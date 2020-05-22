@@ -1,0 +1,2006 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "",
+    "description": "",
+    "version": ""
+  },
+  "basePath": "/login",
+  "tags": [
+    {
+      "name": "Portal Application",
+      "description": "Dev Console Application Operations"
+    },
+    {
+      "name": "OTK Authorize",
+      "description": "Initializes an OAuth 2.0 flow"
+    },
+    {
+      "name": "OTK Token",
+      "description": "Token endpoint for OAuth Toolkit"
+    },
+    {
+      "name": "OTK Openid Connect",
+      "description": "Dev Console Openid Operations"
+    }
+  ],
+  "schemes": [
+    "https"
+  ],
+  "consumes": [],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/application/{tenantId}": {
+      "get": {
+        "tags": [
+          "Portal Application"
+        ],
+        "description": "Retrieves the client identifier and access scope of a Developer Console application for a given Portal tenant.",
+        "operationId": "Get_application_client_id_",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "tenantId",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "The tenant ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "apikey": {
+                  "type": "string",
+                  "description": "The application client ID or API key"
+                },
+                "scope": {
+                  "type": "string",
+                  "description": "The access scope for the application"
+                }
+              },
+              "title": "ApplicationData"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/auth/oauth/v2/authorize": {
+      "get": {
+        "description": "Sends an OAuth 2.0 authorization request. If the request is successful, an authorization grant will be returned, which can then be used to request a token.",
+        "operationId": "Get_request_authorization",
+        "produces": [
+          "text/html"
+        ],
+        "tags": [
+          "OTK Authorize"
+        ],
+        "parameters": [
+          {
+            "name": "mag-identifier",
+            "in": "header",
+            "required": false,
+            "x-is-map": false,
+            "type": "string",
+            "description": "Represents a valid, registered mobile device. **Required for** mobile clients, and must be used in conjunction with `response_type=code`. The mobile client's scope must include `msso`"
+          },
+          {
+            "name": "client_id",
+            "in": "query",
+            "required": true,
+            "x-is-map": false,
+            "type": "string",
+            "description": "Identifies the client making the request"
+          },
+          {
+            "name": "response_type",
+            "in": "query",
+            "required": true,
+            "x-is-map": false,
+            "type": "string",
+            "enum": [
+              "code",
+              "token",
+              "token id_token"
+            ],
+            "description": "The desired authorization grant type. Allowed values are:<br><ul><li>`code` (requests an authorization code)</li><li>`token` (requests an access token as part of an implicit grant flow)</li><li>`token id_token` (requests a registered OpenID extension value; only applies if `scope=openid`)</li></ul>"
+          },
+          {
+            "name": "redirect_uri",
+            "in": "query",
+            "required": false,
+            "x-is-map": false,
+            "type": "string",
+            "description": "The redirection endpoint previously established with the authorization server. **Only** required if multiple `redirect_uri` values are registered for this client"
+          },
+          {
+            "name": "scope",
+            "in": "query",
+            "required": false,
+            "x-is-map": false,
+            "type": "string",
+            "description": "The scope of the access request. **Only** scope values registered for this client will be granted. If only non-matching scope values are requested, the request will fail. Possible values are: `oob` (out of bounds, i.e. any scope), `openid email profile` (OpenID, email address and profile values)"
+          },
+          {
+            "name": "nonce",
+            "in": "query",
+            "required": false,
+            "x-is-map": false,
+            "type": "string",
+            "description": "A unique identifier for the request. **Required if** `response_type=token id_token`"
+          },
+          {
+            "name": "prompt",
+            "in": "query",
+            "required": false,
+            "x-is-map": false,
+            "default": "login consent",
+            "type": "string",
+            "description": "Indicates whether the server should prompt for login and/or consent. **Only** used in an OpenID Connect context. Allowed values are (space separated): `none` (you must provide a value for `id_token_hint`), `login`, and `consent`(only respected if the current user has an active OAuth session using the same `client_id` and `scope` values). Defaults to `login consent`"
+          },
+          {
+            "name": "id_token_hint",
+            "in": "query",
+            "required": false,
+            "x-is-map": false,
+            "type": "string",
+            "description": "Contains a previously issued `id_token`. **Only** used in an OpenID Connect context. **Only** respected for `prompt=none` and `prompt=none consent`"
+          },
+          {
+            "name": "acr_values",
+            "in": "query",
+            "required": false,
+            "x-is-map": false,
+            "type": "string",
+            "description": "Indicates which acr (additional cryptography) classes are acceptable for the user authentication. This is used within the context of OpenID Connect.  It is a space separated list of different values."
+          },
+          {
+            "name": "code_challenge",
+            "in": "query",
+            "required": false,
+            "x-is-map": false,
+            "type": "string",
+            "description": "The `code_challenge` value in a Proof Key for Code Exchange context (See RFC 7636: https://tools.ietf.org/html/rfc7636)"
+          },
+          {
+            "name": "code_challenge_method",
+            "in": "query",
+            "required": false,
+            "x-is-map": false,
+            "type": "string",
+            "description": "The `code_challenge_method` value in a Proof Key for Code Exchange context (See RFC 7636: https://tools.ietf.org/html/rfc7636). Allowed values are: `plain`, `S256`)"
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "required": false,
+            "x-is-map": false,
+            "type": "string",
+            "description": "An opaque value that is used by the client to track its session. The authorization server will include this value when redirecting back to the client. It is **recommended** that you use this parameter for preventing CSRF (Cross-Site Request Forgery) exploits"
+          },
+          {
+            "name": "login_hint",
+            "in": "query",
+            "required": false,
+            "x-is-map": false,
+            "type": "string",
+            "description": "Contains a `tenantId`. **Only** used in an OpenID Connect context"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "headers": {
+              "location": {
+                "description": "Location (URL) includes these required parameters: `action=(display or login depending on 'prompt' and 'id_token_hint') & sessionID & sessionData (a JWT containing a JSON message holding session data)`",
+                "type": "string"
+              }
+            }
+          },
+          "302": {
+            "description": "Found",
+            "schema": {
+              "required": [
+                "session",
+                "request_consent",
+                "request_parameters"
+              ],
+              "type": "object",
+              "properties": {
+                "session": {
+                  "type": "object",
+                  "properties": {
+                    "sessionID": {
+                      "type": "string",
+                      "description": "A session ID matching the `sessionID`"
+                    },
+                    "exp": {
+                      "type": "string",
+                      "description": "expiry"
+                    },
+                    "current_username": {
+                      "type": "string",
+                      "description": "current_username"
+                    },
+                    "current_user_consent": {
+                      "type": "string",
+                      "description": "current_user_consent"
+                    },
+                    "current_user_role": {
+                      "type": "string",
+                      "description": "current_user_role"
+                    },
+                    "current_user_acr": {
+                      "type": "string",
+                      "description": "current_user_acr"
+                    },
+                    "current_user_authTime": {
+                      "type": "string",
+                      "description": "current_user_authTime"
+                    },
+                    "salt": {
+                      "type": "string",
+                      "description": "salt"
+                    },
+                    "third_party_sso_token": {
+                      "type": "string",
+                      "description": "third_party_sso_token"
+                    },
+                    "third_party_sso_token_type": {
+                      "type": "string",
+                      "description": "third_party_sso_token_type"
+                    }
+                  },
+                  "title": "SessionObject"
+                },
+                "request_consent": {
+                  "type": "object",
+                  "properties": {
+                    "client_name": {
+                      "type": "string",
+                      "description": "Client Name"
+                    },
+                    "scope_verified": {
+                      "type": "string",
+                      "description": "Valid scope for this client"
+                    }
+                  },
+                  "title": "RequestConsentObject"
+                },
+                "request_parameters": {
+                  "type": "object",
+                  "properties": {
+                    "display": {
+                      "type": "string",
+                      "description": "Display Value"
+                    },
+                    "prompt": {
+                      "type": "string",
+                      "description": "Prompt Value"
+                    },
+                    "id_token_hint": {
+                      "type": "string",
+                      "description": "Id Token For Authenticated User"
+                    },
+                    "acr_values": {
+                      "type": "string",
+                      "description": "A List of ACR Values"
+                    },
+                    "client_id": {
+                      "type": "string",
+                      "description": "A Client ID"
+                    },
+                    "nonce": {
+                      "type": "string",
+                      "description": "A nonce"
+                    },
+                    "scope": {
+                      "type": "string",
+                      "description": "Requested Scope"
+                    }
+                  },
+                  "title": "RequestParametersObject"
+                }
+              },
+              "title": "ServiceProviderConfigurationData"
+            },
+            "headers": {
+              "location": {
+                "description": "Location (URL) includes these required parameters: `action=(display or login depending on `prompt` and `id_token_hint`) & sessionID & sessionData (a JWT containing a JSON message holding session data)`",
+                "type": "string"
+              },
+              "Pragma": {
+                "description": "Pragma directive",
+                "type": "string",
+                "default": "no-cache"
+              },
+              "Cache-Control": {
+                "description": "Cache control directive",
+                "type": "string",
+                "default": "no-store"
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "headers": {
+              "x-ca-err": {
+                "description": "Custom error extension. Possible values: 3000103 (missing or invalid parameters), 3000112 (code_challenge or code_challenge_method invalid), 3000114 (invalid redirect uri), 3000130 (invalid client type), ",
+                "type": "string",
+                "default": "3000130"
+              },
+              "Pragma": {
+                "description": "Pragma browser directive",
+                "type": "string",
+                "default": "no-cache"
+              },
+              "Cache-Control": {
+                "description": "Cache-Control browser directive",
+                "type": "string",
+                "default": "no-store"
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "headers": {
+              "x-ca-err": {
+                "description": "Custom error extension. Possible values: 3000201 (client could not be authenticated)",
+                "type": "string",
+                "default": "3000201"
+              },
+              "Pragma": {
+                "description": "Pragma browser directive",
+                "type": "string",
+                "default": "no-cache"
+              },
+              "Cache-Control": {
+                "description": "Cache-Control browser directive",
+                "type": "string",
+                "default": "no-store"
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "headers": {
+              "x-ca-err": {
+                "description": "Custom error extension. Possible values: 3000203 (SSL required)",
+                "type": "string",
+                "default": "3000203"
+              },
+              "Pragma": {
+                "description": "Pragma browser directive",
+                "type": "string",
+                "default": "no-cache"
+              },
+              "Cache-Control": {
+                "description": "Cache-Control browser directive",
+                "type": "string",
+                "default": "no-store"
+              }
+            }
+          },
+          "405": {
+            "description": "Method Not Allowed",
+            "headers": {
+              "Allow": {
+                "description": "This header is required by RFC 2616 (see https://tools.ietf.org/html/rfc2616) and contains a comma separated list of valid HTTP methods.",
+                "type": "string",
+                "default": "GET,POST"
+              },
+              "Pragma": {
+                "description": "Pragma browser directive",
+                "type": "string",
+                "default": "no-cache"
+              },
+              "Cache-Control": {
+                "description": "Cache-Control browser directive",
+                "type": "string",
+                "default": "no-store"
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "headers": {
+              "x-ca-err": {
+                "description": "Custom error extension",
+                "type": "string",
+                "default": "3000000"
+              },
+              "Pragma": {
+                "description": "Pragma browser directive",
+                "type": "string",
+                "default": "no-cache"
+              },
+              "Cache-Control": {
+                "description": "Cache-Control browser directive",
+                "type": "string",
+                "default": "no-store"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/oauth/v2/token": {
+      "post": {
+        "description": "Requests an access token or refresh token as per a specified OAuth 2.0 grant type.",
+        "operationId": "Create_request_token",
+        "tags": [
+          "OTK Token"
+        ],
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "mag-identifier",
+            "in": "header",
+            "required": false,
+            "x-is-map": false,
+            "type": "string",
+            "description": "Mobile clients **must** use this header. It must represent a valid registered device. This `grant_type`, however, is not supported by Mobile API Gateway."
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "x-is-map": false,
+            "type": "string",
+            "description": "The HTTP basic authorization header containing the client credentials as a Base64 encoded string (`authorization: Basic Base64(client_id:client_secret)`). This can only be used **instead of** the parameters `client_id` and `client_secret`."
+          },
+          {
+            "name": "client_id",
+            "in": "query",
+            "required": false,
+            "x-is-map": false,
+            "type": "string",
+            "description": "Identifies the client making the request. Can **only** be used if you are not providing an `authorization` value"
+          },
+          {
+            "name": "client_secret",
+            "in": "query",
+            "required": false,
+            "x-is-map": false,
+            "type": "string",
+            "description": "The client secret. Can **only** be used if you are not providing an `authorization` value"
+          },
+          {
+            "name": "grant_type",
+            "in": "query",
+            "required": true,
+            "x-is-map": false,
+            "default": "password",
+            "enum": [
+              "password",
+              "refresh_token",
+              "authorization_code",
+              "client_credentials",
+              "urn:ietf:params:oauth:grant-type:jwt-bearer",
+              "urn:ietf:params:oauth:grant-type:saml2-bearer"
+            ],
+            "type": "string",
+            "description": "The OAuth 2.0 grant type. Allowed values are: <br/><ul><li>`password` (you must provide either `authorization` OR `client_id`, `client_secret`, `tenant_id\\username` and `password` altogether)</li><li>`client_credentials` (you must provide either `authorization` OR `client_id` and `client_secret` altogether)</li><li>`authorization_code` (you must provide `client_id`, `client_secret`, `code` and `redirect_uri`)</li><li>`refresh_token` (you must provide `client_id` and `refresh_token`)</li><li>`jwt` (you must provide `client_id` and `assertion`)</li><li>`saml2-bearer` (you must provide `client_id` and `assertion`)</li></ul> Defaults to `password`"
+          },
+          {
+            "name": "code",
+            "in": "query",
+            "required": false,
+            "x-is-map": false,
+            "type": "string",
+            "description": "Required if `grant_type=authorization_code`."
+          },
+          {
+            "name": "redirect_uri",
+            "in": "query",
+            "required": false,
+            "x-is-map": false,
+            "type": "string",
+            "description": "Required if `grant_type=authorization_code`. Must contain a valid auth code."
+          },
+          {
+            "name": "scope",
+            "in": "query",
+            "required": false,
+            "x-is-map": false,
+            "type": "string",
+            "description": "The scope of the access request. **Only** scope values registered for this client will be granted. If only non-matching scope values are requested, the request will fail. Possible values are: `oob` (out of bounds, i.e. any scope), `openid email profile` (OpenID, email address and profile values)"
+          },
+          {
+            "name": "username",
+            "in": "query",
+            "required": false,
+            "x-is-map": false,
+            "type": "string",
+            "description": "A valid user name. **Only** applicable if `grant_type=password` or `grant_type=client_credentials`"
+          },
+          {
+            "name": "password",
+            "in": "query",
+            "required": false,
+            "x-is-map": false,
+            "type": "string",
+            "format": "password",
+            "description": "A valid password. **Only** applicable if `grant_type=password` or `grant_type=client_credentials`"
+          },
+          {
+            "name": "assertion",
+            "in": "query",
+            "required": false,
+            "x-is-map": false,
+            "type": "string",
+            "description": "A Base64 encoded SAML or JWT token that represents an authenticated resource owner. **Only** applicable if `grant_type=saml2-bearer` or `grant_type=jwt`, respectively"
+          },
+          {
+            "name": "refresh_token",
+            "in": "query",
+            "required": false,
+            "x-is-map": false,
+            "type": "string",
+            "description": "A valid refresh token. **Only** applicable if `grant_type=refresh_token`"
+          },
+          {
+            "name": "code_verifier",
+            "in": "query",
+            "required": false,
+            "x-is-map": false,
+            "type": "string",
+            "description": "A random value of 43-256 characters. See https://tools.ietf.org/html/rfc7636#section-4 for details.  This parameter is required only when a `code_challenge` is provided with the authorization request for this session."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "access_token": {
+                  "type": "string",
+                  "description": "The access token for the request"
+                },
+                "token_type": {
+                  "type": "string",
+                  "description": "The token type issued",
+                  "example": "Bearer"
+                },
+                "expires_in": {
+                  "type": "string",
+                  "description": "The expiry time in seconds",
+                  "example": "3600"
+                },
+                "refresh_token": {
+                  "type": "string",
+                  "description": "The refresh token, if applicable"
+                },
+                "scope": {
+                  "type": "string",
+                  "description": "The issued scope",
+                  "example": "oob"
+                },
+                "id_token": {
+                  "type": "string",
+                  "description": "If the requested `scope` included `msso` or `openid`, the response will include an `id_token`"
+                },
+                "id_token_type": {
+                  "type": "string",
+                  "description": "If the requested `scope` included `msso` or `openid`, the response will include an `id_token_type`"
+                }
+              },
+              "title": "TokenData"
+            },
+            "headers": {
+              "Pragma": {
+                "description": "Pragma browser directive",
+                "type": "string",
+                "default": "no-cache"
+              },
+              "Cache-Control": {
+                "description": "Cache-Control browser directive",
+                "type": "string",
+                "default": "no-store"
+              }
+            }
+          },
+          "204": {
+            "description": "No Content",
+            "headers": {
+              "Access-Control-Allow-Methods": {
+                "description": "Allowable Methods, POST",
+                "type": "string",
+                "default": "POST"
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "headers": {
+              "x-ca-err": {
+                "description": "Custom error extension, possible values: 3003103 (missing or duplicate parameters), 3003107 (invalid mag-identifier), 3003113 (invalid grant), 3003115 (no registered scope value for client), 3003119 (grant type not supported), 3003134 (request did not match CORS requirements), 3003201 (client credentials not valid)",
+                "type": "string",
+                "default": "3003107"
+              },
+              "Pragma": {
+                "description": "Pragma browser directive",
+                "type": "string",
+                "default": "no-cache"
+              },
+              "Cache-Control": {
+                "description": "Cache-Control browser directive",
+                "type": "string",
+                "default": "no-store"
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "headers": {
+              "x-ca-err": {
+                "description": "Custom error extension, possible values: 3003201 (Invalid or Missing credentials), 3003202 (Resource owner could not be authenticated)",
+                "type": "string",
+                "default": "3003202"
+              },
+              "WWW-Authenticate": {
+                "description": "This header is required by RFC 7235 (see https://tools.ietf.org/html/rfc7235) if an authentication scheme has been used. It contains the used authentication scheme and an error message.",
+                "type": "string"
+              },
+              "Pragma": {
+                "description": "Pragma browser directive",
+                "type": "string",
+                "default": "no-cache"
+              },
+              "Cache-Control": {
+                "description": "Cache-Control browser directive",
+                "type": "string",
+                "default": "no-store"
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "headers": {
+              "x-ca-err": {
+                "description": "Custom error extension, possible values:  3003203 (SSL is required)",
+                "type": "string",
+                "default": "3003203"
+              },
+              "Pragma": {
+                "description": "Pragma browser directive",
+                "type": "string",
+                "default": "no-cache"
+              },
+              "Cache-Control": {
+                "description": "Cache-Control browser directive",
+                "type": "string",
+                "default": "no-store"
+              }
+            }
+          },
+          "405": {
+            "description": "Method Not Allowed",
+            "headers": {
+              "Allow": {
+                "description": "This header is required by RFC 2616 (see https://tools.ietf.org/html/rfc2616) and contains a comma separated list of valid HTTP methods.",
+                "type": "string",
+                "default": "POST"
+              },
+              "Pragma": {
+                "description": "Pragma browser directive",
+                "type": "string",
+                "default": "no-cache"
+              },
+              "Cache-Control": {
+                "description": "Cache-Control browser directive",
+                "type": "string",
+                "default": "no-store"
+              }
+            }
+          },
+          "default": {
+            "description": "Unknown error.",
+            "headers": {
+              "x-ca-err": {
+                "description": "Custom error extension, possible values:  3003000 (Request failed due to unknown reason)",
+                "type": "string",
+                "default": "3003000"
+              },
+              "Pragma": {
+                "description": "Pragma browser directive",
+                "type": "string",
+                "default": "no-cache"
+              },
+              "Cache-Control": {
+                "description": "Cache-Control browser directive",
+                "type": "string",
+                "default": "no-store"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/oauth/v2/token/revoke": {
+      "post": {
+        "description": "Revokes an access token or refresh token.<br><br><br> **Note:** Cross-Origin Resource Sharing (CORS) is not supported.",
+        "operationId": "Create_revoke_token_",
+        "tags": [
+          "OTK Token"
+        ],
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": true,
+            "x-is-map": false,
+            "type": "string",
+            "description": "The HTTP basic authorization header containing the client credentials as a Base64 encoded string (`authorization: Basic Base64(client_id:client_secret)`). For public clients the `client_secret` is not required."
+          },
+          {
+            "name": "token",
+            "in": "query",
+            "required": true,
+            "x-is-map": false,
+            "type": "string",
+            "description": "The issued token"
+          },
+          {
+            "name": "token_type_hint",
+            "in": "query",
+            "required": true,
+            "x-is-map": false,
+            "type": "string",
+            "description": "Can be `access_token` or `refresh_token`"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "result": {
+                  "type": "string",
+                  "example": "revoked"
+                }
+              }
+            }
+          },
+          "204": {
+            "description": "No Content",
+            "headers": {
+              "Access-Control-Allow-Methods": {
+                "description": "Allowable Methods, POST, DELETE",
+                "type": "string",
+                "default": "POST"
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "headers": {
+              "x-ca-err": {
+                "description": "Custom error extension, possible values:  3004103 (Missing or duplicate parameters), 3004117 (Client lacks authorization for request), 3003134 (request did not match CORS requirements).",
+                "type": "string",
+                "default": "3004103"
+              },
+              "Pragma": {
+                "description": "Pragma browser directive",
+                "type": "string",
+                "default": "no-cache"
+              },
+              "Cache-Control": {
+                "description": "Cache-Control browser directive",
+                "type": "string",
+                "default": "no-store"
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "headers": {
+              "x-ca-err": {
+                "description": "Custom error extension. Possible value: 3004201 (Invalid or missing credentials).",
+                "type": "string",
+                "default": "3004103"
+              },
+              "WWW-Authenticate": {
+                "description": "This header is required by RFC 7235 (see https://tools.ietf.org/html/rfc7235) if an authentication scheme has been used. It contains the used authentication scheme and an error message.",
+                "type": "string"
+              },
+              "Pragma": {
+                "description": "Pragma browser directive",
+                "type": "string",
+                "default": "no-cache"
+              },
+              "Cache-Control": {
+                "description": "Cache-Control browser directive",
+                "type": "string",
+                "default": "no-store"
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "headers": {
+              "x-ca-err": {
+                "description": "Custom error extension.  Possible value:  3004203 (SSL is required).",
+                "type": "string",
+                "default": "3004203"
+              },
+              "Pragma": {
+                "description": "Pragma browser directive",
+                "type": "string",
+                "default": "no-cache"
+              },
+              "Cache-Control": {
+                "description": "Cache-Control browser directive",
+                "type": "string",
+                "default": "no-store"
+              }
+            }
+          },
+          "405": {
+            "description": "Method Not Allowed",
+            "headers": {
+              "Allow": {
+                "description": "This header is required by RFC 2616 (see https://tools.ietf.org/html/rfc2616) and contains a comma separated list of valid HTTP methods.",
+                "type": "string",
+                "default": "POST"
+              },
+              "Pragma": {
+                "description": "Pragma browser directive",
+                "type": "string",
+                "default": "no-cache"
+              },
+              "Cache-Control": {
+                "description": "Cache-Control browser directive",
+                "type": "string",
+                "default": "no-store"
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable (**Note:** Implies that the token type is not supported by the server.)",
+            "headers": {
+              "x-ca-err": {
+                "description": "Custom error extension",
+                "type": "string",
+                "default": "3002203"
+              },
+              "Pragma": {
+                "description": "Pragma browser directive",
+                "type": "string",
+                "default": "no-cache"
+              },
+              "Cache-Control": {
+                "description": "Cache-Control browser directive",
+                "type": "string",
+                "default": "no-store"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/connect/session/status": {
+      "get": {
+        "tags": [
+          "OTK Openid Connect"
+        ],
+        "description": "The client requests the session status by passing in the `id_token` of the authenticated user. This informs the client if the resource owner is logged in and has a valid session. The session could be active or not exist.",
+        "operationId": "Get_resource_owner_session_status_",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "description": "A valid `access_token` (for example, `authorization: Bearer access-token-value`)."
+          },
+          {
+            "name": "id_token",
+            "in": "query",
+            "required": true,
+            "type": "string",
+            "description": "The `id_token` of the resource owner."
+          },
+          {
+            "name": "id_token_type",
+            "in": "query",
+            "required": false,
+            "default": "urn:ietf:params:oauth:grant-type:jwt-bearer",
+            "type": "string",
+            "description": "The `id_token_type` to be validated. Required if not the default type."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "session": {
+                  "type": "string",
+                  "description": "The session is active.",
+                  "example": "active"
+                },
+                "session_status": {
+                  "type": "string",
+                  "description": "The session does not exist.",
+                  "example": "none"
+                }
+              }
+            }
+          },
+          "204": {
+            "description": "No Content",
+            "headers": {
+              "Access-Control-Allow-Methods": {
+                "description": "Allowable Methods, POST or GET",
+                "type": "string",
+                "default": "GET"
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "headers": {
+              "x-ca-err": {
+                "description": "Custom error extension. Possible values: 3007103 (missing or duplicate parameters), 3007134 (request did not match CORS requirements",
+                "type": "string",
+                "default": "3007103"
+              },
+              "Pragma": {
+                "description": "Pragma browser directive",
+                "type": "string",
+                "default": "no-cache"
+              },
+              "Cache-Control": {
+                "description": "Cache-Control browser directive",
+                "type": "string",
+                "default": "no-store"
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid token. Possible error code values: 1003990, 1003991, 1003992, 1003993",
+            "headers": {
+              "x-ca-err": {
+                "description": "Custom error extension.  Possible values: 3007990 (validation error), ",
+                "type": "string",
+                "default": "3007990"
+              },
+              "Pragma": {
+                "description": "Pragma browser directive",
+                "type": "string",
+                "default": "no-cache"
+              },
+              "Cache-Control": {
+                "description": "Cache-Control browser directive",
+                "type": "string",
+                "default": "no-store"
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden.",
+            "headers": {
+              "x-ca-err": {
+                "description": "Custom error extension.  Possible value: 3007203 (SSL required)",
+                "type": "string",
+                "default": "3007203"
+              },
+              "Pragma": {
+                "description": "Pragma browser directive",
+                "type": "string",
+                "default": "no-cache"
+              },
+              "Cache-Control": {
+                "description": "Cache-Control browser directive",
+                "type": "string",
+                "default": "no-store"
+              }
+            }
+          },
+          "405": {
+            "description": "The HTTP method is not valid",
+            "headers": {
+              "Allow": {
+                "description": "This header is required by RFC 2616 (see https://tools.ietf.org/html/rfc2616) and contains a comma separated list of valid HTTP methods.",
+                "type": "string",
+                "default": "POST"
+              },
+              "Pragma": {
+                "description": "Pragma browser directive",
+                "type": "string",
+                "default": "no-cache"
+              },
+              "Cache-Control": {
+                "description": "Cache-Control browser directive",
+                "type": "string",
+                "default": "no-store"
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "headers": {
+              "x-ca-err": {
+                "description": "Custom error extension",
+                "type": "string",
+                "default": "3002203"
+              },
+              "Pragma": {
+                "description": "Pragma browser directive",
+                "type": "string",
+                "default": "no-cache"
+              },
+              "Cache-Control": {
+                "description": "Cache-Control browser directive",
+                "type": "string",
+                "default": "no-store"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/openid/connect/v1/userinfo": {
+      "get": {
+        "tags": [
+          "OTK Openid Connect"
+        ],
+        "description": "Retrieves session information for a specific resource owner.",
+        "operationId": "Get_resource_owner_user_info_",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "description": "A valid access token, for example: `authorization: Bearer access-token-value`."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "sub": {
+                  "type": "string",
+                  "description": "The login session identifier",
+                  "example": "sYz-nbsEZkFI5uwzVE50IFoeP21c4YP_MTz9mrPklHQ"
+                },
+                "family_name": {
+                  "type": "string",
+                  "description": "The user's family name",
+                  "example": "Administrator"
+                },
+                "preferred_username": {
+                  "type": "string",
+                  "description": "The user's login name",
+                  "example": "admin"
+                },
+                "token": {
+                  "type": "string",
+                  "description": "The `tenantId` and `username`, white space separated",
+                  "example": "apim admin"
+                },
+                "sessionId": {
+                  "type": "string",
+                  "description": "The Portal session ID",
+                  "example": "a72fa393-16fb-4280-8800-1c2a90bc7727"
+                },
+                "email": {
+                  "type": "string",
+                  "description": "The user's email",
+                  "example": "apimnoreply@ca.com"
+                }
+              }
+            }
+          },
+          "204": {
+            "description": "No Content",
+            "headers": {
+              "Access-Control-Allow-Methods": {
+                "description": "Allowable Methods, POST or GET",
+                "type": "string",
+                "default": "GET"
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "headers": {
+              "x-ca-err": {
+                "description": "Custom error extension. Possible values: 3007103 (missing or duplicate parameters), 3007134 (request did not match CORS requirements",
+                "type": "string",
+                "default": "3007103"
+              },
+              "Pragma": {
+                "description": "Pragma browser directive",
+                "type": "string",
+                "default": "no-cache"
+              },
+              "Cache-Control": {
+                "description": "Cache-Control browser directive",
+                "type": "string",
+                "default": "no-store"
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid token. The error code may be 1003990, 1003991, 1003992, 1003993",
+            "headers": {
+              "x-ca-err": {
+                "description": "Custom error extension.  Possible value: 3007990 (validation error)",
+                "type": "string",
+                "default": "3007990"
+              },
+              "Pragma": {
+                "description": "Pragma browser directive",
+                "type": "string",
+                "default": "no-cache"
+              },
+              "Cache-Control": {
+                "description": "Cache-Control browser directive",
+                "type": "string",
+                "default": "no-store"
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden.",
+            "headers": {
+              "x-ca-err": {
+                "description": "Custom error extension.  Possible values:  3007203 (SSL required)",
+                "type": "string",
+                "default": "3007203"
+              },
+              "Pragma": {
+                "description": "Pragma browser directive",
+                "type": "string",
+                "default": "no-cache"
+              },
+              "Cache-Control": {
+                "description": "Cache-Control browser directive",
+                "type": "string",
+                "default": "no-store"
+              }
+            }
+          },
+          "405": {
+            "description": "The HTTP method is not valid",
+            "headers": {
+              "Allow": {
+                "description": "This header is required by RFC 2616 (see https://tools.ietf.org/html/rfc2616) and contains a comma separated list of valid HTTP methods.",
+                "type": "string",
+                "default": "POST"
+              },
+              "Pragma": {
+                "description": "Pragma browser directive",
+                "type": "string",
+                "default": "no-cache"
+              },
+              "Cache-Control": {
+                "description": "Cache-Control browser directive",
+                "type": "string",
+                "default": "no-store"
+              }
+            }
+          },
+          "500": {
+            "description": "Server error.",
+            "headers": {
+              "x-ca-err": {
+                "description": "Custom error extension",
+                "type": "string",
+                "default": "3002203"
+              },
+              "Pragma": {
+                "description": "Pragma browser directive",
+                "type": "string",
+                "default": "no-cache"
+              },
+              "Cache-Control": {
+                "description": "Cache-Control browser directive",
+                "type": "string",
+                "default": "no-store"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "TokenData": {
+      "type": "object",
+      "properties": {
+        "access_token": {
+          "type": "string",
+          "description": "The Access Token for the given token request"
+        },
+        "token_type": {
+          "type": "string",
+          "description": "The Token Type issued",
+          "example": "Bearer"
+        },
+        "expires_in": {
+          "type": "string",
+          "description": "The expiry time, in seconds",
+          "example": "3600"
+        },
+        "refresh_token": {
+          "type": "string",
+          "description": "The refresh token, if applicable"
+        },
+        "scope": {
+          "type": "string",
+          "description": "The issued scope",
+          "example": "oob"
+        },
+        "id_token": {
+          "type": "string",
+          "description": "If the requested SCOPE included 'msso' or 'openid', response includes an id_token"
+        },
+        "id_token_type": {
+          "type": "string",
+          "description": "If the requested SCOPE included 'msso' or 'openid', response includes an id_token_type"
+        }
+      },
+      "title": "TokenData"
+    },
+    "SessionData": {
+      "required": [
+        "session",
+        "request_consent",
+        "request_parameters"
+      ],
+      "type": "object",
+      "properties": {
+        "session": {
+          "type": "object",
+          "properties": {
+            "sessionID": {
+              "type": "string",
+              "description": "A session ID, matching the sessionID"
+            },
+            "exp": {
+              "type": "string",
+              "description": "expiry"
+            },
+            "current_username": {
+              "type": "string",
+              "description": "current_username"
+            },
+            "current_user_consent": {
+              "type": "string",
+              "description": "current_user_consent"
+            },
+            "current_user_role": {
+              "type": "string",
+              "description": "current_user_role"
+            },
+            "current_user_acr": {
+              "type": "string",
+              "description": "current_user_acr"
+            },
+            "current_user_authTime": {
+              "type": "string",
+              "description": "current_user_authTime"
+            },
+            "salt": {
+              "type": "string",
+              "description": "salt"
+            },
+            "third_party_sso_token": {
+              "type": "string",
+              "description": "third_party_sso_token"
+            },
+            "third_party_sso_token_type": {
+              "type": "string",
+              "description": "third_party_sso_token_type"
+            }
+          },
+          "title": "SessionObject"
+        },
+        "request_consent": {
+          "type": "object",
+          "properties": {
+            "client_name": {
+              "type": "string",
+              "description": "Client Name"
+            },
+            "scope_verified": {
+              "type": "string",
+              "description": "Valid scope for this client"
+            }
+          },
+          "title": "RequestConsentObject"
+        },
+        "request_parameters": {
+          "type": "object",
+          "properties": {
+            "display": {
+              "type": "string",
+              "description": "Display Value"
+            },
+            "prompt": {
+              "type": "string",
+              "description": "Prompt Value"
+            },
+            "id_token_hint": {
+              "type": "string",
+              "description": "Id Token For Authenticated User"
+            },
+            "acr_values": {
+              "type": "string",
+              "description": "A List of ACR Values"
+            },
+            "client_id": {
+              "type": "string",
+              "description": "A Client ID"
+            },
+            "nonce": {
+              "type": "string",
+              "description": "A nonce"
+            },
+            "scope": {
+              "type": "string",
+              "description": "Requested Scope"
+            }
+          },
+          "title": "RequestParametersObject"
+        }
+      },
+      "title": "ServiceProviderConfigurationData"
+    },
+    "CustomObject": {
+      "type": "object",
+      "properties": {
+        "mag_demo_products_endpoint_path": {
+          "type": "string",
+          "description": "MAG API demo endpoint",
+          "example": "/protected/resource/products"
+        },
+        "oauth_demo_protected_api_endpoint_path": {
+          "type": "string",
+          "description": "OAuth API demo endpoint",
+          "example": "/oauth/v2/protectedapi/foo"
+        }
+      },
+      "title": "CustomObject"
+    },
+    "ServerObject": {
+      "type": "object",
+      "properties": {
+        "hostname": {
+          "type": "string",
+          "description": "The hostname of the server"
+        },
+        "port": {
+          "type": "string",
+          "description": "The port of the server"
+        },
+        "prefix": {
+          "type": "string",
+          "description": "URL prefix",
+          "example": "/urlprefix"
+        },
+        "server_certs": {
+          "type": "string",
+          "description": "The server certificate(s)"
+        }
+      },
+      "title": "ServerObject"
+    },
+    "OAuthObject": {
+      "type": "object",
+      "properties": {
+        "client": {
+          "type": "object",
+          "properties": {
+            "organization": {
+              "type": "string",
+              "description": "A session ID, matching the sessionID"
+            },
+            "description": {
+              "type": "string",
+              "description": "expiry"
+            },
+            "client_name": {
+              "type": "string",
+              "description": "current_username"
+            },
+            "client_type": {
+              "type": "string",
+              "description": "current_user_consent"
+            },
+            "registered_by": {
+              "type": "string",
+              "description": "current_user_role"
+            },
+            "client_ids": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "client_id": {
+                    "type": "string",
+                    "description": "A client id",
+                    "example": "84695 ... b39770c3d"
+                  },
+                  "client_secret": {
+                    "type": "string",
+                    "description": "A client secret",
+                    "example": "abcde ... ldjjakkC"
+                  },
+                  "scope": {
+                    "type": "string",
+                    "description": "The scopes available for the client",
+                    "example": "openid email profile"
+                  },
+                  "redirect_uri": {
+                    "type": "string",
+                    "description": "The registered redirect_uri for the client",
+                    "example": "https://example.com/client/consent?state=23n23n...13k1j4"
+                  },
+                  "environment": {
+                    "type": "string",
+                    "description": "",
+                    "example": "ALL"
+                  },
+                  "status": {
+                    "type": "string",
+                    "description": "",
+                    "example": "ENABLED"
+                  },
+                  "registered_by": {
+                    "type": "string",
+                    "description": "The id of the entity that registered the client"
+                  }
+                },
+                "title": "ClientIdObject"
+              }
+            }
+          },
+          "title": "ClientObject"
+        },
+        "system_endpoints": {
+          "type": "object",
+          "properties": {
+            "authorization_endpoint_path": {
+              "type": "string",
+              "description": "Authorization endpoint",
+              "example": "/auth/oauth/v2/authorize"
+            },
+            "token_endpoint_path": {
+              "type": "string",
+              "description": "Token endpoint",
+              "example": "/auth/oauth/v2/token"
+            },
+            "token_revocation_endpoint_path": {
+              "type": "string",
+              "description": "Token revocation endpoint",
+              "example": "/auth/oauth/v2/token/revoke"
+            },
+            "usersession_logout_endpoint_path": {
+              "type": "string",
+              "description": "User logout endpoint",
+              "example": "/connect/session/logout"
+            }
+          },
+          "title": "SystemEndpointsObject"
+        },
+        "oauth_protected_endpoints": {
+          "type": "object",
+          "properties": {
+            "userinfo_endpoint_path": {
+              "type": "string",
+              "description": "UserInfo endpoint",
+              "example": "/openid/connect/v1/userinfo"
+            },
+            "usersession_status_endpoint_path": {
+              "type": "string",
+              "description": "User Session status endpoint",
+              "example": "/connect/session/status"
+            }
+          },
+          "title": "OAuthProtectedEndpointsObject"
+        }
+      },
+      "title": "OAuthObject"
+    },
+    "SystemEndpointsObject": {
+      "type": "object",
+      "properties": {
+        "authorization_endpoint_path": {
+          "type": "string",
+          "description": "Authorization endpoint",
+          "example": "/auth/oauth/v2/authorize"
+        },
+        "token_endpoint_path": {
+          "type": "string",
+          "description": "Token endpoint",
+          "example": "/auth/oauth/v2/token"
+        },
+        "token_revocation_endpoint_path": {
+          "type": "string",
+          "description": "Token revocation endpoint",
+          "example": "/auth/oauth/v2/token/revoke"
+        },
+        "usersession_logout_endpoint_path": {
+          "type": "string",
+          "description": "User logout endpoint",
+          "example": "/connect/session/logout"
+        }
+      },
+      "title": "SystemEndpointsObject"
+    },
+    "OAuthProtectedEndpointsObject": {
+      "type": "object",
+      "properties": {
+        "userinfo_endpoint_path": {
+          "type": "string",
+          "description": "UserInfo endpoint",
+          "example": "/openid/connect/v1/userinfo"
+        },
+        "usersession_status_endpoint_path": {
+          "type": "string",
+          "description": "User Session status endpoint",
+          "example": "/connect/session/status"
+        }
+      },
+      "title": "OAuthProtectedEndpointsObject"
+    },
+    "ClientObject": {
+      "type": "object",
+      "properties": {
+        "organization": {
+          "type": "string",
+          "description": "A session ID, matching the sessionID"
+        },
+        "description": {
+          "type": "string",
+          "description": "expiry"
+        },
+        "client_name": {
+          "type": "string",
+          "description": "current_username"
+        },
+        "client_type": {
+          "type": "string",
+          "description": "current_user_consent"
+        },
+        "registered_by": {
+          "type": "string",
+          "description": "current_user_role"
+        },
+        "client_ids": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "client_id": {
+                "type": "string",
+                "description": "A client id",
+                "example": "84695 ... b39770c3d"
+              },
+              "client_secret": {
+                "type": "string",
+                "description": "A client secret",
+                "example": "abcde ... ldjjakkC"
+              },
+              "scope": {
+                "type": "string",
+                "description": "The scopes available for the client",
+                "example": "openid email profile"
+              },
+              "redirect_uri": {
+                "type": "string",
+                "description": "The registered redirect_uri for the client",
+                "example": "https://example.com/client/consent?state=23n23n...13k1j4"
+              },
+              "environment": {
+                "type": "string",
+                "description": "",
+                "example": "ALL"
+              },
+              "status": {
+                "type": "string",
+                "description": "",
+                "example": "ENABLED"
+              },
+              "registered_by": {
+                "type": "string",
+                "description": "The id of the entity that registered the client"
+              }
+            },
+            "title": "ClientIdObject"
+          }
+        }
+      },
+      "title": "ClientObject"
+    },
+    "ClientIdObject": {
+      "type": "object",
+      "properties": {
+        "client_id": {
+          "type": "string",
+          "description": "A client id",
+          "example": "84695 ... b39770c3d"
+        },
+        "client_secret": {
+          "type": "string",
+          "description": "A client secret",
+          "example": "abcde ... ldjjakkC"
+        },
+        "scope": {
+          "type": "string",
+          "description": "The scopes available for the client",
+          "example": "openid email profile"
+        },
+        "redirect_uri": {
+          "type": "string",
+          "description": "The registered redirect_uri for the client",
+          "example": "https://example.com/client/consent?state=23n23n...13k1j4"
+        },
+        "environment": {
+          "type": "string",
+          "description": "",
+          "example": "ALL"
+        },
+        "status": {
+          "type": "string",
+          "description": "",
+          "example": "ENABLED"
+        },
+        "registered_by": {
+          "type": "string",
+          "description": "The id of the entity that registered the client"
+        }
+      },
+      "title": "ClientIdObject"
+    },
+    "SessionObject": {
+      "type": "object",
+      "properties": {
+        "sessionID": {
+          "type": "string",
+          "description": "A session ID, matching the sessionID"
+        },
+        "exp": {
+          "type": "string",
+          "description": "expiry"
+        },
+        "current_username": {
+          "type": "string",
+          "description": "current_username"
+        },
+        "current_user_consent": {
+          "type": "string",
+          "description": "current_user_consent"
+        },
+        "current_user_role": {
+          "type": "string",
+          "description": "current_user_role"
+        },
+        "current_user_acr": {
+          "type": "string",
+          "description": "current_user_acr"
+        },
+        "current_user_authTime": {
+          "type": "string",
+          "description": "current_user_authTime"
+        },
+        "salt": {
+          "type": "string",
+          "description": "salt"
+        },
+        "third_party_sso_token": {
+          "type": "string",
+          "description": "third_party_sso_token"
+        },
+        "third_party_sso_token_type": {
+          "type": "string",
+          "description": "third_party_sso_token_type"
+        }
+      },
+      "title": "SessionObject"
+    },
+    "RequestConsentObject": {
+      "type": "object",
+      "properties": {
+        "client_name": {
+          "type": "string",
+          "description": "Client Name"
+        },
+        "scope_verified": {
+          "type": "string",
+          "description": "Valid scope for this client"
+        }
+      },
+      "title": "RequestConsentObject"
+    },
+    "RequestParametersObject": {
+      "type": "object",
+      "properties": {
+        "display": {
+          "type": "string",
+          "description": "Display Value"
+        },
+        "prompt": {
+          "type": "string",
+          "description": "Prompt Value"
+        },
+        "id_token_hint": {
+          "type": "string",
+          "description": "Id Token For Authenticated User"
+        },
+        "acr_values": {
+          "type": "string",
+          "description": "A List of ACR Values"
+        },
+        "client_id": {
+          "type": "string",
+          "description": "A Client ID"
+        },
+        "nonce": {
+          "type": "string",
+          "description": "A nonce"
+        },
+        "scope": {
+          "type": "string",
+          "description": "Requested Scope"
+        }
+      },
+      "title": "RequestParametersObject"
+    },
+    "ApplicationData": {
+      "type": "object",
+      "properties": {
+        "apikey": {
+          "type": "string",
+          "description": "application client_id or apikey"
+        },
+        "scope": {
+          "type": "string",
+          "description": "application scope"
+        }
+      },
+      "title": "ApplicationData"
+    }
+  },
+  "responses": {
+    "auth302": {
+      "description": "Will contain either: A success response including the redirect location header to the server that handles the authentication.  The redirect parameter 'sessionData's structure looks like the model schema shown OR 'invalid mag-identifier' OR 'invalid scope' OR 'unsupported response type' OR 'unauthorized client'. The non-successful conditions may include redirect query params as follows: 'error', string with default value:  invalid_request 'error_description', string with description of error 'state', string with no default value.  It is opaque to the server and returned as received. 'x-ca-err', string with default 3000108",
+      "schema": {
+        "required": [
+          "session",
+          "request_consent",
+          "request_parameters"
+        ],
+        "type": "object",
+        "properties": {
+          "session": {
+            "type": "object",
+            "properties": {
+              "sessionID": {
+                "type": "string",
+                "description": "The session identifier"
+              },
+              "exp": {
+                "type": "string",
+                "description": "Expiry"
+              },
+              "current_username": {
+                "type": "string",
+                "description": "The current username"
+              },
+              "current_user_consent": {
+                "type": "string",
+                "description": "The current user consent string"
+              },
+              "current_user_role": {
+                "type": "string",
+                "description": "The current user role"
+              },
+              "current_user_acr": {
+                "type": "string",
+                "description": "The current user acr"
+              },
+              "current_user_authTime": {
+                "type": "string",
+                "description": "The current user's authentication time"
+              },
+              "salt": {
+                "type": "string",
+                "description": "Salt"
+              },
+              "third_party_sso_token": {
+                "type": "string",
+                "description": "The third party SSO token"
+              },
+              "third_party_sso_token_type": {
+                "type": "string",
+                "description": "The third party SSO token type"
+              }
+            },
+            "title": "SessionObject"
+          },
+          "request_consent": {
+            "type": "object",
+            "properties": {
+              "client_name": {
+                "type": "string",
+                "description": "The client name"
+              },
+              "scope_verified": {
+                "type": "string",
+                "description": "Valid scope for this client"
+              }
+            },
+            "title": "RequestConsentObject"
+          },
+          "request_parameters": {
+            "type": "object",
+            "properties": {
+              "display": {
+                "type": "string",
+                "description": "The display value"
+              },
+              "prompt": {
+                "type": "string",
+                "description": "The prompt value"
+              },
+              "id_token_hint": {
+                "type": "string",
+                "description": "ID token for the authenticated user"
+              },
+              "acr_values": {
+                "type": "string",
+                "description": "A list of ACR values"
+              },
+              "client_id": {
+                "type": "string",
+                "description": "The client identifier"
+              },
+              "nonce": {
+                "type": "string",
+                "description": "A nonce"
+              },
+              "scope": {
+                "type": "string",
+                "description": "The requested scope"
+              }
+            },
+            "title": "RequestParametersObject"
+          }
+        },
+        "title": "ServiceProviderConfigurationData"
+      },
+      "headers": { 
+        "location": {
+          "description": "Location (URL) includes these required parameters: `action=(display or login depending on 'prompt' and 'id_token_hint') & sessionID & sessionData (a JWT containing a JSON message holding session data)`",
+          "type": "string"
+        },
+        "Pragma": {
+          "description": "Pragma directive",
+          "type": "string",
+          "default": "no-cache"
+        },
+        "Cache-Control": {
+          "description": "Cache control directive",
+          "type": "string",
+          "default": "no-store"
+        }
+      }
+    },
+    "authToken200": {
+      "description": "A success response that includes the issued token, the expiry timeframe (in seconds), and other details from the OAuth Server.",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "access_token": {
+            "type": "string",
+            "description": "The access Token for the token request"
+          },
+          "token_type": {
+            "type": "string",
+            "description": "The token type issued",
+            "example": "Bearer"
+          },
+          "expires_in": {
+            "type": "string",
+            "description": "The expiry time in seconds",
+            "example": "3600"
+          },
+          "refresh_token": {
+            "type": "string",
+            "description": "The refresh token, if applicable"
+          },
+          "scope": {
+            "type": "string",
+            "description": "The issued scope",
+            "example": "oob"
+          },
+          "id_token": {
+            "type": "string",
+            "description": "If the requested `scope` included `msso` or `openid`, the response will include `id_token`"
+          },
+          "id_token_type": {
+            "type": "string",
+            "description": "If the requested `scope` included `msso` or `openid`, the response will include an `id_token_type`"
+          }
+        },
+        "title": "TokenData"
+      },
+      "headers": {
+        "Pragma": {
+          "description": "Pragma browser directive",
+          "type": "string",
+          "default": "no-cache"
+        },
+        "Cache-Control": {
+          "description": "Cache-Control browser directive",
+          "type": "string",
+          "default": "no-store"
+        }
+      }
+    },
+    "application": {
+      "description": "Application data containing the `client_id` (i.e. `apikey`).",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "apikey": {
+            "type": "string",
+            "description": "The application `client_id` or `apikey`."
+          },
+          "scope": {
+            "type": "string",
+            "description": "The application scope."
+          }
+        },
+        "title": "ApplicationData"
+      }
+    }
+  }
+}

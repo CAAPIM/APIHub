@@ -1,0 +1,9 @@
+{
+    "extends": [
+        "plugin:prettier/recommended",
+        "prettier/react"
+    ],
+    "rules": {
+        "prettier/prettier": "error"
+    }
+}

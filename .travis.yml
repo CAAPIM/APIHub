@@ -1,0 +1,54 @@
+dist: xenial
+language: node_js
+node_js:
+    - 'lts/*'
+addons:
+    chrome: stable
+    firefox: latest
+env:
+    global:
+        - NODE_ENV=test
+        - BROWSER=chrome
+branches:
+    only:
+        - master
+
+before_install:
+    - curl -o- -L https://yarnpkg.com/install.sh | bash
+    - source ~/.bashrc
+
+install: make install
+
+cache:
+    yarn: true
+    directories:
+        - ~/.cache
+
+script: make test
+
+stages:
+    - name: test
+    - name: deploy
+      if: branch = master
+
+jobs:
+    include:
+        - stage: test
+          name: Units and E2E tests
+          env:
+              - DEPLOY_ENV=test
+              - NODE_ENV=test
+        - stage: deploy
+          name: Deploy
+          env:
+              - DEPLOY_ENV=integration
+              - NODE_ENV=production
+          install: NODE_ENV=development make install # Install development dependencies
+          script: skip
+          before_deploy:
+              - pip install --user awscli
+              - export PATH=$PATH:$HOME/.local/bin
+          deploy:
+              skip_cleanup: true
+              provider: script
+              script: make deploy

@@ -1,0 +1,30 @@
+{
+    "compilerOptions": {
+        "target": "ES5",
+        "module": "commonjs",
+        "lib": ["es2020", "dom"],
+        "jsx": "react",
+        "outDir": "lib",
+        "rootDir": "src",
+        "declaration": false,
+        "allowJs": true,
+        "moduleResolution": "node",
+        "noImplicitAny": false,
+        "allowSyntheticDefaultImports": true,
+        "esModuleInterop": true,
+        "skipLibCheck": true,
+        "strict": true,
+        "forceConsistentCasingInFileNames": true,
+        "resolveJsonModule": true,
+        "isolatedModules": true
+    },
+    "exclude": [
+        "**/*.spec.ts",
+        "**/*.spec.tsx",
+        "**/*.spec.js",
+        "**/*.test.ts",
+        "**/*.test.tsx",
+        "**/*.test.js"
+    ],
+    "include": ["src"]
+}

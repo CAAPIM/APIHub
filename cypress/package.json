@@ -1,0 +1,16 @@
+{
+    "private": true,
+    "name": "e2e",
+    "version": "0.1.0",
+    "scripts": {
+        "start-gui": "LANGUAGE=en npx cypress open",
+        "start": "LANGUAGE=en node ./start.js"
+    },
+    "devDependencies": {
+        "@cypress/webpack-preprocessor": "~5.1.2",
+        "@testing-library/cypress": "~6.0.0",
+        "cypress": "~4.4.1",
+        "cypress-skip-and-only-ui": "~1.2.6",
+        "eslint-plugin-cypress": "~2.10.3"
+    }
+}

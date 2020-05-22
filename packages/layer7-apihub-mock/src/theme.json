@@ -1,0 +1,61 @@
+{
+    "logo": "",
+    "favicon": "data:image/vnd.microsoft.icon;base64,AAABAAEAEBAAAAEAIABoBAAAFgAAACgAAAAQAAAAIAAAAAEAIAAAAAAAAAQAABILAAASCwAAAAAAAAAAAAD/////////////////////////////////////////////////////////////////////////////////////////////////////+/v7//T09P/39/f///////7+/v/39/f/9fX1//39/f///////Pz8//z8/P/+/v7////////////5+fn/urq6/2tra/9NTU3/WFhY/6Kiov+goKD/V1dX/05OTv+Ghob/u7u7/3Fxcf9wcHD/wcHB/9PT0//8/Pz/l5eX/xUVFf8AAAD/AAAA/wsLC/9BQUH/Dg4O/wEBAf8cHBz/Hh4e/yEhIf8EBAT/EBAQ/7Ozs//g4OD/y8vL/yQkJP8AAAD/Hx8f/4aGhv+VlZX/Pj4+/wAAAP9AQED/1dXV/8bGxv8zMzP/AAAA/xEREf/ExMT//////4eHh/8FBQX/AAAA/3l5ef//////+fn5/15eXv8AAAD/QkJC/+Hh4f//////hoaG/wAAAP8RERH/xMTE//////9nZ2f/AAAA/wQEBP+cnJz///////////+9vb3/Kioq/wQEBP82Njb/e3t7/1ZWVv8AAAD/ERER/8TExP//////cXFx/wAAAP8EBAT/m5ub////////////+Pj4/8bGxv99fX3/UFBQ/zk5Of8eHh7/AAAA/xEREf/Dw8P//////6Kiov8MDAz/AAAA/21tbf/6+vr/8/Pz/39/f/9MTEz/hoaG/+np6f/t7e3/cXFx/wAAAP8RERH/xcXF///////n5+f/R0dH/wAAAP8TExP/ZWVl/2BgYP8NDQ3/BQUF/0VFRf9jY2P/b29v/x8fH/8AAAD/IyMj/9ra2v///////////83Nzf9HR0f/CwsL/wAAAP8AAAD/ERER/1tbW/9DQ0P/AgIC/wAAAP8DAwP/GBgY/4yMjP/7+/v/////////////////6urq/7Kysv+SkpL/lZWV/76+vv/w8PD/zc3N/56env+Pj4//mZmZ/8fHx//4+Pj/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+    "siteTitle": "Adrien's Technologies Developer Network",
+    "lastUpdated": 1586890534345,
+    "color": {
+        "siteTitle": "#48575F",
+        "pageTitle": "#48575F",
+        "background": "#F7F7F7",
+        "bodyText": "#48575F",
+        "link": "#09AEEF",
+        "linkHover": "rgba(9, 174, 239, .5)",
+        "smallText": "#48575F",
+        "borderColor": "#D8D8D8",
+        "primaryButtonBackground": "#09AEEF",
+        "primaryButtonText": "#FFFFFF",
+        "primaryButtonHover": "rgba(9, 174, 239, .5)",
+        "headerBackground": "#FFFFFF",
+        "headerLink": "#09AEEF",
+        "footerBackground": "#48575F",
+        "footerText": "#FFFFFF",
+        "footerLink": "#09AEEF"
+    },
+    "typography": {
+        "siteTitle": "ca-sans-light, \"Helvetica Neue\", helvetica, arial, verdana, sans-serif",
+        "pageTitle": "ca-sans-light, \"Helvetica Neue\", helvetica, arial, verdana, sans-serif",
+        "bodyText": "clear-sans-regular, \"Helvetica Neue\", helvetica, arial, verdana, sans-serif",
+        "smallText": "ca-sans-regular, \"Helvetica Neue\", helvetica, arial, verdana, sans-serif",
+        "footerText": "ca-sans-regular, \"Helvetica Neue\", helvetica, arial, verdana, sans-serif",
+        "buttonText": "ca-sans-regular, \"Helvetica Neue\", helvetica, arial, verdana, sans-serif",
+        "custom": []
+    },
+    "fontSize": {
+        "siteTitle": "20px",
+        "pageTitle": "25px",
+        "bodyText": "14px",
+        "smallText": "12px",
+        "footerText": "14px",
+        "buttonText": "16px"
+    },
+    "image": {
+        "backgroundFooterUri": "",
+        "backgroundHeaderUri": ""
+    },
+    "label": {
+        "service.publish.nav.manageapi.title": "APIs",
+        "service.publish.nav.apps.title": "Apps",
+        "service.publish.nav.apicatalog.title": "API Catalog",
+        "service.publish.nav.apiexplorer.title": "API Explorer"
+    },
+    "display": {
+        "versionNumber": true,
+        "copyright": false,
+        "cookieConsent": {
+            "enabled": false,
+            "message": "PHA+T3VyIHNpdGUgdXNlcyBjb29raWVzPC9wPjxwPldlIHVzZSBjb29raWVzIHRvIGVuc3VyZSB5b3UgZ2V0IHRoZSBiZXN0IHBvc3NpYmxlIHVzZXIgZXhwZXJpZW5jZSBvbiBvdXIgd2Vic2l0ZS4gQnkgY29udGludWluZyB0byB1c2UgdGhpcyB3ZWJzaXRlLCB5b3UgY29uc2VudCB0byBvdXIgdXNlIG9mIHRoZXNlIGNvb2tpZXMuIEZvciBtb3JlIGluZm9ybWF0aW9uIGFib3V0IG91ciBkYXRhIHBvbGljaWVzLCB2aXNpdCA8YSBocmVmPSJodHRwczovL3d3dy5jYS5jb20vdXMvbGVnYWwvcHJpdmFjeS5odG1sIiB0YXJnZXQ9Il9ibGFuayI+IHByaXZhY3kgcG9saWN5PC9hPjwvcD4=",
+            "position": "bottom",
+            "theme": "dark"
+        }
+    }
+}
