@@ -26,6 +26,7 @@ const apiHubMessages = {
             },
             actions: {
                 sign_in: 'Connexion',
+                sign_in_with: 'Connexion avec',
                 sign_up_title: "Nouvel utilisateur d'API Hub ?",
                 sign_up: 'Créer un compte API Hub',
                 forgot_password: 'Mot de passe oublié ?',
@@ -33,6 +34,7 @@ const apiHubMessages = {
             notifications: {
                 invalid_credentials:
                     "Informations d'identification non valides",
+                selected_scheme: 'Se connecter avec',
             },
         },
         account_setup: {
@@ -132,7 +134,7 @@ const apiHubMessages = {
         },
         homepage: {
             placeholder_empty_content:
-                "Le contenu de la page d'accueil n'a pas encore été fourni. Utilisez le bouton de modification pour le créer si vous êtes un administrateur du portail.",
+                "Le contenu de la page d'accueil n'a pas encore été fourni. Les administrateurs du portail peuvent cliquer sur Créer pour ajouter du contenu.",
         },
         actions: {
             view_as_cards: 'Afficher sous forme de cartes',
@@ -147,6 +149,19 @@ const apiHubMessages = {
                 at_least_one_number: 'Au moins un chiffre',
                 at_least_one_special_character:
                     'Au moins un caractère spécial parmi ceux ci-après : !@#$%^&*',
+            },
+        },
+        markdown_editor: {
+            fonts: {
+                bold: 'Gras',
+                italic: 'Italique',
+                strikethrough: 'Barré',
+                unordered: 'Liste non ordonnée',
+                order: 'Liste ordonnée',
+                quote: 'Citation',
+                hr: 'Saut de ligne',
+                inlinecode: 'Code en ligne',
+                code: 'Bloc de code',
             },
         },
     },
@@ -169,12 +184,14 @@ const apiHubMessages = {
                 applicationUsage: 'Applications',
                 assets: 'Actifs',
                 apiLocation: "Emplacement de l'API",
+                apiGroup: "Groupe d'API",
             },
             portalStatus: {
                 enabled: 'Activé',
                 disabled: 'Désactivé',
-                deprecated: 'Désapprouvé',
+                deprecated: 'Déprécié',
                 unpublished: 'Non publié',
+                incomplete: 'Incomplet',
             },
             accessStatus: {
                 public: 'Public',
@@ -244,25 +261,6 @@ const apiHubMessages = {
             },
             documentation: {
                 title: 'Documentation',
-                fields: {
-                    new_document: 'Nouveau document',
-                    select_documentation_locale: 'Langue sélectionnée',
-                },
-                actions: {
-                    new_document_button: 'Nouveau document racine',
-                    new_child_document_button: 'Nouveau sous-document',
-                    edit_document_button: 'Modifier',
-                    delete_document_button: 'Supprimer',
-                },
-                validation: {
-                    error_no_special_characters:
-                        "L'URI doit contenir uniquement des caractères non codés. Les lettres de a à z et les séparateurs - et _ sont pris en charge.",
-                    error_navtitle_not_unique: 'Cet URI existe déjà.',
-                },
-                confirm_delete_document_without_children:
-                    'Vous êtes sur le point de supprimer ce document. Voulez-vous continuer ?',
-                confirm_delete_document_with_children:
-                    'Vous êtes sur le point de supprimer ce document et ses documents enfants. Voulez-vous continuer ?',
             },
         },
         applications: {
@@ -294,10 +292,11 @@ const apiHubMessages = {
             status: {
                 enabled: 'Activé',
                 disabled: 'Désactivé',
-                deprecated: 'Désapprouvé',
+                deprecated: 'Déprécié',
                 unpublished: 'Non publié',
                 rejected: 'Rejeté',
                 application_pending_approval: "En attente d'approbation",
+                edit_application_pending_approval: "En attente d'approbation",
             },
             list: {
                 sort: {
@@ -316,6 +315,8 @@ const apiHubMessages = {
                 generate_secret_warning_2:
                     "Cette option permet d'empêcher l'accès à quiconque utilise la clé d'API actuelle. Partagez le nouveau secret généré avec les développeurs qui codent une application utilisant les API.",
                 secret_generated_heading: 'Nouveau secret généré',
+                secret_generated_heading_error:
+                    'Une erreur est survenue en générant le nouveau code secret',
                 secret_generated_message:
                     "Le secret de texte est visible uniquement pendant la session de navigation actuelle ; il est haché après l'actualisation de la page.",
                 copy_secret_now: 'Copier le secret partagé maintenant',
@@ -325,22 +326,41 @@ const apiHubMessages = {
             },
         },
         documents: {
-            name: 'Document |||| Documents',
+            name: 'Wiki |||| Wiki',
             fields: {
                 title: 'Titre',
                 navtitle: 'URI',
                 markdown: 'Contenu',
                 modifyTs: 'Dernière modification',
                 ordinal: 'Position',
+                new_document: 'Nouveau document',
+                select_documentation_locale: 'Langue sélectionnée',
             },
             actions: {
+                // Toolbar
+                new_document_button: 'Nouveau document racine',
+                new_child_document_button: 'Nouveau sous-document',
+                edit_document_button: 'Modifier',
+                delete_document_button: 'Supprimer',
                 change_document_parent_button: 'Modifier le parent',
+                // Tree
+                expand_documentation:
+                    'Dérouler la documentation du noeud {title}',
+                collapse_documentation:
+                    'Rétracter la documentation du noeud {title}',
+                // Drag & Drop
                 move_as_first_child: 'Premier document',
                 move_after_document: 'Après %{title}',
                 move_as_root_item:
                     'Sélectionnez cette option pour accéder à la racine.',
+                // Form
                 save: 'Publier',
                 cancel: 'Annuler',
+            },
+            validation: {
+                error_no_special_characters:
+                    "L'URI doit contenir uniquement des caractères non codés. Les lettres de a à z et les séparateurs - et _ sont pris en charge.",
+                error_navtitle_not_unique: 'Cet URI existe déjà.',
             },
             notifications: {
                 tree_updated_success:
@@ -359,6 +379,10 @@ const apiHubMessages = {
                 unsaved_changes:
                     'Si vous quittez cette page, vos modifications seront perdues. Voulez-vous annuler la modification de ce document ?',
             },
+            confirm_delete_document_without_children:
+                'Vous êtes sur le point de supprimer ce document. Voulez-vous continuer ?',
+            confirm_delete_document_with_children:
+                'Vous êtes sur le point de supprimer ce document et ses documents enfants. Voulez-vous continuer ?',
         },
         registrations: {
             title: 'Créer un nouveau compte',
@@ -383,6 +407,8 @@ const apiHubMessages = {
                     "Inscription reçue. Un e-mail de notification sera envoyé à l'adresse fournie",
                 email_confirmation_error: 'Email ne correspond pas.',
                 form_confirmation_error: 'Une confirmation est requise.',
+                limituserregistration:
+                    "La demande d'enregistrement de ce courriel est en attente d'approbation/activation. Les demandes multiples ne sont pas autorisées.",
             },
             slider: {
                 confirmed: 'Confirmé',

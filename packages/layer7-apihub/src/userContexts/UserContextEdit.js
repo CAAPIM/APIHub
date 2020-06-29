@@ -1,6 +1,5 @@
 import React, { useCallback } from 'react';
 import {
-    fetchUtils,
     EditView,
     SimpleForm,
     Toolbar,
@@ -24,6 +23,7 @@ import { useApiHub } from '../ApiHubContext';
 import { usePasswordEncryption, validatePassword } from '../authentication';
 import { UserContextTitle } from './UserContextTitle';
 import { UserContextSubtitle } from './UserContextSubtitle';
+import { getFetchJson } from '../fetchUtils';
 
 export const UserContextEdit = props => {
     const { record, save, ...editControllerProps } = useEditController({
@@ -80,18 +80,23 @@ const CancelButton = ({ record }) => {
     );
 };
 
-const useUserContextEditToolbarStyles = makeStyles(theme => ({
-    toolbar: {
-        backgroundColor: 'transparent',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'flex-end',
-        width: 456,
-    },
-    saveButton: {
-        marginLeft: theme.spacing(2),
-    },
-}));
+const useUserContextEditToolbarStyles = makeStyles(
+    theme => ({
+        toolbar: {
+            backgroundColor: 'transparent',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'flex-end',
+            width: 456,
+        },
+        saveButton: {
+            marginLeft: theme.spacing(2),
+        },
+    }),
+    {
+        name: 'Layer7UserContextEditToolbar',
+    }
+);
 
 const UserContextEditToolbar = ({ record, ...rest }) => {
     const classes = useUserContextEditToolbarStyles();
@@ -104,20 +109,25 @@ const UserContextEditToolbar = ({ record, ...rest }) => {
     );
 };
 
-const useUserContextEditStyles = makeStyles(theme => ({
-    root: {
-        padding: `${theme.spacing(2)}px !important`,
-    },
-    field: {
-        width: 456,
-    },
-}));
+const useUserContextEditFormStyles = makeStyles(
+    theme => ({
+        root: {
+            padding: `${theme.spacing(2)}px !important`,
+        },
+        field: {
+            width: 456,
+        },
+    }),
+    {
+        name: 'Layer7UserContextEditForm',
+    }
+);
 
 const validateName = [required(), maxLength(60)];
 const validateEmail = [required(), maxLength(256), email()];
 
 export const UserContextEditForm = ({ record, basePath, save, ...rest }) => {
-    const classes = useUserContextEditStyles();
+    const classes = useUserContextEditFormStyles();
 
     const validate = ({ currentPassword, newPassword, confirmNewPassword }) => {
         const errors = {};
@@ -186,7 +196,7 @@ export const UserContextEditForm = ({ record, basePath, save, ...rest }) => {
 };
 
 const useUpdatePassword = user => {
-    const { url } = useApiHub();
+    const { url, originHubName } = useApiHub();
     const notify = useNotify();
     const [publicKey, encrypt] = usePasswordEncryption();
     const uuid = user?.uuid;
@@ -209,21 +219,19 @@ const useUpdatePassword = user => {
                 finalNewPassword = encryptedNewPassword;
             }
 
+            const fetchJson = getFetchJson(originHubName);
             // This is need to get a special cookie required for password change
-            await fetch(`${url}/admin/sessionCheck`, {
-                credentials: 'include',
-            });
+            await fetchJson(`${url}/admin/sessionCheck`);
 
-            return fetchUtils
-                .fetchJson(`${url}/admin/v2/users/password/change`, {
-                    credentials: 'include',
-                    body: JSON.stringify({
-                        password: finalPassword,
-                        newPassword: finalNewPassword,
-                        uuid,
-                    }),
-                    method: 'PUT',
-                })
+            return fetchJson(`${url}/admin/v2/users/password/change`, {
+                credentials: 'include',
+                body: JSON.stringify({
+                    password: finalPassword,
+                    newPassword: finalNewPassword,
+                    uuid,
+                }),
+                method: 'PUT',
+            })
                 .then(() => {
                     notify(
                         'resources.userContexts.notifications.confirm_password_change'
@@ -242,6 +250,6 @@ const useUpdatePassword = user => {
                     );
                 });
         },
-        [encrypt, notify, publicKey, url, uuid]
+        [encrypt, notify, originHubName, publicKey, url, uuid]
     );
 };

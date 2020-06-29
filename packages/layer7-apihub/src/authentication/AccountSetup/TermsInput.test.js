@@ -9,7 +9,7 @@ import { TermsLabel } from './TermsInput';
 describe('TermsInput', () => {
     beforeEach(() => {
         global.fetch = jest.fn().mockResolvedValueOnce({
-            json: () => Promise.resolve(true),
+            text: () => Promise.resolve(JSON.stringify(true)),
         });
     });
 
@@ -24,7 +24,7 @@ describe('TermsInput', () => {
             );
 
             expect(
-                getByText('apihub.account_setup.terms_of_use')
+                getByText('apihub.account_setup.terms_of_use.terms_of_use')
             ).not.toBeNull();
         });
 
@@ -37,15 +37,19 @@ describe('TermsInput', () => {
 
             await wait(() => {
                 expect(
-                    getByText('apihub.account_setup.terms_of_use')
+                    getByText('apihub.account_setup.terms_of_use.terms_of_use')
                 ).not.toBeNull();
             });
 
-            fireEvent.click(getByText('apihub.account_setup.terms_of_use'));
+            fireEvent.click(
+                getByText('apihub.account_setup.terms_of_use.terms_of_use')
+            );
 
             await wait(() => {
                 expect(
-                    getByText('apihub.account_setup.terms_of_use_dialog.title')
+                    getByText(
+                        'apihub.account_setup.terms_of_use.terms_of_use_dialog.title'
+                    )
                 ).not.toBeNull();
             });
         });

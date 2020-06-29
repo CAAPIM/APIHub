@@ -2,15 +2,6 @@ import React, { cloneElement } from 'react';
 import { useTranslate } from 'react-admin';
 import { makeStyles } from '@material-ui/core';
 
-const useStyles = makeStyles({
-    root: {
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        width: '100%',
-    },
-});
-
 export const UserContextTitle = ({
     actions,
     basePath,
@@ -33,3 +24,17 @@ export const UserContextTitle = ({
         </div>
     );
 };
+
+const useStyles = makeStyles(
+    theme => ({
+        root: {
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            width: '100%',
+        },
+    }),
+    {
+        name: 'Layer7UserContextTitle',
+    }
+);

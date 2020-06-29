@@ -14,6 +14,8 @@ import {
     putAccountSetup,
     getUserContexts,
     putUserContexts,
+    getCmsSettings,
+    getAuthSchemes,
 } from './handlers/authentication';
 import { getTheme } from './handlers/branding';
 import {
@@ -22,7 +24,11 @@ import {
     listApiPermissions,
     getApiSpecContent,
 } from './handlers/apis';
-import { listApiGroups } from './handlers/apiGroups';
+import {
+    listApiGroups,
+    getApiGroup,
+    getApiGroupApis,
+} from './handlers/apiGroups';
 import {
     listApplications,
     getApplication,
@@ -30,7 +36,6 @@ import {
     getSecretHashMetadata,
 } from './handlers/applications';
 import {
-    listDocuments,
     getDocumentsTree,
     postDocument,
     putDocument,
@@ -45,6 +50,7 @@ import { deleteCurrentUser } from './handlers/currentUser';
 import { postRegistration } from './handlers/registrations';
 
 import { initializeRunningIndicator } from './running/indicator';
+import { getMetricsHits, getMetricsLatency } from './handlers/metrics';
 
 let database;
 
@@ -65,13 +71,14 @@ export const startApiHubMockedServer = async (
         data = defaultData,
         urlPrefix = DefaultUrlPrefix,
         showRunningIndicator = true,
+        runningIndicatorLink = '#',
         ...options
     } = {
         timing: 150,
     }
 ) => {
     if (showRunningIndicator) {
-        initializeRunningIndicator();
+        initializeRunningIndicator({ link: runningIndicatorLink });
     }
 
     database = await getDatabase();
@@ -93,24 +100,24 @@ export const startApiHubMockedServer = async (
             );
 
             this.get(
-                `${urlPrefix}/admin/passwordResetTokenValidate`,
+                `${urlPrefix}admin/passwordResetTokenValidate`,
                 passwordResetTokenValidate(database),
                 options
             );
 
-            this.post(
-                `${urlPrefix}/admin/UpdateMyPassword`,
+            this.put(
+                `${urlPrefix}admin/v2/users/password/reset/:uuid`,
                 updateMyPassword(database),
                 options
             );
 
             this.get(
-                `${urlPrefix}/admin/Portal.svc/ResetMyPassword()`,
+                `${urlPrefix}admin/Portal.svc/ResetMyPassword()`,
                 resetPassword(database),
                 options
             );
 
-            this.get(`${urlPrefix}/admin/logout`, logout(database), options);
+            this.get(`${urlPrefix}admin/logout`, logout(database), options);
 
             this.post(
                 `${urlPrefix}api/apim/authenticate/login`,
@@ -119,19 +126,19 @@ export const startApiHubMockedServer = async (
             );
 
             this.get(
-                `${urlPrefix}api/admin/Portal.svc/UserNameUnique()`,
+                `${urlPrefix}admin/Portal.svc/UserNameUnique()`,
                 checkUserNameIsUnique(database),
                 options
             );
 
             this.get(
-                `${urlPrefix}api/admin/accountSetup`,
+                `${urlPrefix}admin/accountSetup`,
                 getAccountSetup(database),
                 options
             );
 
             this.put(
-                `${urlPrefix}/admin/accountSetup`,
+                `${urlPrefix}admin/accountSetup`,
                 putAccountSetup(database),
                 options
             );
@@ -253,6 +260,18 @@ export const startApiHubMockedServer = async (
             );
 
             this.get(
+                `${urlPrefix}api/apim/api-management/1.0/api-groups/:id`,
+                getApiGroup(database),
+                options
+            );
+
+            this.get(
+                `${urlPrefix}api/apim/api-management/1.0/api-groups/:id/apis`,
+                getApiGroupApis(database),
+                options
+            );
+
+            this.get(
                 `${urlPrefix}api/apim/Settings('APP_SECRET_HASHING_METADATA')`,
                 getSecretHashMetadata(database),
                 options
@@ -289,6 +308,37 @@ export const startApiHubMockedServer = async (
                 options
             );
 
+            this.post(
+                `${urlPrefix}admin/Portal.svc/Registrations`,
+                postRegistration(database),
+                options
+            );
+
+            this.get(
+                `${urlPrefix}admin/cmsSettings`,
+                getCmsSettings(database),
+                options
+            );
+
+            this.get(
+                `${urlPrefix}admin/public/auth/schemes`,
+                getAuthSchemes(database),
+                options
+            );
+
+            // api/apim/analytics/metrics/v1/hits/apis/by-week
+            this.get(
+                `${urlPrefix}api/apim/analytics/metrics/v1/hits/apis/:timeAggregation`,
+                getMetricsHits(database),
+                options
+            );
+
+            this.get(
+                `${urlPrefix}api/apim/analytics/metrics/v1/latency/apis/:timeAggregation`,
+                getMetricsLatency(database),
+                options
+            );
+
             // This is the only way I found to make the Applications route work.
             // Its url looks api/apim/api-management/1.0/Applications(':uuid').
             // It seems either the parenthesises or the quotes make the route parameter
@@ -296,6 +346,7 @@ export const startApiHubMockedServer = async (
             this.get(
                 `${urlPrefix}api/apim/*path`,
                 async (schema, request) => {
+                    console.log('Catch all', request.params.path);
                     const path = request.params.path;
 
                     if (path.match(/Applications\('.*'\)/)) {
@@ -312,16 +363,29 @@ export const startApiHubMockedServer = async (
                 options
             );
 
-            this.post(
-                `${urlPrefix}/admin/Portal.svc/Registrations`,
-                postRegistration(database),
-                options
-            );
-
             this.passthrough();
         },
     });
 
+    window.Layer7Mock = {
+        database,
+
+        clearDatabase() {
+            return clearDatabase();
+        },
+
+        initDatabase(initialData = data) {
+            return initDatabase(database, initialData);
+        },
+
+        resetDatabase(initialData = data) {
+            return this.clearDatabase().then(() =>
+                this.initDatabase(initialData)
+            );
+        },
+
+        deleteCurrentUser,
+    };
     return { server, database };
 };
 
@@ -337,6 +401,21 @@ async function getDatabase() {
             reject
         );
     });
+}
+
+async function clearDatabase() {
+    await Promise.all([
+        promisify(database.removeCollection.bind(database), 'apis'),
+        promisify(database.removeCollection.bind(database), 'apiGroups'),
+        promisify(database.removeCollection.bind(database), 'applications'),
+        promisify(database.removeCollection.bind(database), 'userContexts'),
+        promisify(database.removeCollection.bind(database), 'documents'),
+        promisify(database.removeCollection.bind(database), 'specs'),
+        promisify(database.removeCollection.bind(database), 'assets'),
+        promisify(database.removeCollection.bind(database), 'tags'),
+        promisify(database.removeCollection.bind(database), 'registrations'),
+    ]);
+    console.log('Mock database cleared');
 }
 
 async function initDatabase(db, initialData = defaultData) {
@@ -355,62 +434,31 @@ async function initDatabase(db, initialData = defaultData) {
     const hasData = (await promisify(db.apis.find().fetch)).length > 0;
 
     if (!hasData) {
-        await promisify(db.tags.upsert.bind(db.tags), initialData.tags);
-        await promisify(db.apis.upsert.bind(db.apis), initialData.apis);
-        await promisify(
-            db.registrations.upsert.bind(db.registrations),
-            initialData.registrations
-        );
-
-        await promisify(
-            db.applications.upsert.bind(db.applications),
-            initialData.applications
-        );
-
-        await promisify(
-            db.apiGroups.upsert.bind(db.apiGroups),
-            initialData.apiGroups
-        );
-
-        await promisify(
-            db.userContexts.upsert.bind(db.userContexts),
-            initialData.userContexts
-        );
-        await promisify(
-            db.documents.upsert.bind(db.documents),
-            initialData.documents
-        );
-        await promisify(db.assets.upsert.bind(db.assets), initialData.assets);
-    }
-}
-
-window.Layer7Mock = {
-    database,
-
-    async clearDatabase() {
-        const db = await getDatabase();
-        return Promise.all([
-            promisify(db.removeCollection.bind(db), 'apis'),
-            promisify(db.removeCollection.bind(db), 'apiGroups'),
-            promisify(db.removeCollection.bind(db), 'applications'),
-            promisify(db.removeCollection.bind(db), 'userContexts'),
-            promisify(db.removeCollection.bind(db), 'documents'),
-            promisify(db.removeCollection.bind(db), 'specs'),
-            promisify(db.removeCollection.bind(db), 'assets'),
-            promisify(db.removeCollection.bind(db), 'tags'),
-            promisify(db.removeCollection.bind(db), 'registrations'),
+        await Promise.all([
+            promisify(db.tags.upsert.bind(db.tags), initialData.tags),
+            promisify(db.apis.upsert.bind(db.apis), initialData.apis),
+            promisify(
+                db.registrations.upsert.bind(db.registrations),
+                initialData.registrations
+            ),
+            promisify(
+                db.applications.upsert.bind(db.applications),
+                initialData.applications
+            ),
+            promisify(
+                db.apiGroups.upsert.bind(db.apiGroups),
+                initialData.apiGroups
+            ),
+            promisify(
+                db.userContexts.upsert.bind(db.userContexts),
+                initialData.userContexts
+            ),
+            promisify(
+                db.documents.upsert.bind(db.documents),
+                initialData.documents
+            ),
+            promisify(db.assets.upsert.bind(db.assets), initialData.assets),
         ]);
-    },
-
-    async initDatabase(initialData) {
-        const db = await getDatabase();
-        return initDatabase(db, initialData);
-    },
-
-    resetDatabase() {
-        this.clearDatabase();
-        this.initDatabase();
-    },
-
-    deleteCurrentUser,
-};
+    }
+    console.log('Mock database initialized');
+}

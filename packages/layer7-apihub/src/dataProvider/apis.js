@@ -1,4 +1,3 @@
-import { fetchUtils } from 'ra-core';
 import { stringify } from 'query-string';
 
 const basePath = '/api-management/1.0/apis';
@@ -6,17 +5,17 @@ const adminBasePath = '/api-management/internal';
 const apisPath = '/2.0/Apis';
 
 const SearchFields = ['name', 'description'];
-export const apisDataProvider = (apiUrl, adminUrl) => {
+export const apisDataProvider = context => {
     return {
         getList: async ({ filter, pagination, sort }) => {
-            const url = `${apiUrl}${basePath}?${stringify({
+            const url = `${context.apiUrl}${basePath}?${stringify({
                 ...getFilter(filter),
                 page: pagination.page - 1,
                 size: pagination.perPage,
                 sort: `${sort.field},${sort.order}`,
             })}`;
 
-            const { json } = await fetchUtils.fetchJson(url, {
+            const { json } = await context.fetchJson(url, {
                 credentials: 'include',
             });
 
@@ -31,11 +30,11 @@ export const apisDataProvider = (apiUrl, adminUrl) => {
         },
 
         getOne: async ({ id }) => {
-            const url = `${apiUrl}${basePath}/${id}`;
+            const url = `${context.apiUrl}${basePath}/${id}`;
 
             const {
                 json: { uuid, ...data },
-            } = await fetchUtils.fetchJson(url, { credentials: 'include' });
+            } = await context.fetchJson(url, { credentials: 'include' });
 
             return {
                 data: { ...data, id: uuid },
@@ -43,9 +42,9 @@ export const apisDataProvider = (apiUrl, adminUrl) => {
         },
 
         getPermissions: async ({ id }) => {
-            const url = `${adminUrl}${adminBasePath}/permissions/apis/${id}/permitted`;
+            const url = `${context.adminUrl}${adminBasePath}/permissions/apis/${id}/permitted`;
 
-            const { json: data } = await fetchUtils.fetchJson(url, {
+            const { json: data } = await context.fetchJson(url, {
                 credentials: 'include',
             });
 
@@ -57,8 +56,8 @@ export const apisDataProvider = (apiUrl, adminUrl) => {
             };
         },
         getApis: async () => {
-            const url = `${apiUrl}${apisPath}`;
-            const { json } = await fetchUtils.fetchJson(url, {
+            const url = `${context.apiUrl}${apisPath}`;
+            const { json } = await context.fetchJson(url, {
                 credentials: 'include',
             });
 

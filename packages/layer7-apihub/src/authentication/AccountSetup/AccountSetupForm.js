@@ -7,7 +7,7 @@ import {
     TextInput,
     useTranslate,
 } from 'react-admin';
-import { makeStyles, Typography, InputAdornment } from '@material-ui/core';
+import { makeStyles, InputAdornment } from '@material-ui/core';
 import { InfoOutlined } from '@material-ui/icons';
 import { FORM_ERROR } from 'final-form';
 
@@ -18,43 +18,12 @@ import { AccountSetupToolbar } from './AccountSetupToolbar';
 import { validatePassword } from '../validatePassword';
 import { checkUsernameUnicity } from './useAccountData';
 
-const mustBeTrue = () => value =>
-    !value
-        ? 'apihub.account_setup.terms_of_use.terms_of_use_validation'
-        : undefined;
+export const AccountSetupForm = props => {
+    const { initialValues, onSubmit, toolbarProps, ...rest } = props;
 
-const checkUnicity = url => async value => {
-    if (value.length < 6) {
-        return;
-    }
-
-    try {
-        await checkUsernameUnicity(url, value);
-    } catch {
-        return 'apihub.account_setup.validation.error_username_not_unique';
-    }
-};
-
-const useStyles = makeStyles(theme => ({
-    form: {
-        '& >:first-child': {
-            padding: 0,
-        },
-        '& .ra-input': {
-            marginTop: theme.spacing(2),
-        },
-    },
-    title: {
-        fontSize: theme.typography.fontSize * 2,
-        marginBottom: theme.spacing(6),
-        color: theme.palette.getContrastText(theme.palette.background.default),
-    },
-}));
-
-export const AccountSetupForm = ({ initialValues, onSubmit }) => {
-    const classes = useStyles();
+    const classes = useStyles(rest);
     const translate = useTranslate();
-    const { url } = useApiHub();
+    const { url, originHubName } = useApiHub();
 
     const validate = ({ password, confirm_password }) => {
         if (password !== confirm_password) {
@@ -66,17 +35,14 @@ export const AccountSetupForm = ({ initialValues, onSubmit }) => {
     };
 
     return (
-        <>
-            <Typography variant="h2" className={classes.title}>
-                {translate('apihub.account_setup.title')}
-            </Typography>
-
+        <div className={classes.root}>
             <SimpleForm
                 className={classes.form}
                 save={onSubmit}
-                toolbar={<AccountSetupToolbar />}
+                toolbar={<AccountSetupToolbar {...toolbarProps} />}
                 validate={validate}
                 initialValues={initialValues}
+                {...rest}
             >
                 <TextInput
                     source="firstName"
@@ -115,7 +81,9 @@ export const AccountSetupForm = ({ initialValues, onSubmit }) => {
                             <InputAdornment position="end">
                                 <HtmlTooltip
                                     className={classes.tootip}
-                                    title={translate('apihub.tooltip_username')}
+                                    title={translate(
+                                        'apihub.account_setup.validation.tooltip_username'
+                                    )}
                                     placement="right"
                                     arrow
                                 >
@@ -128,7 +96,7 @@ export const AccountSetupForm = ({ initialValues, onSubmit }) => {
                         required(),
                         minLength(6),
                         maxLength(60),
-                        checkUnicity(url),
+                        checkUnicity(url, originHubName),
                     ]}
                 />
                 <PasswordInput
@@ -155,6 +123,40 @@ export const AccountSetupForm = ({ initialValues, onSubmit }) => {
                     validate={[mustBeTrue()]}
                 />
             </SimpleForm>
-        </>
+        </div>
     );
 };
+
+const mustBeTrue = () => value =>
+    !value
+        ? 'apihub.account_setup.terms_of_use.terms_of_use_validation'
+        : undefined;
+
+const checkUnicity = (url, originHubName) => async value => {
+    if (value.length < 6) {
+        return;
+    }
+
+    try {
+        await checkUsernameUnicity(url, originHubName, value);
+    } catch (error) {
+        return 'apihub.account_setup.validation.error_username_not_unique';
+    }
+};
+
+const useStyles = makeStyles(
+    theme => ({
+        root: {},
+        form: {
+            '& >:first-child': {
+                padding: 0,
+            },
+            '& .ra-input': {
+                marginTop: theme.spacing(2),
+            },
+        },
+    }),
+    {
+        name: 'Layer7AccountSetupForm',
+    }
+);

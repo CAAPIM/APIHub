@@ -62,8 +62,13 @@ export const usePasswordVisibility = initialValue => {
     return [visible, toggleVisibility];
 };
 
-const useStyles = makeStyles({
-    tootip: {
-        cursor: 'pointer',
+const useStyles = makeStyles(
+    {
+        tootip: {
+            cursor: 'pointer',
+        },
     },
-});
+    {
+        name: 'Layer7PasswordInput',
+    }
+);

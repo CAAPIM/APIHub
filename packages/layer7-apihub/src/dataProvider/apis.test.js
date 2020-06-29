@@ -1,24 +1,23 @@
-import { fetchUtils } from 'ra-core';
-
 import { apisDataProvider, getFilter } from './apis';
 
 describe('dataProvider - APIs', () => {
     describe('apisDataProvider', () => {
         describe('getPermissions', () => {
             test('should fetch the correct url for getPermissions', async () => {
-                fetchUtils.fetchJson = jest.fn().mockResolvedValue({
+                const fetchJson = jest.fn().mockResolvedValue({
                     json: [],
                 });
 
-                const { getPermissions } = apisDataProvider(
-                    'https://apim.marmelab.com/api/apim',
-                    'https://apim.marmelab.com/admin'
-                );
+                const { getPermissions } = apisDataProvider({
+                    apiUrl: 'https://apim.marmelab.com/api/apim',
+                    adminUrl: 'https://apim.marmelab.com/admin',
+                    fetchJson,
+                });
 
                 await getPermissions({ id: 'covfefe' });
 
                 expect(
-                    fetchUtils.fetchJson
+                    fetchJson
                 ).toHaveBeenCalledWith(
                     'https://apim.marmelab.com/admin/api-management/internal/permissions/apis/covfefe/permitted',
                     { credentials: 'include' }

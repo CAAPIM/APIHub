@@ -28,7 +28,6 @@ script: make test
 
 stages:
     - name: test
-    - name: deploy
       if: branch = master
 
 jobs:
@@ -38,17 +37,3 @@ jobs:
           env:
               - DEPLOY_ENV=test
               - NODE_ENV=test
-        - stage: deploy
-          name: Deploy
-          env:
-              - DEPLOY_ENV=integration
-              - NODE_ENV=production
-          install: NODE_ENV=development make install # Install development dependencies
-          script: skip
-          before_deploy:
-              - pip install --user awscli
-              - export PATH=$PATH:$HOME/.local/bin
-          deploy:
-              skip_cleanup: true
-              provider: script
-              script: make deploy

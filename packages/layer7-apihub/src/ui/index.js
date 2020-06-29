@@ -15,4 +15,8 @@ export * from './SortButton';
 export * from './Stats';
 export * from './TruncatedTextField';
 export * from './ViewTitle';
+
 export * from './useClearNotifications';
+export * from './useCopyToClipboard';
+
+export * from './icons';

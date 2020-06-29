@@ -10,34 +10,6 @@ import {
 
 import { TermsDialog } from './TermsDialog';
 
-export const TermsLabel = () => {
-    const translate = useTranslate();
-    const [isOpen, setIsOpen] = useState();
-
-    const handleOpen = event => {
-        event.preventDefault();
-        setIsOpen(true);
-    };
-
-    const handleClose = () => {
-        setIsOpen(false);
-    };
-
-    return (
-        <>
-            <Typography variant="body1">
-                {translate('apihub.account_setup.terms_of_use_acknowledgement')}
-                <Link to="#" onClick={handleOpen}>
-                    {translate('apihub.account_setup.terms_of_use')}
-                </Link>
-            </Typography>
-            {isOpen === true && (
-                <TermsDialog open={isOpen} onClose={handleClose} />
-            )}
-        </>
-    );
-};
-
 export const TermsInput = ({ helperText, ...rest }) => {
     const {
         input: { onChange, type, value, ...inputProps },
@@ -74,5 +46,37 @@ export const TermsInput = ({ helperText, ...rest }) => {
                 />
             </FormHelperText>
         </FormGroup>
+    );
+};
+
+export const TermsLabel = () => {
+    const translate = useTranslate();
+    const [isOpen, setIsOpen] = useState();
+
+    const handleOpen = event => {
+        event.preventDefault();
+        setIsOpen(true);
+    };
+
+    const handleClose = () => {
+        setIsOpen(false);
+    };
+
+    return (
+        <>
+            <Typography variant="body1">
+                {translate(
+                    'apihub.account_setup.terms_of_use.terms_of_use_acknowledgement'
+                )}
+                <Link to="#" onClick={handleOpen}>
+                    {translate(
+                        'apihub.account_setup.terms_of_use.terms_of_use'
+                    )}
+                </Link>
+            </Typography>
+            {isOpen === true && (
+                <TermsDialog open={isOpen} onClose={handleClose} />
+            )}
+        </>
     );
 };

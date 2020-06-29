@@ -1,3 +1,3 @@
-export * from './ApplicationCredentials';
-export * from './ApplicationUsageField';
-export * from './Applications';
+export * from './ApiApplicationCredentials';
+export * from './ApiApplicationUsageField';
+export * from './ApiApplications';

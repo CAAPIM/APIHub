@@ -4,23 +4,17 @@ import { ValidationError } from 'ra-core';
 import { makeStyles } from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import get from 'lodash/get';
 
-const useStyles = makeStyles(theme => ({
-    toolbar: {
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'stretch',
-        flexBasis: '100%',
-        backgroundColor: 'transparent',
-        padding: 0,
-    },
-    circularProgress: {
-        color: theme.palette.grey[500],
-    },
-}));
+export const LoginToolbar = props => {
+    const { loading = false, error = null, ...rest } = props;
 
-export const LoginToolbar = ({ loading = false, error = null, ...rest }) => {
     const classes = useStyles(rest);
+
+    const { button } = props;
+    const color = get(button, 'color', 'primary');
+    const variant = get(button, 'variant', 'outlined');
+    const size = get(button, 'size', 'small');
 
     return (
         <>
@@ -47,8 +41,30 @@ export const LoginToolbar = ({ loading = false, error = null, ...rest }) => {
                     }
                     label="apihub.login.actions.sign_in"
                     disabled={loading}
+                    color={color}
+                    variant={variant}
+                    size={size}
                 />
             </Toolbar>
         </>
     );
 };
+
+const useStyles = makeStyles(
+    theme => ({
+        toolbar: {
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'stretch',
+            flexBasis: '100%',
+            backgroundColor: 'transparent',
+            padding: 0,
+        },
+        circularProgress: {
+            color: theme.palette.grey[500],
+        },
+    }),
+    {
+        name: 'Layer7LoginToolbar',
+    }
+);

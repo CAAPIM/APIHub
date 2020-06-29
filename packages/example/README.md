@@ -10,29 +10,49 @@ The Example app configuration is set with global variables that are stored in th
 
 When deploying the app, copy the corresponding config file for the enviroment into the `./public` folder. These files are not involved in the webpack build process of the Example app.
 
-For more information about how to use the `public` folder, see [the Create React App documentation]<https://create-react-app.dev/docs/using-the-public-folder)>.
+For more information about how to use the `public` folder, see [the Create React App documentation](https://create-react-app.dev/docs/using-the-public-folder).
 
-**Define a Configuration for a New Environment**
+### Define a Configuration for a New Environment
 
 **Follow these steps:**
 
 1. Create a file named `config-XXX.js` in the `./config` folder, where `XXX` is the new environment name.
-2. Prefix the `deploy` command during the deploy process with `DEPLOY_ENV=XXX make deploy`.
 
-**Tip:** You can override the `window.APIHUB_CONFIG` object directly in JavaScript in the browser before loading the Example app.
-
-The following is an example of `config.js` file:
+The following is an example of the `config.js` file:
 
 ``` js
 window.APIHUB_CONFIG = {
     PAGE_TITLE: 'Layer7 API Hub | Broadcom', // The html page title
-    APIHUB_URL: 'https://apim.dev.ca.com', // The PAPI domain
+    APIHUB_URL: 'https://apim.dev.ca.com', // The Portal API (PAPI) domain
     TENANT_NAME: 'apim', // The tenant name
-    ENABLE_MOCK: false, // Enable the Layer7 API Hub mock server
+    ORIGIN_HUB_NAME: 'APIHub-Default',  // The identifier of the API Hub
+    ENABLE_MOCK: false, // Enable/disable the Layer7 API Hub mock server
+    MOCK_SERVER_INDICATOR_LINK:  // A link opened when clicking on the mock server running indicator
+        'https://github.com/CAAPIM/APIHub/blob/master/packages/layer7-apihub-mock/README.md',
     USE_BRANDING_THEME: false, // Use the branding theme from PAPI
     USE_BRANDING_ICONS: true, // Use the branding favicon from PAPI
 };
 ```
+
+The `ORIGIN_HUB_NAME` variable is sent to PAPI servers to identify your API Hub. The Portal Admin uses this value in the `APIHUB_SETTINGS` to enable remote hosting.
+
+2. Prefix the `deploy` command during the deploy process with `DEPLOY_ENV=XXX make deploy`.
+
+**Tip:** You can override the `window.APIHUB_CONFIG` object directly in JavaScript in the browser before loading the Example app.
+
+### Enable HTTPS
+
+**Follow these steps:**
+
+1. Update the `.env` file to match your node environment (`.env.development` matches `NODE_ENV=development`, for example).
+2. Change or add the following keys:
+
+```sh
+PORT=443
+HTTPS=true
+```
+
+### Customize the Example App
 
 ## Change the Page Title
 
@@ -42,19 +62,88 @@ Change the page title using `react` and `react-helmet` in the [/src/App.js](./sr
 
 1. Update the default title in the `[/public/index.html](./public/index.html)` index file. You can define the page title before the Example app renders the page.
 2. Update the page title defined by the Example app directly in the `config.js` file. The title is stored under the `window.APIHUB_CONFIG.PAGE_TITLE` key. You can define a different title for each environment.
-For more information, see [Change the configuration](./README.md#change-the-configuration)).
+For more information, see [Change the configuration](./README.md#change-the-configuration).
 
-## Use the Mock Server
+## Make Calls to the Layer7 API Hub Mock Server or Portal API (PAPI)
 
-You can customize your application, without connecting to API Portal, using the [Layer7 API Hub mock server](https://github.gwd.broadcom.net/ESD/APIHub/tree/develop/packages/layer7-apihub-mock). The mock server is enabled by default.
+You can make calls to the Layer7 API Hub mock server without having to connect to API Portal. The mock server mimics PAPI responses to ease local development.
 
-To enable or disable the mock server, set the `ENABLE_MOCK` variable to `true` in your configuration file. For more information about how to change the configuration file, see [Configure the Example app](./README.md#configure-the-example-app).
+For more information about the mock server, see [Layer7 API Hub Mock Server](../layer7-apihub-mock).
 
-You can change the [available users](../layer7-apihub-mock/README.md##available-users) by [providing your own data](../layer7-apihub-mock/README.md###provide-your-own-data). You can also use the mock server in other environments.
+### Use the Mock Server
+
+To use the mock server, enable it in the configuration file. Set the `ENABLE_MOCK` variable to `true` (set to `false` to disable) in your configuration file.
+
+For more information about how to change the configuration file, see [Define a Configuration for a New Environment](./README.md#define-a-configuration-for-a-new-environment).
+
+### Use the PAPI
+
+Use one of the following options to use the PAPI:
+
+- Use react-admin resource hooks and components for APIs, applications, or documents.
+- Use fetch directly.
+
+#### Use react-admin Resource Hooks
+Use react-admin resource [hooks](https://marmelab.com/react-admin/Actions.html#specialized-hooks) and components for APIs, applications, or documents.
+
+#### Use fetch
+
+Use [fetch](https://marmelab.com/react-admin/Actions.html#querying-the-api-with-fetch) directly. Include the required credentials and HTTP headers. Use the [getFetchJson wrapper](../layer7-apihub/src/fetchUtils.js) that is in API Hub, which includes the credentials and headers.
+
+The following code is an example of a hook that fetches metrics from the PAPI. The `useLayer7Notify` hook wraps the react-admin `useNotify` hook and adds PAPI error parsing:
+
+```js
+import { getFetchJson, useApiHub, useLayer7Notify } from 'layer7-apihub';
+
+export function useApiHitsMetrics({ startDate, endDate }) {
+    const { urlWithTenant, originHubName } = useApiHub();
+    const [data, setData] = useState();
+    const notify = useLayer7Notify();
+    const url = `${urlWithTenant}/analytics/metrics/v1/hits/apis/by-day?startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}`;
+
+    useEffect(() => {
+        // Use to ensure we don't try to update the state on an unmounted
+        // component
+        let updateState = true;
+        // Get the fetchJson function configured for our instance
+        const fetchJson = getFetchJson(originHubName);
+
+        const fetchData = () => {
+            fetchJson(url)
+                .then(({ json }) => {
+                    // Don't update the state if the calling component has been unmounted
+                    if (updateState && json.data) {
+                        setData(json.data);
+                    }
+                }).catch(error => {
+                    notify(error);
+                });
+        };
+
+        fetchData();
+
+        return () => {
+            updateState = false;
+        };
+    }, [originHubName, urlWithTenant, url]);
+
+    return data;
+}
+```
 
 ## Host the Example App on Another Domain
 
-You can deploy and host your customized API Hub on your own domain. This feature will be available in an upcoming release.
+You can deploy and host your customized API Hub on your own domain in an upcoming release.
+
+## Auto-detect the API Hub URL
+
+API Hub attempts to detect the URL of your API by inspecting your application URL and extracting the first sub domain. For example, with the application URL `https://apim.dev.ca.com`:
+
+- the tenant is `apim`,
+- the PAPI endpoint is `https://apim.dev.ca.com/api/apim/service`
+- the admin endpoint is `https://apim.dev.ca.com/admin`
+
+However, you can also supply the tenant and the API URL yourself by providing the `url` and `tenantName` properties on the `<ApiHubAdmin>` component.
 
 ## Customization Tutorials
 
@@ -62,7 +151,7 @@ You can deploy and host your customized API Hub on your own domain. This feature
 
 ### Add a Page
 
-In this example, we'll add a custom contact-us form in a new page at this location `/#/contact-us`.
+In this example, we add a custom contact-us form in a new page at this location `/#/contact-us`.
 
 1. Create a contact-us form in the `ui` folder.
 

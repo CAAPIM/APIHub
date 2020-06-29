@@ -8,34 +8,6 @@ import { ApiHubUserMenu } from './ApiHubUserMenu';
 import { ApiHubLanguageSwitcher } from './ApiHubLanguageSwitcher';
 import { SidebarButton } from './SidebarButton';
 
-const useStyles = makeStyles(
-    theme => ({
-        toolbar: {
-            paddingRight: 24,
-        },
-        header: {
-            flex: 1,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'flex-start',
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap',
-            overflow: 'hidden',
-            minWidth: '156px',
-        },
-        divider: {
-            alignSelf: 'stretch',
-            backgroundColor: theme.palette.primary.contrastText,
-            height: 'auto',
-            marginBottom: theme.spacing(2),
-            marginLeft: theme.spacing(4),
-            marginRight: theme.spacing(4),
-            marginTop: theme.spacing(2),
-        },
-    }),
-    { name: 'RaAppBar' }
-);
-
 /**
  * The ApiHub AppBar used in the ApiHub Layout.
  *
@@ -90,3 +62,33 @@ ApiHubAppBar.defaultProps = {
     languagesMenu: <ApiHubLanguageSwitcher />,
     sidebarButton: <SidebarButton />,
 };
+
+const useStyles = makeStyles(
+    theme => ({
+        toolbar: {
+            paddingRight: 24,
+        },
+        header: {
+            flex: 1,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'flex-start',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            minWidth: '156px',
+        },
+        divider: {
+            alignSelf: 'stretch',
+            backgroundColor: theme.palette.primary.contrastText,
+            height: 'auto',
+            marginBottom: theme.spacing(2),
+            marginLeft: theme.spacing(4),
+            marginRight: theme.spacing(4),
+            marginTop: theme.spacing(2),
+        },
+    }),
+    {
+        name: 'Layer7AppBar',
+    }
+);

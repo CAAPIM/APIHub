@@ -1,31 +1,30 @@
 import { useEffect, useState } from 'react';
 
 import { useApiHub } from '../ApiHubContext';
+import { getFetchJson } from '../fetchUtils';
 
-export const fetchResetPassword = async (url, username) => {
-    const response = await fetch(
+export const fetchResetPassword = async (url, originHubName, username) => {
+    const fetchJson = getFetchJson(originHubName);
+
+    const { json } = await fetchJson(
         `${url}/admin/Portal.svc/ResetMyPassword()?Username='${username}'`
     );
 
-    if (response.status < 200 || response.status >= 300) {
-        throw new Error(response.statusText);
-    }
-
-    return await response.json();
+    return await json;
 };
 
 export const useResetPassword = () => {
-    const { url } = useApiHub();
+    const { url, originHubName } = useApiHub();
     const [username, setUsername] = useState('');
     const [fetched, setFetched] = useState(false);
 
     useEffect(() => {
         if (!fetched && username !== '') {
-            fetchResetPassword(url, username).then(() => {
+            fetchResetPassword(url, originHubName, username).then(() => {
                 setFetched(true);
             });
         }
-    }, [url, fetched, username]);
+    }, [url, fetched, username, originHubName]);
 
     return [username, setUsername];
 };

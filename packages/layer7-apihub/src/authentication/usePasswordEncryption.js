@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import JSEncrypt from 'jsencrypt';
 import { useApiHub } from '../ApiHubContext';
+import { getFetchJson } from '../fetchUtils';
 
 export const defaultEncrypt = (publicKey, data) => {
     const encrypter = new JSEncrypt();
@@ -19,14 +20,14 @@ export const defaultEncrypt = (publicKey, data) => {
  * const [publicKey, encrypt] = usePasswordEncryption();
  */
 export const usePasswordEncryption = (encrypt = defaultEncrypt) => {
-    const { urlWithTenant } = useApiHub();
+    const { urlWithTenant, originHubName } = useApiHub();
     const [publicKey, setPublicKey] = useState();
 
     useEffect(() => {
-        fetchPublicKey(urlWithTenant)
+        fetchPublicKey(urlWithTenant, originHubName)
             .then(setPublicKey)
             .catch(console.error);
-    }, [urlWithTenant]);
+    }, [originHubName, urlWithTenant]);
 
     const encryptData = async data => {
         if (!publicKey) {
@@ -40,14 +41,10 @@ export const usePasswordEncryption = (encrypt = defaultEncrypt) => {
     return [publicKey, encryptData];
 };
 
-const fetchPublicKey = async apiBaseUrl => {
-    const response = await fetch(`${apiBaseUrl}/authenticate/getPublicKey`);
-
-    if (response.status < 200 || response.status >= 300) {
-        return undefined;
-    }
-
-    const data = await response.json();
-
+const fetchPublicKey = async (apiBaseUrl, originHubName) => {
+    const fetchJson = getFetchJson(originHubName);
+    const { json: data } = await fetchJson(
+        `${apiBaseUrl}/authenticate/getPublicKey`
+    );
     return data.publicKey;
 };

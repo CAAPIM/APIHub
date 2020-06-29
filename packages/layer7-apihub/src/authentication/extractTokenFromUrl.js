@@ -1,4 +1,4 @@
-const TokenUrlRegExp = /.*#token\/(.+)/;
+const TokenUrlRegExp = /.*[#|%23]token\/(.+)/;
 
 export const extractTokenFromUrl = url => {
     const matches = TokenUrlRegExp.exec(url);

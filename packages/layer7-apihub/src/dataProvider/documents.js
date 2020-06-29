@@ -1,6 +1,7 @@
-import { fetchUtils } from 'ra-core';
-
-const basePath = '/document-service/1.0';
+export const ENTITY_TYPE_API = 'api';
+export const ENTITY_TYPE_APPLICATION = 'application';
+export const ENTITY_TYPE_HOME = 'home';
+export const ENTITY_TYPE_CUSTOM = 'custom';
 
 export const buildDocumentId = (entityType, entityUuid, navtitle, locale) => {
     // The document API does not follow the usual REST convention
@@ -24,14 +25,16 @@ const prepareCreateData = ({ id, uuid, children, ...rest }) =>
  */
 const prepareUpdateData = ({ id, children, ...rest }) => JSON.stringify(rest);
 
-export const documentsDataProvider = baseUrl => {
+export const documentsDataProvider = context => {
+    const basePath = `${context.apiUrl}/document-service/1.0`;
+
     return {
         getList: async ({ filter }) => {
             const { entityType, entityUuid, locale } = filter;
 
-            const url = `${baseUrl}${basePath}/docs/${entityType}/${entityUuid}?locale=${locale}`;
+            const url = `${basePath}/docs/${entityType}/${entityUuid}?locale=${locale}`;
 
-            const { json } = await fetchUtils.fetchJson(url, {
+            const { json } = await context.fetchJson(url, {
                 credentials: 'include',
             });
 
@@ -50,11 +53,11 @@ export const documentsDataProvider = baseUrl => {
         },
         getOne: async ({ id }) => {
             const [entityType, entityUuid, navtitle, locale] = id.split('/');
-            const url = `${baseUrl}${basePath}/docs/${entityType}/${entityUuid}/${encodeURIComponent(
+            const url = `${basePath}/docs/${entityType}/${entityUuid}/${encodeURIComponent(
                 navtitle
             )}?locale=${locale}`;
 
-            const { json } = await fetchUtils.fetchJson(url, {
+            const { json } = await context.fetchJson(url, {
                 credentials: 'include',
             });
 
@@ -73,9 +76,9 @@ export const documentsDataProvider = baseUrl => {
         create: async ({ data: { id, ...body } }) => {
             const [entityType, entityUuid] = id.split('/');
             const { navtitle } = body;
-            const url = `${baseUrl}${basePath}/docs/${entityType}/${entityUuid}/${navtitle}`;
+            const url = `${basePath}/docs/${entityType}/${entityUuid}/${navtitle}`;
 
-            const { json } = await fetchUtils.fetchJson(url, {
+            const { json } = await context.fetchJson(url, {
                 credentials: 'include',
                 method: 'POST',
                 body: prepareCreateData(body),
@@ -95,11 +98,11 @@ export const documentsDataProvider = baseUrl => {
         },
         update: async ({ data: { id, ...body } }) => {
             const [entityType, entityUuid, navtitle, locale] = id.split('/');
-            const url = `${baseUrl}${basePath}/docs/${entityType}/${entityUuid}/${encodeURIComponent(
+            const url = `${basePath}/docs/${entityType}/${entityUuid}/${encodeURIComponent(
                 navtitle
             )}?locale=${locale}`;
 
-            const { json } = await fetchUtils.fetchJson(url, {
+            const { json } = await context.fetchJson(url, {
                 credentials: 'include',
                 method: 'PUT',
                 body: prepareUpdateData(body),
@@ -118,9 +121,9 @@ export const documentsDataProvider = baseUrl => {
             };
         },
         updateTree: async ({ entityType, entityUuid, locale, data }) => {
-            const url = `${baseUrl}${basePath}/docs/${entityType}/${entityUuid}?locale=${locale}`;
+            const url = `${basePath}/docs/${entityType}/${entityUuid}?locale=${locale}`;
 
-            const { json } = await fetchUtils.fetchJson(url, {
+            const { json } = await context.fetchJson(url, {
                 method: 'PUT',
                 credentials: 'include',
                 body: JSON.stringify(data),
@@ -130,13 +133,13 @@ export const documentsDataProvider = baseUrl => {
         },
         delete: async ({ id }) => {
             const [entityType, entityUuid, navtitle, locale] = id.split('/');
-            const url = `${baseUrl}${basePath}/docs/${entityType}/${entityUuid}/${encodeURIComponent(
+            const url = `${basePath}/docs/${entityType}/${entityUuid}/${encodeURIComponent(
                 navtitle
             )}?locale=${locale}&forceDelete=true`;
 
             const {
                 json: { ...data },
-            } = await fetchUtils.fetchJson(url, {
+            } = await context.fetchJson(url, {
                 credentials: 'include',
                 method: 'DELETE',
             });

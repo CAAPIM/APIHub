@@ -1,4 +1,4 @@
-import React, { useState, forwardRef } from 'react';
+import React, { useState, useEffect, forwardRef } from 'react';
 import { useTranslate } from 'ra-core';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
@@ -14,15 +14,6 @@ import {
     markdownRenderer as defaultMarkdownRenderer,
 } from '../ui';
 
-const useStyles = makeStyles(theme => ({
-    editor: {
-        height: `calc(100% - ${theme.spacing(2)}px)`,
-    },
-    actions: {
-        margin: theme.spacing(2),
-    },
-}));
-
 export const ApplicationDetailsOverviewEditor = ({
     initialValue,
     markdownRenderer = defaultMarkdownRenderer,
@@ -33,6 +24,11 @@ export const ApplicationDetailsOverviewEditor = ({
     const classes = useStyles();
     const [value, setValue] = useState(initialValue);
     const translate = useTranslate();
+
+    useEffect(() => {
+        // Be sure the value is updated when the initialValue changed
+        setValue(initialValue);
+    }, [initialValue]);
 
     const handleSave = () => {
         onSave(value);
@@ -85,3 +81,17 @@ export const ApplicationDetailsOverviewEditor = ({
 const Transition = forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
+
+const useStyles = makeStyles(
+    theme => ({
+        editor: {
+            height: `calc(100% - ${theme.spacing(2)}px)`,
+        },
+        actions: {
+            margin: theme.spacing(2),
+        },
+    }),
+    {
+        name: 'Layer7ApplicationDetailsOverviewEditor',
+    }
+);

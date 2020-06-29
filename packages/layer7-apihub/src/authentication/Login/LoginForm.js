@@ -9,29 +9,41 @@ import {
 } from 'react-admin';
 import { Link as RouterLink } from 'react-router-dom';
 import { makeStyles, Link, Typography } from '@material-ui/core';
-import { LoginToolbar } from './LoginToolbar';
-
-const useStyles = makeStyles(theme => ({
-    form: {
-        '& >:first-child': {
-            padding: 0,
-        },
-    },
-}));
+import { AuthSchemeList, LoginToolbar } from '.';
+import { useAuthSchemes, usePasswordEncryption } from '..';
 
 export const LoginForm = props => {
+    const { toolbarProps, ...rest } = props;
+
     const login = useLogin();
-    const classes = useStyles(props);
+    const classes = useStyles(rest);
     const translate = useTranslate();
+    const authSchemes = useAuthSchemes();
+    const [publicKey, encrypt] = usePasswordEncryption();
+
     const [isLoading, setIsLoading] = useState(null);
     const [error, setError] = useState(null);
+    const [authScheme, setAuthScheme] = useState(null);
 
     const submit = async ({ username, password }) => {
         setError(null);
         setIsLoading(true);
 
+        const params = { scheme: 'credentials', username, password };
+        if (authScheme) {
+            const enhancedPasswordSecurity =
+                authScheme.advancedConfigurations &&
+                authScheme.advancedConfigurations.enhancedPasswordSecurity ===
+                    'yes';
+            params.provider = authScheme.uuid;
+
+            if (enhancedPasswordSecurity && publicKey) {
+                params.password = await encrypt(password);
+            }
+        }
+
         try {
-            await login({ scheme: 'credentials', username, password });
+            await login(params);
         } catch {
             setError('apihub.login.notifications.invalid_credentials');
         }
@@ -44,7 +56,14 @@ export const LoginForm = props => {
             <SimpleForm
                 className={classes.form}
                 save={submit}
-                toolbar={<LoginToolbar loading={isLoading} error={error} />}
+                toolbar={
+                    <LoginToolbar
+                        loading={isLoading}
+                        error={error}
+                        {...toolbarProps}
+                    />
+                }
+                {...props}
             >
                 <TextInput
                     source="username"
@@ -68,6 +87,25 @@ export const LoginForm = props => {
                     {translate('apihub.login.actions.forgot_password')}
                 </Link>
             </Typography>
+            {authSchemes.length > 0 ? (
+                <AuthSchemeList
+                    onClick={setAuthScheme}
+                    authSchemes={authSchemes}
+                />
+            ) : null}
         </>
     );
 };
+
+const useStyles = makeStyles(
+    theme => ({
+        form: {
+            '& >:first-child': {
+                padding: 0,
+            },
+        },
+    }),
+    {
+        name: 'Layer7LoginForm',
+    }
+);

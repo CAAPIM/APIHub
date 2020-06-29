@@ -3,6 +3,7 @@ import {
     Filter,
     sanitizeListRestProps,
     SelectInput,
+    TextField,
     TopToolbar,
 } from 'react-admin';
 import classnames from 'classnames';
@@ -25,7 +26,7 @@ import {
 } from '../ui';
 import { ApplicationCard } from './ApplicationCard';
 
-const defaultSort = { field: 'uuid', order: 'ASC' };
+const defaultSort = { field: 'name', order: 'ASC' };
 
 const listDisplayPreferenceName = 'listDisplay/applications';
 
@@ -64,12 +65,17 @@ const ApplicationFilter = props => {
                 source="status"
                 choices={[
                     {
-                        id: 'Enabled',
+                        id: 'ENABLED',
                         name: 'resources.applications.status.enabled',
                     },
                     {
-                        id: 'Disabled',
+                        id: 'DISABLED',
                         name: 'resources.applications.status.disabled',
+                    },
+                    {
+                        id: 'APPLICATION_PENDING_APPROVAL',
+                        name:
+                            'resources.applications.status.application_pending_approval',
                     },
                 ]}
             />
@@ -79,6 +85,7 @@ const ApplicationFilter = props => {
 
 const ApplicationListDisplay = props => {
     const [display] = useListDisplay();
+    const classes = useApplicationListStyles();
 
     if (display === LIST_DISPLAY_CARDS) {
         return (
@@ -89,17 +96,44 @@ const ApplicationListDisplay = props => {
     }
 
     return (
-        <Card>
-            <Datagrid rowClick="show" {...props}>
-                <TruncatedTextField source="name" />
+        <Card className={classes.root}>
+            <Datagrid className={classes.datagrid} rowClick="show" {...props}>
+                <TruncatedTextField
+                    source="name"
+                    cellClassName={classes.name}
+                />
+                <TruncatedTextField
+                    source="description"
+                    cellClassName={classes.description}
+                />
                 <AccessField
                     source="status"
                     translationKey="resources.applications.status"
+                    cellClassName={classes.status}
                 />
             </Datagrid>
         </Card>
     );
 };
+const useApplicationListStyles = makeStyles(
+    theme => ({
+        root: {},
+        datagrid: {},
+        name: {},
+        status: {},
+        description: {
+            '& span': {
+                maxWidth: '30vw',
+                [theme.breakpoints.up('lg')]: {
+                    maxWidth: '25vw',
+                },
+            },
+        },
+    }),
+    {
+        name: 'Layer7ApplicationList',
+    }
+);
 
 const useApplicationListActionsStyles = makeStyles(theme => ({
     root: {

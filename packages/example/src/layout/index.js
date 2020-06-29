@@ -1,2 +1,2 @@
-export * from './CustomLayout';
-export * from './CustomHomePage';
+export * from './Layout';
+export * from './HomePage';

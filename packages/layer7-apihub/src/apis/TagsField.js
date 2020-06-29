@@ -7,39 +7,8 @@ import LinearProgress from '@material-ui/core/LinearProgress';
 import Typography from '@material-ui/core/Typography';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-import TabScrollButton from '@material-ui/core/Tabs/TabScrollButton';
+import TabScrollButton from '@material-ui/core/TabScrollButton';
 import classnames from 'classnames';
-
-const useStyles = makeStyles(theme => ({
-    root: {
-        margin: 0,
-        padding: 0,
-        maxWidth: 300,
-        minHeight: 'unset',
-        position: 'relative',
-    },
-    tab: {
-        minHeight: 'unset',
-        minWidth: 'unset',
-        maxWidth: 'unset',
-        paddingBottom: 0,
-        paddingTop: 0,
-        paddingLeft: theme.spacing(0.5),
-        paddingRight: theme.spacing(0.5),
-    },
-    tag: {
-        borderRadius: theme.spacing(0.5),
-        backgroundColor: 'transparent',
-        border: '1px solid',
-        '& + &': {
-            marginLeft: theme.spacing(),
-        },
-    },
-    error: {
-        color: theme.palette.error.main,
-        marginBottom: theme.spacing(),
-    },
-}));
 
 export const TagsField = props => {
     const {
@@ -86,16 +55,6 @@ export const TagsField = props => {
     );
 };
 
-export const TagsFieldScrollButton = props => {
-    const { onClick, ...rest } = props;
-    const handleClick = event => {
-        event.stopPropagation();
-        onClick(event);
-    };
-
-    return <TabScrollButton onClick={handleClick} {...rest} />;
-};
-
 export const AsyncTagsField = props => {
     const { record, variant = 'outlined', color = 'primary', ...rest } = props;
     const translate = useTranslate();
@@ -140,3 +99,50 @@ export const AsyncTagsField = props => {
         </ul>
     );
 };
+
+export const TagsFieldScrollButton = props => {
+    const { onClick, ...rest } = props;
+    const handleClick = event => {
+        event.preventDefault();
+        event.stopPropagation();
+        onClick(event);
+    };
+
+    return <TabScrollButton onClick={handleClick} {...rest} />;
+};
+
+const useStyles = makeStyles(
+    theme => ({
+        root: {
+            margin: 0,
+            padding: 0,
+            maxWidth: 300,
+            minHeight: 'unset',
+            position: 'relative',
+        },
+        tab: {
+            minHeight: 'unset',
+            minWidth: 'unset',
+            maxWidth: 'unset',
+            paddingBottom: 0,
+            paddingTop: 0,
+            paddingLeft: theme.spacing(0.5),
+            paddingRight: theme.spacing(0.5),
+        },
+        tag: {
+            borderRadius: theme.spacing(0.5),
+            backgroundColor: 'transparent',
+            border: '1px solid',
+            '& + &': {
+                marginLeft: theme.spacing(),
+            },
+        },
+        error: {
+            color: theme.palette.error.main,
+            marginBottom: theme.spacing(),
+        },
+    }),
+    {
+        name: 'Layer7ApiTags',
+    }
+);

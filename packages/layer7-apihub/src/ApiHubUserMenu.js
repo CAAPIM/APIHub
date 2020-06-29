@@ -15,27 +15,6 @@ import { Link, useLocation } from 'react-router-dom';
 import { CurrentUserId } from './dataProvider/userContexts';
 import { UserOrganizationSwitcher, useUserContext } from './userContexts';
 
-const useStyles = makeStyles(
-    theme => ({
-        menuItem: {
-            color: theme.palette.text.secondary,
-            marginBottom: theme.spacing(),
-        },
-        menuItemLogout: {
-            marginBottom: '0px',
-        },
-        divider: {
-            marginBottom: theme.spacing(),
-        },
-        icon: {
-            minWidth: theme.spacing(5),
-        },
-    }),
-    {
-        name: 'RaUserMenu',
-    }
-);
-
 /**
  * An hook to get the path of the related list of resources
  * from the current location.
@@ -99,6 +78,11 @@ export const ApiHubUserMenu = props => {
     const handleMenu = event => setAnchorEl(event.currentTarget);
     const handleClose = () => setAnchorEl(null);
 
+    const handleChangeUserContext = value => {
+        handleChangeUserActiveOrg(value);
+        handleClose();
+    };
+
     return (
         <div>
             <Tooltip title={label && translate(label, { _: label })}>
@@ -143,7 +127,7 @@ export const ApiHubUserMenu = props => {
                 <Divider className={classes.divider} />
                 <UserOrganizationSwitcher
                     userContext={userContext}
-                    onChangeUserContext={handleChangeUserActiveOrg}
+                    onChangeUserContext={handleChangeUserContext}
                 />
                 {Children.map(children, menuItem =>
                     isValidElement(menuItem)
@@ -168,3 +152,24 @@ ApiHubUserMenu.defaultProps = {
     label: 'ra.auth.user_menu',
     icon: <AccountCircle />,
 };
+
+const useStyles = makeStyles(
+    theme => ({
+        menuItem: {
+            color: theme.palette.text.secondary,
+            marginBottom: theme.spacing(),
+        },
+        menuItemLogout: {
+            marginBottom: '0px',
+        },
+        divider: {
+            marginBottom: theme.spacing(),
+        },
+        icon: {
+            minWidth: theme.spacing(5),
+        },
+    }),
+    {
+        name: 'ApiHubUserMenu',
+    }
+);

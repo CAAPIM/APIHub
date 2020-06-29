@@ -11,8 +11,11 @@ help:
 install: package.json ## Install dependencies
 	@yarn
 
-copy-config-example: ## Copy config of the example. Usage DEPLOY_ENV=[dev|integration|staging] make copy-config-example.
+copy-config-example: ## Copy config of the example. Usage DEPLOY_ENV=[dev|integration|layer7] make copy-config-example.
 	cp packages/example/config/config-${DEPLOY_ENV}.js packages/example/public/config.js
+
+copy-config-healthcare: ## Copy config of the healthcare. Usage DEPLOY_ENV=[dev|integration|layer7] make copy-config-healthcare.
+	cp packages/healthcare/config/config-${DEPLOY_ENV}.js packages/healthcare/public/config.js
 
 generate-mock-data: ## Generate new data for the mock server. Usage OUTPUT_FILE=my-file.json make generate-mock-data. OUTPUT_FILE is optionnal.
 	./packages/layer7-apihub-mock/bin/generateData.js ${OUTPUT_FILE}
@@ -25,6 +28,9 @@ build: ## Build the library
 build-example: ## Build the example
 	@yarn build-example
 
+build-healthcare: ## Build the healthcare
+	@yarn build-healthcare
+
 build-storybook: ## Build the storybook
 	@yarn build-storybook
 
@@ -33,6 +39,9 @@ build-storybook: ## Build the storybook
 
 start: copy-config-example build ## Starts the application in development mode
 	@yarn start-example
+
+start-healthcare: copy-config-healthcare build ## Starts the application in development mode
+	@yarn start-healthcare
 
 watch-lib: ## Starts the library in development mode
 	@yarn start-lib
@@ -59,8 +68,3 @@ test-e2e-local: ## Opens the end-to-end tests GUI. Usage make test-e2e-local.
 lint: ## Runs linting tools
 	@yarn lint
 
-
-#### Deployment ####
-
-copy-deploy-config-example: ## Copy config of the example. Usage DEPLOY_ENV=[dev|integration|staging] make copy-deploy-config-example.
-	cp packages/example/config/config-${DEPLOY_ENV}.js packages/example/build/config.js

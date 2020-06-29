@@ -1,11 +1,55 @@
 import React from 'react';
+import { useTranslate } from 'ra-core';
+import Typography from '@material-ui/core/Typography';
 
 import { AuthenticationLayout } from '../AuthenticationLayout';
 import { AccountSetupForm } from './AccountSetupForm';
+import { AccountSetupPreparingForm } from './AccountSetupPreparingForm';
+import { AccountSetupInvalidRequest } from './AccountSetupInvalidRequest';
+import { AccountSetupSuccess } from './AccountSetupSuccess';
 import { useAccountData } from './useAccountData';
-import { PreparingForm } from './PreparingForm';
-import { InvalidRequest } from './InvalidRequest';
-import { SetupSucceeded } from './SetupSucceeded';
+
+/**
+ * The account setup form
+ *
+ */
+export const AccountSetup = props => {
+    const [state, accountData, submitAccountData] = useAccountData();
+    const translate = useTranslate();
+
+    const handleSubmit = data => {
+        submitAccountData(data);
+    };
+
+    switch (state) {
+        case 'prepare':
+            return <AccountSetupPreparingForm {...props} />;
+        case 'fill':
+            return (
+                <>
+                    <Typography
+                        variant="h4"
+                        component="h2"
+                        color="textPrimary"
+                        gutterBottom
+                    >
+                        {translate('apihub.account_setup.title')}
+                    </Typography>
+                    <AccountSetupForm
+                        initialValues={accountData}
+                        onSubmit={handleSubmit}
+                        {...props}
+                    />
+                </>
+            );
+        case 'invalid_request':
+            return <AccountSetupInvalidRequest {...props} />;
+        case 'success':
+            return <AccountSetupSuccess {...props} />;
+        default:
+            return null;
+    }
+};
 
 /**
  * The page displaying the account setup form
@@ -24,42 +68,22 @@ import { SetupSucceeded } from './SetupSucceeded';
  * const Content = () => <section><p>Welcome to My Product.</p></section>
  * const Footer = () => <footer>Copyright © 2020 My Company. All Rights Reserved</footer>
  *
- * const AccountSetupPagePage = props => (
+ * const MyAccountSetupPage = props => (
  *     <AccountSetupPage
- *         Header={CustomHeader}
- *         Content={CustomContent}
- *         Footer={CustomFooter}
+ *         Header={Header}
+ *         Content={Content}
+ *         Footer={Footer}
  *         {...props}
  *     />
  * );
  *
  * const MyApp = props => <Admin accountSetupPage={MyAccountSetupPage} {...props} />
+ *
  */
-export const AccountSetupPage = ({
-    location,
-    Layout = AuthenticationLayout,
-    ...props
-}) => {
-    const [state, accountData, submitAccountData] = useAccountData(location);
-
-    const handleSubmit = data => {
-        submitAccountData(data);
-    };
-
+export const AccountSetupPage = props => {
     return (
-        <Layout {...props}>
-            {state === 'prepare' ? (
-                <PreparingForm />
-            ) : state === 'fill' ? (
-                <AccountSetupForm
-                    initialValues={accountData}
-                    onSubmit={handleSubmit}
-                />
-            ) : state === 'invalid_request' ? (
-                <InvalidRequest />
-            ) : state === 'success' ? (
-                <SetupSucceeded />
-            ) : null}
-        </Layout>
+        <AuthenticationLayout {...props}>
+            <AccountSetup />
+        </AuthenticationLayout>
     );
 };

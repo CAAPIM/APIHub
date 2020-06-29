@@ -6,15 +6,6 @@ import { ViewTitle } from '../ui';
 import { UserContextTitle } from './UserContextTitle';
 import { UserContextSubtitle } from './UserContextSubtitle';
 
-const useStyles = makeStyles(theme => ({
-    root: {
-        padding: `${theme.spacing(4)}px !important`,
-    },
-    field: {
-        width: 456,
-    },
-}));
-
 export const UserContextShow = props => {
     const classes = useStyles(props);
 
@@ -54,3 +45,17 @@ export const UserContextShow = props => {
         </>
     );
 };
+
+const useStyles = makeStyles(
+    theme => ({
+        root: {
+            padding: `${theme.spacing(4)}px !important`,
+        },
+        field: {
+            width: 456,
+        },
+    }),
+    {
+        name: 'Layer7UserContextShow',
+    }
+);

@@ -3,12 +3,18 @@ import get from 'lodash/get';
 
 export const ApiHubContext = createContext();
 
-export const ApiHubProvider = ({ url, tenantName, children }) => {
+export const ApiHubProvider = ({
+    url,
+    tenantName,
+    originHubName,
+    children,
+}) => {
     const value = useRef({
+        originHubName,
+        tenantName,
         url,
         urlWithApi: `${url}/api`,
         urlWithTenant: `${url}/api/${tenantName}`,
-        tenantName,
     });
     return (
         <ApiHubContext.Provider value={value.current}>

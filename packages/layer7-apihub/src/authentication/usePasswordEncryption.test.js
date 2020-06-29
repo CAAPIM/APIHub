@@ -26,12 +26,14 @@ describe('usePasswordEncryption', () => {
     test('should encypt the password with the publicKey fetched from the API', async () => {
         global.fetch = jest.fn().mockResolvedValue({
             status: 200,
-            json: () =>
-                Promise.resolve({
-                    respCode: 200,
-                    respMsg: 'Successfully fetched public key',
-                    publicKey,
-                }),
+            text: () =>
+                Promise.resolve(
+                    JSON.stringify({
+                        respCode: 200,
+                        respMsg: 'Successfully fetched public key',
+                        publicKey,
+                    })
+                ),
         });
 
         const { queryByText } = render(

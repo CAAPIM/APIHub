@@ -3,15 +3,6 @@ import { useTranslate } from 'react-admin';
 import { makeStyles } from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
 
-const useStyles = makeStyles(theme => ({
-    root: {
-        fontWeight: theme.typography.fontWeightMedium,
-        marginTop: theme.spacing(4),
-        marginBottom: theme.spacing(2),
-        color: theme.palette.getContrastText(theme.palette.background.default),
-    },
-}));
-
 export const UserContextSubtitle = ({ actions, ...rest }) => {
     const classes = useStyles(rest);
     const translate = useTranslate();
@@ -22,3 +13,19 @@ export const UserContextSubtitle = ({ actions, ...rest }) => {
         </Typography>
     );
 };
+
+const useStyles = makeStyles(
+    theme => ({
+        root: {
+            fontWeight: theme.typography.fontWeightMedium,
+            marginTop: theme.spacing(4),
+            marginBottom: theme.spacing(2),
+            color: theme.palette.getContrastText(
+                theme.palette.background.default
+            ),
+        },
+    }),
+    {
+        name: 'Layer7UserContextSubtitle',
+    }
+);
