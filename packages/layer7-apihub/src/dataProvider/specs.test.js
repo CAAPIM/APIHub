@@ -1,20 +1,21 @@
-import { fetchUtils } from 'ra-core';
-
 import { specsDataProvider } from './specs';
 
 describe('dataProvider - specs', () => {
     describe('getOne', () => {
         test('should fetch the correct url for specs', async () => {
-            fetchUtils.fetchJson = jest.fn().mockResolvedValue({
+            const fetchJson = jest.fn().mockResolvedValue({
                 json: {},
             });
 
-            const { getOne } = specsDataProvider('https://marmelab.com');
+            const { getOne } = specsDataProvider({
+                apiUrl: 'https://marmelab.com',
+                fetchJson,
+            });
 
             await getOne({ id: 'covfefe' });
 
             expect(
-                fetchUtils.fetchJson
+                fetchJson
             ).toHaveBeenCalledWith(
                 "https://marmelab.com/2.0/Apis('covfefe')/SpecContent",
                 { credentials: 'include' }
@@ -22,13 +23,16 @@ describe('dataProvider - specs', () => {
         });
 
         test('should use the api id as the spec id', async () => {
-            fetchUtils.fetchJson = jest.fn().mockResolvedValue({
+            const fetchJson = jest.fn().mockResolvedValue({
                 json: {
                     swagger: 'blablabla',
                 },
             });
 
-            const { getOne } = specsDataProvider('https://marmelab.com');
+            const { getOne } = specsDataProvider({
+                apiUrl: 'https://marmelab.com',
+                fetchJson,
+            });
 
             const result = await getOne({ id: 'covfefe' });
 

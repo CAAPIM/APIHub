@@ -1,3 +1,3 @@
 export const openUserMenu = () => {
-    cy.findByTitle('Profile').click({ force: true });
+    cy.findByLabelText('Profile').click({ force: true });
 };

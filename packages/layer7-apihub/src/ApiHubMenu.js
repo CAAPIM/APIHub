@@ -5,18 +5,7 @@ import classnames from 'classnames';
 import { useTranslate } from 'ra-core';
 import { makeStyles, useMediaQuery } from '@material-ui/core';
 
-import { IconHome, IconApi, IconApps } from './ui/icons';
-
-const useStyles = makeStyles(
-    {
-        main: {
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'flex-start',
-        },
-    },
-    { name: 'RaMenu' }
-);
+import { IconHome, IconApi, IconApps, IconWiki } from './ui/icons';
 
 /**
  * The ApiHub Menu used in the ApiHub Sidebar.
@@ -80,7 +69,29 @@ export const ApiHubMenu = props => {
                 dense={dense}
                 sidebarIsOpen={open}
             />
+            <MenuItemLink
+                key="documents"
+                to="/wiki"
+                primaryText={translate(`resources.documents.name`, {
+                    smart_count: 2,
+                })}
+                leftIcon={<IconWiki />}
+                onClick={onMenuClick}
+                dense={dense}
+                sidebarIsOpen={open}
+            />
             {isXSmall && logout}
         </div>
     );
 };
+
+const useStyles = makeStyles(
+    {
+        main: {
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'flex-start',
+        },
+    },
+    { name: 'RaMenu' }
+);

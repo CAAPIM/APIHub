@@ -4,9 +4,9 @@ This package provides an API Hub mock server that intercepts calls to the Portal
 
 The mock server was built using Mirage JS. For more information, see [the Mirage JS site](https://miragejs.com).
 
-## How to Use the Mock Server in your Application
+## Start the Mock Server in your Client Application
 
-Start a mock server in your client application by calling the `startApiHubMockedServer` function, for example:
+Call the `startApiHubMockedServer` function, for example:
 
 ```js
 import { startApiHubMockedServer } from 'layer7-apihub-mock';
@@ -30,11 +30,9 @@ startApiHubMockedServer().then(() =>
 );
 ```
 
-If no data is available yet, this function initializes the local database.
-
 ### Access the Local Database
 
-The mock server creates a global `Layer7Mock` object that you can use in your browser's Developer Tool console if you need to reset the local database:
+The mock server creates a global `Layer7Mock` object. You can access the local database using this object in your browser's Developer Tool console:
 
 ``` js
 Layer7Mock.database // Returns the data base
@@ -43,11 +41,14 @@ Layer7Mock.clearDatabase() // Delete the local database
 Layer7Mock.initDatabase() // Recreate the local database
 ```
 
-### Running Indicator
+The `resetDatabase()`, `clearDatabase()`, `initDatabase()` functions return promises. They also log messages indicating they finished their job. Wait for these messages before refreshing the page or before performing actions in your application.
 
-By default, a running indicator will be displayed on the bottom left of each pages.
+You can load alternate data than the data that the mock server includes by default using the `resetDatabase()` and `initDatabase()` functions.
+For more information about the format for the `data` object, see [Provide your own Data](#provide-your-own-data).
 
-To disable it, you can pass the `showRunningIndicator` option when stating the API Hub mock server.
+### Disable the Running Indicator
+
+By default, a running indicator is displayed on the bottom left of each page. To disable it, pass the `showRunningIndicator` option when starting the mock server:
 
 ```jsx
 import React from 'react';
@@ -61,19 +62,35 @@ startApiHubMockedServer({ showRunningIndicator: false }).then(() =>
 );
 ```
 
-## Available Users
+## Available User Roles
 
-The following user accounts are included with the mock server:
+The following user roles are included with the mock server:
 
-- A Portal Admin (username `portalAdmin` and password `Password@1`).
-- An Org Publisher (username `orgPublisher` and password `Password@1`).
-- An API Owner (username `apiOwner` and password `Password@1`).
-- A developer user (username `user` and password `Password@1`).
-You can change these users by providing your own data. See the section "Provide your own Data".
+- Portal Admin
+    - login: `portalAdmin`
+    - password: `Password@1`
+    
+- API Owner
+    - login: `apiOwner`
+    - password: `Password@1`
+    
+ - Org Publisher
+    - login: `orgPublisher`
+    - password: `Password@1`
+    
+ - Org Admin
+    - login: `Publisher`
+    - password: `Password@1`
+    
+ - Developer
+    - login: `user`
+    - password: `Password@1`
 
-## Customize API Hub Mock Server
+You can change these user roles by [providing your own Data](#provide-your-own-data).
 
-You can customize the API Hub mock server by adding API routes and entities. The `startApiHubMockedServer()` function returns an object that includes the following keys:
+## Customize the Mock Server
+
+You can customize the mock server by adding API routes and entities. The `startApiHubMockedServer()` function returns an object that includes the following keys:
 - `server`. This key is the MirageJS server instance. You can add API routes using this server instance.
 - `database`. This key is a [minimongo](https://github.com/mWater/minimongo) instance. You can add entities using this instance. These entities are persisted in an IndexedDb database.
 
@@ -103,9 +120,9 @@ startApiHubMockedServer().then(({ server }) => {
 
 ### Register Entities
 
-Register the entities that you want added to and persisted in the IndexedDB database.
+Register the entities that you want added to and persisted in the IndexedDB database. To add custom entities to the database for your customized API routes, use `database.addCollection(entityName)`.
 
-To add custom entities to the database for your customized API routes use `database.addCollection(entityName)`. The following code example expands on the previous code by adding the `custom-entity` entity to the database:
+The following code example expands on the previous code by adding the `custom-entity` entity to the database:
 
 ```jsx
 import React from 'react';
@@ -127,7 +144,7 @@ startApiHubMockedServer().then(({ server, database }) => {
 
 For more information about how to register entitites, see [minimongo](https://github.com/mWater/minimongo).
 
-### Provide your own Data
+### Provide your Own Data
 
 The mock server includes default data. You can also provide your own data by passing the `data` object, for example:
 
@@ -140,21 +157,21 @@ startApiHubMockedServer({ data });
 
 This object includes the following keys:
 
-- `userContexts`. This key is an array of `Users` objects.
-- `tags`. This key is an array of `ApiTag` objects.
-- `apis`. This key is an array of `Apis` objects.
-- `applications`. This key is an array of `Applications` objects.
-- `documents`. This key is an array of `Document` objects.
-- `assets`. This key is an array of `apiAsset` objects.
+- `userContexts`. This key is an array of `Users` PAPI objects.
+- `tags`. This key is an array of `ApiTag` PAPI objects.
+- `apis`. This key is an array of `Apis` PAPI objects.
+- `applications`. This key is an array of `Applications` PAPI objects.
+- `documents`. This key is an array of `Document` PAPI objects.
+- `assets`. This key is an array of `apiAsset` PAPI objects.
 
-For more information about these PAPI objects, see [Layer7 API Developer Portal documentation](http://techdocs.broadcom.com/apiportal).
+For more information about these PAPI objects, see [the Layer7 API Developer Portal documentation](http://techdocs.broadcom.com/apiportal).
 
 ### Generate New Data
 
-To generate new data, you have to run the following command which accepts an output file:
+To generate new data, run the following command which accepts an output file:
 
 ``` sh
 ./bin/generateData.js myOutputFile.json
 ```
 
-If you don't pass an output file, it will override the default data `defaultData.json`.
+If you do not pass an output file, the command overrides the default data `defaultData.json`.

@@ -9,6 +9,7 @@ export * from './authProvider';
 export * from './credentialsAuthProvider';
 export * from './extractTokenFromUrl';
 export * from './useAuthenticationConfiguration';
+export * from './useAuthSchemes';
 export * from './usePasswordEncryption';
 export * from './useResetPassword';
 export * from './validatePassword';

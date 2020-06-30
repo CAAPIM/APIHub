@@ -6,9 +6,13 @@ function generateData() {
     const tags = generateTags();
     const userContexts = generateUserContexts({ organizations });
     const apis = generateApis({ tags });
-    const apiGroups = generateApiGroups();
+    const apiGroups = generateApiGroups({ apis });
     const applications = generateApplications({ apis });
-    const documents = generateDocumentationForApis({ apis });
+    const documents = [
+        ...generateDocumentationForApis({ apis }),
+        ...generateDocumentationForWiki(),
+        ...generateDocumentationForHome(),
+    ];
     const assets = generateAssetsForApis({ apis });
     const registrations = generateRegistrations();
 
@@ -39,8 +43,9 @@ function generateUserContexts({ organizations }) {
                 userDetails: {
                     username: 'portalAdmin',
                     portalAdmin: true,
-                    orgPublisher: true,
-                    apiOwner: true,
+                    orgPublisher: false,
+                    orgAdmin: false,
+                    apiOwner: false,
                 },
             },
         ],
@@ -53,7 +58,22 @@ function generateUserContexts({ organizations }) {
                 userDetails: {
                     username: 'orgPublisher',
                     orgPublisher: true,
+                    orgAdmin: false,
                     apiOwner: true,
+                },
+            },
+        ],
+    });
+
+    const orgAdmin = generateUserContext({
+        organizations,
+        userContexts: [
+            {
+                userDetails: {
+                    username: 'orgAdmin',
+                    orgPublisher: false,
+                    orgAdmin: true,
+                    apiOwner: false,
                 },
             },
         ],
@@ -77,12 +97,13 @@ function generateUserContexts({ organizations }) {
             {
                 userDetails: {
                     username: 'user',
+                    developer: true,
                 },
             },
         ],
     });
 
-    return [portalAdmin, orgPublisher, apiOwner, user];
+    return [portalAdmin, orgPublisher, orgAdmin, apiOwner, user];
 }
 
 function generateUserContext({ organizations, ...data }) {
@@ -114,6 +135,7 @@ function generateUserContext({ organizations, ...data }) {
                         portalAdmin: false,
                         apiOwner: false,
                         orgPublisher: false,
+                        developer: false,
                     },
                     activeOrgUuid: accessibleOrgs[0].uuid,
                     accessibleOrgs: accessibleOrgs.reduce(
@@ -134,7 +156,7 @@ function generateApis(data) {
     return Array.from(Array(25).keys()).map(() => generateApi(data));
 }
 
-function generateApi({ tags, ...data }) {
+function generateApi({ tags, apiGroups, ...data }) {
     const createTs = faker.date.past();
     const modifyTs = faker.date.recent();
     const uuid = faker.random.uuid();
@@ -170,7 +192,7 @@ function generateApiGroups(data) {
     return Array.from(Array(4).keys()).map(() => generateApiGroup(data));
 }
 
-function generateApiGroup(data) {
+function generateApiGroup({ apis, ...data }) {
     const uuid = faker.random.uuid();
 
     return merge(
@@ -181,6 +203,9 @@ function generateApiGroup(data) {
             description: faker.fake(
                 '{{commerce.productName}} {{commerce.productAdjective}} {{commerce.productMaterial}}'
             ),
+            apis: faker.random
+                .arrayElements(apis, faker.random.number({ min: 1, max: 5 }))
+                .map(({ uuid, name, status }) => ({ uuid, name, status })),
         },
         data
     );
@@ -198,7 +223,26 @@ function generateApplication({ apis, ...data }) {
 
     const apiKey = faker.random.uuid();
     const keySecret = faker.random.uuid();
-
+    const status = faker.random.arrayElement([
+        'ENABLED',
+        'ENABLED',
+        'ENABLED',
+        'ENABLED',
+        'DISABLED',
+        'DISABLED',
+        'DEPRECATED',
+        'UNPUBLISHED',
+        'REJECTED',
+        'APPLICATION_PENDING_APPROVAL',
+        'EDIT_APPLICATION_PENDING_APPROVAL',
+    ]);
+    const generateDisabledByType = status =>
+        [
+            'APPLICATION_PENDING_APPROVAL',
+            'EDIT_APPLICATION_PENDING_APPROVAL',
+        ].includes(status)
+            ? faker.random.arrayElement(['INTERNAL', 'EXTERNAL'])
+            : null;
     // This field won't be returned but will be used by the mock server
     const _accessibleApis = faker.random
         .arrayElements(apis, nbApis)
@@ -215,14 +259,8 @@ function generateApplication({ apis, ...data }) {
             name: faker.fake(
                 '{{hacker.abbreviation}} {{name.jobDescriptor}} {{name.jobArea}}'
             ),
-            status: faker.random.arrayElement([
-                'ENABLED',
-                'DISABLED',
-                'DEPRECATED',
-                'UNPUBLISHED',
-                'REJECTED',
-                'APPLICATION_PENDING_APPROVAL',
-            ]),
+            status,
+            disabledByType: generateDisabledByType(status),
             description: faker.company.catchPhrase(),
             OauthCallbackUrl: 'https://example.com/oauthCallback',
             OauthScope: 'OOB',
@@ -255,60 +293,6 @@ function generateDocumentationForApis({ apis, ...data }) {
     return documents;
 }
 
-function generateDocumentationForApi({ api, ...data }) {
-    const nbRootDocuments = faker.random.number({ min: 0, max: 6 });
-    let documents = [];
-
-    for (let index = 0; index < nbRootDocuments; index++) {
-        documents.push(
-            ...generateDocumentsForApi({ api, ordinal: index, maxChild: 6 })
-        );
-    }
-    return documents;
-}
-
-function generateDocumentsForApi({ api, maxChild, ...data }) {
-    return ['en-US', 'fr-FR'].reduce((documents, locale) => {
-        const title = `${locale} - ${faker.company.catchPhrase()}`;
-        const document = {
-            uuid: faker.random.uuid(),
-            type: 'api',
-            typeUuid: api.uuid,
-            locale,
-            status: 'PUBLISHED',
-            title,
-            navtitle: faker.helpers.slugify(title).toLowerCase(),
-            markdown: faker.lorem.text(
-                faker.random.number({ min: 1, max: 10 })
-            ),
-            ...data,
-        };
-        documents.push(document);
-
-        const nbChildDocuments = faker.random.number({ min: 0, max: maxChild });
-        for (let index = 0; index < nbChildDocuments; index++) {
-            documents.push(
-                ...generateDocumentsForApi({
-                    api,
-                    maxChild: maxChild - 2,
-                    parentUuid: document.uuid,
-                    ordinal: index,
-                })
-            );
-        }
-
-        return documents;
-    }, []);
-}
-
-function generateAssetsForApis({ apis, ...data }) {
-    const assets = apis.reduce((acc, api) => {
-        acc.push(...generateAssetsForApi({ api }));
-        return acc;
-    }, []);
-    return assets;
-}
-
 function generateAssetsForApi({ api }) {
     const nbAssets = faker.random.number({ min: 1, max: 5 });
     const assets = [];
@@ -333,6 +317,111 @@ function generateAssetsForApi({ api }) {
     }
 
     return assets;
+}
+
+function generateAssetsForApis({ apis, ...data }) {
+    const assets = apis.reduce((acc, api) => {
+        acc.push(...generateAssetsForApi({ api }));
+        return acc;
+    }, []);
+    return assets;
+}
+
+// Rules for the typeUuid:
+// - for API and APPLICATION its the uuid of the application or api the docs are attached to
+// - for HOME or CUSTOM it can be any unique value (unique to the tenant)
+
+function generateDocumentationForApi({ api, ...data }) {
+    const nbRootDocuments = faker.random.number({ min: 0, max: 6 });
+    let documents = [];
+
+    for (let index = 0; index < nbRootDocuments; index++) {
+        documents.push(
+            ...generateDocumentsForLocales({
+                type: 'api',
+                typeUuid: api.uuid,
+                ordinal: index,
+                maxChild: 3,
+            })
+        );
+    }
+
+    return documents;
+}
+
+function generateDocumentationForWiki() {
+    const nbRootDocuments = 4;
+
+    let documents = [];
+    for (let index = 0; index < nbRootDocuments; index++) {
+        documents.push(
+            ...generateDocumentsForLocales({
+                type: 'custom',
+                typeUuid: 'wiki1',
+                ordinal: index,
+                maxChild: 2,
+            })
+        );
+    }
+    return documents;
+}
+
+function generateDocumentationForHome() {
+    let documents = generateDocumentsForLocales({
+        type: 'home',
+        typeUuid: 'home1',
+        ordinal: 0,
+        maxChild: 0,
+    });
+    documents[0].navtitle = 'home1';
+    return documents;
+}
+
+function generateDocumentsForLocales(params) {
+    return ['en-US', 'fr-FR'].reduce((documents, locale) => {
+        documents.push(...generateDocuments({ locale, ...params }));
+        return documents;
+    }, []);
+}
+
+function generateDocuments({ locale, maxChild, ordinal, ...data }) {
+    const documents = [];
+
+    const title = `${locale} - ${faker.company.catchPhrase()}`;
+    const document = generateDocument({
+        title,
+        locale,
+        ordinal,
+        ...data,
+    });
+
+    documents.push(document);
+
+    const nbChildDocuments = faker.random.number({ min: 0, max: maxChild });
+    for (let index = 0; index < nbChildDocuments; index++) {
+        documents.push(
+            ...generateDocuments({
+                locale,
+                maxChild: maxChild - 2,
+                parentUuid: document.uuid,
+                ...data,
+                ordinal: index,
+            })
+        );
+    }
+
+    return documents;
+}
+
+function generateDocument({ title, ...data }) {
+    return {
+        uuid: faker.random.uuid(),
+        status: 'PUBLISHED',
+        title,
+        navtitle: faker.helpers.slugify(title).toLowerCase(),
+        markdown: faker.lorem.text(faker.random.number({ min: 1, max: 10 })),
+        ...data,
+    };
 }
 
 function generateRegistrations() {

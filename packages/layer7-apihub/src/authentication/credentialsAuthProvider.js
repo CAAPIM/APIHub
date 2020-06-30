@@ -1,20 +1,20 @@
-export const credentialsAuthProvider = (apiUrl, adminUrl) => ({
-    login: async ({ username, password }) => {
+export const credentialsAuthProvider = (apiUrl, adminUrl, fetchJson) => ({
+    login: async ({ username, password, ...params }) => {
         try {
-            const response = await fetch(`${apiUrl}/authenticate/login`, {
+            const { json } = await fetchJson(`${apiUrl}/authenticate/login`, {
                 method: 'POST',
                 body: JSON.stringify({
                     username,
                     password,
                     eula: 'accept',
+                    ...params,
                 }),
-                credentials: 'include',
                 headers: new Headers({
                     'Content-Type': 'application/json; charset=UTF-8',
                 }),
             });
 
-            const { respCode, respMsg } = await response.json();
+            const { respCode, respMsg } = json;
 
             if (respCode < 200 || respCode >= 300) {
                 throw new Error(respMsg);
@@ -26,9 +26,7 @@ export const credentialsAuthProvider = (apiUrl, adminUrl) => ({
     },
     logout: async () => {
         try {
-            await fetch(`${adminUrl}/logout`, {
-                credentials: 'include',
-            });
+            await fetchJson(`${adminUrl}/logout`);
             return Promise.resolve();
         } catch (error) {
             console.error(error);

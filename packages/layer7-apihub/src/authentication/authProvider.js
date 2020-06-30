@@ -1,4 +1,6 @@
 import { credentialsAuthProvider } from './credentialsAuthProvider';
+import { getFetchJson } from '../fetchUtils';
+import { deleteApiHubPreference } from '../preferences';
 
 const LOGIN_SCHEME = '@layer7/authentication/loginScheme';
 const LOGGED_IN = '@layer7/authentication/loggedIn';
@@ -23,13 +25,15 @@ const checkError = error => {
 export const authProvider = (
     baseUrl,
     tenantName,
+    originHubName,
     keyLoginScheme = LOGIN_SCHEME,
-    keyLoggedIn = LOGGED_IN
+    keyLoggedIn = LOGGED_IN,
+    fetchJson = getFetchJson(originHubName)
 ) => {
     const adminUrl = `${baseUrl}/admin`;
     const apiUrl = `${baseUrl}/api/${tenantName}`;
     const providers = {
-        credentials: credentialsAuthProvider(apiUrl, adminUrl),
+        credentials: credentialsAuthProvider(apiUrl, adminUrl, fetchJson),
     };
 
     const getIsLoggedIn = () => {
@@ -80,6 +84,10 @@ export const authProvider = (
                 await authProviderUsedForLogin.logout();
             }
             setIsLoggedIn(false);
+
+            // The documentation locale should reset to the preferred UI locale
+            // for every new session
+            deleteApiHubPreference('documentationLocale');
             return Promise.resolve();
         },
         checkAuth: async () => {
@@ -98,9 +106,7 @@ export const authProvider = (
                 // But he may use another portal to log in.
                 // So fetching the api it's the only way to know
                 // if he is already authenticated or not.
-                const response = await fetch(`${apiUrl}/userContexts`, {
-                    credentials: 'include',
-                });
+                const response = await fetchJson(`${apiUrl}/userContexts`);
                 await checkError(response);
                 setIsLoggedIn(true);
             } catch (error) {

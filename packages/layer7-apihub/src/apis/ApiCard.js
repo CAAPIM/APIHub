@@ -1,6 +1,5 @@
 import React from 'react';
 import { useTranslate, linkToRecord } from 'ra-core';
-import classNames from 'classnames';
 import { Link } from 'react-router-dom';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
@@ -18,122 +17,20 @@ import format from 'date-fns/format';
 
 import { MarkdownView, Stats, StatsText } from '../ui';
 import { TagsField } from './TagsField';
-
-const useStyles = makeStyles(
-    theme => ({
-        root: {
-            height: '100%',
-            display: 'flex',
-            flexDirection: 'column',
-            cursor: 'pointer',
-            textDecoration: 'none',
-        },
-        content: {
-            display: 'flex',
-            flexDirection: 'column',
-            flex: 1,
-        },
-        header: {
-            borderBottomColor: theme.palette.divider,
-            borderBottomWidth: 1,
-            borderBottomStyle: 'solid',
-        },
-        footer: {
-            display: 'flex',
-            flexDirection: 'column',
-            flex: 0,
-        },
-        description: {
-            flex: 1,
-            overflow: 'hidden',
-            // NOTE: We use some deprecated CSS props here but they are still well supported.
-            // Besides, a new draft specification exists https://www.w3.org/TR/css-overflow-3/#propdef--webkit-line-clamp
-            lineClamp: 3,
-            boxOrient: 'vertical',
-            display: '-webkit-box',
-        },
-        subheader: {
-            display: 'flex',
-            fontFamily: theme.typography.body2.fontFamily,
-            fontSize: theme.typography.caption.fontSize,
-        },
-        title: {
-            fontFamily: theme.typography.subtitle2.fontFamily,
-            fontSize: theme.typography.subtitle2.fontSize,
-            fontWeight: theme.typography.fontWeightBold,
-            wordBreak: 'break-word',
-            maxWidth: '100%',
-            marginBottom: theme.spacing(),
-        },
-        enabledContainer: {
-            display: 'flex',
-            alignItems: 'center',
-            width: 'auto',
-        },
-        enabled: {
-            color: theme.palette.success.main,
-            '& $enabledIcon': {
-                backgroundColor: theme.palette.success.main,
-            },
-        },
-        disabled: {
-            '& $enabledIcon': {
-                backgroundColor: theme.palette.text.disabled,
-            },
-        },
-        enabledIcon: {
-            width: theme.spacing(1.5),
-            height: theme.spacing(1.5),
-            borderRadius: 99999,
-            marginRight: theme.spacing(),
-        },
-        ssgServiceType: {
-            fontWeight: theme.typography.fontWeightBold,
-        },
-        divider: {
-            marginLeft: theme.spacing(),
-            marginRight: theme.spacing(),
-            minHeight: theme.spacing(2),
-        },
-        contentDivider: {
-            width: '100%',
-            marginBottom: theme.spacing(),
-            marginTop: 0,
-        },
-        stats: {
-            marginTop: 'auto',
-        },
-        tags: {
-            borderTopStyle: 'solid',
-            borderTopWidth: '1px',
-            borderTopColor: theme.palette.grey[400],
-            minHeight: theme.spacing(4),
-            marginBottom: theme.spacing(1),
-        },
-        tag: {
-            borderRadius: theme.spacing(0.5),
-            fontWeight: theme.typography.fontWeightBold,
-            '& + &': {
-                marginLeft: theme.spacing(0.5),
-            },
-        },
-    }),
-    { name: 'Layer7ApiCard' }
-);
+import { ApiStatus } from './ApiStatus';
 
 export const ApiCard = ({ basePath, record }) => {
     const classes = useStyles();
     const translate = useTranslate();
     const formattedDate =
         record && record.modifyTs ? format(record.modifyTs, 'P') : '';
-
     return (
         <Card
             className={classes.root}
             component={Link}
             to={linkToRecord(basePath, record && record.id, 'show')}
         >
-            <ApiCardHeader
+            <CardHeader
                 className={classes.header}
                 title={
                     <Tooltip title={record.name}>
@@ -152,24 +49,7 @@ export const ApiCard = ({ basePath, record }) => {
                 subheader={
                     <>
                         <div className={classes.subheader}>
-                            <div
-                                className={classNames(
-                                    classes.enabledContainer,
-                                    {
-                                        [classes.enabled]:
-                                            record.portalStatus === 'ENABLED',
-                                        [classes.disabled]:
-                                            record.portalStatus !== 'ENABLED',
-                                    }
-                                )}
-                            >
-                                <div className={classes.enabledIcon} />
-                                <Typography variant="caption">
-                                    {translate(
-                                        `resources.apis.portalStatus.${record.portalStatus.toLowerCase()}`
-                                    )}
-                                </Typography>
-                            </div>
+                            <ApiStatus record={record} variant="caption" />
                             <Divider
                                 orientation="vertical"
                                 className={classes.divider}
@@ -282,17 +162,86 @@ export const ApiCard = ({ basePath, record }) => {
     );
 };
 
-export const ApiCardHeader = props => {
-    const classes = useApiCardHeaderStyles(props);
-
-    return <CardHeader {...props} classes={classes} />;
-};
-
-const useApiCardHeaderStyles = makeStyles(
-    {
-        content: {
-            minWidth: '0%',
+const useStyles = makeStyles(
+    theme => ({
+        root: {
+            height: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            cursor: 'pointer',
+            textDecoration: 'none',
         },
-    },
-    'Layer7ApiCardHeader'
+        content: {
+            display: 'flex',
+            flexDirection: 'column',
+            flex: 1,
+        },
+        header: {
+            borderBottomColor: theme.palette.divider,
+            borderBottomWidth: 1,
+            borderBottomStyle: 'solid',
+        },
+        title: {
+            fontFamily: theme.typography.subtitle2.fontFamily,
+            fontSize: theme.typography.subtitle2.fontSize,
+            fontWeight: theme.typography.fontWeightBold,
+            wordBreak: 'break-word',
+            maxWidth: '100%',
+        },
+        subheader: {
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'flex-start',
+            fontFamily: theme.typography.body2.fontFamily,
+            fontSize: theme.typography.caption.fontSize,
+            padding: theme.spacing(1, 0),
+        },
+        footer: {
+            display: 'flex',
+            flexDirection: 'column',
+            flex: 0,
+        },
+        description: {
+            flex: 1,
+            overflow: 'hidden',
+            // NOTE: We use some deprecated CSS props here but they are still well supported.
+            // Besides, a new draft specification exists https://www.w3.org/TR/css-overflow-3/#propdef--webkit-line-clamp
+            lineClamp: 3,
+            boxOrient: 'vertical',
+            display: '-webkit-box',
+        },
+        ssgServiceType: {
+            fontWeight: theme.typography.fontWeightBold,
+        },
+        divider: {
+            marginLeft: theme.spacing(),
+            marginRight: theme.spacing(),
+            minHeight: theme.spacing(2),
+        },
+        contentDivider: {
+            width: '100%',
+            marginBottom: theme.spacing(),
+            marginTop: 0,
+        },
+        stats: {
+            marginTop: 'auto',
+        },
+        tags: {
+            borderTopStyle: 'solid',
+            borderTopWidth: '1px',
+            borderTopColor: theme.palette.grey[400],
+            minHeight: theme.spacing(4),
+            marginBottom: theme.spacing(1),
+        },
+        tag: {
+            borderRadius: theme.spacing(0.5),
+            fontWeight: theme.typography.fontWeightBold,
+            '& + &': {
+                marginLeft: theme.spacing(0.5),
+            },
+        },
+    }),
+    {
+        name: 'Layer7ApiCard',
+    }
 );

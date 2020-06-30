@@ -1,12 +1,10 @@
-import { fetchUtils } from 'ra-core';
-
 const basePath = '/api-management/1.0/apis';
 
-export const assetsDataProvider = baseUrl => ({
+export const assetsDataProvider = context => ({
     getManyReference: async ({ id }) => {
-        const url = `${baseUrl}${basePath}/${id}/assets`;
+        const url = `${context.apiUrl}${basePath}/${id}/assets`;
 
-        const { json } = await fetchUtils.fetchJson(url, {
+        const { json } = await context.fetchJson(url, {
             credentials: 'include',
         });
 

@@ -15,16 +15,42 @@ export const removeTags = text => {
 // TODO: complete supported markdown syntax
 const markdownOptions = {
     remarkReactComponents: {
-        h1: props => <Typography variant="h1" {...props} />,
-        h2: props => <Typography variant="h2" {...props} />,
-        h3: props => <Typography variant="h3" {...props} />,
-        h4: props => <Typography variant="h4" {...props} />,
-        h5: props => <Typography variant="h5" {...props} />,
-        h6: props => <Typography variant="h6" {...props} />,
-        p: props => <Typography component="p" variant="body1" {...props} />,
+        h1: props => <Typography variant="h1" color="textPrimary" {...props} />,
+        h2: props => <Typography variant="h2" color="textPrimary" {...props} />,
+        h3: props => <Typography variant="h3" color="textPrimary" {...props} />,
+        h4: props => <Typography variant="h4" color="textPrimary" {...props} />,
+        h5: props => <Typography variant="h5" color="textPrimary" {...props} />,
+        h6: props => <Typography variant="h6" color="textPrimary" {...props} />,
+        p: props => (
+            <Typography
+                component="p"
+                variant="body1"
+                color="textPrimary"
+                {...props}
+            />
+        ),
         a: props => <Link {...props} />,
-        li: props => <Typography component="li" variant="body1" {...props} />,
-        td: props => <Typography component="td" variant="body1" {...props} />,
+        li: props => (
+            <Typography
+                component="li"
+                variant="body1"
+                color="textPrimary"
+                {...props}
+            />
+        ),
+        td: props => (
+            <Typography
+                component="td"
+                variant="body1"
+                color="textPrimary"
+                {...props}
+            />
+        ),
+        blockquote: props => {
+            // eslint-disable-next-line react-hooks/rules-of-hooks
+            const classes = useBlockquoteStyles(props);
+            return <blockquote className={classes.root} {...props} />;
+        },
         code: props => {
             // eslint-disable-next-line react-hooks/rules-of-hooks
             const classes = useMarkdownStyles();
@@ -33,12 +59,25 @@ const markdownOptions = {
                     component="code"
                     variant="body1"
                     className={classes.code}
+                    color="textPrimary"
                     {...props}
                 />
             );
         },
     },
 };
+
+const useBlockquoteStyles = makeStyles(theme => ({
+    root: {
+        color: theme.palette.text.secondary,
+        position: 'relative',
+        margin: '16px 0',
+        padding: '5px 8px 5px 30px',
+        background: 'none repeat scroll 0 0 rgba(102,128,153,.05)',
+        border: 'none',
+        borderLeft: '10px solid #d6dbdf',
+    },
+}));
 
 const useMarkdownStyles = makeStyles(theme => ({
     code: {

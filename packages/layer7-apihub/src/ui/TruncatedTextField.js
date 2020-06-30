@@ -4,21 +4,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import Tooltip from '@material-ui/core/Tooltip';
 import get from 'lodash/get';
 
-const useTruncatedTextFieldStyles = makeStyles(theme => ({
-    root: {
-        display: 'inline-block',
-        whiteSpace: 'nowrap',
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
-        maxWidth: '15vw',
-        [theme.breakpoints.up('lg')]: {
-            maxWidth: '10vw',
-        },
-    },
-}));
-
 export const TruncatedTextField = props => {
-    const classes = useTruncatedTextFieldStyles();
+    const classes = useStyles();
     const value = get(props.record, props.source);
 
     return (
@@ -27,3 +14,21 @@ export const TruncatedTextField = props => {
         </Tooltip>
     );
 };
+
+const useStyles = makeStyles(
+    theme => ({
+        root: {
+            display: 'inline-block',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            maxWidth: '15vw',
+            [theme.breakpoints.up('lg')]: {
+                maxWidth: '10vw',
+            },
+        },
+    }),
+    {
+        name: 'Layer7TruncatedTextField',
+    }
+);

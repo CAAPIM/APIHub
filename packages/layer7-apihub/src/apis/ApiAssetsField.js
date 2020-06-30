@@ -10,35 +10,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import get from 'lodash/get';
 import { useApiHub } from '../ApiHubContext';
 
-const useStyles = makeStyles(theme => ({
-    error: {
-        color: theme.palette.error.main,
-        marginBottom: theme.spacing(),
-    },
-}));
-
-const DownloadButton = forwardRef((props, ref) => (
-    <Button variant="outlined" color="primary" ref={ref} {...props} />
-));
-
-const DownloadFilesButton = ({ id }) => {
-    const translate = useTranslate();
-    const { urlWithTenant } = useApiHub();
-
-    const href = `${urlWithTenant}/api-management/1.0/apis/${id}/assets/archive`;
-    const label = translate('resources.apis.overview.actions.download_assets');
-    return (
-        <Link
-            component={DownloadButton}
-            href={href}
-            download="assets.zip"
-            aria-label={label}
-        >
-            {label}
-        </Link>
-    );
-};
-
 export const ApiAssetsField = props => {
     const translate = useTranslate();
     const classes = useStyles(props);
@@ -111,3 +82,37 @@ export const AssetsList = ({ record, links, ...rest }) => {
         </>
     );
 };
+
+const DownloadFilesButton = ({ id }) => {
+    const translate = useTranslate();
+    const { urlWithTenant } = useApiHub();
+
+    const href = `${urlWithTenant}/api-management/1.0/apis/${id}/assets/archive`;
+    const label = translate('resources.apis.overview.actions.download_assets');
+    return (
+        <Link
+            component={DownloadButton}
+            href={href}
+            download="assets.zip"
+            aria-label={label}
+        >
+            {label}
+        </Link>
+    );
+};
+
+const DownloadButton = forwardRef((props, ref) => (
+    <Button variant="outlined" color="primary" ref={ref} {...props} />
+));
+
+const useStyles = makeStyles(
+    theme => ({
+        error: {
+            color: theme.palette.error.main,
+            marginBottom: theme.spacing(),
+        },
+    }),
+    {
+        name: 'Layer7ApiAssetsField',
+    }
+);

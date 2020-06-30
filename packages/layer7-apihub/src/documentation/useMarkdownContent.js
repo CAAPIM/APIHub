@@ -1,5 +1,3 @@
-import get from 'lodash/get';
-import { useSelector } from 'react-redux';
 import {
     CRUD_CREATE,
     CRUD_GET_ONE,
@@ -10,7 +8,6 @@ import {
     useNotify,
     useRefresh,
     useUpdate,
-    useVersion,
 } from 'ra-core';
 
 import { documentationLocales } from '../i18n';
@@ -38,7 +35,6 @@ export const useMarkdownContent = ({ entityType, entityUuid, navtitle }) => {
     const locale = useLocale();
     const notify = useNotify();
     const refresh = useRefresh();
-    const version = useVersion();
     const id = buildDocumentId(
         entityType,
         entityUuid,
@@ -46,7 +42,7 @@ export const useMarkdownContent = ({ entityType, entityUuid, navtitle }) => {
         documentationLocales[locale]
     );
 
-    const { data, loaded, loading, error } = useGetOne('documents', id, {
+    const { data, loaded, loading } = useGetOne('documents', id, {
         action: CRUD_GET_ONE,
     });
 

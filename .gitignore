@@ -28,6 +28,7 @@ yarn-error.log*
 
 # config
 packages/example/public/config.js
+packages/healthcare/public/config.js
 
 # cypress
 cypress/screenshots

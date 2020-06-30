@@ -11,23 +11,12 @@ import get from 'lodash/get';
 import { makeStyles } from '@material-ui/core/styles';
 
 import { Show } from '../ui';
+import { ENTITY_TYPE_API } from '../dataProvider/documents';
 import { CurrentUserId } from '../dataProvider/userContexts';
 import { isPublisher } from '../userContexts';
-import { Overview } from './Overview';
-import { Documentation } from './Documentation';
-import { Specs } from './Specs';
-
-const ApiTitle = ({ record }) => (record ? record.name : '');
-
-// We don't need custom styles by default but this allows to
-// easily customize styles in the theme file directly
-const useStyles = makeStyles(
-    {
-        root: {},
-        card: {},
-    },
-    { name: 'Layer7ApiShow' }
-);
+import { ApiOverview } from './ApiOverview';
+import { ApiDocumentation } from './ApiDocumentation';
+import { ApiSpecs } from './ApiSpecs';
 
 export const ApiShow = props => {
     const { root: rootClassName, ...classes } = useStyles(props);
@@ -59,6 +48,53 @@ export const ApiShow = props => {
     );
 };
 
+export const ApiShowTabs = props => {
+    const translate = useTranslate();
+    const { userIsPublisher, userCanEdit, userCanDelete, ...rest } = props;
+
+    const showSpecs = !isSoapApi(props.record);
+
+    return (
+        <TabbedShowLayout {...rest}>
+            <Tab label={translate('resources.apis.overview.title')}>
+                <ApiOverview userIsPublisher={userIsPublisher} />
+            </Tab>
+            {showSpecs && (
+                <Tab
+                    label={translate('resources.apis.specification.title')}
+                    path="spec"
+                >
+                    <ApiSpecs />
+                </Tab>
+            )}
+            <Tab
+                label={translate('resources.apis.documentation.title')}
+                path="doc"
+            >
+                <ApiDocumentation
+                    userCanEdit={userCanEdit}
+                    userCanDelete={userCanDelete}
+                    entityType={ENTITY_TYPE_API}
+                />
+            </Tab>
+        </TabbedShowLayout>
+    );
+};
+
+const ApiTitle = ({ record, ...rest }) => {
+    const classes = useTitleStyles(rest);
+
+    if (!record) {
+        return null;
+    }
+
+    return (
+        <div className={classes.root}>
+            <span className={classes.title}>{record.name}</span>
+        </div>
+    );
+};
+
 export const isSoapApi = record => {
     // The API type is defined as ssgServiceType in the API list page,
     // but as apiServiceType in the API show page.
@@ -71,34 +107,24 @@ export const isSoapApi = record => {
     return type && type.toLowerCase() === 'soap';
 };
 
-export const ApiShowTabs = props => {
-    const translate = useTranslate();
-    const { userIsPublisher, userCanEdit, userCanDelete, ...rest } = props;
+// We don't need custom styles by default but this allows to
+// easily customize styles in the theme file directly
+const useStyles = makeStyles(
+    {
+        root: {},
+        card: {},
+    },
+    {
+        name: 'Layer7ApiShow',
+    }
+);
 
-    const showSpecs = !isSoapApi(props.record);
-
-    return (
-        <TabbedShowLayout {...rest}>
-            <Tab label={translate('resources.apis.overview.title')}>
-                <Overview userIsPublisher={userIsPublisher} />
-            </Tab>
-            {showSpecs && (
-                <Tab
-                    label={translate('resources.apis.specification.title')}
-                    path="spec"
-                >
-                    <Specs />
-                </Tab>
-            )}
-            <Tab
-                label={translate('resources.apis.documentation.title')}
-                path="doc"
-            >
-                <Documentation
-                    userCanEdit={userCanEdit}
-                    userCanDelete={userCanDelete}
-                />
-            </Tab>
-        </TabbedShowLayout>
-    );
-};
+const useTitleStyles = makeStyles(
+    theme => ({
+        root: {},
+        title: {},
+    }),
+    {
+        name: 'Layer7ApplicationTitle',
+    }
+);

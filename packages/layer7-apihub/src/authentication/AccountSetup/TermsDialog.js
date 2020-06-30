@@ -2,7 +2,7 @@ import React from 'react';
 import { useTranslate } from 'react-admin';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
-import DialogTitle from '@material-ui/core/DialogTitle';
+import DefaultDialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogActions from '@material-ui/core/DialogActions';
 import IconButton from '@material-ui/core/IconButton';
@@ -13,30 +13,71 @@ import { Close } from '@material-ui/icons';
 
 import { useAuthenticationConfiguration } from '../useAuthenticationConfiguration';
 
-const useStyles = makeStyles(theme => ({
-    root: {
-        margin: 0,
-        padding: theme.spacing(2),
-    },
-    closeButton: {
-        position: 'absolute',
-        right: theme.spacing(1),
-        top: theme.spacing(1),
-        color: theme.palette.grey[500],
-    },
-}));
+export const TermsDialog = ({ open, onClose }) => {
+    const translate = useTranslate();
+    const { termsOfUse } = useAuthenticationConfiguration();
 
-const CustomDialogTitle = ({ children, onClose, ...rest }) => {
-    const classes = useStyles(rest);
+    return (
+        <Dialog
+            aria-labelledby="terms_of_use_dialog_title"
+            open={open}
+            onClose={onClose}
+            maxWidth="md"
+            fullWidth
+        >
+            <DialogTitle id="terms_of_use_dialog_title" onClose={onClose}>
+                {translate(
+                    'apihub.account_setup.terms_of_use.terms_of_use_dialog.title'
+                )}
+            </DialogTitle>
+            <DialogContent dividers>
+                {termsOfUse === null && <LinearProgress />}
+                {termsOfUse && <TermsField content={termsOfUse} />}
+            </DialogContent>
+            <DialogActions>
+                <Button autoFocus onClick={onClose} color="primary">
+                    {translate(
+                        'apihub.account_setup.terms_of_use.terms_of_use_dialog.close'
+                    )}
+                </Button>
+            </DialogActions>
+        </Dialog>
+    );
+};
+
+const useTermsTitleStyles = makeStyles(
+    theme => ({
+        root: {
+            margin: 0,
+            padding: theme.spacing(2),
+        },
+        closeButton: {
+            position: 'absolute',
+            right: theme.spacing(1),
+            top: theme.spacing(1),
+            color: theme.palette.grey[500],
+        },
+    }),
+    {
+        name: 'Layer7AccountSetupTermsTitle',
+    }
+);
+
+const DialogTitle = ({ children, onClose, ...rest }) => {
+    const classes = useTermsTitleStyles(rest);
     const translate = useTranslate();
 
     return (
-        <DialogTitle disableTypography className={classes.root} {...rest}>
+        <DefaultDialogTitle
+            disableTypography
+            className={classes.root}
+            {...rest}
+        >
             <Typography variant="h6">{children}</Typography>
             {onClose ? (
                 <IconButton
                     aria-label={translate(
-                        'apihub.account_setup.terms_of_use_dialog.close'
+                        'apihub.account_setup.terms_of_use.terms_of_use_dialog.close'
                     )}
                     className={classes.closeButton}
                     onClick={onClose}
@@ -44,48 +85,18 @@ const CustomDialogTitle = ({ children, onClose, ...rest }) => {
                     <Close />
                 </IconButton>
             ) : null}
-        </DialogTitle>
+        </DefaultDialogTitle>
     );
 };
 
-const Terms = ({ content }) => (
-    <>
-        {content.split('\n').map((section, index) => (
-            <Typography key={index} variant="body2" paragraph>
-                {section}
-            </Typography>
-        ))}
-    </>
-);
-
-export const TermsDialog = ({ open, onClose }) => {
-    const translate = useTranslate();
-    const { termsOfUse } = useAuthenticationConfiguration();
-
+const TermsField = ({ content }) => {
     return (
-        <Dialog
-            aria-labelledby={translate(
-                'apihub.account_setup.terms_of_use_dialog.title'
-            )}
-            open={open}
-            onClose={onClose}
-            maxWidth="md"
-            fullWidth
-        >
-            <CustomDialogTitle onClose={onClose}>
-                {translate('apihub.account_setup.terms_of_use_dialog.title')}
-            </CustomDialogTitle>
-            <DialogContent dividers>
-                {termsOfUse === null && <LinearProgress />}
-                {termsOfUse && <Terms content={termsOfUse} />}
-            </DialogContent>
-            <DialogActions>
-                <Button autoFocus onClick={onClose} color="primary">
-                    {translate(
-                        'apihub.account_setup.terms_of_use_dialog.close'
-                    )}
-                </Button>
-            </DialogActions>
-        </Dialog>
+        <>
+            {content.split('\n').map((section, index) => (
+                <Typography key={index} variant="body2" paragraph>
+                    {section}
+                </Typography>
+            ))}
+        </>
     );
 };

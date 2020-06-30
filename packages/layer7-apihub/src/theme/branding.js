@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import merge from 'lodash/fp/merge';
+import createMuiTheme from '@material-ui/core/styles/createMuiTheme';
 
 import { theme } from './theme';
+import { getFetchJson } from '../fetchUtils';
 
 const convertBrandingToMuiTheme = themeBranding => {
     const { color, typography } = themeBranding;
@@ -86,20 +88,13 @@ const convertBrandingToMuiTheme = themeBranding => {
     };
 };
 
-export const fetchBranding = async url => {
-    const response = await fetch(`${url}/api/apim/branding/1.0/themes`, {
-        method: 'get',
-        credentials: 'include',
-    });
-
-    if (response.status < 200 || response.status >= 300) {
-        throw new Error(response.statusText);
-    }
-
-    return await response.json();
+export const fetchBranding = async (url, originHubName) => {
+    const fetchJson = getFetchJson(originHubName);
+    const { json } = await fetchJson(`${url}/api/apim/branding/1.0/themes`);
+    return json;
 };
 
-export const useBranding = (url, defaultTheme = theme) => {
+export const useBranding = (url, originHubName, defaultTheme = theme) => {
     const [brandingTheme, setBrandingTheme] = useState(defaultTheme);
     const [brandingLogo, setBrandingLogo] = useState('');
     const [brandingFavicon, setBrandingFavicon] = useState('');
@@ -108,16 +103,16 @@ export const useBranding = (url, defaultTheme = theme) => {
         if (!url) {
             return;
         }
-        fetchBranding(url)
+        fetchBranding(url, originHubName)
             .then(theme => {
-                return convertBrandingToMuiTheme(theme);
+                return createMuiTheme(convertBrandingToMuiTheme(theme));
             })
             .then(({ logo, favicon, ...theme }) => {
                 setBrandingLogo(logo);
                 setBrandingFavicon(favicon);
                 setBrandingTheme(merge(defaultTheme, theme));
             });
-    }, [defaultTheme, url]);
+    }, [defaultTheme, originHubName, url]);
 
     return {
         logo: brandingLogo,

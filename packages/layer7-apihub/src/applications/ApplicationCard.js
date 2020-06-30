@@ -3,40 +3,13 @@ import { linkToRecord } from 'ra-core';
 import { Link } from 'react-router-dom';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
+import CardContent from '@material-ui/core/CardContent';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 
-import { Status } from './Status';
-
-const useStyles = makeStyles(theme => ({
-    root: {
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        cursor: 'pointer',
-        textDecoration: 'none',
-    },
-    content: { display: 'flex', flexDirection: 'column', flex: 1 },
-    header: {
-        borderBottomColor: theme.palette.divider,
-        borderBottomWidth: 1,
-        borderBottomStyle: 'solid',
-    },
-    title: {
-        fontFamily: theme.typography.subtitle2.fontFamily,
-        fontSize: theme.typography.subtitle2.fontSize,
-        fontWeight: theme.typography.fontWeightBold,
-        wordBreak: 'break-word',
-        maxWidth: 300,
-        marginBottom: theme.spacing(),
-    },
-    divider: {
-        marginLeft: theme.spacing(),
-        marginRight: theme.spacing(),
-        minHeight: theme.spacing(2),
-    },
-}));
+import { MarkdownView } from '../ui';
+import { ApplicationStatus } from './ApplicationStatus';
 
 export const ApplicationCard = ({ basePath, record }) => {
     const classes = useStyles();
@@ -63,8 +36,71 @@ export const ApplicationCard = ({ basePath, record }) => {
                     </Tooltip>
                 }
                 disableTypography
-                subheader={<Status record={record} variant="caption" />}
+                subheader={
+                    <div className={classes.subheader}>
+                        <ApplicationStatus record={record} variant="caption" />
+                    </div>
+                }
             />
+            {record.description && (
+                <CardContent className={classes.content}>
+                    <Tooltip title={record.description || ''}>
+                        <MarkdownView
+                            className={classes.description}
+                            value={record.description}
+                        />
+                    </Tooltip>
+                </CardContent>
+            )}
         </Card>
     );
 };
+
+const useStyles = makeStyles(
+    theme => ({
+        root: {
+            height: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            cursor: 'pointer',
+            textDecoration: 'none',
+        },
+        content: {
+            display: 'flex',
+            flexDirection: 'column',
+            flex: 1,
+        },
+        header: {
+            borderBottomColor: theme.palette.divider,
+            borderBottomWidth: 1,
+            borderBottomStyle: 'solid',
+        },
+        title: {
+            fontFamily: theme.typography.subtitle2.fontFamily,
+            fontSize: theme.typography.subtitle2.fontSize,
+            fontWeight: theme.typography.fontWeightBold,
+            wordBreak: 'break-word',
+            maxWidth: '100%',
+        },
+        subheader: {
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'flex-start',
+            fontFamily: theme.typography.body2.fontFamily,
+            fontSize: theme.typography.caption.fontSize,
+            padding: theme.spacing(1, 0),
+        },
+        description: {
+            flex: 1,
+            overflow: 'hidden',
+            // NOTE: We use some deprecated CSS props here but they are still well supported.
+            // Besides, a new draft specification exists https://www.w3.org/TR/css-overflow-3/#propdef--webkit-line-clamp
+            lineClamp: 3,
+            boxOrient: 'vertical',
+            display: '-webkit-box',
+        },
+    }),
+    {
+        name: 'Layer7ApplicationCard',
+    }
+);

@@ -2,6 +2,8 @@ import { promisify } from '../promisify';
 import specs from '../specs.json';
 import { getCurrentUser } from './currentUser';
 
+const SearchFields = ['name', 'description'];
+
 export function listApis(database) {
     return async (schema, request) => {
         const { page, size, order, sort, ...filter } = request.queryParams;
@@ -14,8 +16,29 @@ export function listApis(database) {
             await promisify(database.apis.find(filter).fetch)
         ).length;
 
+        let finalFilters = filter;
+        if (Object.keys(filter).some(key => SearchFields.includes(key))) {
+            const otherFilters = Object.keys(filter).filter(
+                key => !SearchFields.includes(key)
+            );
+            finalFilters = otherFilters.reduce(
+                (acc, key) => ({
+                    ...acc,
+                    [key]: filter[key],
+                }),
+                {
+                    $or: SearchFields.map(field => ({
+                        [field]: {
+                            $regex: `.*${filter[field]}.*`,
+                            $options: 'ig',
+                        },
+                    })),
+                }
+            );
+        }
+
         const results = await promisify(
-            database.apis.find(filter, {
+            database.apis.find(finalFilters, {
                 limit: finalSize,
                 skip: finalSize * finalPage,
                 sort: {

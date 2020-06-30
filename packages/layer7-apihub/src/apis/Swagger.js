@@ -7,16 +7,6 @@ import SwaggerUI from 'swagger-ui-react';
 import 'swagger-ui-react/swagger-ui.css';
 import { makeStyles } from '@material-ui/core';
 
-const useStyles = makeStyles(theme => ({
-    swagger: {
-        backgroundColor: theme.palette.common.white,
-        paddingTop: theme.spacing(1),
-        paddingBottom: theme.spacing(1),
-        marginTop: theme.spacing(1),
-        borderRadius: theme.shape.borderRadius,
-    },
-}));
-
 export const Swagger = ({ id }) => {
     const translate = useTranslate();
     const classes = useStyles();
@@ -41,3 +31,18 @@ export const Swagger = ({ id }) => {
         </div>
     );
 };
+
+const useStyles = makeStyles(
+    theme => ({
+        swagger: {
+            backgroundColor: theme.palette.common.white,
+            paddingTop: theme.spacing(1),
+            paddingBottom: theme.spacing(1),
+            marginTop: theme.spacing(1),
+            borderRadius: theme.shape.borderRadius,
+        },
+    }),
+    {
+        name: 'Layer7Swagger',
+    }
+);

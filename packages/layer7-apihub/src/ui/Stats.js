@@ -5,18 +5,8 @@ import Grid from '@material-ui/core/Grid';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 
-const useStatsStyles = makeStyles(theme => ({
-    root: {
-        marginRight: theme.spacing(2),
-        width: 'auto',
-    },
-    icon: {
-        marginRight: theme.spacing(),
-    },
-}));
-
-export const Stats = ({ children, icon, title }) => {
-    const classes = useStatsStyles();
+export const Stats = ({ children, icon, title, ...rest }) => {
+    const classes = useStyles(rest);
 
     return (
         <Tooltip title={title}>
@@ -30,8 +20,8 @@ export const Stats = ({ children, icon, title }) => {
     );
 };
 
-export const StatsText = ({ children }) => {
-    const classes = useStatsStyles();
+export const StatsText = ({ children, ...rest }) => {
+    const classes = useStyles(rest);
     return (
         <Typography
             variant="caption"
@@ -42,3 +32,19 @@ export const StatsText = ({ children }) => {
         </Typography>
     );
 };
+
+const useStyles = makeStyles(
+    theme => ({
+        root: {
+            marginRight: theme.spacing(2),
+            width: 'auto',
+        },
+        icon: {
+            marginRight: theme.spacing(),
+        },
+        text: {},
+    }),
+    {
+        name: 'Layer7Stats',
+    }
+);

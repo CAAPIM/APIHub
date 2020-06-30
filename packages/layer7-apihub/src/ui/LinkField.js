@@ -4,7 +4,7 @@ import pure from 'recompose/pure';
 import Link from '@material-ui/core/Link';
 
 export const LinkField = pure(
-    ({ addLabel, className, source, record = {}, ...rest }) => {
+    ({ addLabel = true, className, source, record = {}, ...rest }) => {
         const value = get(record, source);
         if (!value) {
             return null;
@@ -16,11 +16,3 @@ export const LinkField = pure(
         );
     }
 );
-
-LinkField.defaultProps = {
-    addLabel: true,
-};
-
-LinkField.displayName = 'LinkField';
-
-export default LinkField;

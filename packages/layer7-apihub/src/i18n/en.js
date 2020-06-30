@@ -26,12 +26,14 @@ const apiHubMessages = {
             },
             actions: {
                 sign_in: 'Sign in',
+                sign_in_with: 'Sign in with',
                 sign_up_title: 'New to API Hub?',
                 sign_up: 'Create an API Hub Account',
                 forgot_password: 'Forgot password?',
             },
             notifications: {
                 invalid_credentials: 'Invalid credentials',
+                selected_scheme: 'Signing in with',
             },
         },
         account_setup: {
@@ -127,7 +129,7 @@ const apiHubMessages = {
         },
         homepage: {
             placeholder_empty_content:
-                'The home page content has not been provided yet. Please use the edition button to create it if you are a portal administrator.',
+                'The Home page content has not been provided yet. Portal Admins can click Create to add content.',
         },
         actions: {
             view_as_cards: 'Display as cards',
@@ -144,6 +146,19 @@ const apiHubMessages = {
                 at_least_one_number: 'At least one number',
                 at_least_one_special_character:
                     'At least one special character: !@#$%^&*',
+            },
+        },
+        markdown_editor: {
+            fonts: {
+                bold: 'Bold',
+                italic: 'Italic',
+                strikethrough: 'Strikethrough',
+                unordered: 'Unordered List',
+                order: 'Ordered List',
+                quote: 'Quote',
+                hr: 'Line Break',
+                inlinecode: 'Inline Code',
+                code: 'Block Code',
             },
         },
     },
@@ -166,12 +181,14 @@ const apiHubMessages = {
                 applicationUsage: 'Applications',
                 assets: 'Assets',
                 apiLocation: 'API Location',
+                apiGroup: 'API Group',
             },
             portalStatus: {
                 enabled: 'Enabled',
                 disabled: 'Disabled',
                 deprecated: 'Deprecated',
                 unpublished: 'Unpublished',
+                incomplete: 'Incomplete',
             },
             accessStatus: {
                 public: 'Public',
@@ -235,25 +252,6 @@ const apiHubMessages = {
             },
             documentation: {
                 title: 'Documentation',
-                fields: {
-                    new_document: 'New document',
-                    select_documentation_locale: 'Selected language',
-                },
-                actions: {
-                    new_document_button: 'New root document',
-                    new_child_document_button: 'New child',
-                    edit_document_button: 'Edit',
-                    delete_document_button: 'Delete',
-                },
-                validation: {
-                    error_no_special_characters:
-                        'The URI must contain only uncoded characters. Supports letters from a to z, and the separators - and _.',
-                    error_navtitle_not_unique: 'This URI already exists.',
-                },
-                confirm_delete_document_without_children:
-                    'You are about to delete this document. Are you sure?',
-                confirm_delete_document_with_children:
-                    'You are about to delete this document and its child documents. Are you sure?',
             },
         },
         applications: {
@@ -289,6 +287,7 @@ const apiHubMessages = {
                 unpublished: 'Unpublished',
                 rejected: 'Rejected',
                 application_pending_approval: 'Pending Approval',
+                edit_application_pending_approval: 'Pending Approval',
             },
             list: {
                 sort: {
@@ -307,6 +306,8 @@ const apiHubMessages = {
                 generate_secret_warning_2:
                     'This breaks access for anyone using the current API key. Share and use the newly generated secret with developers coding their application that uses the APIs.',
                 secret_generated_heading: 'New Secret Generated',
+                secret_generated_heading_error:
+                    'An error occurred while generating the secret',
                 secret_generated_message:
                     'Text secret will only be visible during the current browser session and will be hashed after the page has been refreshed.',
                 copy_secret_now: 'Copy the shared secret now',
@@ -316,21 +317,39 @@ const apiHubMessages = {
             },
         },
         documents: {
-            name: 'Document |||| Documents',
+            name: 'Wiki |||| Wiki',
             fields: {
                 title: 'Title',
                 navtitle: 'URI',
                 markdown: 'Content',
                 modifyTs: 'Last Modified',
                 ordinal: 'Position',
+                new_document: 'New document',
+                select_documentation_locale: 'Selected language',
             },
             actions: {
+                // Toolbar
+                new_document_button: 'New root document',
+                new_child_document_button: 'New child',
+                edit_document_button: 'Edit',
+                delete_document_button: 'Delete',
                 change_document_parent_button: 'Change parent',
+                // Tree
+                expand_documentation: 'Expand documentation of node {title}',
+                collapse_documentation:
+                    'Collapse documentation of node {title}',
+                // Drag & Drop
                 move_as_first_child: 'First document',
                 move_after_document: 'After %{title}',
                 move_as_root_item: 'Select to move to root',
+                // Form
                 save: 'Publish',
                 cancel: 'Cancel',
+            },
+            validation: {
+                error_no_special_characters:
+                    'The URI must contain only uncoded characters. Supports letters from a to z, and the separators - and _.',
+                error_navtitle_not_unique: 'This URI already exists.',
             },
             notifications: {
                 tree_updated_success: 'Documentation tree updated successfully',
@@ -344,6 +363,10 @@ const apiHubMessages = {
                 unsaved_changes:
                     'If you leave this page, your changes will be lost. Do you want to cancel editing this document?',
             },
+            confirm_delete_document_without_children:
+                'You are about to delete this document. Are you sure?',
+            confirm_delete_document_with_children:
+                'You are about to delete this document and its child documents. Are you sure?',
         },
         registrations: {
             title: 'Create a New Account',
@@ -367,6 +390,8 @@ const apiHubMessages = {
                     'Registration received. A notification email will be sent to the address provided.',
                 email_confirmation_error: 'Email does not match.',
                 form_confirmation_error: 'Confirmation required.',
+                limituserregistration:
+                    'Registration request for this email is pending approval/activation. Multiple requests are not allowed.',
             },
             slider: {
                 confirmed: 'Confirmed',

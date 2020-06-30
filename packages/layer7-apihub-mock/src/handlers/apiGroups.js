@@ -28,3 +28,27 @@ export function listApiGroups(database) {
         };
     };
 }
+
+export function getApiGroup(database) {
+    return async (schema, request) => {
+        const apiGroup = await promisify(
+            database.apiGroups.findOne.bind(database.apiGroups),
+            { uuid: request.params.id },
+            {}
+        );
+
+        return apiGroup;
+    };
+}
+
+export function getApiGroupApis(database) {
+    return async (schema, request) => {
+        const apiGroup = await promisify(
+            database.apiGroups.findOne.bind(database.apiGroups),
+            { uuid: request.params.id },
+            {}
+        );
+
+        return apiGroup.apis.map(({ uuid }) => ({ uuid }));
+    };
+}

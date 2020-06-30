@@ -1,0 +1,117 @@
+{
+    "userContexts": [
+        {
+            "uuid": "30466aca-a38e-456a-a192-670436b87de3",
+            "userContexts": [
+                {
+                    "userDetails": {
+                        "uuid": "30466aca-a38e-456a-a192-670436b87de3",
+                        "username": "portalAdmin",
+                        "lastName": "Rowe",
+                        "firstName": "Rosario",
+                        "email": "Rosario36@example.com",
+                        "portalAdmin": true,
+                        "apiOwner": true,
+                        "orgPublisher": true
+                    },
+                    "activeOrgUuid": "a77b3c6b-62e0-48df-b9df-4bdbcc212d47",
+                    "accessibleOrgs": {
+                        "Wisoky, Schaefer and Ziemann": "a77b3c6b-62e0-48df-b9df-4bdbcc212d47"
+                    }
+                }
+            ]
+        },
+        {
+            "uuid": "a2c60b54-6ec1-4f68-8357-36b9263837a4",
+            "userContexts": [
+                {
+                    "userDetails": {
+                        "uuid": "a2c60b54-6ec1-4f68-8357-36b9263837a4",
+                        "username": "orgPublisher",
+                        "lastName": "Spinka",
+                        "firstName": "Bell",
+                        "email": "Bell_Spinka36@example.com",
+                        "portalAdmin": false,
+                        "apiOwner": true,
+                        "orgPublisher": true
+                    },
+                    "activeOrgUuid": "a77b3c6b-62e0-48df-b9df-4bdbcc212d47",
+                    "accessibleOrgs": {
+                        "Wisoky, Schaefer and Ziemann": "a77b3c6b-62e0-48df-b9df-4bdbcc212d47",
+                        "Rau, Walter and McGlynn": "4b5f0591-a647-4423-8caf-d276aae220e6",
+                        "Kertzmann - Abbott": "d7a6863e-b124-4023-bf64-9344678d508d",
+                        "Becker, Lindgren and Rodriguez": "4d929c96-b547-4e0a-a597-c4e016f78ad8"
+                    }
+                }
+            ]
+        },
+        {
+            "uuid": "0005cf8e-bf65-42bb-ae68-75c3b7ffc7ff",
+            "userContexts": [
+                {
+                    "userDetails": {
+                        "uuid": "0005cf8e-bf65-42bb-ae68-75c3b7ffc7ff",
+                        "username": "apiOwner",
+                        "lastName": "Gislason",
+                        "firstName": "Dee",
+                        "email": "Dee.Gislason@example.com",
+                        "portalAdmin": false,
+                        "apiOwner": true,
+                        "orgPublisher": false
+                    },
+                    "activeOrgUuid": "a77b3c6b-62e0-48df-b9df-4bdbcc212d47",
+                    "accessibleOrgs": {
+                        "Wisoky, Schaefer and Ziemann": "a77b3c6b-62e0-48df-b9df-4bdbcc212d47",
+                        "Rau, Walter and McGlynn": "4b5f0591-a647-4423-8caf-d276aae220e6",
+                        "Jacobson LLC": "275fa5c7-73d5-41f4-bad6-73350e9ed1cb",
+                        "Becker, Lindgren and Rodriguez": "4d929c96-b547-4e0a-a597-c4e016f78ad8"
+                    }
+                }
+            ]
+        },
+        {
+            "uuid": "dbbcb782-8e85-4cc8-8078-9586870983ff",
+            "userContexts": [
+                {
+                    "userDetails": {
+                        "uuid": "dbbcb782-8e85-4cc8-8078-9586870983ff",
+                        "username": "user",
+                        "lastName": "Hahn",
+                        "firstName": "Kenya",
+                        "email": "Kenya94@example.com",
+                        "portalAdmin": false,
+                        "apiOwner": false,
+                        "orgPublisher": false
+                    },
+                    "activeOrgUuid": "a77b3c6b-62e0-48df-b9df-4bdbcc212d47",
+                    "accessibleOrgs": {
+                        "Wisoky, Schaefer and Ziemann": "a77b3c6b-62e0-48df-b9df-4bdbcc212d47",
+                        "Rau, Walter and McGlynn": "4b5f0591-a647-4423-8caf-d276aae220e6",
+                        "Kertzmann - Abbott": "d7a6863e-b124-4023-bf64-9344678d508d",
+                        "Jacobson LLC": "275fa5c7-73d5-41f4-bad6-73350e9ed1cb",
+                        "Becker, Lindgren and Rodriguez": "4d929c96-b547-4e0a-a597-c4e016f78ad8"
+                    }
+                }
+            ]
+        }
+    ],
+    "apis": [],
+    "applications": [],
+    "tags": [],
+    "documents": [
+        {
+            "uuid": "09190a53-d293-43b5-b399-fd2b3ee11292",
+            "status": "PUBLISHED",
+            "title": "en-US - Developer Center",
+            "navtitle": "home1",
+            "markdown": "### Welcome to our\n## **DEVELOPER CENTER**\n\n\nOur APIs give developers access to the services and data that power our products so they can build the next generation of healthcare applications.",
+            "locale": "en-US",
+            "ordinal": 0,
+            "type": "home",
+            "typeUuid": "home1"
+        }
+    ],
+    "assets": [],
+    "apiGroups": [],
+    "registrations": []
+}

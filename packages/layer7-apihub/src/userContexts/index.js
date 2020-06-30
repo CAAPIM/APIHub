@@ -10,5 +10,5 @@ export const userContexts = {
 
 export * from './UserOrganizationSwitcher';
 export * from './useUserContext';
-export * from './isPublisher';
 export * from './getUserOrganizations';
+export * from './userPermissions';

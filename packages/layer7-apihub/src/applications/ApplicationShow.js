@@ -1,26 +1,35 @@
 import React from 'react';
+import { makeStyles } from '@material-ui/core/styles';
 
 import { Show } from '../ui';
 import { ApplicationDetails } from './ApplicationDetails';
-import { Status } from './Status';
+import { ApplicationTitle } from './ApplicationTitle';
 
-const ApplicationTitle = ({ record }) => {
-    if (!record) {
-        return null;
-    }
+export const ApplicationShow = props => {
+    const { root: rootClassName, ...classes } = useStyles(props);
+    const { permissions, id, ...rest } = props;
 
     return (
-        <div>
-            <div>{record ? record.name : ''}</div>
-            <Status record={record} />
-        </div>
-    );
-};
-
-export const ApplicationShow = ({ permissions, id, ...rest }) => {
-    return (
-        <Show title={<ApplicationTitle />} id={id} {...rest}>
+        <Show
+            className={rootClassName}
+            classes={classes}
+            title={<ApplicationTitle />}
+            id={id}
+            {...rest}
+        >
             <ApplicationDetails />
         </Show>
     );
 };
+
+// We don't need custom styles by default but this allows to
+// easily customize styles in the theme file directly
+const useStyles = makeStyles(
+    {
+        root: {},
+        card: {},
+    },
+    {
+        name: 'Layer7ApplicationShow',
+    }
+);
