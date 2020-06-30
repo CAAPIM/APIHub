@@ -1,16 +1,51 @@
 import React, { useEffect, useState } from 'react';
-import { makeStyles, Typography } from '@material-ui/core';
 import { useTranslate } from 'ra-core';
+import Typography from '@material-ui/core/Typography';
 
 import { useApiHub } from '../../ApiHubContext';
 import { extractTokenFromUrl } from '../extractTokenFromUrl';
 import { NewPasswordForm } from './NewPasswordForm';
-import { VerifyingToken } from './VerifyingToken';
-import { InvalidToken } from './InvalidToken';
-import { Success } from './Success';
+import { NewPasswordVerifyingToken } from './NewPasswordVerifyingToken';
+import { NewPasswordInvalidToken } from './NewPasswordInvalidToken';
+import { NewPasswordSuccess } from './NewPasswordSuccess';
 import { AuthenticationLayout } from '../AuthenticationLayout';
 import { usePasswordEncryption } from '../usePasswordEncryption';
+import { getFetchJson } from '../../fetchUtils';
 
+/**
+ * The component used to create a new password
+ * *
+ */
+export const NewPassword = props => {
+    const [state, handleSubmit] = useSetNewPassword();
+    const translate = useTranslate();
+
+    switch (state) {
+        case 'verifying_token':
+            return <NewPasswordVerifyingToken {...props} />;
+        case 'request_new_password':
+            return (
+                <>
+                    <Typography
+                        variant="h4"
+                        component="h2"
+                        color="textPrimary"
+                        gutterBottom
+                    >
+                        {translate('apihub.new_password.title')}
+                    </Typography>
+
+                    <NewPasswordForm onSubmit={handleSubmit} {...props} />
+                </>
+            );
+        case 'invalid_token':
+            return <NewPasswordInvalidToken {...props} />;
+        case 'success':
+            return <NewPasswordSuccess {...props} />;
+        default:
+            return null;
+    }
+};
 /**
  * The page displaying the form used to create a new password
  *
@@ -39,45 +74,11 @@ import { usePasswordEncryption } from '../usePasswordEncryption';
  *
  * const MyApp = props => <Admin newPasswordPage={MyNewPassword} {...props} />
  */
-export const NewPasswordPage = ({
-    location,
-    Layout = AuthenticationLayout,
-    ...props
-}) => {
-    const [state, handleSubmit] = useSetNewPassword(location);
-    const translate = useTranslate();
-    const classes = useStyles(props);
-
-    return (
-        <Layout {...props}>
-            {state === 'verifying_token' ? (
-                <VerifyingToken />
-            ) : state === 'request_new_password' ? (
-                <>
-                    <Typography variant="h2" className={classes.title}>
-                        {translate('apihub.new_password.title')}
-                    </Typography>
-                    <NewPasswordForm
-                        onSubmit={handleSubmit}
-                        variant="outlined"
-                    />
-                </>
-            ) : state === 'invalid_token' ? (
-                <InvalidToken />
-            ) : state === 'success' ? (
-                <Success />
-            ) : null}
-        </Layout>
-    );
-};
-
-const useStyles = makeStyles(theme => ({
-    title: {
-        fontSize: theme.typography.fontSize * 2,
-        marginBottom: theme.spacing(6),
-        color: theme.palette.getContrastText(theme.palette.background.default),
-    },
-}));
+export const NewPasswordPage = props => (
+    <AuthenticationLayout {...props}>
+        <NewPassword />
+    </AuthenticationLayout>
+);
 
 /**
  * This hook extracts the new password token from the url, verifies it and provides
@@ -86,28 +87,32 @@ const useStyles = makeStyles(theme => ({
  * It returns a tupple containing the current status (verifying_token, invalid_token, request_new_password and success)
  * and a function to actually submit the new password.
  */
-const useSetNewPassword = location => {
+export const useSetNewPassword = (location = window.location.href) => {
     const [state, setState] = useState('verifying_token');
 
-    const { url } = useApiHub();
-    const token = extractTokenFromUrl(location.hash);
+    const { url, originHubName } = useApiHub();
+    const token = extractTokenFromUrl(location);
     const [publicKey, encrypt] = usePasswordEncryption();
 
     useEffect(() => {
         if (state === 'verifying_token') {
-            verifyNewPasswordTokenValid(url, token).then(isVerified => {
-                setState(isVerified ? 'request_new_password' : 'invalid_token');
-            });
+            verifyNewPasswordTokenValid(url, originHubName, token).then(
+                isVerified => {
+                    setState(
+                        isVerified ? 'request_new_password' : 'invalid_token'
+                    );
+                }
+            );
         }
-    }, [url, token, state]);
+    }, [url, token, state, originHubName]);
 
-    const handleSubmit = ({ password }) => {
+    const handleSubmit = async ({ password }) => {
         let finalPassword = password;
         if (publicKey) {
-            finalPassword = encrypt(password);
+            finalPassword = await encrypt(password);
         }
-        return submitNewPassword(url, {
-            password: finalPassword,
+        return submitNewPassword(url, originHubName, {
+            newPassword: finalPassword,
             token,
         }).then(isSuccessful =>
             setState(isSuccessful ? 'success' : 'request_new_password')
@@ -117,16 +122,26 @@ const useSetNewPassword = location => {
     return [state, handleSubmit];
 };
 
-const submitNewPassword = (apiBaseUrl, { password, token }) =>
-    fetch(`${apiBaseUrl}/admin/UpdateMyPassword`, {
-        method: 'post',
-        body: { password, token },
+const submitNewPassword = (
+    apiBaseUrl,
+    originHubName,
+    { newPassword, token }
+) => {
+    const fetchJson = getFetchJson(originHubName);
+    return fetchJson(`${apiBaseUrl}/admin/v2/users/password/reset/${token}`, {
+        method: 'put',
+        body: JSON.stringify({ newPassword, uuid: token }),
     })
-        .then(response => response.status >= 200 && response.status < 300)
-        .catch(() => false);
-
-const verifyNewPasswordTokenValid = (apiBaseUrl, token) =>
-    fetch(`${apiBaseUrl}/admin/passwordResetTokenValidate?token=${token}`)
-        .then(response => response.json())
-        .then(json => !!json)
+        .then(() => true)
         .catch(error => console.error(error) || false);
+};
+
+const verifyNewPasswordTokenValid = (apiBaseUrl, originHubName, token) => {
+    const fetchJson = getFetchJson(originHubName);
+
+    return fetchJson(
+        `${apiBaseUrl}/admin/passwordResetTokenValidate?token=${token}`
+    )
+        .then(({ json }) => !!json)
+        .catch(error => console.error(error) || false);
+};

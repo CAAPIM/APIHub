@@ -6,26 +6,26 @@ This overview includes information about the following:
 - The Material-UI library and its integration in react-admin.
 - Guidelines for developing a react-admin application.
 
-## Overview of the React-Admin Framework
+## Overview of the React-admin Framework
 
 > This section provides an overview of the react-admin application structure, describes the key directories, and their content.
 
-The Layer7 API Hub library is based on top of [react-admin](https://marmelab.com/react-admin). It's a frontend framework for building admin applications running in the browser, on top of REST/GraphQL APIs, using ES6, React, and Material Design. React-admin is open-sourced and maintained by [Marmelab](https://marmelab.com).
+The Layer7 API Hub library is a front-end framework for building admin applications running in the browser, on top of REST/GraphQL APIs, using ES6, React, and Material Design. It is based on top of [react-admin](https://marmelab.com/react-admin). [Marmelab](https://marmelab.com) open sources and maintains react-admin.
 
 The best way to start with API Hub is to walk through [the react-admin tutorial](https://marmelab.com/react-admin/Tutorial.html). This tutorial is a 30-minute step-by-step walkthrough of how to build a react-admin application.
 
 Useful links:
 
 - [React-admin documentation](https://marmelab.com/react-admin/Readme.html): Contains documentation and tutorials to help you get started.
-- [Open-source code on GitHub](https://github.com/marmelab/react-admin): To go deeper, you can read the code source. Everything is public.
-- [Report issues on GitHub](https://github.com/marmelab/react-admin/issues): Report bugs in the react-admin repository.
-- [React-admin community on StackOverflow](http://stackoverflow.com/questions/tagged/react-admin): Ask "How To" questions, get usage advice, or troubleshoot your own code.
+- [React-admin open-source code on GitHub](https://github.com/marmelab/react-admin): To go deeper, you can read the code source. Everything is public.
+- [Report react-admin issues on GitHub](https://github.com/marmelab/react-admin/issues): Report bugs in the React Admin repository.
+- [React-admin community on StackOverflow](http://stackoverflow.com/questions/tagged/react-admin): Ask "How To" questions, get react-admin usage advice, or troubleshoot your own code.
 
-The following sections are based on the [simple example](https://github.com/marmelab/react-admin/tree/master/examples/simple) in the react-admin repository.
+The following sections are based on the [react-admin Simple Example](https://github.com/marmelab/react-admin/tree/master/examples/simple) in the react-admin repository.
 
 ### Application Structure
 
-The following structure is a simplified version of the Simple example:
+The following structure is a simplified version of the Simple Example:
 
 - /src
   - /posts
@@ -131,7 +131,7 @@ export default apiUrl => {
                 json: { uuid, ...data },
             } = await fetchUtils.fetchJson(url, { credentials: 'include' });
 
-            // React-Admin needs an id instead of an uuid.
+            // React Admin needs an id instead of an uuid.
             // So the getOne method makes the transformation
             return {
                 data: {
@@ -154,9 +154,10 @@ export default apiUrl => {
 };
 ```
 
-The Layer 7 API Hub library provides a built-in data provider that works with the API Portal.
+The Layer 7 API Hub library provides a built-in data provider that works with API Portal.
 
-**Tip:** Consider using [the pre-built data providers](https://marmelab.com/react-admin/DataProviders.html#available-providers).
+**Tip:** Consider using [the pre-built react-admin data providers](https://marmelab.com/react-admin/DataProviders.html#available-providers).
+
 
 ### The Authentication Provider
 
@@ -190,13 +191,15 @@ export const authProvider = {
 };
 ```
 
-The Layer7 API Hub library provides a built-in authentication provider. Implement it if you have a special authentication strategy. For more information about how to implement the built-in authentication provider, see the [the react-admin Authentication Documentation](https://marmelab.com/react-admin/Authentication.html).
+Implement the Layer7 API Hub library if you have a special authentication strategy.
+
+For more information about how to implement the built-in authentication provider, see the [the react-admin authentication provider documentation](https://marmelab.com/react-admin/Authentication.html).
 
 ### The i18n Provider
 
-The i18n provider is a dedicated built-in provider that manages the translations. It is based on [Polyglot.js](https://airbnb.io/polyglot.js/). The Layer7 API Hub library provides translations for English (default), Spanish, French, and Italian.
+The i18n provider is a dedicated built-in provider that manages the translations. It is based on [Polyglot.js](https://airbnb.io/polyglot.js/). The Layer7 API Hub library provides translations for English (default), Spanish, and French.
 
-**Tip**: For support of other languages, see [the list of available locales](https://marmelab.com/react-admin/Translation.html#available-locales).
+For more information about the other languages that you can add, see [available locales](https://marmelab.com/react-admin/Translation.html#available-locales).
 
 The i18n provider uses the following format:
 
@@ -258,13 +261,13 @@ export const frenchMessages = mergeTranslations(raFrenchMessages, {
 
 > This section provides an overview of the Material-UI library.
 
-The react-admin front-end framework relies on [Material-UI](https://material-ui.com), a library of components. Material-UI is an implementation for React of the [material design](https://material.io/design). When designing interfaces in react-admin applications, we recommend that you reference the [the Material Design guidelines](https://material.io/design).
+The Layer7 API Hub library react-admin front-end framework relies on [Material-UI](https://material-ui.com). Material-UI is a library of components and an implementation for React of the [material design](https://material.io/design). When designing interfaces in react-admin applications, we recommend that you reference the [the Material Design guidelines](https://material.io/design).
 
 ### Material-UI Components
 
 React-admin uses Material-UI components internally. But sometimes you need to use these components directly. For example, when you are composing a custom interface.
 
-For more information about how to use Material-UI, see [the Material-UI documentation](https://material-ui.com).
+For more information about how to use Material-UI, see [the Material-UI documentation](https://material-ui.com/getting-started/usage/).
 
 The following example builds a custom <Button /> that display a loader when saving:
 
@@ -316,7 +319,7 @@ export function CustomButton(props) {
 
 ### Material-UI Icons
 
-You can use the Material-UI icons as components, and you can customize them. For more information about these icons, see [the Material-UI library](https://material-ui.com/components/material-icons).
+You can use the [Material-UI icons](https://material-ui.com/components/material-icons) as components, and you can customize them:
 
 ``` js
 import { Save as SaveIcon } from '@material-ui/icons';
@@ -329,6 +332,7 @@ import { Save as SaveIcon } from '@material-ui/icons';
 You can customize the [Material-UI theme](https://material-ui.com/customization/theming) by overriding the [default theme](https://material-ui.com/customization/default-theme).
 
 In react-admin, pass the theme to the <Admin /> component:
+
 ``` js
 // Admin.js
 import { defaultTheme } from 'react-admin';
@@ -355,6 +359,57 @@ export function ApiHubAdmin() {
 }
 ```
 
-## Guidelines for Developing a React-Admin Application
+The theme can be much more than that. Most components, either from material-ui, react-admin, or Layer7 API Hub, have a *stylesheet* name. This name follows a convention:
 
-// TODO
+- `Mui[ComponentName]` for MaterialUI components
+- `Ra[ComponentName]` for react-admin components
+- `Layer7[ComponentName]` for Layer7 API Hub components
+
+The theme can contain an [`overrides`](https://material-ui.com/customization/components/#global-theme-override) object with overrides for those components.
+
+For example, the Healthcare app overrides many components like this:
+
+```js
+const theme = {
+    // ...Theme Design Tokens (palette, etc.)
+    overrides: {
+        // Overrides Material UI AppBar styles
+        MuiAppBar: {
+            root: {
+                paddingTop: defaultMuiTheme.spacing(1),
+                paddingBottom: defaultMuiTheme.spacing(1),
+                background: `linear-gradient(127deg, #10054d, #33065b);`,
+            },
+        },
+        // Overrides React Admin Sidebar styles
+        RaSidebar: {
+            drawerPaper: {
+                backgroundColor: palette.common.white,
+                color: palette.primary.main,
+                marginTop: '0.5rem !important',
+                height: `calc(100% - 0.5rem)`,
+                boxShadow: `2px 0px 1px -1px rgba(0,0,0,0.2),
+            1px 0px 3px 0px rgba(0,0,0,0.1)`,
+            },
+        },
+        // Overrides Layer7 ApiHub CardGrid styles
+        Layer7CardGrid: {
+            root: {
+                marginTop: '0px',
+                marginRight: '0px',
+                marginBottom: '0px',
+                marginLeft: '0px',
+            // },
+        },
+    }
+}
+```
+
+## Guidelines for Developing a React-admin Application
+
+When developing custom react-admin components, you might have to deal with errors. The react-admin default components automatically handle data provider errors. You can also handle errors and react to them (notifications, etc.) using the following custom data provider hooks:
+
+- [useDataProvider Hook](https://marmelab.com/react-admin/Actions.html#usedataprovider-hook).
+- [Specialized Hooks](https://marmelab.com/react-admin/Actions.html#specialized-hooks).
+
+If you are concerned about performances related to querying your API too much, you might want to take advantage of react-admin built in caching capabilities. For more information, see [the react-admin Caching documentation](https://marmelab.com/react-admin/Caching.html).

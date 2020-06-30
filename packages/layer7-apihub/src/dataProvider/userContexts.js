@@ -1,20 +1,7 @@
-import { fetchUtils } from 'ra-core';
-import get from 'lodash/get';
+import { getErrorMessage } from '../useLayer7Notify';
 
 // Fake id used because we can only access the current user context
 export const CurrentUserId = 'layer7@currentUser';
-
-const buildErrorMessage = error => {
-    const message = get(error, 'body.userErrorMessage', '');
-    const validationErrors = get(error, 'body.validationErrors', {});
-    const validationMessages = Object.keys(validationErrors)
-        .map(validationField =>
-            get(validationErrors, `${validationField}.localizedMessage`, '')
-        )
-        .join(' ');
-
-    return `${message} ${validationMessages}`;
-};
 
 class UserContextsValidationError extends Error {
     constructor(message) {
@@ -24,12 +11,12 @@ class UserContextsValidationError extends Error {
     }
 }
 
-export const userContextsDataProvider = baseUrl => {
-    const basePath = `${baseUrl}/userContexts`;
+export const userContextsDataProvider = context => {
+    const basePath = `${context.apiUrl}/userContexts`;
 
     return {
         getOne: async () => {
-            const { json: data } = await fetchUtils.fetchJson(basePath, {
+            const { json: data } = await context.fetchJson(basePath, {
                 credentials: 'include',
             });
 
@@ -56,7 +43,7 @@ export const userContextsDataProvider = baseUrl => {
             } = data;
 
             try {
-                await fetchUtils.fetchJson(basePath, {
+                await context.fetchJson(basePath, {
                     credentials: 'include',
                     method: 'PUT',
                     body: JSON.stringify({
@@ -68,7 +55,7 @@ export const userContextsDataProvider = baseUrl => {
                     }),
                 });
             } catch (error) {
-                const message = buildErrorMessage(error);
+                const message = getErrorMessage(error);
                 throw new UserContextsValidationError(message);
             }
 
@@ -83,7 +70,7 @@ export const userContextsDataProvider = baseUrl => {
             // The updateActiveOrganization method should only be used to update the user active organization
 
             try {
-                await fetchUtils.fetchJson(basePath, {
+                await context.fetchJson(basePath, {
                     credentials: 'include',
                     method: 'PUT',
                     body: JSON.stringify({
@@ -91,7 +78,7 @@ export const userContextsDataProvider = baseUrl => {
                     }),
                 });
             } catch (error) {
-                const message = buildErrorMessage(error);
+                const message = getErrorMessage(error);
                 throw new UserContextsValidationError(message);
             }
 

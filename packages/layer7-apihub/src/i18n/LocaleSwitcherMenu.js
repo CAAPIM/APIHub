@@ -6,15 +6,6 @@ import MenuItem from '@material-ui/core/MenuItem';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import classnames from 'classnames';
 
-const useStyles = makeStyles(
-    {
-        button: {
-            textTransform: 'none',
-        },
-    },
-    { name: 'Layer7LocaleSwitcherMenu' }
-);
-
 export const LocaleSwitcherMenu = props => {
     const [anchorEl, setAnchorEl] = useState(null);
     const { onChange, locale, locales, className, ...rest } = props;
@@ -81,5 +72,16 @@ export const LocaleSwitcherMenuItem = forwardRef(
                 {...props}
             />
         );
+    }
+);
+
+const useStyles = makeStyles(
+    {
+        button: {
+            textTransform: 'none',
+        },
+    },
+    {
+        name: 'Layer7LocaleSwitcherMenu',
     }
 );

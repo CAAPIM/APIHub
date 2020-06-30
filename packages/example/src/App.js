@@ -1,29 +1,29 @@
 import React from 'react';
-import { ApiHubAdmin, readApiHubPreference, useBranding } from 'layer7-apihub';
-import { Helmet } from 'react-helmet';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
+import { ApiHubAdmin, readApiHubPreference } from 'layer7-apihub';
 
 import {
-    CustomLoginPage,
-    CustomResetPasswordPage,
-    CustomNewPasswordPage,
-    CustomAccountSetupPage,
-    CustomSignUpPage,
+    LoginPage,
+    ResetPasswordPage,
+    NewPasswordPage,
+    AccountSetupPage,
+    SignUpPage,
 } from './authentication';
 
-import { CustomLayout } from './layout';
+import { Layout, HomePage } from './layout';
 import { themeReducer } from './theme';
 import { i18nProvider } from './i18n/i18nProvider';
-import { CustomHomePage } from './layout';
 
 const App = () => {
-    const {
-        PAGE_TITLE,
-        APIHUB_URL,
-        TENANT_NAME,
-        USE_BRANDING_ICONS,
-    } = global.APIHUB_CONFIG;
-    const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
+    const { APIHUB_URL, TENANT_NAME, ORIGIN_HUB_NAME } = global.APIHUB_CONFIG;
+
+    if (!ORIGIN_HUB_NAME) {
+        throw new Error(
+            'Please provide a value for the ORIGIN_HUB_NAME parameter in your configuration file'
+        );
+    }
+
+    const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)')
+        .matches;
 
     const themeModePreference = readApiHubPreference(
         'themeMode',
@@ -36,38 +36,25 @@ const App = () => {
 
     const defaultLocaleFromPreferences = readApiHubPreference('locale');
 
-    const { favicon } = useBranding(APIHUB_URL);
-
     return (
-        <>
-            <Helmet title={PAGE_TITLE}>
-                {USE_BRANDING_ICONS && favicon && (
-                    <link
-                        id="favicon"
-                        rel="icon"
-                        href={favicon}
-                        type="image/x-icon"
-                    />
-                )}
-            </Helmet>
-            <ApiHubAdmin
-                // ApiHub Settings
-                url={APIHUB_URL} // Will be guessed by ApiHubAdmin if not defined
-                tenantName={TENANT_NAME} // Will be guessed by ApiHubAdmin if not defined
-                // Custom Pages and Layout
-                dashboard={CustomHomePage}
-                layout={CustomLayout}
-                loginPage={CustomLoginPage}
-                resetPasswordPage={CustomResetPasswordPage}
-                newPasswordPage={CustomNewPasswordPage}
-                accountSetupPage={CustomAccountSetupPage}
-                signUpPage={CustomSignUpPage}
-                // React Admin Settings
-                customReducers={{ theme: themeReducer }}
-                i18nProvider={i18nProvider(defaultLocaleFromPreferences)}
-                initialState={initialState}
-            />
-        </>
+        <ApiHubAdmin
+            // ApiHub Settings
+            url={APIHUB_URL} // Will be guessed by ApiHubAdmin if not defined
+            tenantName={TENANT_NAME} // Will be guessed by ApiHubAdmin if not defined
+            originHubName={ORIGIN_HUB_NAME}
+            // Custom Pages and Layout
+            dashboard={HomePage}
+            layout={Layout}
+            loginPage={LoginPage}
+            resetPasswordPage={ResetPasswordPage}
+            newPasswordPage={NewPasswordPage}
+            accountSetupPage={AccountSetupPage}
+            signUpPage={SignUpPage}
+            // React Admin Settings
+            customReducers={{ theme: themeReducer }}
+            i18nProvider={i18nProvider(defaultLocaleFromPreferences)}
+            initialState={initialState}
+        />
     );
 };
 

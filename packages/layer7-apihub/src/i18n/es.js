@@ -26,12 +26,14 @@ const apiHubMessages = {
             },
             actions: {
                 sign_in: 'Iniciar sesión',
+                sign_in_with: 'Iniciar sesión con',
                 sign_up_title: '¿Primera vez en API Hub?',
                 sign_up: 'Crear una cuenta de API Hub',
                 forgot_password: '¿Ha olvidado la contraseña?',
             },
             notifications: {
                 invalid_credentials: 'Credenciales no válidas',
+                selected_scheme: 'Iniciando sesión con',
             },
         },
         account_setup: {
@@ -132,7 +134,7 @@ const apiHubMessages = {
         },
         homepage: {
             placeholder_empty_content:
-                'El contenido de la página principal todavía no se ha proporcionado. Utilice el botón de edición para crearlo si es un administrador del portal.',
+                'El contenido de la página de inicio no se ha proporcionado todavía. Los administradores del portal pueden hacer clic en Crear para añadir contenido.',
         },
         actions: {
             view_as_cards: 'Mostrar como tarjetas',
@@ -149,6 +151,19 @@ const apiHubMessages = {
                 at_least_one_number: 'Al menos un número',
                 at_least_one_special_character:
                     'Al menos un carácter especial: !@#$%^&*',
+            },
+        },
+        markdown_editor: {
+            fonts: {
+                bold: 'Negrita',
+                italic: 'Itálico',
+                strikethrough: 'Tachado',
+                unordered: 'Lista desordenada',
+                order: 'Lista ordenada',
+                quote: 'Citar',
+                hr: 'Salto de línea',
+                inlinecode: 'Código en línea',
+                code: 'Código de bloque',
             },
         },
     },
@@ -171,12 +186,14 @@ const apiHubMessages = {
                 applicationUsage: 'Aplicaciones',
                 assets: 'Activos',
                 apiLocation: 'Ubicación de la API',
+                apiGroup: 'Grupo API',
             },
             portalStatus: {
                 enabled: 'Activado',
                 disabled: 'Desactivado',
                 deprecated: 'Obsoleto',
                 unpublished: 'Sin publicar',
+                incomplete: 'Incompleto',
             },
             accessStatus: {
                 public: 'Público',
@@ -246,25 +263,6 @@ const apiHubMessages = {
             },
             documentation: {
                 title: 'Documentación',
-                fields: {
-                    new_document: 'Nuevo documento',
-                    select_documentation_locale: 'Idioma seleccionado',
-                },
-                actions: {
-                    new_document_button: 'Nuevo elemento raíz',
-                    new_child_document_button: 'Nuevo elemento secundario',
-                    edit_document_button: 'Editar',
-                    delete_document_button: 'Suprimir',
-                },
-                validation: {
-                    error_no_special_characters:
-                        'El URI solo debe contener caracteres no codificados. Admite letras de la a a la z y los separadores - y _.',
-                    error_navtitle_not_unique: 'Este URI ya existe.',
-                },
-                confirm_delete_document_without_children:
-                    'Está a punto de suprimir este documento. ¿Está seguro?',
-                confirm_delete_document_with_children:
-                    'Está a punto de suprimir este documento y sus documentos secundarios. ¿Está seguro?',
             },
         },
         applications: {
@@ -286,6 +284,7 @@ const apiHubMessages = {
                 oauthScope: 'Ámbito de OAuth',
                 overview: 'Descripción general',
                 status: 'Estado',
+                apiGroups: 'API Grupos',
             },
             actions: {
                 generateSecret: 'Generar nuevo secreto',
@@ -302,6 +301,7 @@ const apiHubMessages = {
                 unpublished: 'Sin publicar',
                 rejected: 'Rechazado',
                 application_pending_approval: 'Pendiente de aprobación',
+                edit_application_pending_approval: 'Pendiente de aprobación',
             },
             list: {
                 sort: {
@@ -321,6 +321,8 @@ const apiHubMessages = {
                 generate_secret_warning_2:
                     'Esto rompe el acceso para todos los usuarios que utilicen la clave de la API actual. Comparta y utilice el secreto recién generado con los desarrolladores que codifican la aplicación que utiliza las API.',
                 secret_generated_heading: 'Nuevo secreto generado',
+                secret_generated_heading_error:
+                    'Se produjo un error al generar el secreto',
                 secret_generated_message:
                     'El texto del secreto solo será visible durante la sesión actual del explorador y se aplicará un algoritmo hash después de que se haya actualizado la página.',
                 copy_secret_now: 'Copiar el secreto compartido ahora',
@@ -330,22 +332,41 @@ const apiHubMessages = {
             },
         },
         documents: {
-            name: 'Documento |||| Documentos',
+            name: 'Wiki |||| Wiki',
             fields: {
                 title: 'Título',
                 navtitle: 'URI',
                 markdown: 'Contenido',
                 modifyTs: 'Última modificación',
                 ordinal: 'Posición',
+                new_document: 'Nuevo documento',
+                select_documentation_locale: 'Idioma seleccionado',
             },
             actions: {
+                // Toolbar
+                new_document_button: 'Nuevo elemento raíz',
+                new_child_document_button: 'Nuevo elemento secundario',
+                edit_document_button: 'Editar',
+                delete_document_button: 'Suprimir',
+                // Tree
+                expand_documentation:
+                    'Ampliar la documentación del nodo {title}',
+                collapse_documentation:
+                    'Colapsar la documentación del nodo {title}',
+                // Drag & Drop
                 change_document_parent_button: 'Cambiar elemento principal',
                 move_as_first_child: 'Primer documento',
                 move_after_document: 'Después de %{title}',
                 move_as_root_item:
                     'Seleccionar para desplazarse al elemento raíz',
+                // Form
                 save: 'Publicar',
                 cancel: 'Cancelar',
+            },
+            validation: {
+                error_no_special_characters:
+                    'El URI solo debe contener caracteres no codificados. Admite letras de la a a la z y los separadores - y _.',
+                error_navtitle_not_unique: 'Este URI ya existe.',
             },
             notifications: {
                 tree_updated_success:
@@ -363,6 +384,10 @@ const apiHubMessages = {
                 unsaved_changes:
                     'Si abandona la página, se perderán los cambios realizados. ¿Desea cancelar la edición de este documento?',
             },
+            confirm_delete_document_without_children:
+                'Está a punto de suprimir este documento. ¿Está seguro?',
+            confirm_delete_document_with_children:
+                'Está a punto de suprimir este documento y sus documentos secundarios. ¿Está seguro?',
         },
         registrations: {
             title: 'Crear una nueva cuenta',
@@ -386,6 +411,8 @@ const apiHubMessages = {
                     'Registro recibido. Se enviará un correo electrónico de notificación a la dirección proporcionada.',
                 email_confirmation_error: 'El email no coincide.',
                 form_confirmation_error: 'Se requiere confirmación.',
+                limituserregistration:
+                    'La solicitud de registro de este correo electrónico está pendiente de aprobación/activación. No se permiten solicitudes múltiples.',
             },
             slider: {
                 confirmed: 'Confirmado',

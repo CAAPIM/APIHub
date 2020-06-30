@@ -7,21 +7,31 @@ import { tagsDataProvider } from './tags';
 import { documentsDataProvider } from './documents';
 import { registrationsDataProvider } from './registrations';
 import { userContextsDataProvider } from './userContexts';
+import { getFetchJson } from '../fetchUtils';
 
-export const dataProvider = (baseUrl, tenantName) => {
-    const adminUrl = `${baseUrl}/admin`;
-    const apiUrl = `${baseUrl}/api/${tenantName}`;
+export const dataProvider = (
+    baseUrl,
+    tenantName,
+    originHubName,
+    fetchJson = getFetchJson(originHubName)
+) => {
+    const context = {
+        baseUrl,
+        adminUrl: `${baseUrl}/admin`,
+        apiUrl: `${baseUrl}/api/${tenantName}`,
+        fetchJson,
+    };
 
     const resourcesMap = {
-        apiGroups: apiGroupsDataProvider(apiUrl),
-        apis: apisDataProvider(apiUrl, adminUrl),
-        applications: applicationsDataProvider(apiUrl),
-        assets: assetsDataProvider(apiUrl),
-        tags: tagsDataProvider(apiUrl),
-        specs: specsDataProvider(apiUrl),
-        documents: documentsDataProvider(apiUrl),
-        registrations: registrationsDataProvider(baseUrl),
-        userContexts: userContextsDataProvider(apiUrl),
+        apiGroups: apiGroupsDataProvider(context),
+        apis: apisDataProvider(context),
+        applications: applicationsDataProvider(context),
+        assets: assetsDataProvider(context),
+        tags: tagsDataProvider(context),
+        specs: specsDataProvider(context),
+        documents: documentsDataProvider(context),
+        registrations: registrationsDataProvider(context),
+        userContexts: userContextsDataProvider(context),
     };
 
     const proxy = new Proxy(fakeDataProvider, {

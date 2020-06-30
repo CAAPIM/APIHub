@@ -9,15 +9,6 @@ import {
     markdownRenderer as defaultMarkdownRenderer,
 } from './';
 
-const useStyles = makeStyles({
-    editor: {
-        '& .rc-md-editor': {
-            width: '100%',
-            height: '40vh',
-        },
-    },
-});
-
 export const MarkdownInput = ({
     markdownRenderer = defaultMarkdownRenderer,
     options = {},
@@ -60,3 +51,17 @@ export const MarkdownInput = ({
         </Labeled>
     );
 };
+
+const useStyles = makeStyles(
+    {
+        editor: {
+            '& .rc-md-editor': {
+                width: '100%',
+                height: '40vh',
+            },
+        },
+    },
+    {
+        name: 'Layer7MarkdownInput',
+    }
+);

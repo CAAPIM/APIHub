@@ -9,6 +9,14 @@ describe('extractTokenFromUrl', () => {
         ).toEqual('MzhiMWIzOTEtYmZjNC00N2Y5LTliNjAtZWM2NTRkODAyZDA4');
     });
 
+    test('should return the extracted token from the url when hash is encoded', () => {
+        expect(
+            extractTokenFromUrl(
+                'https://apim.apim-44-demo.lvn.broadcom.net/admin/app/new-password%23token/MzhiMWIzOTEtYmZjNC00N2Y5LTliNjAtZWM2NTRkODAyZDA4'
+            )
+        ).toEqual('MzhiMWIzOTEtYmZjNC00N2Y5LTliNjAtZWM2NTRkODAyZDA4');
+    });
+
     test('should return null if no new password token can be extracted from the url', () => {
         expect(
             extractTokenFromUrl(

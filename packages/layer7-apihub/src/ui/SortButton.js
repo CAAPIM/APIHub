@@ -153,11 +153,16 @@ export const SortButton = ({ children, resource, currentSort }) => {
     ) : null;
 };
 
-const useStyles = makeStyles(theme => ({
-    root: {
-        marginLeft: theme.spacing(),
-    },
-}));
+const useStyles = makeStyles(
+    theme => ({
+        root: {
+            marginLeft: theme.spacing(),
+        },
+    }),
+    {
+        name: 'Layer7SortButton',
+    }
+);
 
 export const SortMenuItem = forwardRef(({ label, sort, onClick }, ref) => {
     const translate = useTranslate();

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, forwardRef, cloneElement } from 'react';
+import React, { useState, useEffect, forwardRef } from 'react';
 import { useTranslate } from 'ra-core';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
@@ -12,6 +12,7 @@ import Slide from '@material-ui/core/Slide';
 import { makeStyles } from '@material-ui/core/styles';
 import SaveIcon from '@material-ui/icons/Save';
 
+import { ENTITY_TYPE_HOME } from '../dataProvider/documents';
 import { HomePageCreateButton, HomePageEditButton } from './HomePageButton';
 import {
     MarkdownEditor,
@@ -37,9 +38,9 @@ export const HomePageContent = props => {
     const { navtitle = 'home1', entityUuid = 'home1', ...rest } = props;
 
     const [{ data, loaded }, handleUpdate] = useMarkdownContent({
-        entityType: 'home',
-        entityUuid: entityUuid,
-        navtitle: navtitle,
+        entityType: ENTITY_TYPE_HOME,
+        entityUuid,
+        navtitle,
     });
     const translate = useTranslate();
     const classes = useStyles(rest);
@@ -123,6 +124,11 @@ const HomePageContentEditor = ({
         onCancel();
     };
 
+    useEffect(() => {
+        // Be sure the value is updated when the initialValue changed
+        setValue(initialValue);
+    }, [initialValue]);
+
     return (
         <Dialog
             open={open}
@@ -167,18 +173,30 @@ const Transition = forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const useStyles = makeStyles(theme => ({
-    root: {
-        position: 'relative',
-    },
-    markdown: {},
-}));
+const useStyles = makeStyles(
+    theme => ({
+        root: {
+            position: 'relative',
+        },
+        markdown: {
+            overflowWrap: 'anywhere',
+        },
+    }),
+    {
+        name: 'Layer7HomePageContent',
+    }
+);
 
-const useHomePageContentEditorStyles = makeStyles(theme => ({
-    editor: {
-        height: `calc(100% - ${theme.spacing(2)}px)`,
-    },
-    actions: {
-        margin: theme.spacing(2),
-    },
-}));
+const useHomePageContentEditorStyles = makeStyles(
+    theme => ({
+        editor: {
+            height: `calc(100% - ${theme.spacing(2)}px)`,
+        },
+        actions: {
+            margin: theme.spacing(2),
+        },
+    }),
+    {
+        name: 'Layer7HomePageContentEditor',
+    }
+);

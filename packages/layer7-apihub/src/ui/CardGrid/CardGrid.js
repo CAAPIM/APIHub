@@ -4,31 +4,6 @@ import { linkToRecord } from 'ra-core';
 import MuiGrid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 
-const useStyles = makeStyles(
-    theme => ({
-        root: {
-            margin: '-2px',
-        },
-        gridList: {
-            width: '100%',
-            marginTop: 0,
-            marginBottom: 0,
-            marginLeft: -theme.spacing(),
-            marginRight: -theme.spacing(),
-        },
-        placeholder: {
-            backgroundColor: theme.palette.grey[300],
-            height: '100%',
-        },
-    }),
-    {
-        name: 'Layer7CardGrid',
-    }
-);
-
-const times = (nbChildren, fn) =>
-    Array.from({ length: nbChildren }, (_, key) => fn(key));
-
 export const LoadingCardGrid = ({ nbItems = 10, spacing = 2, ...rest }) => {
     const classes = useStyles(rest);
     return (
@@ -139,3 +114,28 @@ export const CardGridItem = ({
         </MuiGrid>
     );
 };
+
+const useStyles = makeStyles(
+    theme => ({
+        root: {
+            margin: '-2px',
+        },
+        gridList: {
+            width: '100%',
+            marginTop: 0,
+            marginBottom: 0,
+            marginLeft: -theme.spacing(),
+            marginRight: -theme.spacing(),
+        },
+        placeholder: {
+            backgroundColor: theme.palette.grey[300],
+            height: '100%',
+        },
+    }),
+    {
+        name: 'Layer7CardGrid',
+    }
+);
+
+const times = (nbChildren, fn) =>
+    Array.from({ length: nbChildren }, (_, key) => fn(key));

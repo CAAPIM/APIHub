@@ -1,16 +1,15 @@
 import { login } from '../support/login';
 
+import homepageData from '../data/homepageData.json';
+import homepageDataEmpty from '../data/homepageDataEmpty.json';
+
 describe('Homepage', () => {
     describe('as an admin user', () => {
-        before(() => {
-            cy.loadData();
-        });
-
-        beforeEach(() => {
-            login('portalAdmin', 'Password@1');
-        });
-
         it('should create a new homepage', () => {
+            cy.loadData(homepageDataEmpty);
+
+            login('portalAdmin', 'Password@1');
+
             cy.findByTitle('Create')
                 .should('exist')
                 .click();
@@ -31,6 +30,10 @@ describe('Homepage', () => {
         });
 
         it('should edit the homepage', () => {
+            cy.loadData(homepageData);
+
+            login('portalAdmin', 'Password@1');
+
             cy.findByTitle('Edit')
                 .should('exist')
                 .click();
@@ -53,18 +56,9 @@ describe('Homepage', () => {
     });
 
     describe('as a non admin user', () => {
-        after(() => {
-            cy.window().then(win => {
-                win.Layer7Mock.clearDatabase();
-                win.Layer7Mock.initDatabase();
-            });
-        });
-
-        beforeEach(() => {
-            login('user', 'Password@1');
-        });
-
         it('should not be able to create a new homepage', () => {
+            cy.loadData(homepageDataEmpty);
+            login('user', 'Password@1');
             cy.findByTitle('Create').should('not.exist');
         });
     });

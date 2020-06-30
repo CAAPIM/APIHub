@@ -11,21 +11,23 @@ describe('NewPassword page', () => {
         global.fetch = jest.fn(url =>
             Promise.resolve({
                 status: 201,
-                json: () => {
+                text: () => {
                     if (url.includes('passwordResetTokenValidate')) {
-                        return Promise.resolve(true);
+                        return Promise.resolve(JSON.stringify(true));
                     }
 
-                    if (url.includes('UpdateMyPassword')) {
-                        return Promise.resolve(true);
+                    if (url.includes('v2/users/password/reset')) {
+                        return Promise.resolve(JSON.stringify(true));
                     }
 
                     if (url.includes('getPublicKey')) {
-                        return Promise.resolve({
-                            respCode: 200,
-                            respMsg: 'Successfully fetched public key',
-                            publicKey: 'encryptionKey',
-                        });
+                        return Promise.resolve(
+                            JSON.stringify({
+                                respCode: 200,
+                                respMsg: 'Successfully fetched public key',
+                                publicKey: 'encryptionKey',
+                            })
+                        );
                     }
                 },
             })
@@ -96,17 +98,19 @@ describe('NewPassword page', () => {
     test('should display a message when the new password token is invalid', async () => {
         global.fetch = jest.fn(url =>
             Promise.resolve({
-                json: () => {
+                text: () => {
                     if (url.includes('passwordResetTokenValidate')) {
                         return Promise.resolve(undefined);
                     }
 
                     if (url.includes('getPublicKey')) {
-                        return Promise.resolve({
-                            respCode: 200,
-                            respMsg: 'Successfully fetched public key',
-                            publicKey: 'encryptionKey',
-                        });
+                        return Promise.resolve(
+                            JSON.stringify({
+                                respCode: 200,
+                                respMsg: 'Successfully fetched public key',
+                                publicKey: 'encryptionKey',
+                            })
+                        );
                     }
                 },
             })
@@ -118,7 +122,7 @@ describe('NewPassword page', () => {
         );
         await wait(() => {
             expect(
-                getByText('apihub.new_password.validation.invalid_token')
+                getByText('apihub.new_password.notifications.invalid_token')
             ).not.toBeNull();
         });
     });

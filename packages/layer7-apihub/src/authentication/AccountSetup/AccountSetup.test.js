@@ -11,19 +11,23 @@ describe('AccountSetup page', () => {
         global.fetch = jest.fn(url =>
             Promise.resolve({
                 status: 201,
-                json: () => {
+                text: () => {
                     if (url.includes('accountSetup')) {
-                        return Promise.resolve({
-                            email: 'test@test.net',
-                        });
+                        return Promise.resolve(
+                            JSON.stringify({
+                                email: 'test@test.xd',
+                            })
+                        );
                     }
 
                     if (url.includes('getPublicKey')) {
-                        return Promise.resolve({
-                            respCode: 200,
-                            respMsg: 'Successfully fetched public key',
-                            publicKey: 'encryptionKey',
-                        });
+                        return Promise.resolve(
+                            JSON.stringify({
+                                respCode: 200,
+                                respMsg: 'Successfully fetched public key',
+                                publicKey: 'encryptionKey',
+                            })
+                        );
                     }
                 },
             })
@@ -95,19 +99,23 @@ describe('AccountSetup page', () => {
         global.fetch = jest.fn(url =>
             Promise.resolve({
                 status: 201,
-                json: () => {
+                text: () => {
                     if (url.includes('accountSetup')) {
-                        return Promise.resolve({
-                            data: {},
-                        });
+                        return Promise.resolve(
+                            JSON.stringify({
+                                data: {},
+                            })
+                        );
                     }
 
                     if (url.includes('getPublicKey')) {
-                        return Promise.resolve({
-                            respCode: 200,
-                            respMsg: 'Successfully fetched public key',
-                            publicKey: 'encryptionKey',
-                        });
+                        return Promise.resolve(
+                            JSON.stringify({
+                                respCode: 200,
+                                respMsg: 'Successfully fetched public key',
+                                publicKey: 'encryptionKey',
+                            })
+                        );
                     }
                 },
             })

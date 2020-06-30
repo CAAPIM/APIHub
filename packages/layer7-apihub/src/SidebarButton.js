@@ -9,27 +9,6 @@ import { Tooltip } from '@material-ui/core';
 
 import { useApiHubPreference } from './preferences';
 
-const useStyles = makeStyles(theme => ({
-    root: {
-        marginLeft: '0.5em',
-        marginRight: '0.5em',
-    },
-    closed: {
-        transition: theme.transitions.create(['transform'], {
-            easing: theme.transitions.easing.sharp,
-            duration: theme.transitions.duration.leavingScreen,
-        }),
-        transform: 'rotate(0deg)',
-    },
-    open: {
-        transition: theme.transitions.create(['transform'], {
-            easing: theme.transitions.easing.sharp,
-            duration: theme.transitions.duration.leavingScreen,
-        }),
-        transform: 'rotate(180deg)',
-    },
-}));
-
 export const SidebarButton = ({ open, ...props }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
@@ -77,3 +56,27 @@ export const SidebarButton = ({ open, ...props }) => {
         </Tooltip>
     );
 };
+
+const useStyles = makeStyles(
+    theme => ({
+        root: {
+            marginLeft: '0.5em',
+            marginRight: '0.5em',
+        },
+        closed: {
+            transition: theme.transitions.create(['transform'], {
+                easing: theme.transitions.easing.sharp,
+                duration: theme.transitions.duration.leavingScreen,
+            }),
+            transform: 'rotate(0deg)',
+        },
+        open: {
+            transition: theme.transitions.create(['transform'], {
+                easing: theme.transitions.easing.sharp,
+                duration: theme.transitions.duration.leavingScreen,
+            }),
+            transform: 'rotate(180deg)',
+        },
+    }),
+    { name: 'Layer7SidebarButton' }
+);

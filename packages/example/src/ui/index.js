@@ -1,3 +1,3 @@
 export * from './icons';
-export * from './CustomFooter';
-export * from './CustomHeader';
+export * from './Footer';
+export * from './Header';

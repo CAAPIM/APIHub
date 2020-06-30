@@ -7,22 +7,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import AddIcon from '@material-ui/icons/Add';
 import EditIcon from '@material-ui/icons/Edit';
 
-const useStyles = makeStyles(
-    theme => {
-        const appBarHeight = theme.spacing(9); // AppBar (size + margin)
-        const homePagePadding = theme.spacing(3); // HomePage (padding)
-
-        return {
-            root: {
-                position: 'fixed',
-                right: homePagePadding,
-                top: `calc(${appBarHeight}px + ${homePagePadding}px)`,
-            },
-        };
-    },
-    { name: 'Layer7HomePageButton' }
-);
-
 export const HomePageCreateButton = ({ onClick, className, ...rest }) => {
     const translate = useTranslate();
     const classes = useStyles(rest);
@@ -56,3 +40,21 @@ export const HomePageEditButton = ({ onClick, className, ...rest }) => {
         </Tooltip>
     );
 };
+
+const useStyles = makeStyles(
+    theme => {
+        const appBarHeight = theme.spacing(9); // AppBar (size + margin)
+        const homePagePadding = theme.spacing(3); // HomePage (padding)
+
+        return {
+            root: {
+                position: 'fixed',
+                right: homePagePadding,
+                top: `calc(${appBarHeight}px + ${homePagePadding}px)`,
+            },
+        };
+    },
+    {
+        name: 'Layer7HomePageButton',
+    }
+);

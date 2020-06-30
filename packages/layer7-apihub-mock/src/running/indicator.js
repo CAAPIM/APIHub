@@ -4,8 +4,6 @@
 import { iconQuestionMark } from './icons';
 
 export const KEY = '@layer7/mock-server/running-indicator';
-export const LINK =
-    'https://github.com/marmelab/broadcom-api-hub/blob/master/packages/layer7-apihub-mock/README.md';
 
 /**
  * Create and display the running indicator that should be displayed when the mock server is running.
@@ -13,10 +11,10 @@ export const LINK =
  * @param {*} icon The HTML element containing the icon
  * @param {*} link The link to open when clicking on the running indicator
  */
-export function initializeRunningIndicator(
+export function initializeRunningIndicator({
     icon = iconQuestionMark,
-    link = LINK
-) {
+    link = '#',
+}) {
     const shadowHost = document.createElement('div');
     shadowHost.id = KEY;
     // Make sure container is fixed and on a high zIndex so it shows
@@ -99,19 +97,19 @@ export function initializeRunningIndicator(
     updateContainer();
 }
 
-function createContainer(prefix, icon, link) {
+function createContainer(prefix, icon, link = '#') {
     const container = document.createElement('div');
     container.id = `${prefix}container`;
 
     container.innerHTML = `
-      <button id="${prefix}close" title="Hide Running Indicator">
-        <span>×</span>
-      </button>
-      <a href="${link}" target="_blank" rel="noreferrer">
-        <div id="${prefix}icon-wrapper">
-            ${icon}
-            Mock Server Running
-        </div>
+        <button id="${prefix}close" title="Hide Running Indicator">
+            <span>×</span>
+        </button>
+        <a href="${link}" target="_blank" rel="noreferrer">
+            <div id="${prefix}icon-wrapper">
+                ${icon}
+                Mock Server Running
+            </div>
         </a>
     `;
 

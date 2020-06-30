@@ -1,8 +1,53 @@
 import React from 'react';
+import { Typography } from '@material-ui/core';
+import { useTranslate } from 'ra-core';
+
 import { ResetPasswordForm } from './ResetPasswordForm';
 import { ResetPasswordConfirm } from './ResetPasswordConfirm';
 import { useResetPassword } from '../useResetPassword';
 import { AuthenticationLayout } from '../AuthenticationLayout';
+
+/**
+ * The component used to reset a password
+ */
+export const ResetPassword = props => {
+    const [username, setUsername] = useResetPassword();
+    const translate = useTranslate();
+
+    const handleSubmit = ({ username }) => {
+        setUsername(username);
+    };
+
+    if (username) {
+        return (
+            <>
+                <Typography
+                    variant="h4"
+                    component="h2"
+                    color="textPrimary"
+                    gutterBottom
+                >
+                    {translate('apihub.reset_password.title')}
+                </Typography>
+
+                <ResetPasswordConfirm {...props} />
+            </>
+        );
+    }
+    return (
+        <>
+            <Typography
+                variant="h4"
+                component="h2"
+                color="textPrimary"
+                gutterBottom
+            >
+                {translate('apihub.reset_password.title')}
+            </Typography>
+            <ResetPasswordForm onSubmit={handleSubmit} {...props} />
+        </>
+    );
+};
 
 /**
  * The page displaying the reset password form
@@ -33,20 +78,9 @@ import { AuthenticationLayout } from '../AuthenticationLayout';
  * const MyApp = props => <Admin resetPasswordPage={MyResetPasswordPage} {...props} />
  */
 export const ResetPasswordPage = props => {
-    const { Layout = AuthenticationLayout } = props;
-    const [username, setUsername] = useResetPassword();
-
-    const onSubmit = ({ username }) => {
-        setUsername(username);
-    };
-
     return (
-        <Layout {...props}>
-            {username ? (
-                <ResetPasswordConfirm />
-            ) : (
-                <ResetPasswordForm onSubmit={onSubmit} />
-            )}
-        </Layout>
+        <AuthenticationLayout {...props}>
+            <ResetPassword />
+        </AuthenticationLayout>
     );
 };

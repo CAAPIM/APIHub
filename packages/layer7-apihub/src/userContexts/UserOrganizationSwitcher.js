@@ -12,45 +12,6 @@ import CheckIcon from '@material-ui/icons/Check';
 
 import { getUserOrganizations } from '.';
 
-const useStyles = makeStyles(theme => ({
-    root: {
-        padding: `0px 0px ${theme.spacing()}px 0px`,
-    },
-    item: {
-        color: theme.palette.text.secondary,
-    },
-    itemText: {
-        display: 'block',
-        marginTop: '0px',
-        marginBottom: '0px',
-        maxWidth: '300px',
-        [theme.breakpoints.up('lg')]: {
-            maxWidth: '250px',
-        },
-    },
-    truncatedText: {
-        display: 'inline-block',
-        whiteSpace: 'nowrap',
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
-        maxWidth: '300px',
-        [theme.breakpoints.up('lg')]: {
-            maxWidth: '250px',
-        },
-    },
-    secondaryText: {
-        fontSize: theme.typography.caption.fontSize,
-    },
-    icon: {
-        marginLeft: theme.spacing(2),
-        minWidth: theme.spacing(3),
-        color: theme.palette.success.main,
-    },
-    divider: {
-        marginBottom: theme.spacing(),
-    },
-}));
-
 export const UserOrganizationSwitcher = ({
     userContext,
     onChangeUserContext,
@@ -114,3 +75,47 @@ export const UserOrganizationSwitcher = ({
         </>
     ) : null;
 };
+
+const useStyles = makeStyles(
+    theme => ({
+        root: {
+            padding: `0px 0px ${theme.spacing()}px 0px`,
+        },
+        item: {
+            color: theme.palette.text.secondary,
+        },
+        itemText: {
+            display: 'block',
+            marginTop: '0px',
+            marginBottom: '0px',
+            maxWidth: '300px',
+            [theme.breakpoints.up('lg')]: {
+                maxWidth: '250px',
+            },
+        },
+        truncatedText: {
+            display: 'inline-block',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            maxWidth: '300px',
+            [theme.breakpoints.up('lg')]: {
+                maxWidth: '250px',
+            },
+        },
+        secondaryText: {
+            fontSize: theme.typography.caption.fontSize,
+        },
+        icon: {
+            marginLeft: theme.spacing(2),
+            minWidth: theme.spacing(3),
+            color: theme.palette.success.main,
+        },
+        divider: {
+            marginBottom: theme.spacing(),
+        },
+    }),
+    {
+        name: 'Layer7UserOrganizationSwitcher',
+    }
+);

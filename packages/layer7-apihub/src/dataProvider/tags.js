@@ -1,14 +1,12 @@
-import { fetchUtils } from 'ra-core';
+export const tagsDataProvider = context => {
+    const basePath = `${context.apiUrl}/tags`;
+    const basePathApi = `${context.apiUrl}/api-management/1.0/apis`;
 
-const basePath = '/tags';
-const basePathApi = '/api-management/1.0/apis';
-
-export const tagsDataProvider = baseUrl => {
     return {
         getManyReference: async ({ id }) => {
-            const url = `${baseUrl}${basePathApi}/${id}/tags`;
+            const url = `${basePathApi}/${id}/tags`;
 
-            const { json } = await fetchUtils.fetchJson(url, {
+            const { json } = await context.fetchJson(url, {
                 credentials: 'include',
             });
 
@@ -23,9 +21,7 @@ export const tagsDataProvider = baseUrl => {
         },
 
         getList: async () => {
-            const url = `${baseUrl}${basePath}`;
-
-            const { json } = await fetchUtils.fetchJson(url, {
+            const { json } = await context.fetchJson(basePath, {
                 credentials: 'include',
             });
 
@@ -40,9 +36,7 @@ export const tagsDataProvider = baseUrl => {
         },
 
         getMany: async () => {
-            const url = `${baseUrl}${basePath}`;
-
-            const { json } = await fetchUtils.fetchJson(url, {
+            const { json } = await context.fetchJson(basePath, {
                 credentials: 'include',
             });
 

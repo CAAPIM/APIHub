@@ -1,0 +1,1006 @@
+{
+    "userContexts": [
+        {
+            "uuid": "30466aca-a38e-456a-a192-670436b87de3",
+            "userContexts": [
+                {
+                    "userDetails": {
+                        "uuid": "30466aca-a38e-456a-a192-670436b87de3",
+                        "username": "portalAdmin",
+                        "lastName": "Rowe",
+                        "firstName": "Rosario",
+                        "email": "Rosario36@example.com",
+                        "portalAdmin": true,
+                        "apiOwner": true,
+                        "orgPublisher": true
+                    },
+                    "activeOrgUuid": "a77b3c6b-62e0-48df-b9df-4bdbcc212d47",
+                    "accessibleOrgs": {
+                        "Wisoky, Schaefer and Ziemann": "a77b3c6b-62e0-48df-b9df-4bdbcc212d47"
+                    }
+                }
+            ]
+        },
+        {
+            "uuid": "a2c60b54-6ec1-4f68-8357-36b9263837a4",
+            "userContexts": [
+                {
+                    "userDetails": {
+                        "uuid": "a2c60b54-6ec1-4f68-8357-36b9263837a4",
+                        "username": "orgPublisher",
+                        "lastName": "Spinka",
+                        "firstName": "Bell",
+                        "email": "Bell_Spinka36@example.com",
+                        "portalAdmin": false,
+                        "apiOwner": true,
+                        "orgPublisher": true
+                    },
+                    "activeOrgUuid": "a77b3c6b-62e0-48df-b9df-4bdbcc212d47",
+                    "accessibleOrgs": {
+                        "Wisoky, Schaefer and Ziemann": "a77b3c6b-62e0-48df-b9df-4bdbcc212d47",
+                        "Rau, Walter and McGlynn": "4b5f0591-a647-4423-8caf-d276aae220e6",
+                        "Kertzmann - Abbott": "d7a6863e-b124-4023-bf64-9344678d508d",
+                        "Becker, Lindgren and Rodriguez": "4d929c96-b547-4e0a-a597-c4e016f78ad8"
+                    }
+                }
+            ]
+        },
+        {
+            "uuid": "0005cf8e-bf65-42bb-ae68-75c3b7ffc7ff",
+            "userContexts": [
+                {
+                    "userDetails": {
+                        "uuid": "0005cf8e-bf65-42bb-ae68-75c3b7ffc7ff",
+                        "username": "apiOwner",
+                        "lastName": "Gislason",
+                        "firstName": "Dee",
+                        "email": "Dee.Gislason@example.com",
+                        "portalAdmin": false,
+                        "apiOwner": true,
+                        "orgPublisher": false
+                    },
+                    "activeOrgUuid": "a77b3c6b-62e0-48df-b9df-4bdbcc212d47",
+                    "accessibleOrgs": {
+                        "Wisoky, Schaefer and Ziemann": "a77b3c6b-62e0-48df-b9df-4bdbcc212d47",
+                        "Rau, Walter and McGlynn": "4b5f0591-a647-4423-8caf-d276aae220e6",
+                        "Jacobson LLC": "275fa5c7-73d5-41f4-bad6-73350e9ed1cb",
+                        "Becker, Lindgren and Rodriguez": "4d929c96-b547-4e0a-a597-c4e016f78ad8"
+                    }
+                }
+            ]
+        },
+        {
+            "uuid": "dbbcb782-8e85-4cc8-8078-9586870983ff",
+            "userContexts": [
+                {
+                    "userDetails": {
+                        "uuid": "dbbcb782-8e85-4cc8-8078-9586870983ff",
+                        "username": "user",
+                        "lastName": "Hahn",
+                        "firstName": "Kenya",
+                        "email": "Kenya94@example.com",
+                        "portalAdmin": false,
+                        "apiOwner": false,
+                        "orgPublisher": false
+                    },
+                    "activeOrgUuid": "a77b3c6b-62e0-48df-b9df-4bdbcc212d47",
+                    "accessibleOrgs": {
+                        "Wisoky, Schaefer and Ziemann": "a77b3c6b-62e0-48df-b9df-4bdbcc212d47",
+                        "Rau, Walter and McGlynn": "4b5f0591-a647-4423-8caf-d276aae220e6",
+                        "Kertzmann - Abbott": "d7a6863e-b124-4023-bf64-9344678d508d",
+                        "Jacobson LLC": "275fa5c7-73d5-41f4-bad6-73350e9ed1cb",
+                        "Becker, Lindgren and Rodriguez": "4d929c96-b547-4e0a-a597-c4e016f78ad8"
+                    }
+                }
+            ]
+        }
+    ],
+    "apis": [
+        {
+            "id": "77a5b01b-9eb6-4489-bb80-c7b846a4853c",
+            "uuid": "77a5b01b-9eb6-4489-bb80-c7b846a4853c",
+            "name": "GB National Configuration",
+            "description": "Monitored analyzing neural-net",
+            "createTs": 1557476795001,
+            "modifyTs": 1588072633375,
+            "version": "5.2.1",
+            "ssgServiceType": "REST",
+            "portalStatus": "UNPUBLISHED",
+            "accessStatus": "PUBLIC",
+            "tags": ["Accounts", "Plans", "Organizations"],
+            "applicationUsage": 3
+        }
+    ],
+    "applications": [
+        {
+            "id": "e28c7cc4-78c0-49b8-b651-850b08f3d9d4",
+            "uuid": "e28c7cc4-78c0-49b8-b651-850b08f3d9d4",
+            "name": "FTP International Identity",
+            "status": "DISABLED",
+            "description": "Synchronised regional emulation",
+            "OauthCallbackUrl": "https://example.com/oauthCallback",
+            "OauthScope": "OOB",
+            "OauthType": "public",
+            "apiKey": "57b6607d-9d97-4b1c-b179-c7109fb47cd9",
+            "keySecret": "6ab5909f-90b3-4730-ab43-4486e4775001",
+            "apiIds": {
+                "results": [
+                    "f1c20a2f-fbc6-47ea-8ae0-0b44e2426067",
+                    "998e218e-cc9f-4ee4-862d-6a00edd1aca5"
+                ]
+            },
+            "_accessibleApis": [
+                "f1c20a2f-fbc6-47ea-8ae0-0b44e2426067",
+                "998e218e-cc9f-4ee4-862d-6a00edd1aca5"
+            ]
+        },
+        {
+            "id": "5853acb3-9dd1-4b14-ab37-68b54374f0c9",
+            "uuid": "5853acb3-9dd1-4b14-ab37-68b54374f0c9",
+            "name": "HTTP Product Optimization",
+            "status": "UNPUBLISHED",
+            "description": "Upgradable static installation",
+            "OauthCallbackUrl": "https://example.com/oauthCallback",
+            "OauthScope": "OOB",
+            "OauthType": "public",
+            "apiKey": "ec6ca9d5-0e3b-46a9-aa7c-bd14c3fda6cc",
+            "keySecret": "4bd3911f-6bb4-4c6a-b82e-9674f9ab126d",
+            "apiIds": {
+                "results": [
+                    "37fca74d-7704-4a36-b891-a153eb5a6df0",
+                    "35584e1f-f2d5-4084-8d8c-324563316ac5",
+                    "3cf2fa50-1b32-4f44-8206-b8f15fe84363"
+                ]
+            },
+            "_accessibleApis": [
+                "37fca74d-7704-4a36-b891-a153eb5a6df0",
+                "35584e1f-f2d5-4084-8d8c-324563316ac5",
+                "3cf2fa50-1b32-4f44-8206-b8f15fe84363"
+            ]
+        },
+        {
+            "id": "4357e9d5-8043-4a07-bdd1-9f4e2f0df065",
+            "uuid": "4357e9d5-8043-4a07-bdd1-9f4e2f0df065",
+            "name": "THX Internal Markets",
+            "status": "ENABLED",
+            "description": "Team-oriented executive knowledge base",
+            "OauthCallbackUrl": "https://example.com/oauthCallback",
+            "OauthScope": "OOB",
+            "OauthType": "public",
+            "apiKey": "eb1e96a3-632b-4544-a820-785bb548c71e",
+            "keySecret": "c62d919b-5474-4e95-92df-9841724dba14",
+            "apiIds": {
+                "results": [
+                    "364ba753-27bc-430f-87e8-4a4576c00f3d",
+                    "cf9813bb-937d-4079-bd61-99241d329f06",
+                    "19610eee-cb26-48b3-902e-55ba1bb4a7ad",
+                    "07ad5958-c8b2-471f-8b5a-cc15704997c2",
+                    "35584e1f-f2d5-4084-8d8c-324563316ac5"
+                ]
+            },
+            "_accessibleApis": [
+                "364ba753-27bc-430f-87e8-4a4576c00f3d",
+                "cf9813bb-937d-4079-bd61-99241d329f06",
+                "19610eee-cb26-48b3-902e-55ba1bb4a7ad",
+                "07ad5958-c8b2-471f-8b5a-cc15704997c2",
+                "35584e1f-f2d5-4084-8d8c-324563316ac5"
+            ]
+        },
+        {
+            "id": "7b98d0eb-086e-4677-9c9b-0fb45d2e686c",
+            "uuid": "7b98d0eb-086e-4677-9c9b-0fb45d2e686c",
+            "name": "THX International Interactions",
+            "status": "UNPUBLISHED",
+            "description": "Right-sized multi-state application",
+            "OauthCallbackUrl": "https://example.com/oauthCallback",
+            "OauthScope": "OOB",
+            "OauthType": "public",
+            "apiKey": "a3cc2da6-e1e7-41fc-8374-3473256eb3f7",
+            "keySecret": "9aeba35c-9e66-458c-ad2f-a095ec870f8e",
+            "apiIds": {
+                "results": [
+                    "8005d094-4732-4377-b4f2-a9ff8f130a9f",
+                    "34af9ec9-9e1d-44a5-8191-ccc4fcefcbb4"
+                ]
+            },
+            "_accessibleApis": [
+                "8005d094-4732-4377-b4f2-a9ff8f130a9f",
+                "34af9ec9-9e1d-44a5-8191-ccc4fcefcbb4"
+            ]
+        },
+        {
+            "id": "4cbd6ce9-33b4-4349-b390-cd60f5bfcdc0",
+            "uuid": "4cbd6ce9-33b4-4349-b390-cd60f5bfcdc0",
+            "name": "SMTP Corporate Accounts",
+            "status": "ENABLED",
+            "description": "Down-sized bottom-line task-force",
+            "OauthCallbackUrl": "https://example.com/oauthCallback",
+            "OauthScope": "OOB",
+            "OauthType": "public",
+            "apiKey": "f9391423-1373-4825-9f39-c495bd671cbd",
+            "keySecret": "6149ba45-c88d-4b50-8883-5ac7c38abe35",
+            "apiIds": {
+                "results": [
+                    "f1c20a2f-fbc6-47ea-8ae0-0b44e2426067",
+                    "977e1094-f991-40d4-a9f9-1b834aac0835"
+                ]
+            },
+            "_accessibleApis": [
+                "f1c20a2f-fbc6-47ea-8ae0-0b44e2426067",
+                "977e1094-f991-40d4-a9f9-1b834aac0835"
+            ]
+        },
+        {
+            "id": "50a5a3a8-9cb0-46ba-8d38-9b0d9ab874c0",
+            "uuid": "50a5a3a8-9cb0-46ba-8d38-9b0d9ab874c0",
+            "name": "JSON International Quality",
+            "status": "UNPUBLISHED",
+            "description": "Devolved mobile workforce",
+            "OauthCallbackUrl": "https://example.com/oauthCallback",
+            "OauthScope": "OOB",
+            "OauthType": "public",
+            "apiKey": "6732cbd3-c6f1-431d-a335-4619643295b3",
+            "keySecret": "10d898d0-6283-48ed-991f-7a61542ae136",
+            "apiIds": {
+                "results": [
+                    "7334d942-1ddf-40d4-9e2f-2e9c9931bd95",
+                    "07ad5958-c8b2-471f-8b5a-cc15704997c2",
+                    "37fca74d-7704-4a36-b891-a153eb5a6df0",
+                    "3cf2fa50-1b32-4f44-8206-b8f15fe84363"
+                ]
+            },
+            "_accessibleApis": [
+                "7334d942-1ddf-40d4-9e2f-2e9c9931bd95",
+                "07ad5958-c8b2-471f-8b5a-cc15704997c2",
+                "37fca74d-7704-4a36-b891-a153eb5a6df0",
+                "3cf2fa50-1b32-4f44-8206-b8f15fe84363"
+            ]
+        },
+        {
+            "id": "a7b1a688-7a1b-4ac8-82df-e44a6f0a380a",
+            "uuid": "a7b1a688-7a1b-4ac8-82df-e44a6f0a380a",
+            "name": "SDD National Factors",
+            "status": "UNPUBLISHED",
+            "description": "Secured responsive hierarchy",
+            "OauthCallbackUrl": "https://example.com/oauthCallback",
+            "OauthScope": "OOB",
+            "OauthType": "confidential",
+            "apiKey": "1d228bcb-7eee-4270-ba76-c6fca80cda8f",
+            "keySecret": "6c6112c1-f51f-4fb8-a019-bf2673335387",
+            "apiIds": {
+                "results": ["35584e1f-f2d5-4084-8d8c-324563316ac5"]
+            },
+            "_accessibleApis": ["35584e1f-f2d5-4084-8d8c-324563316ac5"]
+        },
+        {
+            "id": "0a0137e9-9efb-425a-af69-19ba858cbfa0",
+            "uuid": "0a0137e9-9efb-425a-af69-19ba858cbfa0",
+            "name": "SCSI Principal Configuration",
+            "status": "UNPUBLISHED",
+            "description": "Cross-group transitional algorithm",
+            "OauthCallbackUrl": "https://example.com/oauthCallback",
+            "OauthScope": "OOB",
+            "OauthType": "public",
+            "apiKey": "bab31e20-56b1-451a-b7cb-89efe5691c93",
+            "keySecret": "30e9c739-e92c-41a2-89fc-d64bb839720b",
+            "apiIds": {
+                "results": ["dd4dcd8d-972e-41b9-b8b1-743f16f7d8f4"]
+            },
+            "_accessibleApis": ["dd4dcd8d-972e-41b9-b8b1-743f16f7d8f4"]
+        },
+        {
+            "id": "1eb216a8-b90c-44b2-a5d5-c76b340c5457",
+            "uuid": "1eb216a8-b90c-44b2-a5d5-c76b340c5457",
+            "name": "AI Principal Identity",
+            "status": "UNPUBLISHED",
+            "description": "Persistent 24 hour flexibility",
+            "OauthCallbackUrl": "https://example.com/oauthCallback",
+            "OauthScope": "OOB",
+            "OauthType": "confidential",
+            "apiKey": "94e86ce8-1406-4a20-9f17-7b618c0bf759",
+            "keySecret": "de986ce8-7158-4f64-a43c-2266f2cbd716",
+            "apiIds": {
+                "results": [
+                    "dc01ee61-6f42-4c6b-9074-d3e2e1b87694",
+                    "07ad5958-c8b2-471f-8b5a-cc15704997c2",
+                    "090f565d-cea1-49ee-9179-cae1df3edd15",
+                    "3cf2fa50-1b32-4f44-8206-b8f15fe84363",
+                    "34af9ec9-9e1d-44a5-8191-ccc4fcefcbb4"
+                ]
+            },
+            "_accessibleApis": [
+                "dc01ee61-6f42-4c6b-9074-d3e2e1b87694",
+                "07ad5958-c8b2-471f-8b5a-cc15704997c2",
+                "090f565d-cea1-49ee-9179-cae1df3edd15",
+                "3cf2fa50-1b32-4f44-8206-b8f15fe84363",
+                "34af9ec9-9e1d-44a5-8191-ccc4fcefcbb4"
+            ]
+        },
+        {
+            "id": "124ba5d3-420b-499f-942c-5934c9c5dd39",
+            "uuid": "124ba5d3-420b-499f-942c-5934c9c5dd39",
+            "name": "AGP Regional Factors",
+            "status": "DISABLED",
+            "description": "Realigned exuding hardware",
+            "OauthCallbackUrl": "https://example.com/oauthCallback",
+            "OauthScope": "OOB",
+            "OauthType": "public",
+            "apiKey": "42d4db7a-5251-472e-85e2-fa764d4deb78",
+            "keySecret": "87c20e92-6a03-4e2e-973b-5856a7335535",
+            "apiIds": {
+                "results": [
+                    "e95961c1-a1f5-41f7-9ca8-aad45b6ab6ee",
+                    "966dd609-911b-4f1c-814f-5591f1262a94",
+                    "84ad6a9b-f0cb-43b7-b5c8-e7da379f6f72",
+                    "f1c20a2f-fbc6-47ea-8ae0-0b44e2426067",
+                    "977e1094-f991-40d4-a9f9-1b834aac0835"
+                ]
+            },
+            "_accessibleApis": [
+                "e95961c1-a1f5-41f7-9ca8-aad45b6ab6ee",
+                "966dd609-911b-4f1c-814f-5591f1262a94",
+                "84ad6a9b-f0cb-43b7-b5c8-e7da379f6f72",
+                "f1c20a2f-fbc6-47ea-8ae0-0b44e2426067",
+                "977e1094-f991-40d4-a9f9-1b834aac0835"
+            ]
+        },
+        {
+            "id": "10106b9f-ce5b-4249-adea-8024c37108a5",
+            "uuid": "10106b9f-ce5b-4249-adea-8024c37108a5",
+            "name": "PCI Global Accountability",
+            "status": "REJECTED",
+            "description": "Assimilated analyzing migration",
+            "OauthCallbackUrl": "https://example.com/oauthCallback",
+            "OauthScope": "OOB",
+            "OauthType": "confidential",
+            "apiKey": "6f73dfc4-e7bf-4eee-a603-feb381f5c390",
+            "keySecret": "5bce4e1b-3253-4de4-bb89-4cb5ad8a13ba",
+            "apiIds": {
+                "results": [
+                    "77a5b01b-9eb6-4489-bb80-c7b846a4853c",
+                    "84ad6a9b-f0cb-43b7-b5c8-e7da379f6f72",
+                    "d9831871-2dcd-4d25-95b4-fad975349bd3",
+                    "dd4dcd8d-972e-41b9-b8b1-743f16f7d8f4"
+                ]
+            },
+            "_accessibleApis": [
+                "77a5b01b-9eb6-4489-bb80-c7b846a4853c",
+                "84ad6a9b-f0cb-43b7-b5c8-e7da379f6f72",
+                "d9831871-2dcd-4d25-95b4-fad975349bd3",
+                "dd4dcd8d-972e-41b9-b8b1-743f16f7d8f4"
+            ]
+        },
+        {
+            "id": "4ebe247b-c44a-4545-ab82-888d9eaac76f",
+            "uuid": "4ebe247b-c44a-4545-ab82-888d9eaac76f",
+            "name": "AI Internal Brand",
+            "status": "DEPRECATED",
+            "description": "Pre-emptive context-sensitive time-frame",
+            "OauthCallbackUrl": "https://example.com/oauthCallback",
+            "OauthScope": "OOB",
+            "OauthType": "public",
+            "apiKey": "5fd3655c-32b5-436d-ade6-18836bdc1985",
+            "keySecret": "3da25ff0-99f5-43fa-9f66-b585605ae46f",
+            "apiIds": {
+                "results": [
+                    "7334d942-1ddf-40d4-9e2f-2e9c9931bd95",
+                    "77a5b01b-9eb6-4489-bb80-c7b846a4853c",
+                    "8005d094-4732-4377-b4f2-a9ff8f130a9f",
+                    "090f565d-cea1-49ee-9179-cae1df3edd15"
+                ]
+            },
+            "_accessibleApis": [
+                "7334d942-1ddf-40d4-9e2f-2e9c9931bd95",
+                "77a5b01b-9eb6-4489-bb80-c7b846a4853c",
+                "8005d094-4732-4377-b4f2-a9ff8f130a9f",
+                "090f565d-cea1-49ee-9179-cae1df3edd15"
+            ]
+        },
+        {
+            "id": "441eeb1d-fc87-4230-bc61-2c50cc00865f",
+            "uuid": "441eeb1d-fc87-4230-bc61-2c50cc00865f",
+            "name": "COM Principal Web",
+            "status": "APPLICATION_PENDING_APPROVAL",
+            "description": "Grass-roots directional help-desk",
+            "OauthCallbackUrl": "https://example.com/oauthCallback",
+            "OauthScope": "OOB",
+            "OauthType": "public",
+            "apiKey": "688141ef-c36a-4730-97ea-c864bee75554",
+            "keySecret": "3cf35680-18e3-4af9-b65f-a2291930351a",
+            "apiIds": {
+                "results": [
+                    "a2a475a8-f180-4540-b01c-e3d930535d09",
+                    "d9831871-2dcd-4d25-95b4-fad975349bd3",
+                    "07ad5958-c8b2-471f-8b5a-cc15704997c2"
+                ]
+            },
+            "_accessibleApis": [
+                "a2a475a8-f180-4540-b01c-e3d930535d09",
+                "d9831871-2dcd-4d25-95b4-fad975349bd3",
+                "07ad5958-c8b2-471f-8b5a-cc15704997c2"
+            ]
+        },
+        {
+            "id": "2f1ad633-5440-4830-ac12-a07d1c74ca9b",
+            "uuid": "2f1ad633-5440-4830-ac12-a07d1c74ca9b",
+            "name": "FTP Principal Metrics",
+            "status": "ENABLED",
+            "description": "De-engineered 24/7 matrices",
+            "OauthCallbackUrl": "https://example.com/oauthCallback",
+            "OauthScope": "OOB",
+            "OauthType": "public",
+            "apiKey": "2d0f13f2-7b57-4b74-8073-87174e955d94",
+            "keySecret": "4c421504-07da-4852-87c0-c5e597799d3a",
+            "apiIds": {
+                "results": ["d60de589-538a-4312-aa25-3a72f38a01d3"]
+            },
+            "_accessibleApis": ["d60de589-538a-4312-aa25-3a72f38a01d3"]
+        },
+        {
+            "id": "8efc0885-a586-45b0-89b8-ea60202c8770",
+            "uuid": "8efc0885-a586-45b0-89b8-ea60202c8770",
+            "name": "GB Lead Accountability",
+            "status": "ENABLED",
+            "description": "Profound local migration",
+            "OauthCallbackUrl": "https://example.com/oauthCallback",
+            "OauthScope": "OOB",
+            "OauthType": "confidential",
+            "apiKey": "a8631c1c-4d22-4445-825e-979bd4e52b9b",
+            "keySecret": "7f08a8f8-2d27-4b47-be32-1a85b45a0849",
+            "apiIds": {
+                "results": [
+                    "ffc84d89-90dc-4fe3-923a-0e409fbf9e0a",
+                    "c43854cd-8473-41ec-9c1e-c32d361ed924",
+                    "84ad6a9b-f0cb-43b7-b5c8-e7da379f6f72",
+                    "cf9813bb-937d-4079-bd61-99241d329f06",
+                    "090f565d-cea1-49ee-9179-cae1df3edd15"
+                ]
+            },
+            "_accessibleApis": [
+                "ffc84d89-90dc-4fe3-923a-0e409fbf9e0a",
+                "c43854cd-8473-41ec-9c1e-c32d361ed924",
+                "84ad6a9b-f0cb-43b7-b5c8-e7da379f6f72",
+                "cf9813bb-937d-4079-bd61-99241d329f06",
+                "090f565d-cea1-49ee-9179-cae1df3edd15"
+            ]
+        },
+        {
+            "id": "7cb3bfe9-d6bf-40a8-a12a-456c0602883a",
+            "uuid": "7cb3bfe9-d6bf-40a8-a12a-456c0602883a",
+            "name": "CSS Dynamic Security",
+            "status": "DEPRECATED",
+            "description": "Customer-focused global complexity",
+            "OauthCallbackUrl": "https://example.com/oauthCallback",
+            "OauthScope": "OOB",
+            "OauthType": "confidential",
+            "apiKey": "93a3c413-d448-43d6-8825-1250fb017bc2",
+            "keySecret": "adb3cc1a-a44b-420d-8c14-6a34e3752f63",
+            "apiIds": {
+                "results": [
+                    "966dd609-911b-4f1c-814f-5591f1262a94",
+                    "d60de589-538a-4312-aa25-3a72f38a01d3",
+                    "19610eee-cb26-48b3-902e-55ba1bb4a7ad"
+                ]
+            },
+            "_accessibleApis": [
+                "966dd609-911b-4f1c-814f-5591f1262a94",
+                "d60de589-538a-4312-aa25-3a72f38a01d3",
+                "19610eee-cb26-48b3-902e-55ba1bb4a7ad"
+            ]
+        },
+        {
+            "id": "7b0be34e-9cd9-4f9a-8d4a-5edd014763bb",
+            "uuid": "7b0be34e-9cd9-4f9a-8d4a-5edd014763bb",
+            "name": "ADP International Accountability",
+            "status": "DISABLED",
+            "description": "Monitored web-enabled conglomeration",
+            "OauthCallbackUrl": "https://example.com/oauthCallback",
+            "OauthScope": "OOB",
+            "OauthType": "confidential",
+            "apiKey": "86866a0b-f8ec-40af-b300-1ae6ee105254",
+            "keySecret": "f457668d-80c6-4983-93e1-0a085f7cfd55",
+            "apiIds": {
+                "results": [
+                    "e95961c1-a1f5-41f7-9ca8-aad45b6ab6ee",
+                    "d60de589-538a-4312-aa25-3a72f38a01d3",
+                    "f1c20a2f-fbc6-47ea-8ae0-0b44e2426067",
+                    "19610eee-cb26-48b3-902e-55ba1bb4a7ad",
+                    "07ad5958-c8b2-471f-8b5a-cc15704997c2"
+                ]
+            },
+            "_accessibleApis": [
+                "e95961c1-a1f5-41f7-9ca8-aad45b6ab6ee",
+                "d60de589-538a-4312-aa25-3a72f38a01d3",
+                "f1c20a2f-fbc6-47ea-8ae0-0b44e2426067",
+                "19610eee-cb26-48b3-902e-55ba1bb4a7ad",
+                "07ad5958-c8b2-471f-8b5a-cc15704997c2"
+            ]
+        },
+        {
+            "id": "7d0434c2-742b-454f-8af6-8e3786997d93",
+            "uuid": "7d0434c2-742b-454f-8af6-8e3786997d93",
+            "name": "FTP Dynamic Directives",
+            "status": "UNPUBLISHED",
+            "description": "Mandatory well-modulated protocol",
+            "OauthCallbackUrl": "https://example.com/oauthCallback",
+            "OauthScope": "OOB",
+            "OauthType": "public",
+            "apiKey": "9509e9c6-4a1c-417d-8972-5c8aaa8b69ec",
+            "keySecret": "43240c5a-f30b-4969-a3ec-c1b1c7768846",
+            "apiIds": {
+                "results": [
+                    "ffc84d89-90dc-4fe3-923a-0e409fbf9e0a",
+                    "77a5b01b-9eb6-4489-bb80-c7b846a4853c",
+                    "c43854cd-8473-41ec-9c1e-c32d361ed924",
+                    "d60de589-538a-4312-aa25-3a72f38a01d3",
+                    "34af9ec9-9e1d-44a5-8191-ccc4fcefcbb4"
+                ]
+            },
+            "_accessibleApis": [
+                "ffc84d89-90dc-4fe3-923a-0e409fbf9e0a",
+                "77a5b01b-9eb6-4489-bb80-c7b846a4853c",
+                "c43854cd-8473-41ec-9c1e-c32d361ed924",
+                "d60de589-538a-4312-aa25-3a72f38a01d3",
+                "34af9ec9-9e1d-44a5-8191-ccc4fcefcbb4"
+            ]
+        },
+        {
+            "id": "fc70ea8b-b0d9-47f4-b0b3-56ab17d8878d",
+            "uuid": "fc70ea8b-b0d9-47f4-b0b3-56ab17d8878d",
+            "name": "SCSI Legacy Paradigm",
+            "status": "DEPRECATED",
+            "description": "Team-oriented homogeneous matrices",
+            "OauthCallbackUrl": "https://example.com/oauthCallback",
+            "OauthScope": "OOB",
+            "OauthType": "confidential",
+            "apiKey": "c37d0703-145a-4ce4-bc60-b69e3bdfd4b5",
+            "keySecret": "c06f15a5-5ca7-423c-be8a-ea7cf3ccf074",
+            "apiIds": {
+                "results": [
+                    "e95961c1-a1f5-41f7-9ca8-aad45b6ab6ee",
+                    "966dd609-911b-4f1c-814f-5591f1262a94"
+                ]
+            },
+            "_accessibleApis": [
+                "e95961c1-a1f5-41f7-9ca8-aad45b6ab6ee",
+                "966dd609-911b-4f1c-814f-5591f1262a94"
+            ]
+        },
+        {
+            "id": "03093909-0b5b-4066-9335-44d91a199c86",
+            "uuid": "03093909-0b5b-4066-9335-44d91a199c86",
+            "name": "ATP International Identity",
+            "status": "DISABLED",
+            "description": "Balanced coherent intranet",
+            "OauthCallbackUrl": "https://example.com/oauthCallback",
+            "OauthScope": "OOB",
+            "OauthType": "confidential",
+            "apiKey": "06f4fb4d-80f4-49fd-bfb5-6154889eda03",
+            "keySecret": "c369e771-0fe0-4814-b11b-20e32a2cbd7e",
+            "apiIds": {
+                "results": [
+                    "ffc84d89-90dc-4fe3-923a-0e409fbf9e0a",
+                    "7334d942-1ddf-40d4-9e2f-2e9c9931bd95",
+                    "dc01ee61-6f42-4c6b-9074-d3e2e1b87694",
+                    "364ba753-27bc-430f-87e8-4a4576c00f3d",
+                    "35584e1f-f2d5-4084-8d8c-324563316ac5"
+                ]
+            },
+            "_accessibleApis": [
+                "ffc84d89-90dc-4fe3-923a-0e409fbf9e0a",
+                "7334d942-1ddf-40d4-9e2f-2e9c9931bd95",
+                "dc01ee61-6f42-4c6b-9074-d3e2e1b87694",
+                "364ba753-27bc-430f-87e8-4a4576c00f3d",
+                "35584e1f-f2d5-4084-8d8c-324563316ac5"
+            ]
+        },
+        {
+            "id": "65d53d28-2313-48a8-be8c-57dbffb634c3",
+            "uuid": "65d53d28-2313-48a8-be8c-57dbffb634c3",
+            "name": "PCI Principal Marketing",
+            "status": "APPLICATION_PENDING_APPROVAL",
+            "description": "Optimized bifurcated circuit",
+            "OauthCallbackUrl": "https://example.com/oauthCallback",
+            "OauthScope": "OOB",
+            "OauthType": "public",
+            "apiKey": "dbf2ccf5-b33f-4c73-8189-6c8b92e466e9",
+            "keySecret": "afc544d9-bf13-4f64-a4cb-f380250c8e8c",
+            "apiIds": {
+                "results": [
+                    "8005d094-4732-4377-b4f2-a9ff8f130a9f",
+                    "34af9ec9-9e1d-44a5-8191-ccc4fcefcbb4"
+                ]
+            },
+            "_accessibleApis": [
+                "8005d094-4732-4377-b4f2-a9ff8f130a9f",
+                "34af9ec9-9e1d-44a5-8191-ccc4fcefcbb4"
+            ]
+        },
+        {
+            "id": "c0bebb8b-0f2e-43d2-a248-9b6e11c0060a",
+            "uuid": "c0bebb8b-0f2e-43d2-a248-9b6e11c0060a",
+            "name": "SMTP District Paradigm",
+            "status": "DEPRECATED",
+            "description": "Upgradable web-enabled array",
+            "OauthCallbackUrl": "https://example.com/oauthCallback",
+            "OauthScope": "OOB",
+            "OauthType": "public",
+            "apiKey": "0abc277c-a7a4-45b9-a037-6daf26d18ede",
+            "keySecret": "5aac73e9-de4a-4598-b19b-63a496e3d763",
+            "apiIds": {
+                "results": [
+                    "e95961c1-a1f5-41f7-9ca8-aad45b6ab6ee",
+                    "8005d094-4732-4377-b4f2-a9ff8f130a9f",
+                    "dc01ee61-6f42-4c6b-9074-d3e2e1b87694",
+                    "35584e1f-f2d5-4084-8d8c-324563316ac5",
+                    "34af9ec9-9e1d-44a5-8191-ccc4fcefcbb4"
+                ]
+            },
+            "_accessibleApis": [
+                "e95961c1-a1f5-41f7-9ca8-aad45b6ab6ee",
+                "8005d094-4732-4377-b4f2-a9ff8f130a9f",
+                "dc01ee61-6f42-4c6b-9074-d3e2e1b87694",
+                "35584e1f-f2d5-4084-8d8c-324563316ac5",
+                "34af9ec9-9e1d-44a5-8191-ccc4fcefcbb4"
+            ]
+        },
+        {
+            "id": "2b59d9c4-f531-4a6d-bd12-fb3068c3285e",
+            "uuid": "2b59d9c4-f531-4a6d-bd12-fb3068c3285e",
+            "name": "AGP Forward Interactions",
+            "status": "DEPRECATED",
+            "description": "Function-based high-level success",
+            "OauthCallbackUrl": "https://example.com/oauthCallback",
+            "OauthScope": "OOB",
+            "OauthType": "confidential",
+            "apiKey": "8536082a-dbb9-4a0c-95bb-f8aaa37dd519",
+            "keySecret": "508549cc-a05e-49b5-bb12-a8f73ab28f61",
+            "apiIds": {
+                "results": ["ffc84d89-90dc-4fe3-923a-0e409fbf9e0a"]
+            },
+            "_accessibleApis": ["ffc84d89-90dc-4fe3-923a-0e409fbf9e0a"]
+        },
+        {
+            "id": "a9d5b728-deed-4c95-abcd-21545f2b8893",
+            "uuid": "a9d5b728-deed-4c95-abcd-21545f2b8893",
+            "name": "SSL Product Marketing",
+            "status": "ENABLED",
+            "description": "Future-proofed foreground help-desk",
+            "OauthCallbackUrl": "https://example.com/oauthCallback",
+            "OauthScope": "OOB",
+            "OauthType": "public",
+            "apiKey": "d3a85265-c3a1-46ec-b03e-1642334bd3dd",
+            "keySecret": "7c89c5ef-7bde-4ee3-b57c-e140c2d1c8d6",
+            "apiIds": {
+                "results": [
+                    "ffc84d89-90dc-4fe3-923a-0e409fbf9e0a",
+                    "364ba753-27bc-430f-87e8-4a4576c00f3d",
+                    "998e218e-cc9f-4ee4-862d-6a00edd1aca5",
+                    "3cf2fa50-1b32-4f44-8206-b8f15fe84363",
+                    "977e1094-f991-40d4-a9f9-1b834aac0835"
+                ]
+            },
+            "_accessibleApis": [
+                "ffc84d89-90dc-4fe3-923a-0e409fbf9e0a",
+                "364ba753-27bc-430f-87e8-4a4576c00f3d",
+                "998e218e-cc9f-4ee4-862d-6a00edd1aca5",
+                "3cf2fa50-1b32-4f44-8206-b8f15fe84363",
+                "977e1094-f991-40d4-a9f9-1b834aac0835"
+            ]
+        },
+        {
+            "id": "1e48cc1b-2d6e-43b5-9219-c8c7beb8d23c",
+            "uuid": "1e48cc1b-2d6e-43b5-9219-c8c7beb8d23c",
+            "name": "THX Principal Markets",
+            "status": "DISABLED",
+            "description": "Exclusive dynamic forecast",
+            "OauthCallbackUrl": "https://example.com/oauthCallback",
+            "OauthScope": "OOB",
+            "OauthType": "confidential",
+            "apiKey": "7fdc1ed0-a2ea-4199-b38e-4f38cdaa2a35",
+            "keySecret": "1a6dccdc-6b1e-4de7-9047-4cc5198e1d2e",
+            "apiIds": {
+                "results": [
+                    "966dd609-911b-4f1c-814f-5591f1262a94",
+                    "19610eee-cb26-48b3-902e-55ba1bb4a7ad"
+                ]
+            },
+            "_accessibleApis": [
+                "966dd609-911b-4f1c-814f-5591f1262a94",
+                "19610eee-cb26-48b3-902e-55ba1bb4a7ad"
+            ]
+        }
+    ],
+    "tags": [
+        {
+            "uuid": "74ab326e-f07a-4973-8e41-00c2dc255c80",
+            "name": "Accounts"
+        },
+        {
+            "uuid": "003b4c25-a0fb-4da9-81c1-71cda5686630",
+            "name": "Security"
+        },
+        {
+            "uuid": "5fe9f704-83f7-4af6-aa83-3fe6f4971ac0",
+            "name": "Plans"
+        },
+        {
+            "uuid": "7d76a92c-da99-4582-afa4-a12d1ef64f27",
+            "name": "Organizations"
+        }
+    ],
+    "documents": [
+        {
+            "uuid": "70a5e99e-92b3-4a40-80a3-f4407612bb4e",
+            "status": "PUBLISHED",
+            "title": "en-US - Integrated high-level encoding",
+            "navtitle": "en-us---integrated-high-level-encoding",
+            "markdown": "Quam temporibus maxime voluptatem aliquam sunt nostrum accusamus. Labore sapiente iste voluptatem sint temporibus voluptatibus aliquid voluptate molestiae. Nam velit earum occaecati. Expedita fugiat sapiente dolor fugit ullam. Molestiae ipsa molestias autem magnam. Et sed enim error dicta voluptas voluptas.\n \rUllam facere tempora commodi molestiae dolor. Alias expedita quas ex ipsa tempore sint. Fugiat nostrum debitis sunt. Aliquid aut tempora non quisquam et neque et saepe. Adipisci pariatur temporibus animi qui necessitatibus sunt recusandae pariatur excepturi. Vitae ut magnam recusandae natus libero.\n \rQui cum eveniet harum mollitia beatae ut tenetur. Soluta magnam consequatur sunt vel magnam et nulla. Dolor eaque ipsum quibusdam libero numquam aut quibusdam est. Totam ut nihil qui. Velit adipisci esse.",
+            "locale": "en-US",
+            "ordinal": 0,
+            "type": "api",
+            "typeUuid": "77a5b01b-9eb6-4489-bb80-c7b846a4853c"
+        },
+        {
+            "uuid": "dd993a56-ee7b-4f57-bcb1-2a007bd08a7c",
+            "status": "PUBLISHED",
+            "title": "en-US - Realigned encompassing forecast",
+            "navtitle": "en-us---realigned-encompassing-forecast",
+            "markdown": "Rerum minus voluptas repudiandae est laborum nihil. Est explicabo sed quisquam sed dolores cum. Debitis consequatur qui sunt deleniti accusamus amet voluptatem odio id. Commodi cum deleniti. Placeat sunt placeat alias ut et molestias omnis. Esse iusto dolorem.",
+            "locale": "en-US",
+            "ordinal": 0,
+            "parentUuid": "70a5e99e-92b3-4a40-80a3-f4407612bb4e",
+            "type": "api",
+            "typeUuid": "77a5b01b-9eb6-4489-bb80-c7b846a4853c"
+        },
+        {
+            "uuid": "9e606f8c-af93-46ac-a05d-13f109e19ddf",
+            "status": "PUBLISHED",
+            "title": "en-US - Cross-platform well-modulated benchmark",
+            "navtitle": "en-us---cross-platform-well-modulated-benchmark",
+            "markdown": "similique at et",
+            "locale": "en-US",
+            "ordinal": 0,
+            "parentUuid": "70a5e99e-92b3-4a40-80a3-f4407612bb4e",
+            "type": "api",
+            "typeUuid": "77a5b01b-9eb6-4489-bb80-c7b846a4853c"
+        },
+        {
+            "uuid": "b4f2b903-6241-4e23-a834-635af8846e53",
+            "status": "PUBLISHED",
+            "title": "fr-FR - Intuitive actuating moderator",
+            "navtitle": "fr-fr---intuitive-actuating-moderator",
+            "markdown": "Commodi delectus distinctio accusamus non vel officia dignissimos. Veritatis repudiandae temporibus dolores consequatur. Rerum eligendi ut. Ipsa sint consequuntur quae qui velit omnis. Culpa repudiandae omnis assumenda veniam non aperiam rerum enim. Praesentium et doloribus magnam tenetur iure dolores ipsa qui.",
+            "locale": "fr-FR",
+            "ordinal": 0,
+            "type": "api",
+            "typeUuid": "77a5b01b-9eb6-4489-bb80-c7b846a4853c"
+        },
+        {
+            "uuid": "7ea7a184-afb9-464a-bc70-e3ec7ca007e4",
+            "status": "PUBLISHED",
+            "title": "en-US - Switchable logistical function",
+            "navtitle": "en-us---switchable-logistical-function",
+            "markdown": "Nam quia voluptatem quia.",
+            "locale": "en-US",
+            "ordinal": 1,
+            "type": "api",
+            "typeUuid": "77a5b01b-9eb6-4489-bb80-c7b846a4853c"
+        },
+        {
+            "uuid": "6399105e-07b3-44bf-b484-211a77a6e3e5",
+            "status": "PUBLISHED",
+            "title": "en-US - Reactive solution-oriented hub",
+            "navtitle": "en-us---reactive-solution-oriented-hub",
+            "markdown": "dolores",
+            "locale": "en-US",
+            "ordinal": 0,
+            "parentUuid": "7ea7a184-afb9-464a-bc70-e3ec7ca007e4",
+            "type": "api",
+            "typeUuid": "77a5b01b-9eb6-4489-bb80-c7b846a4853c"
+        },
+        {
+            "uuid": "0f07f4a2-74a3-4325-bdd2-3eb5aa098f8a",
+            "status": "PUBLISHED",
+            "title": "en-US - Devolved bandwidth-monitored synergy",
+            "navtitle": "en-us---devolved-bandwidth-monitored-synergy",
+            "markdown": "ab",
+            "locale": "en-US",
+            "ordinal": 0,
+            "parentUuid": "7ea7a184-afb9-464a-bc70-e3ec7ca007e4",
+            "type": "api",
+            "typeUuid": "77a5b01b-9eb6-4489-bb80-c7b846a4853c"
+        },
+        {
+            "uuid": "2d43a031-9725-4983-af90-99857660cd23",
+            "status": "PUBLISHED",
+            "title": "en-US - Profound actuating solution",
+            "navtitle": "en-us---profound-actuating-solution",
+            "markdown": "ea totam quis",
+            "locale": "en-US",
+            "ordinal": 1,
+            "parentUuid": "7ea7a184-afb9-464a-bc70-e3ec7ca007e4",
+            "type": "api",
+            "typeUuid": "77a5b01b-9eb6-4489-bb80-c7b846a4853c"
+        },
+        {
+            "uuid": "556c188b-0f30-47b1-8977-d023a8abf842",
+            "status": "PUBLISHED",
+            "title": "en-US - Public-key disintermediate core",
+            "navtitle": "en-us---public-key-disintermediate-core",
+            "markdown": "tempore cum quo",
+            "locale": "en-US",
+            "ordinal": 0,
+            "parentUuid": "7ea7a184-afb9-464a-bc70-e3ec7ca007e4",
+            "type": "api",
+            "typeUuid": "77a5b01b-9eb6-4489-bb80-c7b846a4853c"
+        },
+        {
+            "uuid": "0a95b80b-0810-4ac5-8840-79669dea9958",
+            "status": "PUBLISHED",
+            "title": "en-US - Organic 6th generation knowledge base",
+            "navtitle": "en-us---organic-6th-generation-knowledge-base",
+            "markdown": "Aut rerum incidunt rerum saepe. Sint culpa voluptatum hic delectus eaque dolor minima accusantium necessitatibus.",
+            "locale": "en-US",
+            "ordinal": 2,
+            "parentUuid": "7ea7a184-afb9-464a-bc70-e3ec7ca007e4",
+            "type": "api",
+            "typeUuid": "77a5b01b-9eb6-4489-bb80-c7b846a4853c"
+        },
+        {
+            "uuid": "af8bd21d-34f5-4fa1-a88b-932ebfdb4f1b",
+            "status": "PUBLISHED",
+            "title": "fr-FR - Multi-lateral user-facing benchmark",
+            "navtitle": "fr-fr---multi-lateral-user-facing-benchmark",
+            "markdown": "Et sunt nemo expedita assumenda qui consequuntur. Sit ut repudiandae tempore corporis eos. Ut illum a quis magnam ex.",
+            "locale": "fr-FR",
+            "ordinal": 1,
+            "type": "api",
+            "typeUuid": "77a5b01b-9eb6-4489-bb80-c7b846a4853c"
+        },
+        {
+            "uuid": "2f32b7bb-7747-4c4d-94c1-bd1eef5dfafb",
+            "status": "PUBLISHED",
+            "title": "en-US - Seamless attitude-oriented budgetary management",
+            "navtitle": "en-us---seamless-attitude-oriented-budgetary-management",
+            "markdown": "harum",
+            "locale": "en-US",
+            "ordinal": 2,
+            "type": "api",
+            "typeUuid": "77a5b01b-9eb6-4489-bb80-c7b846a4853c"
+        },
+        {
+            "uuid": "eade52a0-66e8-409c-94e8-af311505f0b0",
+            "status": "PUBLISHED",
+            "title": "en-US - Persistent local capability",
+            "navtitle": "en-us---persistent-local-capability",
+            "markdown": "Sunt officia doloremque. Quam fugiat quo expedita sed aut. Ratione laboriosam pariatur quis in maxime et minima minus. Repellendus et deserunt voluptatem doloremque omnis quas animi. Vel non qui ut eius sunt temporibus consequatur perspiciatis.",
+            "locale": "en-US",
+            "ordinal": 0,
+            "parentUuid": "2f32b7bb-7747-4c4d-94c1-bd1eef5dfafb",
+            "type": "api",
+            "typeUuid": "77a5b01b-9eb6-4489-bb80-c7b846a4853c"
+        },
+        {
+            "uuid": "8cfe66d5-c90c-4b7f-a33c-38789dc8501c",
+            "status": "PUBLISHED",
+            "title": "en-US - Grass-roots even-keeled process improvement",
+            "navtitle": "en-us---grass-roots-even-keeled-process-improvement",
+            "markdown": "Eligendi quisquam iure vel qui. Delectus blanditiis voluptatem dignissimos qui deleniti modi perferendis. Dolor quidem fuga consequatur qui molestias. Praesentium inventore nulla voluptate voluptas quisquam dignissimos non saepe beatae. Est perferendis consequatur sed ut repudiandae. Et blanditiis labore explicabo suscipit.\n \rSit quia in omnis similique omnis. Sunt aut dolores commodi ut odit sed eius. Est beatae nihil sunt consectetur. Dolores sit minima libero. Consequuntur facilis ipsa molestias ex doloremque animi vel eligendi. Totam quis odit qui eum.\n \rPariatur et eius est laudantium eaque animi. Aut corrupti velit velit consectetur maxime. Odit dolorum incidunt sit sit ipsa iusto et. Est nam itaque sint enim officiis iusto. Dicta veniam reiciendis.",
+            "locale": "en-US",
+            "ordinal": 1,
+            "parentUuid": "2f32b7bb-7747-4c4d-94c1-bd1eef5dfafb",
+            "type": "api",
+            "typeUuid": "77a5b01b-9eb6-4489-bb80-c7b846a4853c"
+        },
+        {
+            "uuid": "960266d7-ddbc-4242-97e0-68746917c3c9",
+            "status": "PUBLISHED",
+            "title": "en-US - User-centric fresh-thinking access",
+            "navtitle": "en-us---user-centric-fresh-thinking-access",
+            "markdown": "Et sunt soluta qui voluptatem qui.\nModi error voluptatum molestias est maiores soluta ducimus.\nAut necessitatibus enim laudantium.\nMagnam rerum quo maxime sint amet veniam aut eaque deleniti.\nPraesentium veniam placeat atque autem cumque vel.",
+            "locale": "en-US",
+            "ordinal": 0,
+            "parentUuid": "2f32b7bb-7747-4c4d-94c1-bd1eef5dfafb",
+            "type": "api",
+            "typeUuid": "77a5b01b-9eb6-4489-bb80-c7b846a4853c"
+        },
+        {
+            "uuid": "0bfc17f9-960e-4a56-9b7f-31fc84c3435f",
+            "status": "PUBLISHED",
+            "title": "en-US - Up-sized tangible migration",
+            "navtitle": "en-us---up-sized-tangible-migration",
+            "markdown": "qui eum fuga",
+            "locale": "en-US",
+            "ordinal": 2,
+            "parentUuid": "2f32b7bb-7747-4c4d-94c1-bd1eef5dfafb",
+            "type": "api",
+            "typeUuid": "77a5b01b-9eb6-4489-bb80-c7b846a4853c"
+        },
+        {
+            "uuid": "0075277b-5d0a-4e80-84cc-285cd0c28409",
+            "status": "PUBLISHED",
+            "title": "fr-FR - Front-line mission-critical initiative",
+            "navtitle": "fr-fr---front-line-mission-critical-initiative",
+            "markdown": "Aspernatur nihil ipsum repudiandae animi voluptatibus odio corporis.\nNobis eius error.\nPraesentium quia illum sed.\nId blanditiis qui enim.",
+            "locale": "fr-FR",
+            "ordinal": 2,
+            "type": "api",
+            "typeUuid": "77a5b01b-9eb6-4489-bb80-c7b846a4853c"
+        },
+        {
+            "uuid": "68fb4fbc-3925-4cc8-9dd0-cd925d362307",
+            "status": "PUBLISHED",
+            "title": "en-US - Adaptive modular installation",
+            "navtitle": "en-us---adaptive-modular-installation",
+            "markdown": "Omnis nobis vel tenetur quasi velit rerum nobis suscipit voluptas.\nNon id eos enim ipsum.\nRecusandae asperiores eaque non adipisci assumenda.\nVoluptatem architecto quibusdam omnis quod excepturi hic at inventore sapiente.",
+            "locale": "en-US",
+            "ordinal": 3,
+            "type": "api",
+            "typeUuid": "77a5b01b-9eb6-4489-bb80-c7b846a4853c"
+        },
+        {
+            "uuid": "13577bcd-90f5-4ea0-a32a-55c26169edc6",
+            "status": "PUBLISHED",
+            "title": "fr-FR - Down-sized exuding website",
+            "navtitle": "fr-fr---down-sized-exuding-website",
+            "markdown": "Error ea consequuntur asperiores dolores id et error animi totam.\nReprehenderit at eius pariatur consequatur.",
+            "locale": "fr-FR",
+            "ordinal": 3,
+            "type": "api",
+            "typeUuid": "77a5b01b-9eb6-4489-bb80-c7b846a4853c"
+        },
+        {
+            "uuid": "c8050f6e-db15-4e14-a237-8520c236baba",
+            "status": "PUBLISHED",
+            "title": "fr-FR - Multi-tiered composite benchmark",
+            "navtitle": "fr-fr---multi-tiered-composite-benchmark",
+            "markdown": "Deserunt cumque minima. Sed consequatur ut natus modi ut quaerat. Fugit aut amet natus in neque natus nam. Facere est id sint alias molestias sunt nulla. Non vitae id.",
+            "locale": "fr-FR",
+            "ordinal": 0,
+            "parentUuid": "13577bcd-90f5-4ea0-a32a-55c26169edc6",
+            "type": "api",
+            "typeUuid": "77a5b01b-9eb6-4489-bb80-c7b846a4853c"
+        },
+        {
+            "uuid": "90725df2-6417-44fd-b679-267752695267",
+            "status": "PUBLISHED",
+            "title": "fr-FR - Enterprise-wide heuristic productivity",
+            "navtitle": "fr-fr---enterprise-wide-heuristic-productivity",
+            "markdown": "Sed culpa numquam amet. Qui nisi adipisci cum nesciunt inventore ut ea. Aliquam omnis assumenda est voluptatem vel iure eum. Architecto sunt mollitia ab vel quibusdam sed voluptas minus recusandae. Omnis autem itaque. Id velit dolores ipsum earum.",
+            "locale": "fr-FR",
+            "ordinal": 0,
+            "parentUuid": "13577bcd-90f5-4ea0-a32a-55c26169edc6",
+            "type": "api",
+            "typeUuid": "77a5b01b-9eb6-4489-bb80-c7b846a4853c"
+        }
+    ],
+    "assets": [
+        {
+            "uuid": "618e331d-5dab-404c-9c51-fad45962a780",
+            "type": "JSON",
+            "name": "hard_drive_auto_loan_account_fish.json",
+            "_apiUuid": "77a5b01b-9eb6-4489-bb80-c7b846a4853c",
+            "links": [
+                {
+                    "rel": "file",
+                    "href": "/api-management/1.0/apis/77a5b01b-9eb6-4489-bb80-c7b846a4853c/assets/618e331d-5dab-404c-9c51-fad45962a780/file"
+                }
+            ]
+        },
+        {
+            "uuid": "89082aba-2bf8-44cb-8da4-1fabdb7be4ea",
+            "type": "JSON",
+            "name": "paradigm.json",
+            "_apiUuid": "77a5b01b-9eb6-4489-bb80-c7b846a4853c",
+            "links": [
+                {
+                    "rel": "file",
+                    "href": "/api-management/1.0/apis/77a5b01b-9eb6-4489-bb80-c7b846a4853c/assets/89082aba-2bf8-44cb-8da4-1fabdb7be4ea/file"
+                }
+            ]
+        }
+    ],
+    "apiGroups": [],
+    "registrations": []
+}

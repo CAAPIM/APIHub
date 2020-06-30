@@ -4,71 +4,91 @@
 
 ## Packages Directory
 
-> This section provides an overview of the react-admin application structure, describes the key directories, and their content. The packages directory includes the following libraries and apps.
+> This section provides an overview of the react-admin application structure, describes the key directories, and the content of these directories. The packages directory includes the following libraries and apps.
 
 ### Layer7 API Hub Library
 
-For more information about the Layer7 API Hub library, see [the README](./packages/layer7-apihub/README.md):
+[The Layer7 API Hub library README](./packages/layer7-apihub/README.md) includes the following information:
 
-- [Add custom pages](./packages/layer7-apihub/README.md##add-a-pages)
-- [Change the styles](./packages/layer7-apihub/README.md##how-to-change-the-styles)
-- [Add additional language support](./packages/layer7-apihub/README.md##how-to-add-additional-language-support)
-- [Catch and display PAPI errors](./packages/layer7-apihub/README.md##How-to-catch-and-display-papi-errors)
+- [Add pages](./packages/layer7-apihub/README.md##add-a-pages)
+- [Add additional language support](./packages/layer7-apihub/README.md##add-additional-language-support)
 
 ### Example App
 
-The Example app has the same source code as the standard API Hub.
+The Example app has the same source code as the standard API Hub. [The Example app README](./packages/example/README.md) includes the following information:
 
-For more information about the Example app, see [the Example App README](./packages/example/README.md):
-
-- [Change the configuration](./packages/example/README.md##change-the-configuration)
+- [Configure the Example app](./packages/example/README.md##configure-the-example-app)
 - [Change the page title](./packages/example/README.md##change-the-page-title)
-- [Connect to Portal API (PAPI) or use the Layer7 API Hub mock server](./packages/example/README.md##connecting-to-portal-apis-or-using-the-mock-server)
-- [Host the app on another domain](./packages/example/README.md##host-the-app-on-another-domain)
-- [Enable HTTPS](./packages/example/README.md##enable-https)
+- [Make calls to the Layer7 API Hub Mock Server or Portal API (PAPI)](./packages/example/README.md##make-calls-to-the-layer7-api-hub-mock-server-or-portal-api-papi)
+- [Host the Example app on another domain](./packages/example/README.md##host-the-example-app-on-another-domain)
 - [Auto-detect the API Hub URL](./packages/example/README.md##auto-detect-the-api-hub-url)
+- [Customization Tutorials](./packages/example/README.md##customization-tutorials)
+
+### Healthcare App
+
+[The Healthcare app](./packages/healthcare/README.md) demonstrates a possible customized variation of API Hub with a Healthcare theme. It includes the same developer features as the Example app. It further extends the API Hub to include custom pages and additional calls (PAPI and Portal Metrics API). You use this app with the mock server.
+
+The Healthcare app README includes the following information:
+
+- [Available users](./packages/healthcare/README.md##available-users)
+- [Customize the Healthcare app](./packages/layer7-apihub-mock/README.md##customize-the-healthcare-app)
 
 ### Layer7 API Hub Mock Server
 
-For more information about the API Hub mock server, see [the Layer7 API Hub Mock Server Package README](./packages/layer7-apihub-mock/README.md):
+[The Layer7 API Hub mock server README](./packages/layer7-apihub-mock/README.md) includes the following information:
 
-- [Use the mock server in your application](./packages/layer7-apihub-mock/README.md##How-to-use-it-in-your-application)
+- [Start the mock server in your client application](./packages/layer7-apihub-mock/README.md##start-the-cock-server-in-your-client-application)
 - [Available users](./packages/layer7-apihub-mock/README.md##available-users)
-- [Customize API Hub mock server](./packages/layer7-apihub-mock/README.md##customize-API-hub-mock-server)
+- [Customize the mock server](./packages/layer7-apihub-mock/README.md##customize-the-mock-server)
 
 ### Cypress End-To-End Testing
 
-For more information about end-to-end testing, see [the Cypress README](./cypress/README.md).
+The end-to-end (E2E) tests are for the Example app.
 
-## Development
+For more information about this testing, see [the Cypress - End-To-End Testing README](./cypress/README.md).
+
+## Quick Start
+
+Use the following commands to set up you local development environment.
 
 **Prerequisites:**
 
+Before setting up your local development environment, ensure that you have completed the following:
 - You have installed [Yarn](https://yarnpkg.com/).
 - You have installed Make.
 
-**Tip:** You can install the dependencies by issuing the following command:
+### Install the JavaScript Dependencies
+
+Install the JavaScript dependencies by issuing the following command:
 
 ```sh
 make install
 ```
-## Start the Application
+### Start an App
 
-Start the application in watch mode by issuing the following command:
+Start the Example app or the Healthcare app in watch mode.
+
+To start the **Example app**, issue the following command:
 
 ```sh
 make start
 ```
 
-## Run the Tests
+To start the **Healthcare app**, issue the following command:
 
-Run the unit tests and the end-to-end (E2E) tests by issuing the following command:
+```sh
+make start-healthcare
+```
 
-``` sh
+### Run the Tests
+
+Run the unit tests and the E2E tests by issuing the following command:
+
+``` 
 make test
 ```
 
-### Unit Tests
+#### Unit Tests
 
 Run only the unit tests by issuing the following command:
 
@@ -76,11 +96,7 @@ Run only the unit tests by issuing the following command:
 make test-unit
 ```
 
-### End-To-End Tests
-
-The E2E tests are based on the Example app. For more information about this package, see [Example app](./packages/example).
-
-**Prerequisite:** You have a running instance of the Example app at <https://localhost:3000>. For more information, see ([Host the Example app on another domain](./packages/example/README.md##host-the-app-on-another-domain)).
+#### End-To-End Tests
 
 Run only the E2E tests:
 
@@ -94,9 +110,9 @@ Open the E2E tests GUI (useful for writing and debugging E2E tests):
 make test-e2e-local
 ```
 
-## Deploy the Example API Hub
+## Deploy the Example App
 
-Build the Layer7 API Hub library, build the Example app, and copy the production configuration by issuing the following commands:
+Build the API Hub library, the Example app, and then copy the production configuration by issuing the following commands:
 
 ```sh
 make build
@@ -109,3 +125,5 @@ Copy the contents of the `packages/example/build` directory to your favorite web
 ```sh
 docker run --name APIHub -v `pwd`/packages/example/build:/usr/share/nginx/html:ro -p 8888:80 nginx
 ```
+
+

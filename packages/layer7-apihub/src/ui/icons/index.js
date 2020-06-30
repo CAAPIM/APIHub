@@ -1,5 +1,4 @@
-import { IconApi } from './icon_api';
-import { IconApps } from './icon_apps';
-import { IconHome } from './icon_home';
-
-export { IconApi, IconApps, IconHome };
+export * from './IconApi';
+export * from './IconApps';
+export * from './IconHome';
+export * from './IconWiki';

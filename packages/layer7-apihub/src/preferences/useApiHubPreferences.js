@@ -2,6 +2,9 @@ import { useLocalStorage } from '@rehooks/local-storage';
 
 const DEFAULT_STORAGE_KEY = '@layer7/preferences';
 
+export const getPreferenceKey = preferenceName =>
+    `${DEFAULT_STORAGE_KEY}/${preferenceName}`;
+
 /**
  * An hook to get, write or delete a preference.
  * The preferences will be synchronized between all the browser tabs
@@ -29,10 +32,7 @@ const DEFAULT_STORAGE_KEY = '@layer7/preferences';
  *
  */
 export const useApiHubPreference = (preferenceName, defaultPreference) => {
-    return useLocalStorage(
-        `${DEFAULT_STORAGE_KEY}/${preferenceName}`,
-        defaultPreference
-    );
+    return useLocalStorage(getPreferenceKey(preferenceName), defaultPreference);
 };
 
 /**
@@ -47,7 +47,7 @@ export const useApiHubPreference = (preferenceName, defaultPreference) => {
  */
 export const readApiHubPreference = (preferenceName, defaultPreference) => {
     return (
-        localStorage.getItem(`${DEFAULT_STORAGE_KEY}/${preferenceName}`) ||
+        localStorage.getItem(getPreferenceKey(preferenceName)) ||
         defaultPreference
     );
 };
@@ -63,8 +63,15 @@ export const readApiHubPreference = (preferenceName, defaultPreference) => {
  *
  */
 export const writeApiHubPreference = (preferenceName, newPreference) => {
-    localStorage.setItem(
-        `${DEFAULT_STORAGE_KEY}/${preferenceName}`,
-        newPreference
-    );
+    localStorage.setItem(getPreferenceKey(preferenceName), newPreference);
+};
+
+/**
+ * A method to delete a preference from the localstorage.
+ *
+ * @param {string} preferenceName The preference name
+ *
+ */
+export const deleteApiHubPreference = preferenceName => {
+    localStorage.removeItem(getPreferenceKey(preferenceName));
 };

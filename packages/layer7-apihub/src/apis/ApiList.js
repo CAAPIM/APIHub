@@ -35,10 +35,6 @@ import { TagsField } from './TagsField';
 import { LastUpdateField } from './LastUpdateField';
 import { readApiHubPreference } from '../preferences';
 
-const defaultSort = { field: 'createTs', order: 'DESC' };
-
-const listDisplayPreferenceName = 'listDisplay/apis';
-
 export const ApiList = props => {
     const initialListDisplay = readApiHubPreference(
         listDisplayPreferenceName,
@@ -63,14 +59,6 @@ export const ApiList = props => {
         </ListDisplayProvider>
     );
 };
-
-const ApiListComponent = props => <div {...props} />;
-
-const useApiFilterStyles = makeStyles({
-    searchInput: {
-        minWidth: '300px',
-    },
-});
 
 const ApiFilter = props => {
     const translate = useTranslate();
@@ -173,18 +161,6 @@ const ApiListDisplay = props => {
     );
 };
 
-const useApiListActionsStyles = makeStyles(
-    theme => ({
-        root: {
-            alignItems: 'center',
-        },
-        button: {
-            marginLeft: theme.spacing(),
-        },
-    }),
-    { name: 'Layer7ApiListActions' }
-);
-
 const ApiListActions = ({
     className,
     currentSort,
@@ -253,9 +229,33 @@ export const ApiListSortButton = props => (
     </SortButton>
 );
 
+const defaultSort = { field: 'createTs', order: 'DESC' };
+
+const listDisplayPreferenceName = 'listDisplay/apis';
+
+const ApiListComponent = props => <div {...props} />;
+
 const SortByNameASC = { field: 'name', order: 'ASC' };
 const SortByNameDESC = { field: 'name', order: 'DESC' };
 const SortByCreateTsASC = { field: 'createTs', order: 'ASC' };
 const SortByCreateTsDESC = { field: 'createTs', order: 'DESC' };
 const SortByModifyTsASC = { field: 'modifyTs', order: 'ASC' };
 const SortByModifyTsDESC = { field: 'modifyTs', order: 'DESC' };
+
+const useApiFilterStyles = makeStyles({
+    searchInput: {
+        minWidth: '300px',
+    },
+});
+
+const useApiListActionsStyles = makeStyles(
+    theme => ({
+        root: {
+            alignItems: 'center',
+        },
+        button: {
+            marginLeft: theme.spacing(),
+        },
+    }),
+    { name: 'Layer7ApiListActions' }
+);

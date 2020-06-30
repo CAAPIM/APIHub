@@ -6,16 +6,17 @@ describe('useResetPassword', () => {
             global.fetch = jest.fn().mockResolvedValue(
                 Promise.resolve({
                     status: 200,
-                    json: () => Promise.resolve({ status: 200 }),
+                    text: () =>
+                        Promise.resolve(JSON.stringify({ status: 200 })),
                 })
             );
 
             const url = 'https://marmelab.com/api';
             const username = 'Luwangel';
 
-            await fetchResetPassword(url, username);
+            await fetchResetPassword(url, 'origin', username);
 
-            expect(global.fetch).toHaveBeenCalledWith(
+            expect(global.fetch.mock.calls[0][0]).toEqual(
                 `https://marmelab.com/api/admin/Portal.svc/ResetMyPassword()?Username='Luwangel'`
             );
         });
@@ -24,7 +25,8 @@ describe('useResetPassword', () => {
             global.fetch = jest.fn().mockResolvedValue(
                 Promise.resolve({
                     status: 200,
-                    json: () => Promise.resolve({ status: 200 }),
+                    text: () =>
+                        Promise.resolve(JSON.stringify({ status: 200 })),
                 })
             );
 
@@ -38,6 +40,7 @@ describe('useResetPassword', () => {
                 Promise.resolve({
                     status: 400,
                     statusText: 'Bad Request',
+                    text: () => Promise.resolve(JSON.stringify({})),
                 })
             );
 

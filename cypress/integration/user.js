@@ -6,101 +6,103 @@ import {
 } from '../support/userProfile';
 import { openUserMenu } from '../support/userMenu';
 
+import userData from '../data/userData.json';
+
 describe('User', () => {
-    describe('User Profile', () => {
-        before(() => {
-            cy.loadData();
+    // User Profile
+
+    it('should display and edit the user profile', () => {
+        cy.loadData(userData);
+
+        login('portalAdmin', 'Password@1');
+
+        openUserProfile();
+
+        // Open the user profile show view
+
+        checkUserProfileDetails({
+            username: 'portalAdmin',
+            lastName: 'Rowe',
+            firstName: 'Rosario',
+            email: 'Rosario36@example.com',
         });
 
-        beforeEach(() => {
-            login('portalAdmin', 'Password@1');
+        // Open the user profile edit view
+
+        cy.findByText('Edit').click();
+
+        checkUserProfileEditDetails({
+            username: 'portalAdmin',
+            lastName: 'Rowe',
+            firstName: 'Rosario',
+            email: 'Rosario36@example.com',
         });
 
-        it('should display and edit the user profile', () => {
-            openUserProfile();
+        // Last Name
 
-            // Open the user profile show view
+        cy.findByLabelText('Last Name *')
+            .clear()
+            .type('Rowelo');
 
-            checkUserProfileDetails({
-                username: 'portalAdmin',
-                lastName: 'Rowe',
-                firstName: 'Rosario',
-                email: 'Rosario36@example.com',
-            });
+        // First Name
 
-            // Open the user profile edit view
+        cy.findByLabelText('First Name *')
+            .clear()
+            .type('Rosarito');
 
-            cy.findByText('Edit').click();
+        // Email
 
-            checkUserProfileEditDetails({
-                username: 'portalAdmin',
-                lastName: 'Rowe',
-                firstName: 'Rosario',
-                email: 'Rosario36@example.com',
-            });
+        cy.findByLabelText('Email *')
+            .clear()
+            .type('Rosarito36@marmelab.com');
 
-            // Last Name
+        cy.findByText('Save').click();
 
-            cy.findByLabelText('Last Name *')
-                .clear()
-                .type('Rowelo');
+        // Discard notification
+        cy.findByText('My Profile').click();
+        cy.wait(250);
 
-            // First Name
-
-            cy.findByLabelText('First Name *')
-                .clear()
-                .type('Rosarito');
-
-            // Email
-
-            cy.findByLabelText('Email *')
-                .clear()
-                .type('Rosarito36@marmelab.com');
-
-            cy.findByText('Save').click();
-
-            // Discard notification
-            cy.findByText('My Profile').click();
-            cy.wait(250);
-
-            // Open the user profile show view
-            checkUserProfileDetails({
-                username: 'portalAdmin',
-                lastName: 'Rowelo',
-                firstName: 'Rosarito',
-                email: 'Rosarito36@marmelab.com',
-            });
+        // Open the user profile show view
+        checkUserProfileDetails({
+            username: 'portalAdmin',
+            lastName: 'Rowelo',
+            firstName: 'Rosarito',
+            email: 'Rosarito36@marmelab.com',
         });
     });
 
-    describe('User Organization', () => {
-        before(() => {
-            cy.loadData();
-        });
+    // User Organization
 
-        beforeEach(() => {
-            login('user', 'Password@1');
-        });
+    it('should swith the organization and stay on the same page', () => {
+        cy.loadData(userData);
 
-        it('should swith the organization and stay on the home page', () => {
-            cy.visit('/#/');
-            openUserMenu();
-            cy.findByText('Rau, Walter and McGlynn').click();
-            cy.url().should('contains', '/#/');
-        });
+        login('user', 'Password@1');
 
-        it('should swith the organization and stay on the apis page', () => {
-            cy.visit('/#/apis');
-            openUserMenu();
-            cy.findByText('Kertzmann - Abbott').click();
-            cy.url().should('contains', '/#/apis');
-        });
+        // Home
 
-        it('should swith the organization and stay on the same page', () => {
-            cy.visit('/#/applications');
-            openUserMenu();
-            cy.findByText('Jacobson LLC').click();
-            cy.url().should('contains', '/#/applications');
-        });
+        cy.visit('/#/');
+        cy.contains('The Home page content has not been provided yet.');
+        openUserMenu();
+        cy.findByText('Rau, Walter and McGlynn').click({ force: true });
+        cy.contains('Your organization updated successfully');
+        cy.url().should('contains', '/#/');
+        cy.contains('The Home page content has not been provided yet.').click(); // discard notification
+
+        cy.contains('APIs').click();
+        cy.findAllByText('APIs').should('have.length', 3);
+        cy.findByText('No results found');
+        openUserMenu();
+        cy.findByText('Kertzmann - Abbott').click({ force: true });
+        cy.contains('Your organization updated successfully');
+        cy.url().should('contains', '/#/apis');
+        cy.findByText('No results found').click(); // discard notification
+
+        cy.contains('Applications').click();
+        cy.findAllByText('Applications').should('have.length', 3);
+        cy.findByText('No results found');
+        openUserMenu();
+        cy.findByText('Jacobson LLC').click({ force: true });
+        cy.contains('Your organization updated successfully');
+        cy.url().should('contains', '/#/applications');
     });
 });
