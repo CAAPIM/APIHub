@@ -13,7 +13,9 @@ import { makeStyles } from '@material-ui/core/styles';
 import AppsIcon from '@material-ui/icons/Apps';
 import TimeIcon from '@material-ui/icons/AccessTime';
 import EventIcon from '@material-ui/icons/Event';
+import Button from '@material-ui/core/Button';
 import format from 'date-fns/format';
+import { ApiOverviewImage } from './ApiOverviewImage'
 
 import { MarkdownView, Stats, StatsText } from '../ui';
 import { TagsField } from './TagsField';
@@ -84,6 +86,9 @@ export const ApiCard = ({ basePath, record }) => {
                 }
             />
             <CardContent className={classes.content}>
+                {record.image ? (
+                    <ApiOverviewImage image={record.image} name={record.name} maxHeight="56px"/>
+                ) : null}
                 <Tooltip title={record.description || ''}>
                     <MarkdownView
                         className={classes.description}
@@ -100,62 +105,9 @@ export const ApiCard = ({ basePath, record }) => {
                     />
                 </Grid>
                 <Grid container alignItems="center" className={classes.stats}>
-                    <Grid item>
-                        <Stats
-                            icon={<AppsIcon />}
-                            title={translate(
-                                'resources.apis.list.cards.fields.applications_long',
-                                {
-                                    smart_count: record.applicationUsage || 0,
-                                }
-                            )}
-                        >
-                            <StatsText>
-                                {translate(
-                                    'resources.apis.list.cards.fields.applications',
-                                    {
-                                        smart_count:
-                                            record.applicationUsage || 0,
-                                    }
-                                )}
-                            </StatsText>
-                        </Stats>
-                    </Grid>
-                    <Grid item>
-                        <Stats
-                            icon={<TimeIcon />}
-                            title={translate(
-                                'resources.apis.list.cards.fields.averageLatency_long',
-                                {
-                                    smart_count: record.averageLatency || 0,
-                                }
-                            )}
-                        >
-                            <StatsText>
-                                {translate(
-                                    'resources.apis.list.cards.fields.averageLatency',
-                                    {
-                                        ms: record.averageLatency || 0,
-                                    }
-                                )}
-                            </StatsText>
-                        </Stats>
-                    </Grid>
-                    {formattedDate && (
-                        <Grid item>
-                            <Stats
-                                icon={<EventIcon />}
-                                title={translate(
-                                    'resources.apis.list.cards.fields.updated',
-                                    {
-                                        date: formattedDate,
-                                    }
-                                )}
-                            >
-                                <StatsText>{formattedDate}</StatsText>
-                            </Stats>
-                        </Grid>
-                    )}
+                    <Button size="small" color="primary" className={classes.button}>
+                        More Information
+                    </Button>
                 </Grid>
             </CardActions>
         </Card>
@@ -240,6 +192,9 @@ const useStyles = makeStyles(
                 marginLeft: theme.spacing(0.5),
             },
         },
+        button: {
+            color: theme.palette.colorContrast,
+        }
     }),
     {
         name: 'Layer7ApiCard',

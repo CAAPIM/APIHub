@@ -16,6 +16,7 @@ import { CurrentUserId } from '../dataProvider/userContexts';
 import { isPublisher } from '../userContexts';
 import { ApiOverview } from './ApiOverview';
 import { ApiDocumentation } from './ApiDocumentation';
+import { ApiShowMetrics } from './ApiShowMetrics';
 import { ApiSpecs } from './ApiSpecs';
 
 export const ApiShow = props => {
@@ -76,6 +77,11 @@ export const ApiShowTabs = props => {
                     userCanDelete={userCanDelete}
                     entityType={ENTITY_TYPE_API}
                 />
+            </Tab>
+            <Tab
+                label={translate('resources.apis.monitoring.title')}
+            >
+                <ApiShowMetrics />
             </Tab>
         </TabbedShowLayout>
     );

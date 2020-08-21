@@ -17,6 +17,9 @@ copy-config-example: ## Copy config of the example. Usage DEPLOY_ENV=[dev|integr
 copy-config-healthcare: ## Copy config of the healthcare. Usage DEPLOY_ENV=[dev|integration|layer7] make copy-config-healthcare.
 	cp packages/healthcare/config/config-${DEPLOY_ENV}.js packages/healthcare/public/config.js
 
+copy-config-mapfre: ## Copy config of the mapfre. Usage DEPLOY_ENV=[dev|integration|layer7] make copy-config-mapfre.
+	cp packages/mapfre/config/config-${DEPLOY_ENV}.js packages/mapfre/public/config.js
+
 generate-mock-data: ## Generate new data for the mock server. Usage OUTPUT_FILE=my-file.json make generate-mock-data. OUTPUT_FILE is optionnal.
 	./packages/layer7-apihub-mock/bin/generateData.js ${OUTPUT_FILE}
 
@@ -42,6 +45,9 @@ start: copy-config-example build ## Starts the application in development mode
 
 start-healthcare: copy-config-healthcare build ## Starts the application in development mode
 	@yarn start-healthcare
+
+start-mapfre: copy-config-mapfre build ## Starts the application in development mode
+	@yarn start-mapfre
 
 watch-lib: ## Starts the library in development mode
 	@yarn start-lib

@@ -11,6 +11,7 @@ import { VisibilityField } from './VisibilityField';
 import { ApiAssetsField } from './ApiAssetsField';
 import { ApiApplicationUsageField } from './Application';
 import { AsyncTagsField } from './TagsField';
+import { ApiOverviewImage } from './ApiOverviewImage'
 
 export const ApiOverview = ({ record, userIsPublisher }) => {
     const classes = useOverviewStyles();
@@ -170,6 +171,12 @@ export const ApiOverview = ({ record, userIsPublisher }) => {
                 className={classes.description}
                 classes={gridClasses}
             >
+                 {record.image ? (
+                    <Grid item>
+                        <ApiOverviewImage image={record.image} name={record.name} maxHeight="172px"/>
+                    </Grid>
+                ) : null}
+
                 {userIsPublisher ? (
                     <Grid item>
                         <Labeled

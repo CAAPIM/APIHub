@@ -51,7 +51,7 @@ export const ApiApplicationUsageField = props => {
 const useStyles = makeStyles(
     theme => ({
         root: {
-            color: theme.palette.primary.main,
+            color: theme.palette.colorContrast,
         },
         error: {
             color: theme.palette.error.main,

@@ -253,6 +253,9 @@ const apiHubMessages = {
             documentation: {
                 title: 'Documentation',
             },
+            monitoring: {
+                title: 'Monitoring',
+            },
         },
         applications: {
             name: 'Application |||| Applications',
