@@ -42,7 +42,7 @@ export const LandingPageApis = props => {
             <Typography className={classes.title} variant="h2">
                 APIs
             </Typography>
-            <Typography className={classes.subtitle} variant="subtitle2">
+            <Typography className={classes.subtitle} variant="subtitle1">
                 Explore the developer tools we offer.
             </Typography>
             {!loaded ? (
@@ -68,12 +68,10 @@ const useStyles = makeStyles(theme => ({
         justifyContent: 'center',
         flexDirection: 'column',
         padding: theme.spacing(10, 0, 2),
+        color: '#000000',
     },
     title: {
         fontSize: '2rem',
-    },
-    subtitle: {
-        color: theme.palette.colorContrast,
     },
     cardGrid: {
         width: '100%',

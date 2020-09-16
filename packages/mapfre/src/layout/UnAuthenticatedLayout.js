@@ -11,17 +11,27 @@ import { Notification } from 'react-admin';
 import { theme } from '../theme';
 import { Footer } from './Footer';
 import { Header } from './Header';
+import illustration from './mapfre_main.jpg';
 
 export const UnAuthenticatedLayout = ({ children, showActions }) => {
     const classes = useStyles();
 
     return (
-        <Container className={classes.root} maxWidth="lg">
+        <>
             <Header showActions={showActions} />
-            <main className={classes.main}>{children}</main>
+            {showActions ? (
+                <img
+                    src={illustration}
+                    alt="Mapfre's Mechanich"
+                    className={classes.illustration}
+                />
+            ) : null}
+            <Container className={classes.root} maxWidth="lg">
+                <main className={classes.main}>{children}</main>
+                <Notification />
+            </Container>
             <Footer />
-            <Notification />
-        </Container>
+        </>
     );
 };
 
@@ -55,6 +65,10 @@ const useStyles = makeStyles(
             display: 'flex',
             flexDirection: 'column',
             flex: 1,
+        },
+        illustration: {
+            height: '100%',
+            width: '100%',
         },
     }),
     {

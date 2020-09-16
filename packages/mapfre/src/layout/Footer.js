@@ -30,6 +30,7 @@ export const Footer = ({ withLogo = true, ...rest }) => {
 const useStyles = makeStyles(
     theme => ({
         root: {
+            background: `#c02524`,
             display: 'flex',
             paddingTop: theme.spacing(8),
             paddingBottom: theme.spacing(4),
@@ -47,7 +48,8 @@ const useStyles = makeStyles(
             color: theme.palette.common.white,
             fontWeight: theme.typography.fontWeightBold,
             '& + &': {
-                marginLeft: theme.spacing(4),
+                marginLeft: theme.spacing(2),
+                marginRight: theme.spacing(1),
             },
         },
     }),

@@ -9,7 +9,6 @@ import { useAuthState } from 'ra-core';
 import { Redirect } from 'react-router';
 
 import { UnAuthenticatedLayoutWithTheme } from '../layout';
-import illustration from './mapfre_main.jpg';
 import { LandingPageApis } from './LandingPageApis';
 
 export const LandingPage = () => {
@@ -27,13 +26,6 @@ export const LandingPage = () => {
     return (
         <UnAuthenticatedLayoutWithTheme showActions>
             <Grid className={classes.heroContainer} container spacing={4}>
-                <Grid item xs={12}>
-                    <img
-                        src={illustration}
-                        alt="A doctor with a stethoscope"
-                        className={classes.illustration}
-                    />
-                </Grid>
                 <Grid item xs={12} md={6} className={classes.welcomeContainer}>
                     <Typography variant="h1" className={classes.title}>
                         Mapfre
@@ -87,6 +79,7 @@ const useStyles = makeStyles(theme => ({
     },
     welcomeContainer: {
         marginTop: theme.spacing(8),
+        color: '#000000',
     },
     title: {
         fontSize: theme.typography.fontSize * 2,
@@ -98,10 +91,6 @@ const useStyles = makeStyles(theme => ({
         maxWidth: '50%',
         display: 'inline-block',
         lineHeight: 0.9,
-    },
-    illustration: {
-        height: '100%',
-        width: '100%',
     },
     heroButtonsContainer: {
         marginTop: theme.spacing(4),
