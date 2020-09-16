@@ -65,7 +65,7 @@ export const Header = props => {
 const useAppbarStyles = makeStyles(
     theme => ({
         root: {
-            background: 'transparent',
+            background: '#c02524',
         },
         title: {
             paddingTop: theme.spacing(1),

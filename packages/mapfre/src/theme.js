@@ -7,8 +7,11 @@ import createPalette from '@material-ui/core/styles/createPalette';
 const palette = createPalette(
     merge({}, defaultTheme.palette, {
         secondary: {
+            //Cambia el color de algunos botones e indicadores de posición.Original: #43425d
             main: '#43425d',
+            //No se percibe ningún cambio. Original: #ae418e
             light: '#ae418e',
+            //Original:
             dark: '#c02524',
         },
         primary: {

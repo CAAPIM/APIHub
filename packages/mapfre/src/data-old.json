@@ -45,15 +45,15 @@
                     },
                     "activeOrgUuid": "79dc4a0e-6ea7-4e63-ac67-d3630b8ad725",
                     "accessibleOrgs": {
-                        "Mapfre España": "79dc4a0e-6ea7-4e63-ac67-d3630b8ad725",
-                        "Mapfre LATAM": "b7c0db2c-393a-42dc-a982-f415486410b8",
-                        "Agroseguro": "4b076681-55bf-4d9a-af79-6a530affa1e6",
-                        "Santander": "338bf63f-6a50-4a1c-b8b8-77c33abfbfa4",
-                        "Docplanner": "f513cfb0-bf9b-4d51-9f5e-f914174cd78f"
+                        "Lang - Hegmann": "79dc4a0e-6ea7-4e63-ac67-d3630b8ad725",
+                        "Shields - Conroy": "b7c0db2c-393a-42dc-a982-f415486410b8",
+                        "Daugherty, Kunde and Nikolaus": "4b076681-55bf-4d9a-af79-6a530affa1e6",
+                        "Walsh, Bernier and Hodkiewicz": "338bf63f-6a50-4a1c-b8b8-77c33abfbfa4",
+                        "Streich - Shields": "f513cfb0-bf9b-4d51-9f5e-f914174cd78f"
                     }
                 }
             ]
-        },
+        },		
         {
             "uuid": "3fcbda8f-540b-48bf-850d-99da60d3f91e",
             "userContexts": [
@@ -75,125 +75,6 @@
                         "Lang - Hegmann": "79dc4a0e-6ea7-4e63-ac67-d3630b8ad725",
                         "Walsh, Bernier and Hodkiewicz": "338bf63f-6a50-4a1c-b8b8-77c33abfbfa4",
                         "Streich - Shields": "f513cfb0-bf9b-4d51-9f5e-f914174cd78f"
-                    }
-                }
-            ]
-        },
-        {
-            "uuid": "3fcbda8f-540b-48bf-850d-99da60d3f910",
-            "userContexts": [
-                {
-                    "userDetails": {
-                        "uuid": "3fcbda8f-540b-48bf-850d-99da60d3f910",
-                        "username": "orgPublisherAgro",
-                        "lastName": "Látigo",
-                        "firstName": "John",
-                        "email": "jlatigo@example.com",
-                        "portalAdmin": false,
-                        "apiOwner": false,
-                        "orgPublisher": true,
-                        "developer": false,
-                        "orgAdmin": false
-                    },
-                    "activeOrgUuid": "4b076681-55bf-4d9a-af79-6a530affa1e6",
-                    "accessibleOrgs": {
-                        "Agroseguro": "4b076681-55bf-4d9a-af79-6a530affa1e6"
-                    }
-                }
-            ]
-        },
-        {
-            "uuid": "3fcbda8f-540b-48bf-850d-99da60d3f920",
-            "userContexts": [
-                {
-                    "userDetails": {
-                        "uuid": "3fcbda8f-540b-48bf-850d-99da60d3f920",
-                        "username": "orgPublisherSantan",
-                        "lastName": "Tuffo",
-                        "firstName": "Carlo",
-                        "email": "ctuffo@example.com",
-                        "portalAdmin": false,
-                        "apiOwner": false,
-                        "orgPublisher": true,
-                        "developer": false,
-                        "orgAdmin": false
-                    },
-                    "activeOrgUuid": "338bf63f-6a50-4a1c-b8b8-77c33abfbfa4",
-                    "accessibleOrgs": {
-                        "Santander": "338bf63f-6a50-4a1c-b8b8-77c33abfbfa4"
-                    }
-                }
-            ]
-        },
-        {
-            "uuid": "3fcbda8f-540b-48bf-850d-99da60d3f930",
-            "userContexts": [
-                {
-                    "userDetails": {
-                        "uuid": "3fcbda8f-540b-48bf-850d-99da60d3f930",
-                        "username": "orgPublisherDP",
-                        "lastName": "Phamet",
-                        "firstName": "George",
-                        "email": "gphamet@example.com",
-                        "portalAdmin": false,
-                        "apiOwner": false,
-                        "orgPublisher": true,
-                        "developer": false,
-                        "orgAdmin": false
-                    },
-                    "activeOrgUuid": "f513cfb0-bf9b-4d51-9f5e-f914174cd78f",
-                    "accessibleOrgs": {
-                        "Docplanner": "f513cfb0-bf9b-4d51-9f5e-f914174cd78f"
-                    }
-                }
-            ]
-        },
-        {
-            "uuid": "3fcbda8f-540b-48bf-850d-99da60d3f950",
-            "userContexts": [
-                {
-                    "userDetails": {
-                        "uuid": "3fcbda8f-540b-48bf-850d-99da60d3f950",
-                        "username": "EspApiOwner",
-                        "lastName": "Zapatero",
-                        "firstName": "Miguel",
-                        "email": "mzapatero@example.com",
-                        "portalAdmin": false,
-                        "apiOwner": true,
-                        "orgPublisher": true,
-                        "developer": false,
-                        "orgAdmin": false
-                    },
-                    "activeOrgUuid": "79dc4a0e-6ea7-4e63-ac67-d3630b8ad725",
-                    "accessibleOrgs": {
-                        "Mapfre España": "79dc4a0e-6ea7-4e63-ac67-d3630b8ad725"
-                    }
-                }
-            ]
-        },
-        {
-            "uuid": "3fcbda8f-540b-48bf-850d-99da60d3f940",
-            "userContexts": [
-                {
-                    "userDetails": {
-                        "uuid": "3fcbda8f-540b-48bf-850d-99da60d3f940",
-                        "username": "LatamApiOwner",
-                        "lastName": "Vitelo",
-                        "firstName": "Fernando",
-                        "email": "fviteloo@example.com",
-                        "portalAdmin": false,
-                        "apiOwner": true,
-                        "orgPublisher": true,
-                        "developer": false,
-                        "orgAdmin": false
-                    },
-                    "activeOrgUuid": "b7c0db2c-393a-42dc-a982-f415486410b8",
-                    "accessibleOrgs": {
-                      "Mapfre España": "79dc4a0e-6ea7-4e63-ac67-d3630b8ad725",
-                      "Mapfre LATAM": "b7c0db2c-393a-42dc-a982-f415486410b8",
-                      "Agroseguro": "4b076681-55bf-4d9a-af79-6a530affa1e6",
-                      "Santander": "338bf63f-6a50-4a1c-b8b8-77c33abfbfa4",
-                      "Docplanner": "f513cfb0-bf9b-4d51-9f5e-f914174cd78f"
                     }
                 }
             ]
@@ -223,75 +104,6 @@
             ]
         },
         {
-            "uuid": "c34beed9-4998-46c1-9bd8-0dec0925bfd9",
-            "userContexts": [
-                {
-                    "userDetails": {
-                        "uuid": "c34beed9-4998-46c1-9bd8-0dec0925bfd9",
-                        "username": "orgAdminAgro",
-                        "lastName": "Simon",
-                        "firstName": "Ana",
-                        "email": "asimon@example.com",
-                        "portalAdmin": false,
-                        "apiOwner": false,
-                        "orgPublisher": false,
-                        "developer": false,
-                        "orgAdmin": true
-                    },
-                    "activeOrgUuid": "4b076681-55bf-4d9a-af79-6a530affa1e6",
-                    "accessibleOrgs": {
-                        "Agroseguro": "4b076681-55bf-4d9a-af79-6a530affa1e6"
-                    }
-                }
-            ]
-        },
-        {
-            "uuid": "c34beed9-4998-46c1-9bd8-0dec0925bf10",
-            "userContexts": [
-                {
-                    "userDetails": {
-                        "uuid": "c34beed9-4998-46c1-9bd8-0dec0925bf10",
-                        "username": "orgAdminSantan",
-                        "lastName": "Paz",
-                        "firstName": "Ana",
-                        "email": "apaz@example.com",
-                        "portalAdmin": false,
-                        "apiOwner": false,
-                        "orgPublisher": false,
-                        "developer": false,
-                        "orgAdmin": true
-                    },
-                    "activeOrgUuid": "338bf63f-6a50-4a1c-b8b8-77c33abfbfa4",
-                    "accessibleOrgs": {
-                        "Santander": "338bf63f-6a50-4a1c-b8b8-77c33abfbfa4"
-                    }
-                }
-            ]
-        },
-        {
-            "uuid": "c34beed9-4998-46c1-9bd8-0dec0925bf11",
-            "userContexts": [
-                {
-                    "userDetails": {
-                        "uuid": "c34beed9-4998-46c1-9bd8-0dec0925bf11",
-                        "username": "orgAdminDP",
-                        "lastName": "Gomez",
-                        "firstName": "Sergio",
-                        "email": "sgomez@example.com",
-                        "portalAdmin": false,
-                        "apiOwner": false,
-                        "orgPublisher": false,
-                        "developer": false,
-                        "orgAdmin": true
-                    },
-                    "activeOrgUuid": "f513cfb0-bf9b-4d51-9f5e-f914174cd78f",
-                    "accessibleOrgs": {
-                        "Docplanner": "f513cfb0-bf9b-4d51-9f5e-f914174cd78f"
-                    }
-                }
-            ]
-        },
-        {
             "uuid": "dfee4417-5f96-4ce5-9e5c-1d34eb68301f",
             "userContexts": [
                 {
@@ -310,50 +122,6 @@
                     "accessibleOrgs": {
                         "Lang - Hegmann": "79dc4a0e-6ea7-4e63-ac67-d3630b8ad725",
                         "Walsh, Bernier and Hodkiewicz": "338bf63f-6a50-4a1c-b8b8-77c33abfbfa4"
-                    }
-                }
-            ]
-        },
-        {
-            "uuid": "dfee4417-5f96-4ce5-9e5c-1d34eb68305g",
-            "userContexts": [
-                {
-                    "userDetails": {
-                        "uuid": "dfee4417-5f96-4ce5-9e5c-1d34eb68305g",
-                        "username": "apiOwner2",
-                        "lastName": "Holt",
-                        "firstName": "Raymond",
-                        "email": "rholt@example.com",
-                        "portalAdmin": false,
-                        "apiOwner": true,
-                        "orgPublisher": false,
-                        "developer": false
-                    },
-                    "activeOrgUuid": "79dc4a0e-6ea7-4e63-ac67-d3630b8ad725",
-                    "accessibleOrgs": {
-                        "Mapfre España": "79dc4a0e-6ea7-4e63-ac67-d3630b8ad725"
-                    }
-                }
-            ]
-        },
-        {
-            "uuid": "dfee4417-5f96-4ce5-9e5c-1d34eb68304g",
-            "userContexts": [
-                {
-                    "userDetails": {
-                        "uuid": "dfee4417-5f96-4ce5-9e5c-1d34eb68304g",
-                        "username": "apiOwner3",
-                        "lastName": "Diaz",
-                        "firstName": "Rosa",
-                        "email": "rdiaz@example.com",
-                        "portalAdmin": false,
-                        "apiOwner": true,
-                        "orgPublisher": false,
-                        "developer": false
-                    },
-                    "activeOrgUuid": "b7c0db2c-393a-42dc-a982-f415486410b8",
-                    "accessibleOrgs": {
-                        "Mapfre LATAM": "b7c0db2c-393a-42dc-a982-f415486410b8"
                     }
                 }
             ]
@@ -383,116 +151,6 @@
                     }
                 }
             ]
-        },
-        {
-            "uuid": "6e2e8396-1e7e-4af6-a5b5-2f741f149d10",
-            "userContexts": [
-                {
-                    "userDetails": {
-                        "uuid": "6e2e8396-1e7e-4af6-a5b5-2f741f149d10",
-                        "username": "userAgro",
-                        "lastName": "Peralta",
-                        "firstName": "Layla",
-                        "email": "lperalta@example.com",
-                        "portalAdmin": false,
-                        "apiOwner": false,
-                        "orgPublisher": false,
-                        "developer": true
-                    },
-                    "activeOrgUuid": "4b076681-55bf-4d9a-af79-6a530affa1e6",
-                    "accessibleOrgs": {
-                        "Agroseguro": "4b076681-55bf-4d9a-af79-6a530affa1e6"
-                    }
-                }
-            ]
-        },
-        {
-            "uuid": "6e2e8396-1e7e-4af6-a5b5-2f741f149d11",
-            "userContexts": [
-                {
-                    "userDetails": {
-                        "uuid": "6e2e8396-1e7e-4af6-a5b5-2f741f149d11",
-                        "username": "userSantan",
-                        "lastName": "Lo Truglio",
-                        "firstName": "Joe",
-                        "email": "jlotruglio@example.com",
-                        "portalAdmin": false,
-                        "apiOwner": false,
-                        "orgPublisher": false,
-                        "developer": true
-                    },
-                    "activeOrgUuid": "338bf63f-6a50-4a1c-b8b8-77c33abfbfa4",
-                    "accessibleOrgs": {
-                        "Santander": "338bf63f-6a50-4a1c-b8b8-77c33abfbfa4"
-                    }
-                }
-            ]
-        },
-        {
-            "uuid": "6e2e8396-1e7e-4af6-a5b5-2f741f149d13",
-            "userContexts": [
-                {
-                    "userDetails": {
-                        "uuid": "6e2e8396-1e7e-4af6-a5b5-2f741f149d13",
-                        "username": "userDP",
-                        "lastName": "Peralta",
-                        "firstName": "Jake",
-                        "email": "jperalta@example.com",
-                        "portalAdmin": false,
-                        "apiOwner": false,
-                        "orgPublisher": false,
-                        "developer": true
-                    },
-                    "activeOrgUuid": "f513cfb0-bf9b-4d51-9f5e-f914174cd78f",
-                    "accessibleOrgs": {
-                        "Docplanner": "f513cfb0-bf9b-4d51-9f5e-f914174cd78f"
-                    }
-                }
-            ]
-        },
-        {
-            "uuid": "6e2e8396-1e7e-4af6-a5b5-2f741f149d14",
-            "userContexts": [
-                {
-                    "userDetails": {
-                        "uuid": "6e2e8396-1e7e-4af6-a5b5-2f741f149d14",
-                        "username": "userEsp",
-                        "lastName": "Linetti",
-                        "firstName": "Gina",
-                        "email": "glinetti@example.com",
-                        "portalAdmin": false,
-                        "apiOwner": false,
-                        "orgPublisher": false,
-                        "developer": true
-                    },
-                    "activeOrgUuid": "79dc4a0e-6ea7-4e63-ac67-d3630b8ad725",
-                    "accessibleOrgs": {
-                        "Mapfre España": "79dc4a0e-6ea7-4e63-ac67-d3630b8ad725"
-                    }
-                }
-            ]
-        },
-        {
-            "uuid": "6e2e8396-1e7e-4af6-a5b5-2f741f149d15",
-            "userContexts": [
-                {
-                    "userDetails": {
-                        "uuid": "6e2e8396-1e7e-4af6-a5b5-2f741f149d15",
-                        "username": "userEsp",
-                        "lastName": "Smith",
-                        "firstName": "Kevin",
-                        "email": "ksmith@example.com",
-                        "portalAdmin": false,
-                        "apiOwner": false,
-                        "orgPublisher": false,
-                        "developer": true
-                    },
-                    "activeOrgUuid": "b7c0db2c-393a-42dc-a982-f415486410b8",
-                    "accessibleOrgs": {
-                        "Mapfre LATAM": "b7c0db2c-393a-42dc-a982-f415486410b8"
-                    }
-                }
-            ]
         }
     ],
     "apisLogout": [
@@ -516,13 +174,12 @@
             "portalStatus": "UNPUBLISHED",
             "accessStatus": "PRIVATE",
             "tags": [
-                "Interna",
-				        "Mapfre",
-                "Agrario"
+                "Accounts",
+				"Mapfre"
             ],
-            "applicationUsage": 3
+            "applicationUsage": 2
         },
-		    {
+		{
             "id": "63cd344c-eadf-4854-be37-cd7454ddb0ab",
             "uuid": "63cd344c-eadf-4854-be37-cd7454ddb0ab",
             "name": "Motor",
@@ -530,15 +187,15 @@
             "createTs": 1585992777739,
             "modifyTs": 1597240357393,
             "version": "3.0.7",
-            "ssgServiceType": "SOAP",
+            "ssgServiceType": "REST",
             "portalStatus": "UNPUBLISHED",
             "accessStatus": "PRIVATE",
             "tags": [
-                "Interna",
-				        "Mapfre",
-                "Motor"
+                "Accounts",
+				"TestTag",
+				"Mapfre"
             ],
-            "applicationUsage": 0,
+            "applicationUsage": 2,
             "image":"motor_header.jpg"
         },
         {
@@ -550,14 +207,15 @@
             "modifyTs": 1597303208865,
             "version": "1.6.9",
             "ssgServiceType": "REST",
-            "portalStatus": "ENABLED",
-            "accessStatus": "PRIVATE",
+            "portalStatus": "UNPUBLISHED",
+            "accessStatus": "PUBLIC",
             "tags": [
-                "Interna",
-                "Mapfre",
-                "Bancos"
+                "Security",
+                "Plans",
+                "Organizations",
+				"Mapfre"
             ],
-            "applicationUsage": 4
+            "applicationUsage": 8
         },
         {
             "id": "df4eea7f-5821-40bf-9d16-958f1b3ac3fb",
@@ -571,11 +229,10 @@
             "portalStatus": "ENABLED",
             "accessStatus": "PUBLIC",
             "tags": [
-				        "Interna",
-                "Mapfre",
-                "Bancos"
+                "Security",
+				"Mapfre"
             ],
-            "applicationUsage": 6,
+            "applicationUsage": 4,
             "image":"business_support_header.jpg"
         },
         {
@@ -590,53 +247,18 @@
             "portalStatus": "DISABLED",
             "accessStatus": "PUBLIC",
             "tags": [
-                "Interna",
-				        "Mapfre",
-                "Bancos"
+                "Accounts",
+                "Security",
+				"Mapfre"
             ],
             "applicationUsage": 3
-        },
-        {
-            "id": "006ac934-4754-4c78-8722-447259100a52",
-            "uuid": "006ac934-4754-4c78-8722-447259100a52",
-            "name": "ATMAPI",
-            "description": "Offers functionalities to interact with ATMs in the Santander net.",
-            "createTs": 1584741331761,
-            "modifyTs": 1597309554989,
-            "version": "0.1.0",
-            "ssgServiceType": "REST",
-            "portalStatus": "ENABLED",
-            "accessStatus": "PRIVATE",
-            "tags": [
-                "Externa",
-                "Mapfre",
-                "Bancos"
-            ],
-            "applicationUsage": 1
-        },
-        {
-            "id": "006ac934-4754-4c78-8722-447259100b56",
-            "uuid": "006ac934-4754-4c78-8722-447259100b56",
-            "name": "Servicios Medicos",
-            "description": "Offers functionalities to interact with healthcare centers in the Mapfre net.",
-            "createTs": 1584741331761,
-            "modifyTs": 1597309554989,
-            "version": "1.1.0",
-            "ssgServiceType": "SOAP",
-            "portalStatus": "DISABLED",
-            "accessStatus": "PUBLIC",
-            "tags": [
-                "Healthcare",
-                "Externa"
-            ],
-            "applicationUsage": 1
         }
     ],
     "applications": [
         {
             "id": "cb067a86-d86e-47b9-9edf-839f953bdb21",
             "uuid": "cb067a86-d86e-47b9-9edf-839f953bdb21",
-            "name": "Santander App 1",
+            "name": "Santander Bank",
             "status": "ENABLED",
             "disabledByType": null,
             "description": "App for Santander Bank",
@@ -647,171 +269,44 @@
             "keySecret": "e1832447-67a1-4f33-8c95-dfb7c0e1aa39",
             "apiIds": {
                 "results": [
-                    "63cd344c-eadf-4854-be37-cd7454ddb0ab",
-                    "df4eea7f-5821-40bf-9d16-958f1b3ac3fb",
-                    "006ac934-4754-4c78-8722-447259100ab3",
-                    "006ac934-4754-4c78-8722-447259100a52"
-                ]
-            },
-            "_accessibleApis": [
-                "63cd344c-eadf-4854-be37-cd7454ddb0ab",
-                "df4eea7f-5821-40bf-9d16-958f1b3ac3fb",
-                "006ac934-4754-4c78-8722-447259100ab3",
-                "006ac934-4754-4c78-8722-447259100a52"
-            ]
-        },
-        {
-            "id": "cb067a86-d86e-47b9-9edf-839f953bbbdc",
-            "uuid": "cb067a86-d86e-47b9-9edf-839f953bbbdc",
-            "name": "Santander App 2",
-            "status": "DISABLED",
-            "disabledByType": null,
-            "description": "App for Santander Bank",
-            "OauthCallbackUrl": "https://example.com/oauthCallback",
-            "OauthScope": "OOB",
-            "OauthType": "confidential",
-            "apiKey": "fae74f6b-a9a7-44fb-b9ff-50aafadcaffc",
-            "keySecret": "e1832447-67a1-4f33-8c95-dfb7c0e1aa41",
-            "apiIds": {
-                "results": [
-                    "63cd344c-eadf-4854-be37-cd7454ddb0ab",
-                    "df4eea7f-5821-40bf-9d16-958f1b3ac3fb"
-                ]
-            },
-            "_accessibleApis": [
-                "63cd344c-eadf-4854-be37-cd7454ddb0ab",
-                "df4eea7f-5821-40bf-9d16-958f1b3ac3fb"
-            ]
-        },
-        {
-            "id": "cb067a86-d86e-47b9-9edf-839f953bbbdb",
-            "uuid": "cb067a86-d86e-47b9-9edf-839f953bbbdb",
-            "name": "TuoTempo",
-            "status": "ENABLED",
-            "disabledByType": null,
-            "description": "TuoTempo app for Docplanner",
-            "OauthCallbackUrl": "https://example.com/oauthCallback",
-            "OauthScope": "OOB",
-            "OauthType": "confidential",
-            "apiKey": "fae74f6b-a9a7-44fb-b9ff-50aafadcabfc",
-            "keySecret": "e1832447-67a1-4f33-8c95-dfb7c0e1ab52",
-            "apiIds": {
-                "results": [
-                    "63cd344c-eadf-4854-be37-cd7454ddb0ab",
-                    "df4eea7f-5821-40bf-9d16-958f1b3ac3fb",
-                    "006ac934-4754-4c78-8722-447259100ab3",
-                    "006ac934-4754-4c78-8722-447259100b56"
-                ]
-            },
-            "_accessibleApis": [
-                "63cd344c-eadf-4854-be37-cd7454ddb0ab",
-                "df4eea7f-5821-40bf-9d16-958f1b3ac3fb",
-                "006ac934-4754-4c78-8722-447259100ab3",
-                "006ac934-4754-4c78-8722-447259100b56"
-            ]
-        },
-        {
-            "id": "cb067a86-d86e-47b9-9edf-839f953bbbda",
-            "uuid": "cb067a86-d86e-47b9-9edf-839f953bbbda",
-            "name": "Agroseguro App1",
-            "status": "ENABLED",
-            "disabledByType": null,
-            "description": "App for MRA",
-            "OauthCallbackUrl": "https://example.com/oauthCallback",
-            "OauthScope": "OOB",
-            "OauthType": "confidential",
-            "apiKey": "fae74f6b-a9a7-44fb-b9ff-50aafadcrmcf",
-            "keySecret": "e1832447-67a1-4f33-8c95-dfb7c0e1bc63",
-            "apiIds": {
-                "results": [
                     "63cd344c-eadf-4854-be37-cd7454ddb0ae",
-                    "df4eea7f-5821-40bf-9d16-958f1b3ac3fb"
-                ]
-            },
-            "_accessibleApis": [
-                    "63cd344c-eadf-4854-be37-cd7454ddb0ae",
-                    "df4eea7f-5821-40bf-9d16-958f1b3ac3fb"
-            ]
-        },
-        {
-            "id": "cb067a86-d86e-47b9-9edf-839f953bbbdq",
-            "uuid": "cb067a86-d86e-47b9-9edf-839f953bbbdq",
-            "name": "Agroseguro App2",
-            "status": "ENABLED",
-            "disabledByType": null,
-            "description": "App for MRE",
-            "OauthCallbackUrl": "https://example.com/oauthCallback",
-            "OauthScope": "OOB",
-            "OauthType": "confidential",
-            "apiKey": "fae74f6b-a9a7-44fb-b9ff-50aafadcer96",
-            "keySecret": "e1832447-67a1-4f33-8c95-dfb7c0e1cd95",
-            "apiIds": {
-                "results": [
-                    "63cd344c-eadf-4854-be37-cd7454ddb0ae",
+                    "63cd344c-eadf-4854-be37-cd7454ddb0ab",
+                    "63cd344c-eadf-4854-be37-cd7454ddb0ay",
                     "df4eea7f-5821-40bf-9d16-958f1b3ac3fb"
                 ]
             },
             "_accessibleApis": [
                 "63cd344c-eadf-4854-be37-cd7454ddb0ae",
-                "df4eea7f-5821-40bf-9d16-958f1b3ac3fb"
-            ]
-        },
-        {
-            "id": "cb067a86-d86e-47b9-9edf-839f953bbbdw",
-            "uuid": "cb067a86-d86e-47b9-9edf-839f953bbbdw",
-            "name": "Agroseguro App3",
-            "status": "DISABLED",
-            "disabledByType": null,
-            "description": "App for Mediadores",
-            "OauthCallbackUrl": "https://example.com/oauthCallback",
-            "OauthScope": "OOB",
-            "OauthType": "confidential",
-            "apiKey": "fae74f6b-a9a7-44fb-b9ff-50aafadcan93",
-            "keySecret": "e1832447-67a1-4f33-8c95-dfb7c0e2ie86",
-            "apiIds": {
-                "results": [
-                    "63cd344c-eadf-4854-be37-cd7454ddb0ae",
-                    "63cd344c-eadf-4854-be37-cd7454ddb0ab",
-                    "df4eea7f-5821-40bf-9d16-958f1b3ac3fb",
-                    "006ac934-4754-4c78-8722-447259100ab3"
-                ]
-            },
-            "_accessibleApis": [
-                "63cd344c-eadf-4854-be37-cd7454ddb0ae",
                 "63cd344c-eadf-4854-be37-cd7454ddb0ab",
-                "df4eea7f-5821-40bf-9d16-958f1b3ac3fb",
-                "006ac934-4754-4c78-8722-447259100ab3"
+                "63cd344c-eadf-4854-be37-cd7454ddb0ay",
+                "df4eea7f-5821-40bf-9d16-958f1b3ac3fb"
             ]
         }
     ],
     "tags": [
         {
             "uuid": "a7757950-c95e-4bee-a454-317877bdf51e",
-            "name": "Healthcare"
+            "name": "Accounts"
         },
         {
             "uuid": "a7757950-c95e-4bee-a454-317877bdf51f",
-            "name": "Interna"
+            "name": "Mapfre"
         },
 		{
             "uuid": "a7757950-c95e-4bee-a454-317877bdf510",
-            "name": "Externa"
+            "name": "TestTag"
         },
         {
             "uuid": "731c970c-51b6-49ff-b2bb-0eafa8199ec3",
-            "name": "Motor"
+            "name": "Security"
         },
         {
             "uuid": "d204aa4d-12fa-4d91-8514-49cb41904427",
-            "name": "Mapfre"
+            "name": "Plans"
         },
         {
             "uuid": "8f199676-7d3d-471f-995a-58a2f0549ed2",
-            "name": "Bancos"
-        },
-        {
-            "uuid": "8f199676-7d3d-471f-995a-58a2f0549po8",
-            "name": "Agrario"
+            "name": "Organizations"
         }
     ],
     "documents": [
@@ -9713,26 +9208,6 @@
                 {
                     "uuid": "63cd344c-eadf-4854-be37-cd7454ddb0ay",
                     "name": "Operational Management"
-                }
-            ]
-        },
-        {
-            "id": "abb964ec-b427-4d29-8a0d-643f8a68f93f",
-            "uuid": "abb964ec-b427-4d29-8a0d-643f8a68f93f",
-            "name": "Mapfre LATAM",
-            "description": "Mapfre LATAM",
-            "apis": [
-                {
-                    "uuid": "006ac934-4754-4c78-8722-447259100ab3",
-                    "name": "Catalogs"
-                },
-                {
-                    "uuid": "6006ac934-4754-4c78-8722-447259100a52",
-                    "name": "ATMAPI"
-                },
-                {
-                    "uuid": "006ac934-4754-4c78-8722-447259100b56",
-                    "name": "Servicios Medicos"
                 }
             ]
         }

@@ -38,8 +38,8 @@ const useStyles = makeStyles(
     theme => ({
         '@global': {
             body: {
-                background: `linear-gradient(90deg, rgba(192,37,36,1) 0%, rgba(190,37,36,0.7903536414565826) 42%);
-            `,
+                //original: `linear-gradient(90deg, rgba(116,255,51,0) 0%, rgba(80,55,0,1) 42%);`
+                background: '#ffffff',
                 color: theme.palette.common.white,
             },
             '#root': {

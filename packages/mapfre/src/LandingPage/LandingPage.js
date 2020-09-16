@@ -9,7 +9,7 @@ import { useAuthState } from 'ra-core';
 import { Redirect } from 'react-router';
 
 import { UnAuthenticatedLayoutWithTheme } from '../layout';
-import illustration from './illustration.png';
+import illustration from './mapfre_main.jpg';
 import { LandingPageApis } from './LandingPageApis';
 
 export const LandingPage = () => {
@@ -27,6 +27,13 @@ export const LandingPage = () => {
     return (
         <UnAuthenticatedLayoutWithTheme showActions>
             <Grid className={classes.heroContainer} container spacing={4}>
+                <Grid item xs={12}>
+                    <img
+                        src={illustration}
+                        alt="A doctor with a stethoscope"
+                        className={classes.illustration}
+                    />
+                </Grid>
                 <Grid item xs={12} md={6} className={classes.welcomeContainer}>
                     <Typography variant="h1" className={classes.title}>
                         Mapfre
@@ -64,13 +71,6 @@ export const LandingPage = () => {
                             Read more
                         </Button>
                     </div>
-                </Grid>
-                <Grid item xs={12} md={6}>
-                    <img
-                        src={illustration}
-                        alt="A doctor with a stethoscope"
-                        className={classes.illustration}
-                    />
                 </Grid>
                 <Grid item xs={12} md={12}>
                     <LandingPageApis />
