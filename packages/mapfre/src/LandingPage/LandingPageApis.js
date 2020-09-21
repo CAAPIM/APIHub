@@ -24,9 +24,7 @@ export const LandingPageApis = props => {
         'apis',
         { page: 1, perPage: 12 },
         { field: 'createTs', order: 'DESC' },
-        {
-            q: '',
-        }
+        { q: '', accessStatus: 'PUBLIC' }
     );
 
     if (error) {

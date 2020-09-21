@@ -14,7 +14,7 @@ export const apisDataProvider = context => {
                 size: pagination.perPage,
                 sort: `${sort.field},${sort.order}`,
             })}`;
-
+            
             const { json } = await context.fetchJson(url, {
                 credentials: 'include',
             });
