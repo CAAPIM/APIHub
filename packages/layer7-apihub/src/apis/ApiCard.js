@@ -21,7 +21,8 @@ import { MarkdownView, Stats, StatsText } from '../ui';
 import { TagsField } from './TagsField';
 import { ApiStatus } from './ApiStatus';
 
-export const ApiCard = ({ basePath, record }) => {
+export const ApiCard = ({ basePath, record, landing }) => {
+    const landingBool = (landing === 'true');
     const classes = useStyles();
     const translate = useTranslate();
     const formattedDate =
@@ -32,59 +33,81 @@ export const ApiCard = ({ basePath, record }) => {
             component={Link}
             to={linkToRecord(basePath, record && record.id, 'show')}
         >
+            {landingBool ? (
+                 <CardHeader
+                 className={classes.headerlanding}
+                 title={
+                     <Tooltip title={record.name}>
+                         <Typography
+                             variant="h5"
+                             component="span"
+                             display="block"
+                             className={classes.title}
+                             noWrap
+                         >
+                             {record.name}
+                         </Typography>
+                     </Tooltip>
+                 }
+                 disableTypography
+             />
+            ) : 
+            
             <CardHeader
-                className={classes.header}
-                title={
-                    <Tooltip title={record.name}>
+            className={classes.header}
+            title={
+                <Tooltip title={record.name}>
+                    <Typography
+                        variant="h5"
+                        component="span"
+                        display="block"
+                        className={classes.title}
+                        noWrap
+                    >
+                        {record.name}
+                    </Typography>
+                </Tooltip>
+            }
+            disableTypography
+            subheader={
+                <>
+                    <div className={classes.subheader}>
+                        <ApiStatus record={record} variant="caption" />
+                        <Divider
+                            orientation="vertical"
+                            className={classes.divider}
+                        />
                         <Typography
-                            variant="h5"
-                            component="span"
-                            display="block"
-                            className={classes.title}
-                            noWrap
+                            variant="caption"
+                            color="textSecondary"
+                            className={classes.ssgServiceType}
                         >
-                            {record.name}
+                            {record.ssgServiceType}
                         </Typography>
-                    </Tooltip>
-                }
-                disableTypography
-                subheader={
-                    <>
-                        <div className={classes.subheader}>
-                            <ApiStatus record={record} variant="caption" />
-                            <Divider
-                                orientation="vertical"
-                                className={classes.divider}
-                            />
+                        <Divider
+                            orientation="vertical"
+                            className={classes.divider}
+                        />
+                        <Tooltip title={record.version}>
                             <Typography
                                 variant="caption"
                                 color="textSecondary"
-                                className={classes.ssgServiceType}
+                                noWrap
                             >
-                                {record.ssgServiceType}
+                                {translate(
+                                    'resources.apis.list.cards.fields.version',
+                                    {
+                                        version: record.version,
+                                    }
+                                )}
                             </Typography>
-                            <Divider
-                                orientation="vertical"
-                                className={classes.divider}
-                            />
-                            <Tooltip title={record.version}>
-                                <Typography
-                                    variant="caption"
-                                    color="textSecondary"
-                                    noWrap
-                                >
-                                    {translate(
-                                        'resources.apis.list.cards.fields.version',
-                                        {
-                                            version: record.version,
-                                        }
-                                    )}
-                                </Typography>
-                            </Tooltip>
-                        </div>
-                    </>
-                }
-            />
+                        </Tooltip>
+                    </div>
+                </>
+            }
+        />}
+           
+            
             <CardContent className={classes.content}>
                 {record.image ? (
                     <ApiOverviewImage image={record.image} name={record.name} maxHeight="56px"/>
@@ -97,6 +120,7 @@ export const ApiCard = ({ basePath, record }) => {
                 </Tooltip>
             </CardContent>
             <CardActions className={classes.footer}>
+                {!landingBool ? (
                 <Grid container alignItems="center" className={classes.tags}>
                     <TagsField
                         record={record}
@@ -104,6 +128,7 @@ export const ApiCard = ({ basePath, record }) => {
                         className={classes.tag}
                     />
                 </Grid>
+                ) : null }
                 <Grid container alignItems="center" className={classes.stats}>
                     <Button size="small" color="primary" className={classes.button}>
                         More Information
@@ -132,6 +157,10 @@ const useStyles = makeStyles(
             borderBottomColor: theme.palette.divider,
             borderBottomWidth: 1,
             borderBottomStyle: 'solid',
+        },
+        headerlanding: {
+            height: 'auto',
+            padding: 0,
         },
         title: {
             fontFamily: theme.typography.subtitle2.fontFamily,

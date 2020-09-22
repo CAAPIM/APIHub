@@ -4,7 +4,11 @@ import { CardGrid } from 'layer7-apihub';
 import { makeStyles } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Typography from '@material-ui/core/Typography';
-import Card from '@material-ui/core/Card';
+/*
+    Descomentar si se descomenta componente ApiLandingCard 
+*/
+
+/*import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardActions from '@material-ui/core/CardActions';
@@ -12,7 +16,8 @@ import Tooltip from '@material-ui/core/Tooltip';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';*/
+import { ApiCard } from 'layer7-apihub';
 
 import { stringify } from 'query-string';
 
@@ -52,7 +57,7 @@ export const LandingPageApis = props => {
                     loaded={loaded}
                     classes={{ root: classes.cardGrid }}
                 >
-                    <ApiLandingCard />
+                    <ApiCard landing="true" />
                 </CardGrid>
             )}
         </div>
@@ -77,7 +82,7 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-const useApiGroupCardStyles = makeStyles(theme => ({
+/*const useApiGroupCardStyles = makeStyles(theme => ({
     root: {
         textDecoration: 'none',
     },
@@ -156,9 +161,12 @@ const useApiGroupCardStyles = makeStyles(theme => ({
         display: 'block',
         width: '100%',
     },
-}));
+}));*/
 
-const ApiLandingCard = ({ record }) => {
+//Tarjetas APICard de la pantalla de landing originales.
+// Las comento por si dan marcha atrás a las ApiCard de la LandingPage
+
+/*const ApiLandingCard = ({ record }) => {
     const classes = useApiGroupCardStyles();
 
     if (!record) {
@@ -216,7 +224,7 @@ const ApiLandingCard = ({ record }) => {
             </Card>
         </Link>
     );
-};
+};*/
 
 /*
 <Card className={classes.card}>
