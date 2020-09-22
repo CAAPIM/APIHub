@@ -49,9 +49,7 @@ export const LoginPage = props => {
 const useStyles = makeStyles(theme => ({
     '@global': {
         body: {
-            background: `
-            linear-gradient(90deg, rgba(192,37,36,1) 0%, rgba(192,37,36,0.896796218487395) 35%);
-            `,
+            background: `#c10003`,
             color: theme.palette.common.white,
             backgroundRepeat: 'no-repeat',
             backgroundSize: 'contain',
