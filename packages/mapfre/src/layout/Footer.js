@@ -11,9 +11,7 @@ export const Footer = ({ withLogo = true, ...rest }) => {
     return (
         <footer className={classes.root}>
             {withLogo && <BrandLogo className={classes.logo} />}
-            <Typography className={classes.company}>
-                ©2020 Mapfre Name
-            </Typography>
+            <Typography className={classes.company}>©2020 Mapfre</Typography>
             <Link className={classes.link} variant="body1">
                 Cookies
             </Link>
