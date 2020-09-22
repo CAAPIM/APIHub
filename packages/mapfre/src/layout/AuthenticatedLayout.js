@@ -41,7 +41,7 @@ const useFooterStyles = makeStyles(
     theme => ({
         root: {
             color: theme.palette.primary.main,
-            backgroundColor: '#c02524',
+            backgroundColor: '#c10003',
             height: '100px',
             padding: theme.spacing(0),
             paddingTop: theme.spacing(0),

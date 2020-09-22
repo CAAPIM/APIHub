@@ -12,7 +12,7 @@ const palette = createPalette(
             //No se percibe ningún cambio. Original: #ae418e
             light: '#ae418e',
             //Original:
-            dark: '#c02524',
+            dark: '#c10003',
         },
         primary: {
             main: '#10054d',
@@ -21,7 +21,7 @@ const palette = createPalette(
         },
         background: {
             default: '#e7e6ed',
-            darker: '#c02524',
+            darker: '#c10003',
         },
         type: 'light',
         colorContrast: '#ffffff',
@@ -78,7 +78,7 @@ export const theme = createMuiTheme(
                 root: {
                     paddingTop: defaultMuiTheme.spacing(1),
                     paddingBottom: defaultMuiTheme.spacing(1),
-                    background: `linear-gradient(127deg, #c02524, #c02524);`,
+                    background: `linear-gradient(127deg, #c10003, #c10003);`,
                 },
             },
             MuiCard: {
