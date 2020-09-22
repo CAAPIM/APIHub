@@ -119,8 +119,13 @@ const useStyles = makeStyles(
     theme => ({
         root: {
             margin: '-2px',
+            display: 'flex',
         },
         gridList: {
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexDirection: 'row',
+            alignItems: 'stretch',
             width: '100%',
             marginTop: 0,
             marginBottom: 0,
