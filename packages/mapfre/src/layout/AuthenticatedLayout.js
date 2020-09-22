@@ -41,7 +41,7 @@ const useFooterStyles = makeStyles(
     theme => ({
         root: {
             color: theme.palette.primary.main,
-            backgroundColor: '#d1cfdd',
+            backgroundColor: '#c02524',
             height: '100px',
             padding: theme.spacing(0),
             paddingTop: theme.spacing(0),
@@ -53,13 +53,13 @@ const useFooterStyles = makeStyles(
             fill: theme.palette.primary.dark,
         },
         company: {
-            color: theme.palette.primary.dark,
+            color: '#ffffff',
             padding: theme.spacing(0, 3),
             fontWeight: theme.typography.fontWeightRegular,
             fontSize: '0.9rem',
         },
         link: {
-            color: theme.palette.primary.dark,
+            color: '#ffffff',
             fontWeight: theme.typography.fontWeightRegular,
             fontSize: '0.9rem',
         },
