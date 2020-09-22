@@ -52,6 +52,7 @@ export const LandingPageApis = props => {
                 <CircularProgress color="primary" />
             ) : (
                 <CardGrid
+                    basePath="/apis"
                     ids={ids}
                     data={data}
                     loaded={loaded}
