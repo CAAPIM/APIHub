@@ -109,9 +109,6 @@ export const ApiCard = ({ basePath, record, landing }) => {
            
             
             <CardContent className={classes.content}>
-                {record.image ? (
-                    <ApiOverviewImage image={record.image} name={record.name} maxHeight="56px"/>
-                ) : null}
                 <Tooltip title={record.description || ''}>
                     <MarkdownView
                         className={classes.description}
