@@ -320,7 +320,7 @@ const apiHubMessages = {
             },
         },
         documents: {
-            name: 'Wiki |||| Wiki',
+            name: 'Documents |||| Documents',
             fields: {
                 title: 'Title',
                 navtitle: 'URI',

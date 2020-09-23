@@ -169,7 +169,7 @@ const apiHubMessages = {
     },
     resources: {
         apis: {
-            name: 'API |||| Las API',
+            name: 'API |||| APIs',
             fields: {
                 name: 'Nombre',
                 portalStatus: 'Estado',
@@ -335,7 +335,7 @@ const apiHubMessages = {
             },
         },
         documents: {
-            name: 'Wiki |||| Wiki',
+            name: 'Documentación |||| Documentación',
             fields: {
                 title: 'Título',
                 navtitle: 'URI',
