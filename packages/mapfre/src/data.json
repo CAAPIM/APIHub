@@ -9699,8 +9699,8 @@
         {
             "id": "abb964ec-b427-4d29-8a0d-643f8a68f92c",
             "uuid": "abb964ec-b427-4d29-8a0d-643f8a68f92c",
-            "name": "Mapfre Spain",
-            "description": "Mapfre Spain",
+            "name": "Empresas",
+            "description": "Empresas",
             "apis": [
                 {
                     "uuid": "63cd344c-eadf-4854-be37-cd7454ddb0ae",
@@ -9719,8 +9719,8 @@
         {
             "id": "abb964ec-b427-4d29-8a0d-643f8a68f93f",
             "uuid": "abb964ec-b427-4d29-8a0d-643f8a68f93f",
-            "name": "Mapfre LATAM",
-            "description": "Mapfre LATAM",
+            "name": "Particulares",
+            "description": "Particulares",
             "apis": [
                 {
                     "uuid": "006ac934-4754-4c78-8722-447259100ab3",
