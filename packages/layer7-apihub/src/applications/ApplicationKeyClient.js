@@ -56,7 +56,7 @@ const useStyles = makeStyles(
         buttonCopy: {},
         iconCopy: {
             fontSize: '1rem',
-            color: theme.palette.secondary.main,
+            color: theme.palette.colorContrast,
         },
     }),
     {

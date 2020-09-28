@@ -228,12 +228,12 @@ const useStyles = makeStyles(
                 paddingRight: theme.spacing(4),
             },
             '& label': {
-                color: theme.palette.primary.main,
+                color: theme.palette.colorContrast,
                 fontSize: '1rem',
             },
             '& label ~ div': {
                 fontWeight: theme.typography.fontWeightBold,
-                color: theme.palette.primary.main,
+                color: theme.palette.colorContrast,
                 padding: theme.spacing(0),
             },
         },
@@ -252,6 +252,7 @@ const useStyles = makeStyles(
             },
             '& h3': {
                 marginTop: theme.spacing(4),
+                color: theme.palette.colorContrast,
             },
             '& label ~ div': {
                 display: 'flex',
@@ -314,7 +315,7 @@ const useStyles = makeStyles(
             fontSize: '1rem',
         },
         apiIcon: {
-            color: theme.palette.primary.main,
+            color: theme.palette.colorContrast,
         },
     }),
     {
@@ -342,6 +343,7 @@ const useHeaderStyles = makeStyles(
         },
         value: {
             fontSize: '1.25rem',
+            color: theme.palette.colorContrast,
         },
         icon: {
             marginRight: theme.spacing(2),

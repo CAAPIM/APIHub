@@ -81,6 +81,7 @@ const useStyles = makeStyles(
             fontWeight: theme.typography.fontWeightBold,
             wordBreak: 'break-word',
             maxWidth: '100%',
+            color: theme.palette.colorContrast,
         },
         subheader: {
             display: 'flex',

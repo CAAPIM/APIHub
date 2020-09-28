@@ -614,6 +614,7 @@ export const theme = createMuiTheme(
                     width: `calc(100% - ${defaultMuiTheme.spacing(2)}px)`,
                 },
                 fieldContent: {
+                    color: palette.colorContrast,
                     backgroundColor: palette.background.darker,
                     padding: defaultMuiTheme.spacing(1, 1, 1, 2),
                     borderRadius: defaultMuiTheme.shape.borderRadius,
@@ -628,6 +629,7 @@ export const theme = createMuiTheme(
                     width: `calc(100% - ${defaultMuiTheme.spacing(2)}px)`,
                 },
                 fieldContent: {
+                    color: palette.colorContrast,
                     backgroundColor: palette.background.darker,
                     padding: defaultMuiTheme.spacing(1, 1, 1, 2),
                     borderRadius: defaultMuiTheme.shape.borderRadius,
@@ -784,7 +786,7 @@ export const theme = createMuiTheme(
                     height: '140px',
                 },
                 title: {
-                    color: palette.primary.main,
+                    color: palette.colorContrast,
                     backgroundColor: palette.background.darker,
                     padding: defaultMuiTheme.spacing(4, 2),
                 },
