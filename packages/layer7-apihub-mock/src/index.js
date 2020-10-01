@@ -364,6 +364,8 @@ export const startApiHubMockedServer = async (
             );
 
             this.passthrough();
+
+            this.passthrough("https://apisb.mapfre.com/srv/api/**");
         },
     });
 
