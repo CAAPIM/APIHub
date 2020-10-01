@@ -829,9 +829,9 @@
         {
             "uuid": "c2c83ff6-501d-4c25-acda-3fd0be8c9b8c",
             "status": "PUBLISHED",
-            "title": "es-ES - Mapfre Dummy Document",
-            "navtitle": "es-es---mapfre dummy document",
-            "markdown": "Consequuntur animi asperiores enim.",
+            "title": "Introduccion",
+            "navtitle": "es-es---Introduccion",
+            "markdown": "##### INTRODUCCION \r Este servicio permite a los canales externos realizar la gestión del producto de Multirriesgo Empresarial dentro del área de emisión. El Servicio dispone de 3 operaciones para la gestión de este ramo. \r Las operaciones proporcionadas por este servicio son: \r -   **simulacion** \r\n Esta operación permite obtener el detalle de la simulación de una operación de Multirriesgo Empresarial a partir de los datos básicos de información del producto. \rSi saltan controles de auditoría se informan en la respuesta de salida  junto a la prima. Si existe una salido con  controles de rechazo se informan en la respuesta sin prima. \r -   **  propuesta** \r\n Esta operación permite realizar una simulación de contratación incluyendo los datos del riesgo y de los intervinientes.  Si saltan controles de auditoría o de Negocio se informan en la respuesta de salida para su tratamiento. Si todo va bien se queda preparada para su contratación. \rSi existe una salida con  controles de rechazo se informan en la respuesta sin prima. \r -   ** poliza** \r\n Esta operación permite realizar la contratación de la póliza  o solicitud de contrato partir de la operación realizada en la operación anterior. \rSi existe una salida con  controles de rechazo se informan en la respuesta",
             "locale": "es-ES",
             "ordinal": 0,
             "type": "api",
