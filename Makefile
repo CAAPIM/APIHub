@@ -34,6 +34,9 @@ build-example: ## Build the example
 build-healthcare: ## Build the healthcare
 	@yarn build-healthcare
 
+build-mapfre: ## Build the healthcare
+	@yarn build-mapfre
+
 build-storybook: ## Build the storybook
 	@yarn build-storybook
 

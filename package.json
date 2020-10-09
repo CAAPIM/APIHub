@@ -7,6 +7,7 @@
         "build-mock": "cd packages/layer7-apihub-mock && yarn build",
         "build-example": "cd packages/example && yarn build",
         "build-healthcare": "cd packages/healthcare && yarn build",
+        "build-mapfre": "cd packages/mapfre && yarn build",
         "build-storybook": "cd packages/layer7-apihub && yarn build-storybook",
         "start-example": "concurrently \"yarn start-lib\" \"yarn start-mock\" \"cd packages/example && yarn start\"",
         "start-healthcare": "concurrently \"yarn start-lib\" \"yarn start-mock\" \"cd packages/healthcare && yarn start\"",
