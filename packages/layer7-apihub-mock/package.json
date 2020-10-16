@@ -18,7 +18,7 @@
         "date-fns": "2.14.0",
         "faker": "Marak/faker.js",
         "kcd-scripts": "6.3.0",
-        "lodash": "4.17.15",
+        "lodash": "4.17.19",
         "minimist": "1.2.5",
         "minimongo": "6.5.1",
         "miragejs": "0.1.40",
