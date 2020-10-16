@@ -34,7 +34,7 @@ window.APIHUB_CONFIG = {
 };
 ```
 
-The `ORIGIN_HUB_NAME` variable is sent to API Portal servers to identify your API Hub. The Portal Admin uses this value to set the `name` attribute in the APIHUB_SETTINGS to enable remote hosting. For more information, see the API Portal documentation on how to Register the hosting domain of your customized API Hub with API Portal. 
+The `ORIGIN_HUB_NAME` variable is sent to API Portal server to identify your API Hub. The Portal Admin uses this value to set the `name` attribute in the `APIHUB_SETTINGS` to enable remote hosting. For more information, see the API Portal documentation on how to Register the hosting domain of your customized API Hub with API Portal. 
 
 2. Prefix the `deploy` command during the deploy process with `DEPLOY_ENV=XXX make deploy`.
 
