@@ -155,6 +155,7 @@ const useStyles = makeStyles(
             transition: 'opacity 2s',
         },
         overviewScrollFadeColor: {
+            pointerEvents: 'none',
             background:
                 'linear-gradient(to bottom, rgba(251, 251, 251, 0) 0%, rgba(251, 251, 251, 1) 100%)',
         },

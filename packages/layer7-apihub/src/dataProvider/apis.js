@@ -1,18 +1,19 @@
 import { stringify } from 'query-string';
 
 const basePath = '/api-management/1.0/apis';
-const adminBasePath = '/api-management/internal';
+const internalBasePath = '/api-management/internal';
 const apisPath = '/2.0/Apis';
 
 const SearchFields = ['name', 'description'];
 export const apisDataProvider = context => {
     return {
-        getList: async ({ filter, pagination, sort }) => {
+        async getList({ filter, pagination, sort }) {
+            const sortField = sort.field == 'id' ? 'uuid' : sort.field;
             const url = `${context.apiUrl}${basePath}?${stringify({
                 ...getFilter(filter),
                 page: pagination.page - 1,
                 size: pagination.perPage,
-                sort: `${sort.field},${sort.order}`,
+                sort: `${sortField},${sort.order}`,
             })}`;
 
             const { json } = await context.fetchJson(url, {
@@ -29,7 +30,18 @@ export const apisDataProvider = context => {
             };
         },
 
-        getOne: async ({ id }) => {
+        async getMany({ ids }) {
+            const apis = await Promise.all(ids.map(id => this.getOne({ id })));
+
+            return {
+                data: apis.reduce((acc, getOneResult) => {
+                    acc.push(getOneResult.data);
+                    return acc;
+                }, []),
+            };
+        },
+
+        async getOne({ id }) {
             const url = `${context.apiUrl}${basePath}/${id}`;
 
             const {
@@ -41,8 +53,8 @@ export const apisDataProvider = context => {
             };
         },
 
-        getPermissions: async ({ id }) => {
-            const url = `${context.adminUrl}${adminBasePath}/permissions/apis/${id}/permitted`;
+        async getPermissions({ id }) {
+            const url = `${context.apiUrl}${internalBasePath}/permissions/apis/${id}/permitted`;
 
             const { json: data } = await context.fetchJson(url, {
                 credentials: 'include',
@@ -55,7 +67,8 @@ export const apisDataProvider = context => {
                 },
             };
         },
-        getApis: async () => {
+
+        async getApis() {
             const url = `${context.apiUrl}${apisPath}`;
             const { json } = await context.fetchJson(url, {
                 credentials: 'include',
@@ -71,9 +84,36 @@ export const apisDataProvider = context => {
                         name: item.Name,
                         description: item.Description,
                         version: item.Version,
+                        portalStatus: item.PortalStatus,
                         ...item,
                     })) || [],
                 total: json.length || 0,
+            };
+        },
+
+        async getApisByApiGroup({ apiGroupId }) {
+            // Filter by API Group
+            const { json: apiGroupApisIds } = await context.fetchJson(
+                `${context.apiUrl}/api-management/1.0/api-groups/${apiGroupId}/apis`,
+                {
+                    credentials: 'include',
+                }
+            );
+
+            const apis = await Promise.all(
+                apiGroupApisIds.map(({ uuid }) => {
+                    // Get APIs One By One
+                    return context
+                        .fetchJson(`${context.apiUrl}${basePath}/${uuid}`, {
+                            credentials: 'include',
+                        })
+                        .then(({ data }) => data);
+                })
+            );
+
+            return {
+                data: apis,
+                total: apis.length,
             };
         },
     };

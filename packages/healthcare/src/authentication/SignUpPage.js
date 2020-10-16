@@ -30,6 +30,12 @@ export const SignUpPage = () => {
             onSuccess: () => {
                 notify('resources.registrations.notifications.confirmation');
             },
+            onFailure: error => {
+                notify(
+                    error || 'resources.registrations.notifications.error',
+                    'error'
+                );
+            },
         });
     };
     return (

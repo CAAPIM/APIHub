@@ -5,12 +5,12 @@ import {
     TextField,
     TextInput,
     useUpdate,
-    useNotify,
     required,
     CRUD_UPDATE,
 } from 'react-admin';
 import { makeStyles } from '@material-ui/core';
 
+import { useLayer7Notify } from '../../useLayer7Notify';
 import { MarkdownInput } from '../../ui';
 import { DocumentFormToolbar } from './DocumentFormToolbar';
 
@@ -19,7 +19,7 @@ export const DocumentEditForm = ({
     onSave = () => {},
     onCancel = () => {},
 }) => {
-    const notify = useNotify();
+    const notify = useLayer7Notify();
 
     const [update, { data, loading, error }] = useUpdate('documents');
 
@@ -36,8 +36,11 @@ export const DocumentEditForm = ({
                 onSuccess: () => {
                     notify('resources.documents.notifications.edit_success');
                 },
-                onFailure: () => {
-                    notify('resources.documents.notifications.edit_error');
+                onFailure: error => {
+                    notify(
+                        error || 'resources.documents.notifications.edit_error',
+                        'error'
+                    );
                 },
             }
         );

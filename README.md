@@ -126,4 +126,81 @@ Copy the contents of the `packages/example/build` directory to your favorite web
 docker run --name APIHub -v `pwd`/packages/example/build:/usr/share/nginx/html:ro -p 8888:80 nginx
 ```
 
+## Create an API Hub Implementation
 
+Follow these steps:
+
+1. From the root of this repository, initialize a new react-app called `my-own-apihub` by issuing the following commands:
+
+```sh
+$ cd packages && yarn create react-app my-own-apihub --scripts-version=3.2.0 
+```
+2. Add the `layer7-aphub`, `layer7-apihub-mock`, and `react-admin` packages as dependencies in the new package.json:
+
+```
+  # in packages/my-own-apihub/package.json
+ "dependencies": {
+        "layer7-apihub": "~1.0.0",
+        "layer7-apihub-mock": "~1.0.0",
+        "react": "~16.13.1",
+        "react-admin": "~3.6.2",
+        "react-scripts": "~3.2.0"
+    },
+``` 
+
+3. Copy the config files to the `example` package by issuing the following commands:
+```sh
+$ cp -r packages/example/config packages/my-own-apihub/config/
+$ cp packages/my-own-apihub/config/config-dev.js packages/my-own-apihub/public/config.js
+```
+
+4. Update the public `index.html` file to include the `config.js` file:
+```html
+<!-- in packages/my-own-apihub/public/index.html -->
+<head>
+...
+  <script type="text/javascript" src="%PUBLIC_URL%/config.js"></script>
+... 
+ </head>
+```
+
+5. Include the base API Hub component in the `App.js` file:
+```js
+// in packages/my-own-apihub/src/App.js
+import { ApiHubAdmin } from 'layer7-apihub';
+const App = () => {
+    const { APIHUB_URL, TENANT_NAME, ORIGIN_HUB_NAME } = global.APIHUB_CONFIG;
+    return (
+        <ApiHubAdmin
+            url={APIHUB_URL} 
+            tenantName={TENANT_NAME}
+            originHubName={ORIGIN_HUB_NAME}
+        />
+    );
+};
+```
+
+6. Add the mock server to the `index.js` file:
+```js
+// in packages/my-own-apihub/src/index.js
+import { startApiHubMockedServer } from 'layer7-apihub-mock';
+...
+const { ENABLE_MOCK, MOCK_SERVER_INDICATOR_LINK } = global.APIHUB_CONFIG;
+export const shouldEnableMock = (enableMock = ENABLE_MOCK) =>
+    enableMock === 'true' || enableMock === true;
+if (!shouldEnableMock(ENABLE_MOCK)) {
+    ReactDOM.render(<App />, document.getElementById('root'));
+} else {
+    console.log('Starting the mocked server');
+    startApiHubMockedServer({
+        runningIndicatorLink: MOCK_SERVER_INDICATOR_LINK,
+    }).then(() => ReactDOM.render(<App />, document.getElementById('root')));
+}
+```
+
+7. Start the bare-bones my-own-apihub app by issuing the following commands:
+```
+$ cd packages/my-own-apihub
+$ yarn install
+$ yarn start
+```

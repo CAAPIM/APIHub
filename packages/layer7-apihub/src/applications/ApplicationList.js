@@ -3,11 +3,13 @@ import {
     Filter,
     sanitizeListRestProps,
     SelectInput,
-    TextField,
     TopToolbar,
+    CreateButton,
 } from 'react-admin';
+import { useTranslate } from 'ra-core';
 import classnames from 'classnames';
 import { makeStyles } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
 import Card from '@material-ui/core/Card';
 
 import { readApiHubPreference } from '../preferences';
@@ -24,17 +26,76 @@ import {
     TruncatedTextField,
     useListDisplay,
 } from '../ui';
+import { useUserContext } from '../userContexts';
+import { isAdminUser } from '../userContexts';
 import { ApplicationCard } from './ApplicationCard';
+import { ApplicationActions } from './ApplicationActions';
+import Inbox from '@material-ui/icons/Inbox';
 
 const defaultSort = { field: 'name', order: 'ASC' };
 
 const listDisplayPreferenceName = 'listDisplay/applications';
+
+const useEmptyStyles = makeStyles(
+    theme => ({
+        message: {
+            textAlign: 'center',
+            opacity: theme.palette.type === 'light' ? 0.5 : 0.8,
+            margin: '0 1em',
+            color:
+                theme.palette.type === 'light'
+                    ? 'inherit'
+                    : theme.palette.text.primary,
+        },
+        icon: {
+            width: '9em',
+            height: '9em',
+        },
+        toolbar: {
+            textAlign: 'center',
+            marginTop: '2em',
+        },
+    }),
+    { name: 'Empty' }
+);
+const Empty = ({ canCRUD, basePath, ...props }) => {
+    const classes = useEmptyStyles(props);
+    const translate = useTranslate();
+    return (
+        <>
+            <div className={classes.message}>
+                <Inbox className={classes.icon} />
+                <Typography variant="h6" paragraph>
+                    {translate('resources.applications.fields.noApplications')}
+                </Typography>
+            </div>
+            {canCRUD && (
+                <div className={classes.toolbar}>
+                    <CreateButton
+                        basePath={basePath}
+                        variant="contained"
+                        color="primary"
+                        label="resources.applications.actions.addApplication"
+                    />
+                </div>
+            )}
+        </>
+    );
+};
 
 export const ApplicationList = props => {
     const initialListDisplay = readApiHubPreference(
         listDisplayPreferenceName,
         LIST_DISPLAY_CARDS
     );
+    const [userContext] = useUserContext();
+    const [canCRUD, setCanCRUD] = React.useState(false);
+
+    React.useEffect(() => {
+        if (userContext && isAdminUser(userContext)) {
+            setCanCRUD(true);
+        }
+    }, [userContext]);
 
     return (
         <ListDisplayProvider
@@ -42,7 +103,8 @@ export const ApplicationList = props => {
             preferenceName={listDisplayPreferenceName}
         >
             <List
-                actions={<ApplicationListActions />}
+                empty={<Empty canCRUD={canCRUD} />}
+                actions={<ApplicationListActions canCRUD={canCRUD} />}
                 filter={{ $select: 'Name,Uuid,ApiKey,Status,Description' }}
                 filters={<ApplicationFilter />}
                 sort={defaultSort}
@@ -50,7 +112,7 @@ export const ApplicationList = props => {
                 component={ApplicationListComponent}
                 {...props}
             >
-                <ApplicationListDisplay />
+                <ApplicationListDisplay canCRUD={canCRUD} />
             </List>
         </ListDisplayProvider>
     );
@@ -84,13 +146,14 @@ const ApplicationFilter = props => {
 };
 
 const ApplicationListDisplay = props => {
+    const { canCRUD } = props;
     const [display] = useListDisplay();
     const classes = useApplicationListStyles();
 
     if (display === LIST_DISPLAY_CARDS) {
         return (
             <CardGrid {...props}>
-                <ApplicationCard />
+                <ApplicationCard canCRUD={canCRUD} />
             </CardGrid>
         );
     }
@@ -111,10 +174,12 @@ const ApplicationListDisplay = props => {
                     translationKey="resources.applications.status"
                     cellClassName={classes.status}
                 />
+                <ApplicationActions source="actions" sortable={false} list />
             </Datagrid>
         </Card>
     );
 };
+
 const useApplicationListStyles = makeStyles(
     theme => ({
         root: {},
@@ -142,6 +207,10 @@ const useApplicationListActionsStyles = makeStyles(theme => ({
     button: {
         marginLeft: theme.spacing(),
     },
+    createButton: {
+        paddingRight: theme.spacing(2),
+        marginRight: theme.spacing(2),
+    },
 }));
 
 const ApplicationListActions = ({
@@ -154,6 +223,9 @@ const ApplicationListActions = ({
     permanentFilter,
     resource,
     showFilter,
+    hasCreate,
+    basePath,
+    canCRUD,
     ...props
 }) => {
     const classes = useApplicationListActionsStyles();
@@ -164,6 +236,15 @@ const ApplicationListActions = ({
             className={classnames(classes.root, className)}
             {...sanitizeListRestProps(props)}
         >
+            {canCRUD && (
+                <CreateButton
+                    basePath={basePath}
+                    variant="contained"
+                    color="primary"
+                    className={classes.createButton}
+                    label="resources.applications.actions.addApplication"
+                />
+            )}
             {filters &&
                 cloneElement(filters, {
                     resource,

@@ -1,8 +1,9 @@
 import React from 'react';
 import { useTranslate } from 'react-admin';
-import { makeStyles, Typography, Link } from '@material-ui/core';
-import { Link as RouterLink } from 'react-router-dom';
-import { ChevronRight as ChevronRightIcon } from '@material-ui/icons';
+import { makeStyles } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
+import { Link } from 'react-router-dom';
 
 export const ResetPasswordConfirm = props => {
     const classes = useStyles(props);
@@ -31,18 +32,17 @@ export const ResetPasswordConfirm = props => {
                     'apihub.reset_password_confirm.form_details.description'
                 )}
             </Typography>
-            <Typography variant="body1">
-                <Link
-                    component={RouterLink}
-                    to="/login"
-                    className={classes.link}
-                >
-                    <ChevronRightIcon />
-                    {translate(
-                        'apihub.reset_password_confirm.actions.open_login_page'
-                    )}
-                </Link>
-            </Typography>
+            <Button
+                className={classes.button}
+                color="primary"
+                variant="contained"
+                component={Link}
+                to="/login"
+            >
+                {translate(
+                    'apihub.reset_password_confirm.actions.open_login_page'
+                )}
+            </Button>
         </div>
     );
 };
@@ -60,10 +60,7 @@ const useStyles = makeStyles(
             color: theme.palette.text.secondary,
             marginBottom: theme.spacing(6),
         },
-        link: {
-            display: 'flex',
-            alignItems: 'center',
-        },
+        button: {},
     }),
     {
         name: 'Layer7ResetPasswordConfirm',

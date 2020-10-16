@@ -1,9 +1,9 @@
 import React from 'react';
 import { DataProviderContext, renderWithRedux } from 'ra-core';
+import { fireEvent, wait } from '@testing-library/react';
 
 import { HomePageContent } from './HomePageContent';
 import { CurrentUserId } from '../dataProvider/userContexts';
-import { fireEvent, wait } from '@testing-library/react';
 
 describe('HomePageContent', () => {
     const initialState = {

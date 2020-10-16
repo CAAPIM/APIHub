@@ -16,14 +16,13 @@ import {
     useApiHubPreference,
 } from 'layer7-apihub';
 import { BrandLogo } from '../ui';
-import { changeTheme } from '../theme';
+import { changeTheme, useTheme } from '../theme';
 
 export const AppBar = ({
     children,
     classes: classesOverride,
     className,
     languagesMenu,
-    logo,
     logout,
     open,
     sidebarButton,
@@ -32,13 +31,13 @@ export const AppBar = ({
     ...rest
 }) => {
     const classes = useStyles({ classes: classesOverride });
-
+    const { logo } = useTheme();
     return (
         <HideOnScroll>
             <MuiAppBar
                 className={className}
-                color="secondary"
-                elevation={0}
+                color="#FFFFFF"
+                elevation={2}
                 {...rest}
             >
                 <Toolbar
@@ -48,7 +47,11 @@ export const AppBar = ({
                 >
                     {cloneElement(sidebarButton, { open })}
                     <div className={classes.header}>
-                        <BrandLogo className={classes.logo} fill="#fff" />
+                        <BrandLogo
+                            className={classes.logo}
+                            fill="#fff"
+                            img={logo}
+                        />
                     </div>
                     <LoadingIndicator />
                     {!global.APIHUB_CONFIG.USE_BRANDING_THEME ? (
@@ -76,6 +79,10 @@ const useStyles = makeStyles(
     theme => ({
         toolbar: {
             paddingRight: 24,
+            backgroundColor: theme.palette.customHeader?.main,
+            color: theme.palette.getContrastText(
+                theme.palette.customHeader?.main || theme.palette.common.white
+            ),
         },
         header: {
             flex: 1,
@@ -97,7 +104,8 @@ const useStyles = makeStyles(
             marginTop: theme.spacing(2),
         },
         logo: {
-            height: theme.spacing(9),
+            height: theme.spacing(6),
+            padding: '10px',
         },
     }),
     {

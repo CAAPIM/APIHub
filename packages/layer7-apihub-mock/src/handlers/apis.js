@@ -12,10 +12,6 @@ export function listApis(database) {
         const finalSize = parseInt(size, 10);
         const [finalSort, finalOrder] = sort ? sort.split(',') : [];
 
-        const totalElements = (
-            await promisify(database.apis.find(filter).fetch)
-        ).length;
-
         let finalFilters = filter;
         if (Object.keys(filter).some(key => SearchFields.includes(key))) {
             const otherFilters = Object.keys(filter).filter(
@@ -36,6 +32,10 @@ export function listApis(database) {
                 }
             );
         }
+
+        const totalElements = (
+            await promisify(database.apis.find(finalFilters).fetch)
+        ).length;
 
         const results = await promisify(
             database.apis.find(finalFilters, {

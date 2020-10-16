@@ -11,13 +11,13 @@ describe('useResetPassword', () => {
                 })
             );
 
-            const url = 'https://marmelab.com/api';
+            const url = 'https://marmelab.com/api/apim';
             const username = 'Luwangel';
 
             await fetchResetPassword(url, 'origin', username);
 
             expect(global.fetch.mock.calls[0][0]).toEqual(
-                `https://marmelab.com/api/admin/Portal.svc/ResetMyPassword()?Username='Luwangel'`
+                `https://marmelab.com/api/apim/ResetMyPassword()?Username='Luwangel'`
             );
         });
 

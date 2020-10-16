@@ -1,10 +1,8 @@
 import { login, logout } from '../support/login';
 
-import authenticationData from '../data/authenticationData.json';
-
-describe('Authentication', () => {
+describe.skip('Authentication', () => {
     it('should login to the platform as an administrator', () => {
-        cy.loadData(authenticationData);
+        cy.loadData();
 
         login('portalAdmin', 'Password@1');
 
@@ -12,7 +10,7 @@ describe('Authentication', () => {
     });
 
     it('should login to the platform as a developer', () => {
-        cy.loadData(authenticationData);
+        cy.loadData();
 
         login('user', 'Password@1');
 

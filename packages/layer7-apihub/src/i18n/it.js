@@ -1,9 +1,12 @@
 import { mergeTranslations } from 'react-admin';
-import raMessages from 'ra-language-italian';
+import raMessages from 'ra-language-english';
 
 const apiHubMessages = {
     ra: {
         ...raMessages,
+        page: {
+            dashboard: 'Pagina iniziale',
+        },
         actions: {
             ...raMessages.actions,
             open_sidebar: 'Apri il menu',
@@ -12,6 +15,9 @@ const apiHubMessages = {
         navigation: {
             ...raMessages.navigation,
             page_rows_per_page: 'Elementi per pagina:',
+        },
+        auth: {
+            logout: 'Disconnettersi',
         },
     },
     apihub: {
@@ -30,7 +36,7 @@ const apiHubMessages = {
             },
             notifications: {
                 invalid_credentials: 'Credenziali non valide',
-                selected_scheme: 'Accesso utilizzando',
+                selected_scheme: 'Accesso con',
             },
         },
         account_setup: {
@@ -58,14 +64,13 @@ const apiHubMessages = {
             },
             notifications: {
                 prepare: 'Preparazione del modulo in corso...',
-                invalid_request: "'Impossibile configurare l'account.",
+                invalid_request: "Impossibile configurare l'account.",
                 success: "L'account è stato configurato correttamente.",
             },
             terms_of_use: {
                 terms_of_use_acknowledgement: 'Ho letto e accetto i ',
                 terms_of_use: 'Condizioni di utilizzo',
-                terms_of_use_validation:
-                    'Si prega di accettare i termini e le condizioni',
+                terms_of_use_validation: 'Accetto i termini e le condizioni',
                 terms_of_use_dialog: {
                     title: 'Condizioni di utilizzo',
                     close: 'Chiudi',
@@ -109,7 +114,7 @@ const apiHubMessages = {
                 open_login_page: 'Vai alla pagina di accesso',
             },
             validation: {
-                error_password_match: 'Le password non corrispondono.',
+                error_password_match: 'Le password non corrispondono',
                 tooltip_password:
                     'Requisiti di password:\n- Numero minimo di caratteri: 8\n- Numero massimo di caratteri: 60\n- Almeno un carattere con lettera minuscola\n- Almeno un carattere con lettera maiuscola\n- Almeno un numero\n- Almeno un carattere speciale: !@#$%^&*',
                 tooltip_password_confirm: 'Ripeti la password',
@@ -130,11 +135,14 @@ const apiHubMessages = {
         },
         homepage: {
             placeholder_empty_content:
-                'Il contenuto della Home page non è stato ancora fornito. Gli amministratori del portale possono cliccare su Crea per aggiungere contenuti.',
+                'Il contenuto della pagina principale non è ancora stato fornito. Gli amministratori del portale possono fare clic su Crea per aggiungere il contenuto.',
         },
         actions: {
             view_as_cards: 'Mostra come schede',
             view_as_list: 'Mostra come elenco',
+            tree_drop_before: 'Prima di %{title}',
+            tree_drop_after: 'Dopo %{title}',
+            select_an_api_plan: 'Seleziona un piano API (obbligatorio)',
         },
         validation: {
             password: {
@@ -152,13 +160,19 @@ const apiHubMessages = {
                 bold: 'Grassetto',
                 italic: 'Corsivo',
                 strikethrough: 'Barrato',
-                unordered: 'Lista non ordinata',
-                order: 'Lista ordinata',
-                quote: 'Citazione',
-                hr: 'Interruzione di linea',
-                inlinecode: 'Codice in linea',
+                unordered: 'Elenco non ordinato',
+                order: 'Elenco ordinato',
+                quote: 'Quota',
+                hr: 'Interruzione di riga',
+                inlinecode: 'Codice inline',
                 code: 'Codice di blocco',
             },
+        },
+        terms_and_conditions: {
+            api_label:
+                'Facendo clic su Seleziona API, si accettano i termini e le condizioni',
+            api_group_label:
+                'Facendo clic su Seleziona gruppo API, si accettano i termini e le condizioni',
         },
     },
     resources: {
@@ -180,7 +194,7 @@ const apiHubMessages = {
                 applicationUsage: 'Applicazioni',
                 assets: 'Beni',
                 apiLocation: 'Posizione API',
-                apiGroup: 'Gruppi di API',
+                apiGroup: 'Gruppo API',
             },
             portalStatus: {
                 enabled: 'Abilitato',
@@ -259,6 +273,23 @@ const apiHubMessages = {
                 title: 'Documentazione',
             },
         },
+        apiGroups: {
+            name: 'Gruppo API |||| Gruppi API',
+            short_name: 'Gruppo |||| Gruppi',
+            fields: {
+                name: 'Nome',
+            },
+        },
+        apiPlans: {
+            name: 'Piano API |||| Piani API',
+            fields: {
+                name: 'Nome',
+                description: 'Descrizione',
+                rate_limit: 'Limite di frequenza',
+                quota: 'Quota',
+                quota_interval: 'Intervallo di quota',
+            },
+        },
         applications: {
             name: 'Applicazione |||| Applicazioni',
             fields: {
@@ -276,19 +307,63 @@ const apiHubMessages = {
                 oauthScope: 'Ambito OAuth',
                 overview: 'Panoramica',
                 status: 'Stato',
+                apiGroups: 'Gruppi API',
+                apiGroup: 'Gruppo API',
+                organization: 'Organizzazione',
+                applicationInformation: "Informazioni sull'applicazione",
+                customField: 'Campo personalizzato',
+                noCustomFields: 'Nessun campo personalizzato disponibile',
+                apiManagement: 'Gestione API',
+                authCredentials: 'Autenticazione e credenziali',
+                callbackUrl: 'URL di richiamata/reindirizzamento',
+                scope: 'Ambito',
+                type: 'Tipo',
+                none: 'Nessuno',
+                public: 'Pubblico',
+                confidential: 'Riservato',
+                sharedSecretFormat: 'Formato del segreto condiviso',
+                selectOrganization: 'Seleziona organizzazione',
+                apiPlan: 'Piano API',
+                quota: 'Quota',
+                rateLimit: 'Limite di frequenza',
+                termsOfUseApi:
+                    'Facendo clic su Aggiungi API, si accettano i termini e le condizioni',
+                actions: ' Azioni',
             },
             actions: {
                 generateSecret: 'Genera nuovo segreto',
                 copyNewSecret: 'Copia nuovo segreto',
                 plainTextSecret: 'Segreto di testo normale',
                 hashedSecret: 'Segreto con hash',
+                cancel: 'Annulla',
+                save: 'Salva',
+                addApplication: 'Aggiungi applicazione',
+                createApplication: 'Crea applicazione',
+                deleteApplication: 'Elimina applicazione',
+                select_api: 'Seleziona API',
+                addApi: 'Aggiungi API',
+                addApiGroup: 'Aggiungi gruppo API',
+                searchByApiTitle: 'Cerca per titolo API',
+                filterByTag: 'Filtra per tag',
+                accept_terms_and_conditions:
+                    'Accetto i termini e le condizioni',
+                edit: 'Modifica',
+                delete: 'Elimina',
+            },
+            validation: {
+                error_application_name_not_unique:
+                    "Nome dell'applicazione non univoco",
+                callback_url_caption: 'Usa valori separati da virgola',
+                scope_caption: 'Usa valori separati da spazi',
+                application_name_caption:
+                    'Usa nome univoco di 50 caratteri (valore massimo consentito)',
             },
             status: {
                 enabled: 'Abilitato',
                 disabled: 'Disabilitato',
                 deprecated: 'Obsoleto',
                 unpublished: 'Non pubblicato',
-                rejected: 'Respinto',
+                rejected: 'Rifiutato',
                 application_pending_approval: 'In attesa di approvazione',
                 edit_application_pending_approval: 'In attesa di approvazione',
             },
@@ -310,11 +385,25 @@ const apiHubMessages = {
                     "L'operazione interrompe l'accesso per chiunque utilizzi la chiave API corrente. Condividere e utilizzare il nuovo segreto generato con gli sviluppatori che codificano l'applicazione mediante le API.",
                 secret_generated_heading: 'Nuovo segreto generato',
                 secret_generated_heading_error:
-                    'Si è verificato un errore durante la generazione del segreto',
+                    'Si è verificato un errore durante la generazione del segreto.',
                 secret_generated_message:
                     "Il segreto di testo sarà visibile solo durante la sessione corrente del browser e verrà aggiunto un hash in seguito all'aggiornamento della pagina.",
                 copy_secret_now: 'Copia il segreto condiviso ora',
+                copy_to_clipboard: 'Copia negli Appunti',
+                edit_overview: 'Modifica panoramica',
+                empty_overview: 'Nuovo valore',
+                create_success: 'Applicazione creata correttamente.',
+                create_error:
+                    "Si è verificato un errore durante la creazione dell'applicazione.",
+                edit_success: 'Applicazione aggiornata correttamente.',
+                edit_error:
+                    "Si è verificato un errore durante l'aggiornamento dell'applicazione.",
+                delete_success: 'Applicazione eliminata correttamente.',
+                delete_error:
+                    "Si è verificato un errore durante l'eliminazione dell'applicazione.",
             },
+            confirm_delete:
+                "Si sta per procedere all'eliminazione dell'applicazione. Procedere?",
         },
         documents: {
             name: 'Wiki |||| Wiki',
@@ -328,24 +417,19 @@ const apiHubMessages = {
                 select_documentation_locale: 'Lingua selezionata',
             },
             actions: {
-                // Toolbar
-                new_document_button: 'Nuovo documento radice',
+                new_document_button: 'New root document',
                 new_child_document_button: 'Nuovo elemento figlio',
                 edit_document_button: 'Modifica',
                 delete_document_button: 'Elimina',
                 change_document_parent_button: 'Modifica elemento padre',
-                // Tree
-                expand_documentation:
-                    'Espandere la documentazione del nodo {title}',
+                expand_documentation: 'Expand documentation of node {title}',
                 collapse_documentation:
-                    'Documentazione del collasso del nodo {title}',
-                // Drag & Drop
-                move_as_first_child: 'Primo documento',
+                    'Comprimi documentazione del nodo {title}',
+                move_as_first_child: 'First document',
                 move_after_document: 'Dopo %{title}',
                 move_as_root_item:
                     'Seleziona per passare alla directory principale',
-                // Form
-                save: 'Pubblica',
+                save: 'Publish',
                 cancel: 'Annulla',
             },
             validation: {
@@ -376,34 +460,35 @@ const apiHubMessages = {
                 "Si sta per procedere all'eliminazione del documento e dei documenti figlio. Procedere?",
         },
         registrations: {
-            title: 'Crea un nuovo conto',
+            title: 'Crea Nuovo account',
             fields: {
-                email: 'Email',
-                email_confirmation: 'Conferma Email',
-                organization: 'Organizzazione o Spazio di Lavoro',
-                organization_description: "Descrizione dell'organizzazione",
-                robot: 'Non sono un robot',
+                email: 'Messaggio di posta elettronica',
+                email_confirmation: 'Conferma indirizzo di posta',
+                organization: 'Organizzazione o area di lavoro',
+                organization_description: 'Descrizione organizzazione',
+                robot: "I'm not a robot",
             },
             actions: {
                 submit: 'Inoltra',
-                login: 'Accedi ad un conto esistente',
-                return_to_homepage: 'Ritorna alla homepage',
+                login: 'Accedi a un account esistente',
+                return_to_homepage: 'Torna alla pagina principale',
             },
             notifications: {
-                confirmation_required: 'Conferma richiesta',
+                confirmation_required: 'Conferma obbligatoria',
                 error:
-                    'Si è verificato un problema durante la registrazione del tuo account.',
-                confirmation_title: 'Controlla La Tua Email',
+                    "Si è verificato un problema durante la registrazione dell'account.",
+                confirmation_title: 'Verifica la casella di posta',
                 confirmation:
-                    "Registrazione ricevuta. Un'e-mail di notifica verrà inviata all'indirizzo fornito",
-                email_confirmation_error: "l'Email non corrisponde.",
-                form_confirmation_error: 'È richiesta la conferma.',
+                    "Registrazione ricevuta. Verrà inviato un messaggio di posta elettronica di notifica all'indirizzo specificato.",
+                email_confirmation_error:
+                    'Gli indirizzi di posta non corrispondono.',
+                form_confirmation_error: 'Conferma obbligatoria.',
                 limituserregistration:
-                    'La richiesta di registrazione per questa e-mail è in attesa di approvazione/attivazione. Non sono ammesse richieste multiple.',
+                    'La richiesta di registrazione per questo messaggio di posta elettronica è in attesa di approvazione/attivazione. Non sono consentite richieste multiple.',
             },
             slider: {
-                confirmed: 'Confermato',
-                unconfirmed: 'Scorrere per confermare',
+                confirmed: 'Operazione confermata',
+                unconfirmed: 'Scorri per confermare',
             },
         },
         userContexts: {
@@ -414,17 +499,18 @@ const apiHubMessages = {
                     lastName: 'Cognome',
                     firstName: 'Nome',
                     email: 'Messaggio di posta elettronica',
-                    current_password: 'Password corrente',
                     password: 'Password',
-                    confirm_password: 'Conferma Password',
                 },
+                currentPassword: 'Password corrente',
+                newPassword: 'Password',
+                confirmNewPassword: 'Conferma Password',
             },
             actions: {
                 edit_profile: 'Profilo personale',
-                change_password: 'Modifica password',
+                cancel: 'Annulla',
             },
             notifications: {
-                profile_not_exist_error: 'Questo profilo non esiste',
+                profile_not_exist_error: 'Il profilo non esiste.',
                 update_success: 'Profilo aggiornato',
                 update_error: 'Aggiornamento del profilo non riuscito',
                 invalid_password: 'La password corrente non è valida',
@@ -432,6 +518,7 @@ const apiHubMessages = {
                     "La password è stata ripristinata. Utilizzare la nuova password per effettuare l'accesso.",
             },
             validation: {
+                error_current_password_empty: 'Immettere la password corrente',
                 error_password_match: 'Le password non corrispondono',
                 tooltip_password:
                     'Requisiti di password:\n- Numero minimo di caratteri: 8\n- Numero massimo di caratteri: 60\n- Almeno un carattere con lettera minuscola\n- Almeno un carattere con lettera maiuscola\n- Almeno un numero\n- Almeno un carattere speciale: !@#$%^&*',

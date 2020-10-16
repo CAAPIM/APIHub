@@ -68,8 +68,8 @@ export const ApiHubUserMenu = props => {
 
     const userName = userContext
         ? translate('apihub.menu.user_details.full_name', {
-              last_name: userContext.userDetails.lastName,
-              first_name: userContext.userDetails.firstName,
+              last_name: userContext?.userDetails?.lastName,
+              first_name: userContext?.userDetails?.firstName,
           })
         : '';
 

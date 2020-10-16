@@ -1,12 +1,34 @@
 import { login } from '../support/login';
+import defaultData from '../../packages/layer7-apihub-mock/src/defaultData.json';
 
-import homepageData from '../data/homepageData.json';
-import homepageDataEmpty from '../data/homepageDataEmpty.json';
+describe.skip('Homepage', () => {
+    before(() => {
+        cy.clearLocalStorageCache();
+    });
 
-describe('Homepage', () => {
+    beforeEach(() => {
+        cy.restoreLocalStorageCache();
+    });
+
+    afterEach(() => {
+        cy.saveLocalStorageCache();
+    });
+
     describe('as an admin user', () => {
         it('should create a new homepage', () => {
-            cy.loadData(homepageDataEmpty);
+            const emptyHomepageData = {
+                ...defaultData,
+                apis: [],
+                applications: [],
+                tags: [],
+                documents: [],
+                assets: [],
+                apiGroups: [],
+                registrations: [],
+                customFields: [],
+                apiEulas: [],
+            };
+            cy.loadData(emptyHomepageData);
 
             login('portalAdmin', 'Password@1');
 
@@ -30,7 +52,7 @@ describe('Homepage', () => {
         });
 
         it('should edit the homepage', () => {
-            cy.loadData(homepageData);
+            cy.loadData();
 
             login('portalAdmin', 'Password@1');
 
@@ -57,7 +79,7 @@ describe('Homepage', () => {
 
     describe('as a non admin user', () => {
         it('should not be able to create a new homepage', () => {
-            cy.loadData(homepageDataEmpty);
+            cy.loadData();
             login('user', 'Password@1');
             cy.findByTitle('Create').should('not.exist');
         });

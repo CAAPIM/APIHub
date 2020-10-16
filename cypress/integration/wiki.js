@@ -2,11 +2,21 @@
 
 import { login } from '../support/login';
 
-import wikiData from '../data/wikiData.json';
+describe.skip('Wiki', () => {
+    before(() => {
+        cy.clearLocalStorageCache();
+    });
 
-describe('Wiki', () => {
+    beforeEach(() => {
+        cy.restoreLocalStorageCache();
+    });
+
+    afterEach(() => {
+        cy.saveLocalStorageCache();
+    });
+
     it('should open the first document by default for all languages', () => {
-        cy.loadData(wikiData);
+        cy.loadData();
 
         login('user', 'Password@1');
 
@@ -14,18 +24,22 @@ describe('Wiki', () => {
             .first()
             .click();
 
-        cy.findByText('en-US - Automated mission-critical protocol');
-        cy.findByText('nulla');
+        cy.findByText('en-US - Enhanced optimal Graphical User Interface');
+        cy.findByText(
+            'Eligendi omnis consequuntur consequatur corporis assumenda sed nihil unde. Omnis tenetur quam. Consequatur sapiente est aut laudantium voluptates nemo reiciendis explicabo excepturi.'
+        );
 
         cy.findByLabelText('Selected language').click();
         cy.findByText('Français').click();
 
-        cy.findByText('fr-FR - Digitized hybrid hub');
-        cy.findByText('quam qui voluptates');
+        cy.findByText('fr-FR - Business-focused zero tolerance middleware');
+        cy.findByText(
+            'Nihil ex repellendus dolorem suscipit aspernatur non deleniti quia. Qui non et quod esse in velit earum. Doloribus rerum suscipit rerum et libero quae asperiores distinctio. Dolorum pariatur exercitationem quibusdam sunt. Ipsa sint totam sit ut quis veniam sint. Fugiat velit delectus reiciendis unde.'
+        );
     });
 
     it('should allow to create, edit and delete documents', () => {
-        cy.loadData(wikiData);
+        cy.loadData();
 
         login('portalAdmin', 'Password@1');
 
@@ -104,7 +118,7 @@ describe('Wiki', () => {
     });
 
     it('should allow to edit other languages for documentation', () => {
-        cy.loadData(wikiData);
+        cy.loadData();
 
         login('portalAdmin', 'Password@1');
 
@@ -113,15 +127,19 @@ describe('Wiki', () => {
             .click();
 
         // Has english documentation by default
-        cy.findByText('en-US - Automated mission-critical protocol');
+        cy.findByText('en-US - Enhanced optimal Graphical User Interface');
 
         cy.findByLabelText('Selected language').click();
         cy.findByText('Français').click();
 
         // Has french documentation loaded
-        cy.findByText('fr-FR - Digitized hybrid hub').click();
+        cy.findByText(
+            'fr-FR - Business-focused zero tolerance middleware'
+        ).click();
         cy.findByLabelText('Edit').click();
-        cy.findByDisplayValue('fr-FR - Digitized hybrid hub')
+        cy.findByDisplayValue(
+            'fr-FR - Business-focused zero tolerance middleware'
+        )
             .clear()
             .type('fr-FR Une baguette!');
         cy.findByLabelText('Publish').click();
@@ -130,11 +148,11 @@ describe('Wiki', () => {
         cy.findByLabelText('Selected language').click();
         cy.findByText('English', { selector: '[role=menuitem]' }).click();
         cy.findAllByText('fr-FR Une baguette!').should('have.length', 0);
-        cy.findByText('en-US - Automated mission-critical protocol');
+        cy.findByText('en-US - Enhanced optimal Graphical User Interface');
     });
 
     it('should not allow a user without edition rights to edit the documentation', () => {
-        cy.loadData(wikiData);
+        cy.loadData();
 
         login('user', 'Password@1');
 
@@ -142,8 +160,12 @@ describe('Wiki', () => {
             .first()
             .click();
 
-        cy.findByText('en-US - Automated mission-critical protocol').click();
-        cy.findByText('nulla');
+        cy.findByText(
+            'en-US - Enhanced optimal Graphical User Interface'
+        ).click();
+        cy.findByText(
+            'Eligendi omnis consequuntur consequatur corporis assumenda sed nihil unde. Omnis tenetur quam. Consequatur sapiente est aut laudantium voluptates nemo reiciendis explicabo excepturi.'
+        );
         cy.findAllByLabelText('Edit').should('have.length', 0);
     });
 });

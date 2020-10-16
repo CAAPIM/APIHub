@@ -7,6 +7,9 @@ import Typography from '@material-ui/core/Typography';
 export const ApiStatus = ({ record, variant = 'caption' }) => {
     const classes = useStyles();
     const translate = useTranslate();
+    if (!record.portalStatus) {
+        record.portalStatus = record.status || '';
+    }
 
     if (!record) {
         return null;

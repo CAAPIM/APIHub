@@ -78,11 +78,14 @@ export const ApiHubAdmin = ({
 
     const resources = [
         // Resources which are needed for references but which will not have any UI
+        <Resource key="apiEulas" name="apiEulas" />,
         <Resource key="apiGroups" name="apiGroups" />,
         <Resource key="assets" name="assets" />,
+        <Resource key="customFields" name="customFields" />,
+        <Resource key="documents" name="documents" />,
+        <Resource key="organizations" name="organizations" />,
         <Resource key="specs" name="specs" />,
         <Resource key="tags" name="tags" />,
-        <Resource key="documents" name="documents" />,
     ];
 
     // If the user provided their own resources, they should override the defaults.

@@ -16,20 +16,34 @@ import { HtmlTooltip, PasswordInput } from '../../ui';
 import { TermsInput } from './TermsInput';
 import { AccountSetupToolbar } from './AccountSetupToolbar';
 import { validatePassword } from '../validatePassword';
-import { checkUsernameUnicity } from './useAccountData';
+import isEmpty from 'lodash/isEmpty';
+import { getErrorMessage } from '../../useLayer7Notify';
 
 export const AccountSetupForm = props => {
-    const { initialValues, onSubmit, toolbarProps, ...rest } = props;
-
+    const {
+        initialValues,
+        onSubmit,
+        toolbarProps,
+        error = {},
+        ...rest
+    } = props;
     const classes = useStyles(rest);
     const translate = useTranslate();
-    const { url, originHubName } = useApiHub();
+    const { urlWithTenant, originHubName } = useApiHub();
 
+    let flag = true;
     const validate = ({ password, confirm_password }) => {
         if (password !== confirm_password) {
             return {
                 [FORM_ERROR]:
                     'apihub.account_setup.validation.error_password_match',
+            };
+        }
+        if (!isEmpty(error) && flag) {
+            const message = getErrorMessage(error);
+            flag = false;
+            return {
+                userName: message,
             };
         }
     };
@@ -92,12 +106,7 @@ export const AccountSetupForm = props => {
                             </InputAdornment>
                         ),
                     }}
-                    validate={[
-                        required(),
-                        minLength(6),
-                        maxLength(60),
-                        checkUnicity(url, originHubName),
-                    ]}
+                    validate={[required(), minLength(6), maxLength(60)]}
                 />
                 <PasswordInput
                     source="password"
@@ -132,18 +141,6 @@ const mustBeTrue = () => value =>
         ? 'apihub.account_setup.terms_of_use.terms_of_use_validation'
         : undefined;
 
-const checkUnicity = (url, originHubName) => async value => {
-    if (value.length < 6) {
-        return;
-    }
-
-    try {
-        await checkUsernameUnicity(url, originHubName, value);
-    } catch (error) {
-        return 'apihub.account_setup.validation.error_username_not_unique';
-    }
-};
-
 const useStyles = makeStyles(
     theme => ({
         root: {},
@@ -154,6 +151,7 @@ const useStyles = makeStyles(
             '& .ra-input': {
                 marginTop: theme.spacing(2),
             },
+            paddingBottom: theme.spacing(4),
         },
     }),
     {

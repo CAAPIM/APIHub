@@ -68,7 +68,7 @@ For more information, see [Change the configuration](./README.md#change-the-conf
 
 You can make calls to the Layer7 API Hub mock server without having to connect to API Portal. The mock server mimics PAPI responses to ease local development.
 
-For more information about the mock server, see [Layer7 API Hub Mock Server](../layer7-apihub-mock).
+For more information about the mock server, see [Layer7 API Hub Mock Server](https://github.gwd.broadcom.net/ESD/APIHub/tree/develop/packages/layer7-apihub-mock).
 
 ### Use the Mock Server
 
@@ -84,6 +84,7 @@ Use one of the following options to use the PAPI:
 - Use fetch directly.
 
 #### Use react-admin Resource Hooks
+
 Use react-admin resource [hooks](https://marmelab.com/react-admin/Actions.html#specialized-hooks) and components for APIs, applications, or documents.
 
 #### Use fetch
@@ -198,8 +199,8 @@ import { ApiHubAdmin } from 'layer7-apihub';
 
 import { ContactUs } from './ui'; // Import the component you've just created
 
-function ContactUsRoute() {
-    return <Route
+const ContactUsRoute = () => {
+    <Route
         path="/contact-us"
         component={ContactUs}
         noLayout // Do not use the layout from ApiHub

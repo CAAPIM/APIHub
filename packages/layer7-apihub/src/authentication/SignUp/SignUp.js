@@ -12,10 +12,16 @@ export const SignUp = props => {
     const translate = useTranslate();
     const classes = useStyles(props);
     const [showConfirmation, setShowConfirmation] = useState(false);
+    const [serverError, setServerError] = useState(null);
     const [signup] = useSignup();
 
     const handleSubmit = data => {
-        signup(data, { onSuccess: () => setShowConfirmation(true) });
+        signup(data, {
+            onSuccess: () => setShowConfirmation(true),
+            onFailure: error => {
+                setServerError({ error });
+            },
+        });
     };
 
     return (
@@ -30,7 +36,11 @@ export const SignUp = props => {
             {showConfirmation ? (
                 <SignUpConfirmation {...props} />
             ) : (
-                <SignUpForm onSubmit={handleSubmit} {...props} />
+                <SignUpForm
+                    onSubmit={handleSubmit}
+                    serverError={serverError}
+                    {...props}
+                />
             )}
         </>
     );
@@ -98,7 +108,7 @@ export const useSignup = () => {
                         'error'
                     );
                     if (onFailure) {
-                        onFailure();
+                        onFailure(error);
                     }
                 },
             }

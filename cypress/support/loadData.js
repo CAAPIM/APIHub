@@ -1,4 +1,4 @@
-import defaultData from '../data/defaultData.json';
+import defaultData from '../../packages/layer7-apihub-mock/src/defaultData.json';
 
 Cypress.Commands.add('loadData', (data = defaultData) => {
     cy.visit('/#/login');

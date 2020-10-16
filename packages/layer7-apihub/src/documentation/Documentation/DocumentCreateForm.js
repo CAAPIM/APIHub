@@ -4,7 +4,6 @@ import {
     FormDataConsumer,
     TextInput,
     useCreate,
-    useNotify,
     useRefresh,
     required,
     CRUD_CREATE,
@@ -13,6 +12,7 @@ import { makeStyles } from '@material-ui/core';
 import { useForm } from 'react-final-form';
 import slugify from 'slugify';
 
+import { useLayer7Notify } from '../../useLayer7Notify';
 import { buildDocumentId } from '../../dataProvider/documents';
 import { MarkdownInput } from '../../ui';
 import { DocumentFormToolbar } from './DocumentFormToolbar';
@@ -25,7 +25,7 @@ export const DocumentCreateForm = ({
     onSaved = () => {},
     onCancel = () => {},
 }) => {
-    const notify = useNotify();
+    const notify = useLayer7Notify();
     const refresh = useRefresh();
 
     const [create, { loading, error }] = useCreate('documents');
@@ -49,8 +49,12 @@ export const DocumentCreateForm = ({
                     refresh();
                     onSaved(data);
                 },
-                onFailure: () => {
-                    notify('resources.documents.notifications.create_error');
+                onFailure: error => {
+                    notify(
+                        error ||
+                            'resources.documents.notifications.create_error',
+                        'error'
+                    );
                 },
             }
         );

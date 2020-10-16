@@ -5,11 +5,11 @@ import {
     useCreate,
     useGetOne,
     useLocale,
-    useNotify,
     useRefresh,
     useUpdate,
 } from 'ra-core';
 
+import { useLayer7Notify } from '../useLayer7Notify';
 import { documentationLocales } from '../i18n';
 import { buildDocumentId } from '../dataProvider/documents';
 
@@ -33,7 +33,7 @@ import { buildDocumentId } from '../dataProvider/documents';
  */
 export const useMarkdownContent = ({ entityType, entityUuid, navtitle }) => {
     const locale = useLocale();
-    const notify = useNotify();
+    const notify = useLayer7Notify();
     const refresh = useRefresh();
     const id = buildDocumentId(
         entityType,
@@ -64,10 +64,10 @@ export const useMarkdownContent = ({ entityType, entityUuid, navtitle }) => {
                     refresh();
                 }
             },
-            onFailure: () => {
+            onFailure: error => {
                 notify(
-                    'resources.documents.notifications.edit_error',
-                    'warning'
+                    error || 'resources.documents.notifications.edit_error',
+                    'error'
                 );
             },
             undoable: !!data ? true : false,

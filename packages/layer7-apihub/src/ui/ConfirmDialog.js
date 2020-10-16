@@ -4,6 +4,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogActions from '@material-ui/core/DialogActions';
 import Dialog from '@material-ui/core/Dialog';
+import Typography from '@material-ui/core/Typography';
 
 export const ConfirmDialog = ({
     title,
@@ -23,7 +24,9 @@ export const ConfirmDialog = ({
         {...rest}
     >
         <DialogTitle id="confirmation-dialog-title">{title}</DialogTitle>
-        <DialogContent dividers>{content}</DialogContent>
+        <DialogContent dividers>
+            <Typography variant="body1">{content}</Typography>
+        </DialogContent>
         <DialogActions>
             <Button
                 autoFocus
@@ -31,10 +34,10 @@ export const ConfirmDialog = ({
                 variant="outlined"
                 color="secondary"
             >
-                {buttonConfirm}
+                {buttonCancel}
             </Button>
             <Button onClick={onConfirm} variant="contained" color="primary">
-                {buttonCancel}
+                {buttonConfirm}
             </Button>
         </DialogActions>
     </Dialog>

@@ -4,7 +4,7 @@ import { theme as defaultTheme, useBranding } from 'layer7-apihub';
 import merge from 'lodash/merge';
 import createMuiTheme from '@material-ui/core/styles/createMuiTheme';
 import createPalette from '@material-ui/core/styles/createPalette';
-
+import { guessApihubTenantName, guessApihubUrl } from '../layout';
 export const CHANGE_THEME = 'CHANGE_THEME';
 
 export const themeReducer = (previousState = 'light', { type, payload }) => {
@@ -75,9 +75,21 @@ export const darkTheme = createMuiTheme(
 export const lightTheme = defaultTheme;
 
 export const useTheme = () => {
-    const { APIHUB_URL, USE_BRANDING_THEME } = global.APIHUB_CONFIG;
-    const { theme: brandingTheme } = useBranding(APIHUB_URL);
+    const {
+        APIHUB_URL,
+        USE_BRANDING_THEME,
+        TENANT_NAME,
+        ORIGIN_HUB_NAME,
+    } = global.APIHUB_CONFIG;
 
+    const TENANT = TENANT_NAME || guessApihubTenantName();
+    const URL = APIHUB_URL || guessApihubUrl();
+    const API_URL_WITH_TENANT = `${URL}/api/${TENANT}`;
+
+    const { logo, brandingTheme } = useBranding(
+        API_URL_WITH_TENANT,
+        ORIGIN_HUB_NAME
+    );
     const themeMode = useSelector(state => state.theme);
 
     const theme = useMemo(() => {
@@ -87,5 +99,5 @@ export const useTheme = () => {
         return themeMode === 'light' ? lightTheme : darkTheme;
     }, [USE_BRANDING_THEME, brandingTheme, themeMode]);
 
-    return theme;
+    return { theme, logo };
 };

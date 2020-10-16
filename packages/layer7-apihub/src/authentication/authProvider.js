@@ -30,10 +30,9 @@ export const authProvider = (
     keyLoggedIn = LOGGED_IN,
     fetchJson = getFetchJson(originHubName)
 ) => {
-    const adminUrl = `${baseUrl}/admin`;
     const apiUrl = `${baseUrl}/api/${tenantName}`;
     const providers = {
-        credentials: credentialsAuthProvider(apiUrl, adminUrl, fetchJson),
+        credentials: credentialsAuthProvider(apiUrl, fetchJson),
     };
 
     const getIsLoggedIn = () => {
@@ -42,6 +41,10 @@ export const authProvider = (
 
     const setIsLoggedIn = value => {
         sessionStorage.setItem(keyLoggedIn, JSON.stringify(value));
+    };
+
+    const removeIsLoggedIn = () => {
+        sessionStorage.removeItem(keyLoggedIn);
     };
 
     let schemeUsedForLogin = null;
@@ -79,11 +82,20 @@ export const authProvider = (
         },
         logout: async () => {
             const authProviderUsedForLogin = getProviderUsedForLogin();
-
             if (authProviderUsedForLogin) {
                 await authProviderUsedForLogin.logout();
+            } else {
+                // Call the default logout route
+                try {
+                    await fetchJson(`${apiUrl}/logout`);
+                    return Promise.resolve();
+                } catch (error) {
+                    console.error(error);
+                }
             }
-            setIsLoggedIn(false);
+            // Don't set the isLoggedIn variable to false
+            // to force the checkAuth method to check if the user is authenticated by fetching the API
+            removeIsLoggedIn();
 
             // The documentation locale should reset to the preferred UI locale
             // for every new session
@@ -96,10 +108,6 @@ export const authProvider = (
             const isLoggedIn = getIsLoggedIn();
             if (isLoggedIn === true) {
                 return Promise.resolve();
-            }
-
-            if (isLoggedIn === false) {
-                return Promise.reject();
             }
 
             try {

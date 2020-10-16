@@ -52,6 +52,14 @@ export const theme = createMuiTheme(
                     backgroundColor: palette.secondary.main,
                     marginTop: '1.5em',
                     height: 'calc(100% - 1.5em)',
+                    [defaultMuiTheme.breakpoints.up('xs')]: {
+                        marginTop: '0',
+                        paddingTop: '1.5em',
+                    },
+                    [defaultMuiTheme.breakpoints.down('sm')]: {
+                        marginTop: '0',
+                        paddingTop: '1.5em',
+                    },
                 },
             },
             RaLayout: {

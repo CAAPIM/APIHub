@@ -2,7 +2,19 @@
 
 import { login } from '../support/login';
 
-describe('Applications', () => {
+describe.skip('Applications', () => {
+    before(() => {
+        cy.clearLocalStorageCache();
+    });
+
+    beforeEach(() => {
+        cy.restoreLocalStorageCache();
+    });
+
+    afterEach(() => {
+        cy.saveLocalStorageCache();
+    });
+
     it('should find an application in the datagrid and in the list of cards', () => {
         cy.loadData();
 
@@ -16,15 +28,15 @@ describe('Applications', () => {
 
         cy.findByTitle('Display as list').click();
 
-        cy.findByTitle('ATP International Identity'); // Name
-        cy.findByTitle('Balanced coherent intranet'); // Description
+        cy.findByTitle('CSS Human Intranet'); // Name
+        cy.findByTitle('Self-enabling global workforce'); // Description
 
         // As a list of cards
 
         cy.findByTitle('Display as cards').click();
 
-        cy.findByTitle('ATP International Identity'); // Name
-        cy.findByTitle('Balanced coherent intranet'); // Description
+        cy.findByTitle('CSS Human Intranet'); // Name
+        cy.findByTitle('Self-enabling global workforce'); // Description
     });
 
     it('should show an application details', () => {
@@ -38,23 +50,23 @@ describe('Applications', () => {
 
         cy.findByTitle('Display as list').click();
 
-        cy.findByTitle('ATP International Identity').click({ force: true });
+        cy.findByTitle('CSS Human Intranet').click({ force: true });
 
         // Overview
 
         cy.findByLabelText('Overview').should('contain', 'No value');
         cy.findByLabelText('API Key / Client ID').should(
             'contain',
-            '06f4fb4d-80f4-49fd-bfb5-6154889eda03'
+            'b43b8e38-511a-4234-b533-4264a8fcaa26'
         );
         cy.findByLabelText('Shared Secret / Client Secret').should(
             'contain',
-            'c369e771-0fe0-4814-b11b-20e32a2cbd7e'
+            'cf4f15ea-b8c5-453c-8072-9b5115db5eb9'
         );
 
         cy.findByLabelText('Description').should(
             'contain',
-            'Balanced coherent intranet'
+            'Self-enabling global workforce'
         );
         cy.findByLabelText('OAuth Callback URL').should(
             'contain',
@@ -75,7 +87,7 @@ describe('Applications', () => {
 
         cy.findByTitle('Display as list').click();
 
-        cy.findByTitle('ATP International Identity').click({ force: true });
+        cy.findByTitle('CSS Human Intranet').click({ force: true });
 
         // Overview
 
@@ -91,7 +103,7 @@ describe('Applications', () => {
 
         cy.findByTitle('Display as list').click();
 
-        cy.findByTitle('COM Principal Web').click({ force: true });
+        cy.findByTitle('GB Future Response').click({ force: true });
 
         // Details
         cy.findByLabelText('Generate New Secret').should('not.exist');
@@ -105,7 +117,7 @@ describe('Applications', () => {
 
         cy.findByTitle('Display as list').click();
 
-        cy.findByTitle('COM Principal Web').click({ force: true });
+        cy.findByTitle('GB Future Response').click({ force: true });
 
         // Details
         cy.findByLabelText('Generate New Secret').should('exist');

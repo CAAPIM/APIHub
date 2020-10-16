@@ -27,7 +27,6 @@ const useStyles = makeStyles(
         },
         title: {
             fontWeight: theme.typography.fontWeightMedium,
-            textTransform: 'capitalize',
             color: theme.palette.getContrastText(
                 theme.palette.background.default
             ),

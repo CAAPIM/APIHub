@@ -1,4 +1,8 @@
 import { promisify } from '../promisify';
+import { Response } from 'miragejs';
+
+const UuidRegexp = /Eulas\('(.*)'\)/;
+const SearchFields = ['name', 'description'];
 
 export function listApiGroups(database) {
     return async (schema, request) => {
@@ -8,12 +12,33 @@ export function listApiGroups(database) {
         const finalSize = parseInt(size, 10);
         const [finalSort, finalOrder] = sort ? sort.split(',') : [];
 
+        let finalFilters = filter;
+        if (Object.keys(filter).some(key => SearchFields.includes(key))) {
+            const otherFilters = Object.keys(filter).filter(
+                key => !SearchFields.includes(key)
+            );
+            finalFilters = otherFilters.reduce(
+                (acc, key) => ({
+                    ...acc,
+                    [key]: filter[key],
+                }),
+                {
+                    $or: SearchFields.map(field => ({
+                        [field]: {
+                            $regex: `.*${filter[field]}.*`,
+                            $options: 'ig',
+                        },
+                    })),
+                }
+            );
+        }
+
         const totalElements = (
-            await promisify(database.apiGroups.find(filter).fetch)
+            await promisify(database.apiGroups.find(finalFilters).fetch)
         ).length;
 
         const results = await promisify(
-            database.apiGroups.find(filter, {
+            database.apiGroups.find(finalFilters, {
                 limit: finalSize,
                 skip: finalSize * finalPage,
                 sort: {
@@ -50,5 +75,25 @@ export function getApiGroupApis(database) {
         );
 
         return apiGroup.apis.map(({ uuid }) => ({ uuid }));
+    };
+}
+
+export function getApiGroupEula(database) {
+    return async (schema, request) => {
+        const matches = UuidRegexp.exec(request.params.path);
+
+        if (matches && matches.length > 1) {
+            const Uuid = matches[1];
+            const eula = await promisify(
+                database.apiEulas.findOne.bind(database.apiEulas),
+                { Uuid }
+            );
+
+            if (eula) {
+                return eula;
+            }
+        }
+
+        return new Response(404);
     };
 }

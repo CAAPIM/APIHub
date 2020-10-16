@@ -8,12 +8,15 @@ import {
     useTranslate,
 } from 'react-admin';
 import { makeStyles, Link, Typography } from '@material-ui/core';
+import isEmpty from 'lodash/isEmpty';
 import { SignUpToolbar } from './SignUpToolbar';
 import { ConfirmSlider } from '../../ui';
+import { getErrorMessage } from '../../useLayer7Notify';
 
 export const SignUpForm = props => {
     const classes = useStyles(props);
-    const { onSubmit = () => {}, toolbarProps } = props;
+    const { onSubmit = () => {}, toolbarProps, serverError } = props;
+    let showError = false;
     const {
         title,
         form,
@@ -26,7 +29,6 @@ export const SignUpForm = props => {
     const [formConfirmed, setFormConfirmed] = useState(false);
     const [showSliderAlert, setShowSliderAlert] = useState(false);
     const [sliderLabelColor, setSliderLabelColor] = useState('textPrimary');
-
     const submit = data => {
         const { EmailConfirmation, ...registration } = data;
 
@@ -48,6 +50,17 @@ export const SignUpForm = props => {
         }
     };
 
+    const validate = () => {
+        if (!isEmpty(serverError) && !showError) {
+            const { error } = serverError;
+            const message = getErrorMessage(error);
+            showError = true;
+            return {
+                OrganizationName: message,
+            };
+        }
+    };
+
     return (
         <>
             <SimpleForm
@@ -55,6 +68,7 @@ export const SignUpForm = props => {
                 save={submit}
                 toolbar={<SignUpToolbar {...toolbarProps} />}
                 redirect={false}
+                validate={validate}
             >
                 <TextInput
                     source="Email"
