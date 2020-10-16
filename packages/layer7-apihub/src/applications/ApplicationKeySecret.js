@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslate } from 'ra-core';
-import { Labeled, useQuery, useMutation, useNotify } from 'react-admin';
+import { Labeled, useQuery, useMutation } from 'react-admin';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
@@ -14,7 +14,8 @@ import NativeSelect from '@material-ui/core/NativeSelect';
 import ReportProblemOutlinedIcon from '@material-ui/icons/ReportProblemOutlined';
 import { makeStyles } from '@material-ui/core/styles';
 import get from 'lodash/get';
-
+import { useForm } from 'react-final-form';
+import { useLayer7Notify } from '../useLayer7Notify';
 import { useCopyToClipboard } from '../ui';
 
 export const ApplicationKeySecret = props => {
@@ -27,7 +28,8 @@ export const ApplicationKeySecret = props => {
         errorMessage: 'resources.applications.notifications.copy_error',
     });
     const translate = useTranslate();
-    const notify = useNotify();
+    const notify = useLayer7Notify();
+    const form = useForm();
 
     const [keySecret, setKeySecret] = useState(record.keySecret);
     const [isPlainTextSelected, setIsPlainTextSelected] = useState(true);
@@ -81,40 +83,32 @@ export const ApplicationKeySecret = props => {
         }
     }, [data, error]);
 
-    const [generate] = useMutation(
-        {
-            type: 'getGenerateNewSharedSecret',
-            resource: 'applications',
-            payload: {
-                isPlainTextSelected: isPlainTextSelected,
-                isHashedSecretSetting,
-                id: appUuid,
-                record,
-            },
-        },
-        {
-            onSuccess: ({ data }) => {
-                notify(
-                    'resources.applications.notifications.secret_generated_heading'
-                );
-                if (isHashedSecretSetting && !isPlainTextSelected) {
-                    setOneTimePassword(true);
-                    setKeySecret(data.keySecret);
-                } else {
-                    setKeySecret(data.keySecret);
-                    setOpen(false);
-                }
-            },
-            onFailure: error => {
-                setOpen(false);
-                const { value } = error.message || {
-                    value:
-                        'resources.applications.notifications.secret_generated_heading_error',
-                };
-                notify(value, 'warning');
-            },
+    /*
+    To generate random uuid
+    */
+    const uuidv4 = () => {
+        return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
+            (
+                c ^
+                (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (c / 4)))
+            ).toString(16)
+        );
+    };
+
+    const generateKeySecret = () => {
+        const key = uuidv4().replace(/-/g, '');
+        notify('resources.applications.notifications.secret_generated_heading');
+        if (isHashedSecretSetting && !isPlainTextSelected) {
+            setOneTimePassword(true);
+            setKeySecret(key);
+            form.change('ShouldHash', true);
+        } else {
+            setKeySecret(key);
+            setOpen(false);
+            form.change('ShouldHash', false);
         }
-    );
+        form.change('keySecret', key);
+    };
 
     if (isGetSecretHashMetadataLoading) {
         return null;
@@ -168,7 +162,6 @@ export const ApplicationKeySecret = props => {
                             )}
                         </Button>
                     )}
-
                     {isHashedSecretSetting && allowSelectHashing && (
                         <NativeSelect
                             className={classes.selectField}
@@ -203,7 +196,6 @@ export const ApplicationKeySecret = props => {
                                     'resources.applications.actions.hashedSecret'
                                 )}
                             </option>
-                            )}
                         </NativeSelect>
                     )}
                     <Dialog
@@ -215,13 +207,13 @@ export const ApplicationKeySecret = props => {
                     >
                         {oneTimePassword ? (
                             <OneTimePasswordDialog
-                                handleClose={handleSecretClearAndClose}
+                                handleClose={handleClose}
                                 keySecret={keySecret}
                             />
                         ) : (
                             <ShowGenerateDialog
                                 handleClose={handleClose}
-                                generate={generate}
+                                generate={generateKeySecret}
                             />
                         )}
                     </Dialog>

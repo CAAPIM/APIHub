@@ -11,22 +11,19 @@ import { makeStyles } from '@material-ui/core/styles';
 import { MarkdownView } from '../ui';
 import { ApplicationStatus } from './ApplicationStatus';
 
-export const ApplicationCard = ({ basePath, record }) => {
+export const ApplicationCard = ({ basePath, record, canCRUD }) => {
     const classes = useStyles();
 
     return (
-        <Card
-            className={classes.root}
-            component={Link}
-            to={linkToRecord(basePath, record && record.id, 'show')}
-        >
+        <Card className={classes.root}>
             <CardHeader
                 className={classes.header}
+                component={Link}
+                to={linkToRecord(basePath, record && record.id, 'show')}
                 title={
                     <Tooltip title={record.name}>
                         <Typography
                             variant="h5"
-                            component="span"
                             display="block"
                             className={classes.title}
                             noWrap
@@ -43,7 +40,11 @@ export const ApplicationCard = ({ basePath, record }) => {
                 }
             />
             {record.description && (
-                <CardContent className={classes.content}>
+                <CardContent
+                    className={classes.content}
+                    component={Link}
+                    to={linkToRecord(basePath, record && record.id, 'show')}
+                >
                     <Tooltip title={record.description || ''}>
                         <MarkdownView
                             className={classes.description}
@@ -62,18 +63,19 @@ const useStyles = makeStyles(
             height: '100%',
             display: 'flex',
             flexDirection: 'column',
-            cursor: 'pointer',
             textDecoration: 'none',
         },
         content: {
             display: 'flex',
             flexDirection: 'column',
             flex: 1,
+            textDecoration: 'none',
         },
         header: {
             borderBottomColor: theme.palette.divider,
             borderBottomWidth: 1,
             borderBottomStyle: 'solid',
+            textDecoration: 'none',
         },
         title: {
             fontFamily: theme.typography.subtitle2.fontFamily,
@@ -81,6 +83,8 @@ const useStyles = makeStyles(
             fontWeight: theme.typography.fontWeightBold,
             wordBreak: 'break-word',
             maxWidth: '100%',
+            textDecoration: 'none',
+            color: theme.palette.text.primary,
         },
         subheader: {
             display: 'flex',

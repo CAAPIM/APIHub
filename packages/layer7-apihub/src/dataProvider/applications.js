@@ -74,10 +74,71 @@ export const applicationsDataProvider = context => {
                     organizationUuid: data.OrganizationUuid,
                     organizationName: data.OrganizationName,
                     apiIds: data.ApiIds,
+                    apiApiPlanIds: data.ApiApiPlanIds,
+                    apiGroupIds: data.ApiGroupIds,
                     apiKey: data.ApiKey,
                     keySecret: data.KeySecret,
                     disabledByType: data.DisabledByType,
+                    customFieldValues: data.CustomFieldValues?.results || [],
                     ...data,
+                },
+            };
+        },
+
+        create: async ({ data }) => {
+            // const url = `${context.baseUrl}/admin/Portal.svc/Applications`;
+            const url = `${legacyPath}`;
+            const {
+                json: { Uuid, ...responseData },
+            } = await context.fetchJson(url, {
+                credentials: 'include',
+                method: 'POST',
+                body: JSON.stringify(data),
+            });
+
+            return {
+                data: {
+                    id: Uuid,
+                    name: responseData.Name,
+                    description: responseData.Description,
+                    status: responseData.Status,
+                    organizationUuid: responseData.OrganizationUuid,
+                    organizationName: responseData.OrganizationName,
+                    apiIds: responseData.ApiIds,
+                    apiApiPlanIds: responseData.ApiApiPlanIds,
+                    apiGroupIds: responseData.ApiGroupIds,
+                    apiKey: responseData.ApiKey,
+                    keySecret: responseData.KeySecret,
+                    disabledByType: responseData.DisabledByType,
+                    ...responseData,
+                },
+            };
+        },
+        update: async ({ id, data }) => {
+            const url = `${legacyPath}('${id}')`;
+            const {
+                json: { ...responseData },
+            } = await context.fetchJson(url, {
+                credentials: 'include',
+                method: 'PUT',
+                body: JSON.stringify(data),
+            });
+
+            return {
+                data: {
+                    id: responseData.Uuid,
+                    name: responseData.Name,
+                    description: responseData.Description,
+                    status: responseData.Status,
+                    organizationUuid: responseData.OrganizationUuid,
+                    organizationName: responseData.OrganizationName,
+                    apiIds: responseData.ApiIds,
+                    apiApiPlanIds: responseData.ApiApiPlanIds,
+                    apiGroupIds: responseData.ApiGroupIds,
+                    apiKey: responseData.ApiKey,
+                    keySecret: responseData.KeySecret,
+                    disabledByType: responseData.DisabledByType,
+                    ...responseData,
                 },
             };
         },
@@ -107,16 +168,43 @@ export const applicationsDataProvider = context => {
         }) => {
             const url =
                 isHashedSecretSetting && isPlainTextSelected
-                    ? `${context.baseUrl}/admin/Portal.svc/GenerateNewSharedSecret?ApplicationUuid='${id}'&ShouldHash='false'`
-                    : `${context.baseUrl}/admin/Portal.svc/GenerateNewSharedSecret?ApplicationUuid='${id}'`;
+                    ? `${context.apiUrl}/GenerateNewSharedSecret?ApplicationUuid='${id}'&ShouldHash='false'`
+                    : `${context.apiUrl}/GenerateNewSharedSecret?ApplicationUuid='${id}'`;
             const { json } = await context.fetchJson(url, {
                 credentials: 'include',
             });
             return {
                 data: {
                     id,
-                    keySecret: json.d.result,
+                    keySecret: json.result,
                 },
+            };
+        },
+
+        checkApplicationUniqueness: async ({ applicationName }) => {
+            const url = `${context.baseUrl}/admin/Portal.svc/ApplicationNameUnique()?Name='${applicationName}'`;
+            const { json } = await context.fetchJson(url, {
+                credentials: 'include',
+            });
+            return {
+                data: {
+                    isNameUnique: json.d.result,
+                },
+            };
+        },
+
+        delete: async ({ id }) => {
+            const url = `${legacyPath}('${id}')`;
+
+            const {
+                json: { ...data },
+            } = await context.fetchJson(url, {
+                credentials: 'include',
+                method: 'DELETE',
+            });
+
+            return {
+                data: { data },
             };
         },
     };

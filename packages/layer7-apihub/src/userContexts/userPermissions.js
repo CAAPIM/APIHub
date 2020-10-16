@@ -36,6 +36,21 @@ export function isOrgBoundUser(userContext) {
 }
 
 /**
+ * Detect if the user is an admin user and not a developer from the user context.
+ *
+ * @param {object} userContext The user context
+ */
+export function isAdminUser(userContext) {
+    const portalAdmin = !!get(userContext, 'userDetails.portalAdmin', null);
+    const apiOwner = !!get(userContext, 'userDetails.apiOwner', null);
+    const orgPublisher = !!get(userContext, 'userDetails.orgPublisher', null);
+    const orgAdmin = !!get(userContext, 'userDetails.orgAdmin', null);
+    const developer = !!get(userContext, 'userDetails.developer', null);
+
+    return (portalAdmin || apiOwner || orgAdmin || orgPublisher) && !developer;
+}
+
+/**
  * Detect if the user is an admin from the user context.
  *
  * @param {object} userContext The user context

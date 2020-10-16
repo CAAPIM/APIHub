@@ -7,6 +7,12 @@ const apiHubMessages = {
         page: {
             dashboard: 'Home',
         },
+        action: {
+            add_filter: 'Add Filter',
+            show: 'Show',
+            edit: 'Edit',
+            bulk_actions: '1 item selected |||| %{smart_count} items selected',
+        },
         actions: {
             ...raMessages.actions,
             open_sidebar: 'Open the menu',
@@ -15,6 +21,11 @@ const apiHubMessages = {
         navigation: {
             ...raMessages.navigation,
             page_rows_per_page: 'Items per page:',
+            next: 'Next',
+            prev: 'Prev',
+        },
+        auth: {
+            logout: 'Logout',
         },
     },
     apihub: {
@@ -39,8 +50,8 @@ const apiHubMessages = {
         account_setup: {
             title: 'Complete And Activate Account',
             fields: {
-                firstname: 'First name',
-                lastname: 'Last name',
+                firstname: 'First Name',
+                lastname: 'Last Name',
                 email: 'Email',
                 username: 'Username',
                 password: 'Password',
@@ -51,7 +62,7 @@ const apiHubMessages = {
                 open_login_page: 'Go to Sign In',
             },
             validation: {
-                error_password_match: "The passwords don't match",
+                error_password_match: 'The passwords do not match',
                 error_username_not_unique: 'This username is not unique',
                 tooltip_username: 'Minimum 6 characters\nMaximum 60 characters',
                 tooltip_password:
@@ -109,7 +120,7 @@ const apiHubMessages = {
                 open_login_page: 'Go to Sign In',
             },
             validation: {
-                error_password_match: 'The passwords do not match.',
+                error_password_match: 'The passwords do not match',
                 tooltip_password:
                     'Password requirements:\n- Minimum 8 characters\n- Maximum 60 characters\n- At least one lowercase character\n- At least one uppercase character\n- At least one number\n- At least one special character: !@#$%^&*',
                 tooltip_password_confirm: 'Repeat your password',
@@ -136,6 +147,7 @@ const apiHubMessages = {
             view_as_list: 'Display as list',
             tree_drop_before: 'Before %{title}',
             tree_drop_after: 'After %{title}',
+            select_an_api_plan: 'Select an API Plan (Required)',
         },
         validation: {
             password: {
@@ -160,6 +172,12 @@ const apiHubMessages = {
                 inlinecode: 'Inline Code',
                 code: 'Block Code',
             },
+        },
+        terms_and_conditions: {
+            api_label:
+                'By clicking Select API, I accept the Terms and Conditions',
+            api_group_label:
+                'By clicking Select API Group, I accept the Terms and Conditions',
         },
     },
     resources: {
@@ -254,6 +272,23 @@ const apiHubMessages = {
                 title: 'Documentation',
             },
         },
+        apiGroups: {
+            name: 'API Group |||| API Groups',
+            short_name: 'Group |||| Groups',
+            fields: {
+                name: 'Name',
+            },
+        },
+        apiPlans: {
+            name: 'API Plan |||| API Plans',
+            fields: {
+                name: 'Name',
+                description: 'Description',
+                rate_limit: 'Rate Limit',
+                quota: 'Quota',
+                quota_interval: 'Quota Interval',
+            },
+        },
         applications: {
             name: 'Application |||| Applications',
             fields: {
@@ -271,6 +306,30 @@ const apiHubMessages = {
                 oauthScope: 'OAuth Scope',
                 overview: 'Overview',
                 status: 'State',
+                apiGroups: 'API Groups',
+                apiGroup: 'API Group',
+                organization: 'Organization',
+                applicationInformation: 'Application Information',
+                customField: 'Custom Field',
+                noCustomFields: 'No available custom fields',
+                noApplications: 'No available applications',
+                apiManagement: 'API Management',
+                authCredentials: 'Authentication and Credentials',
+                callbackUrl: 'Callback/Redirect URL(s)',
+                scope: 'Scope',
+                type: 'Type',
+                none: 'None',
+                public: 'Public',
+                confidential: 'Confidential',
+                sharedSecretFormat: 'Shared Secret Format',
+                selectOrganization: 'Select organization',
+                apiPlan: 'API Plan',
+                quota: 'Quota',
+                rateLimit: 'Rate Limit',
+                termsOfUseApi:
+                    'By clicking Add API, I accept Terms and Conditions',
+                actions: 'Actions',
+                default: 'Default',
             },
             actions: {
                 generateSecret: 'Generate New Secret',
@@ -279,6 +338,24 @@ const apiHubMessages = {
                 hashedSecret: 'Hashed secret',
                 cancel: 'Cancel',
                 save: 'Save',
+                addApplication: 'Add Application',
+                createApplication: 'Create Application',
+                deleteApplication: 'Delete Application',
+                select_api: 'Select API',
+                addApi: 'Add API',
+                addApiGroup: 'Add API Group',
+                searchByApiTitle: 'Search',
+                filterByTag: 'Filter by tag',
+                accept_terms_and_conditions: 'I Accept the Terms & Conditions',
+                edit: 'Edit',
+                delete: 'Delete',
+            },
+            validation: {
+                error_application_name_not_unique:
+                    'This application name is not unique',
+                callback_url_caption: 'Use comma separated values',
+                scope_caption: 'Use space separated values',
+                application_name_caption: 'Use unique name 50 characters (max)',
             },
             status: {
                 enabled: 'Enabled',
@@ -314,7 +391,17 @@ const apiHubMessages = {
                 copy_to_clipboard: 'Copy to Clipboard',
                 edit_overview: 'Edit overview',
                 empty_overview: 'No value',
+                create_success: 'Application successfully created.',
+                create_error:
+                    'An error occurred while creating the application.',
+                edit_success: 'Application successfully updated.',
+                edit_error: 'An error occurred while updating the application.',
+                delete_success: 'Application successfully deleted.',
+                delete_error:
+                    'An error occurred while deleting the application.',
             },
+            confirm_delete:
+                'You are about to delete this application. Are you sure?',
         },
         documents: {
             name: 'Wiki |||| Wiki',

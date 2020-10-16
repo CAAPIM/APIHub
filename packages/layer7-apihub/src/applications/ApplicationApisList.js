@@ -1,35 +1,97 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useQuery } from 'react-admin';
-import { useTranslate, linkToRecord } from 'ra-core';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
+import { useTranslate, linkToRecord, useDataProvider } from 'ra-core';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Link from '@material-ui/core/Link';
 import { Link as RouterLink } from 'react-router-dom';
+import uniq from 'lodash/uniq';
+import flatMap from 'lodash/flatMap';
+import union from 'lodash/union';
+import map from 'lodash/map';
 
 import MuiExpansionPanel from '@material-ui/core/ExpansionPanel';
 import MuiExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import MuiExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import { ApiStatus } from '../apis/ApiStatus';
+import { useLayer7Notify } from '../useLayer7Notify';
 
-export const ApplicationApisList = ({ apis }) => {
+export const ApplicationApisList = ({ application }) => {
+    const { apiIds, apiGroupIds } = application;
+    const { results: apis } = apiIds;
+
     const classes = useStyles();
     const translate = useTranslate();
+    const dataProvider = useDataProvider();
+    const notify = useLayer7Notify();
+    const [apiPlansEnabled, setApiPlansEnabled] = useState(false);
+    const [selectedApiGroups, setSelectedApiGroups] = useState([]);
+    const [appApis, setAppApis] = useState([]);
 
-    const { data = [] } = useQuery({
+    const { data: allApis = [] } = useQuery({
         type: 'getApis',
         resource: 'apis',
     });
 
-    const appApis = apis ? getAppApis(data, apis) : [];
+    const {
+        data: apiPlanFeatureFlag,
+        error,
+        loading: isLoadingApiPlansFeatureFlag,
+    } = useQuery({
+        type: 'getApiPlansFeatureFlag',
+        resource: 'apiPlans',
+        payload: {},
+    });
+
+    React.useEffect(() => {
+        if (apiPlanFeatureFlag) {
+            setApiPlansEnabled(apiPlanFeatureFlag.value === 'true');
+        }
+    }, [apiPlanFeatureFlag]);
+
+    React.useEffect(() => {
+        async function fetchInitialSelectedItems() {
+            if (apiGroupIds.results?.length && !selectedApiGroups.length) {
+                const { data: apiGroups } = await dataProvider.getList(
+                    'apiGroups',
+                    {
+                        filter: {
+                            orgUuid: application.organizationUuid,
+                            applicationUuid: application.id,
+                        },
+                        pagination: { page: 1, perPage: 100 },
+                    },
+                    {
+                        onFailure: error => notify(error),
+                    }
+                );
+                const appApiGroups = apiGroups.filter(apiGroup =>
+                    application.apiGroupIds.results.find(
+                        id => apiGroup.id === id
+                    )
+                );
+                setSelectedApiGroups(appApiGroups);
+            }
+        }
+        if (apis && allApis && allApis.length) {
+            fetchInitialSelectedItems();
+            const apiGroupsList = getAppApiGroupsApisList(selectedApiGroups);
+            const allSelectedApis = union(apis, apiGroupsList);
+
+            const listedApis = apis ? getAppApis(allApis, allSelectedApis) : [];
+            if (listedApis && listedApis.length > 0) {
+                setAppApis(listedApis);
+            }
+        }
+    }, [
+        apis,
+        allApis,
+        selectedApiGroups,
+    ]);
 
     return (
-        <ExpansionPanel square>
+        <ExpansionPanel square defaultExpanded="true">
             <ExpansionPanelSummary
                 expandIcon={<ExpandMoreIcon />}
                 aria-controls="apilistpanel-content"
@@ -41,66 +103,29 @@ export const ApplicationApisList = ({ apis }) => {
                 </Typography>
             </ExpansionPanelSummary>
             <ExpansionPanelDetails>
-                <TableContainer className={classes.container}>
-                    <Table
-                        className={classes.table}
-                        size="small"
-                        stickyHeader
-                        aria-label="sticky table"
-                    >
-                        <TableHead className={classes.tableHeader}>
-                            <TableRow>
-                                <StyledTableCell>
-                                    {translate(`resources.apis.name`, {
-                                        smart_count: 1,
-                                    })}
-                                </StyledTableCell>
-                                <StyledTableCell align="center">
-                                    {translate('resources.apis.fields.version')}
-                                </StyledTableCell>
-                                <StyledTableCell align="left">
-                                    {translate(
-                                        'resources.apis.fields.description'
-                                    )}
-                                </StyledTableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {appApis &&
-                                appApis.map(row => (
-                                    <TableRow key={row.id}>
-                                        <StyledTableCell
-                                            component="th"
-                                            scope="row"
-                                        >
-                                            <Link
-                                                component={RouterLink}
-                                                to={linkToRecord(
-                                                    '/apis',
-                                                    row && row.id,
-                                                    'show'
-                                                )}
-                                            >
-                                                {row.name}
-                                            </Link>
-                                        </StyledTableCell>
-                                        <StyledTableCell align="center">
-                                            {row.version}
-                                        </StyledTableCell>
-                                        <StyledTableCell
-                                            align="left"
-                                            style={{
-                                                maxWidth: '30%',
-                                                textOverflow: 'ellipsis',
-                                            }}
-                                        >
-                                            {row.description}
-                                        </StyledTableCell>
-                                    </TableRow>
-                                ))}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
+                <div className={classes.details}>
+                    {appApis &&
+                        appApis.map(row => (
+                            <div className={classes.additionalDetails}>
+                                <div className={classes.title}>
+                                    <Link
+                                        component={RouterLink}
+                                        to={linkToRecord(
+                                            '/apis',
+                                            row && row.id,
+                                            'show'
+                                        )}
+                                    >
+                                        {row.name} v{row.version}
+                                    </Link>
+                                    <ApiStatus record={row} variant="caption" />
+                                </div>
+                                <div className={classes.description}>
+                                    {row.description}
+                                </div>
+                            </div>
+                        ))}
+                </div>
             </ExpansionPanelDetails>
         </ExpansionPanel>
     );
@@ -109,10 +134,14 @@ export const ApplicationApisList = ({ apis }) => {
 const getAppApis = (allApis, selectedApis) =>
     allApis.filter(api => selectedApis.includes(api.id));
 
+const getAppApiGroupsApisList = list =>
+    uniq(flatMap(list, ({ apis }) => map(apis, api => api.uuid)));
+
 const ExpansionPanel = withStyles(theme => ({
     root: {
         width: '100%',
-        border: `1px solid ${theme.palette.grey[500]}`,
+        border: 'none',
+        borderBottom: `1px solid ${theme.palette.grey[200]}`,
         boxShadow: 'none',
         '&:not(:last-child)': {
             borderBottom: 0,
@@ -129,13 +158,13 @@ const ExpansionPanel = withStyles(theme => ({
 
 const ExpansionPanelSummary = withStyles(theme => ({
     root: {
-        backgroundColor: theme.palette.background.default,
-        borderBottom: `1px solid ${theme.palette.grey[500]}`,
+        borderBottom: `1px solid ${theme.palette.grey[200]}`,
         marginBottom: -1,
         minHeight: 56,
         '&$expanded': {
             minHeight: 56,
         },
+        padding: 0,
     },
     content: {
         '&$expanded': {
@@ -147,21 +176,10 @@ const ExpansionPanelSummary = withStyles(theme => ({
 
 const ExpansionPanelDetails = withStyles(theme => ({
     root: {
-        padding: theme.spacing(1, 0, 0),
+        padding: theme.spacing(0, 0, 0),
+        border: 'none',
     },
 }))(MuiExpansionPanelDetails);
-
-const StyledTableCell = withStyles(theme => ({
-    head: {
-        fontSize: theme.typography.body1,
-        fontWeight: '600',
-    },
-    body: {
-        fontSize: theme.typography.body1,
-        fontWeight: '500',
-        maxWidth: '33%',
-    },
-}))(TableCell);
 
 const useStyles = makeStyles(
     theme => ({
@@ -177,10 +195,32 @@ const useStyles = makeStyles(
         heading: {
             fontSize: theme.typography.pxToRem(15),
             fontWeight: theme.typography.fontWeightBold,
-            textTransform: 'uppercase',
+            textTransform: 'titlecase',
             color: theme.palette.grey[600],
             marginLeft: theme.spacing(1),
             marginRight: theme.spacing(1),
+        },
+        title: {
+            width: '100%',
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+        },
+        details: {
+            marginBottom: theme.spacing(1),
+            marginLeft: theme.spacing(3),
+            width: '100%',
+            fontSize: '1rem',
+        },
+        additionalDetails: {
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            marginTop: theme.spacing(2),
+        },
+        description: {
+            marginTop: theme.spacing(0),
+            fontSize: theme.typography.pxToRem(14),
         },
     }),
     {

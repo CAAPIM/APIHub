@@ -1,5 +1,4 @@
 import {
-    useNotify,
     useRefresh,
     useRedirect,
     useGetOne,
@@ -10,10 +9,11 @@ import {
 } from 'ra-core';
 import merge from 'lodash/merge';
 
+import { useLayer7Notify } from '../useLayer7Notify';
 import { CurrentUserId } from '../dataProvider/userContexts';
 
 export const useUserContext = redirectTo => {
-    const notify = useNotify();
+    const notify = useLayer7Notify();
     const refresh = useRefresh();
     const redirect = useRedirect();
 
@@ -52,7 +52,7 @@ export const useUserContext = redirectTo => {
                 onFailure: () => {
                     notify(
                         'resources.userContexts.userDetails.notifications.update_error',
-                        'warning'
+                        'error'
                     );
                 },
             }
@@ -81,10 +81,11 @@ export const useUserContext = redirectTo => {
                     }
                     refresh();
                 },
-                onFailure: () => {
+                onFailure: error => {
                     notify(
-                        'resources.userContexts.activeOrgUuid.notifications.update_error',
-                        'warning'
+                        error ||
+                            'resources.userContexts.activeOrgUuid.notifications.update_error',
+                        'error'
                     );
                 },
             }

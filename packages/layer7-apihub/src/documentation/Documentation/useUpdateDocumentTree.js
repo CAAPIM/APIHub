@@ -1,12 +1,13 @@
 import {
     useMutation,
-    useNotify,
     CRUD_GET_LIST_SUCCESS,
     GET_LIST,
     FETCH_END,
 } from 'ra-core';
 import { useDispatch } from 'react-redux';
 import { useCallback } from 'react';
+
+import { useLayer7Notify } from '../../useLayer7Notify';
 
 export const moveDocument = ({
     documentUuid,
@@ -97,7 +98,7 @@ export const useUpdateDocumentTree = ({
     locale,
 }) => {
     const dispatch = useDispatch();
-    const notify = useNotify();
+    const notify = useLayer7Notify();
     const [mutate, mutationState] = useMutation({
         type: 'updateTree',
         resource: 'documents',
@@ -145,10 +146,11 @@ export const useUpdateDocumentTree = ({
                             true
                         );
                     },
-                    onFailure: () => {
+                    onFailure: error => {
                         notify(
-                            'resources.documents.notifications.tree_updated_error',
-                            'warning'
+                            error ||
+                                'resources.documents.notifications.tree_updated_error',
+                            'error'
                         );
                         // Fake a getList fetch success to optimistically update
                         // the treeview, avoiding a full view refresh

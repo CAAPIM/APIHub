@@ -12,18 +12,23 @@ export const ApplicationTitle = ({ record, ...rest }) => {
 
     return (
         <div className={classes.root}>
-            <span className={classes.title}>{record.name}</span>
-            <ApplicationStatus
-                classes={{ status: classes.status }}
-                record={record}
-            />
+            <div>
+                <span className={classes.title}>{record.name}</span>
+                <ApplicationStatus
+                    classes={{ status: classes.status }}
+                    record={record}
+                />
+            </div>
         </div>
     );
 };
 
 const useStyles = makeStyles(
     theme => ({
-        root: {},
+        root: {
+            display: 'flex',
+            justifyContent: 'space-between',
+        },
         title: {},
         status: {
             padding: theme.spacing(1, 0),

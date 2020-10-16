@@ -8,7 +8,7 @@ The Example app is built on top of [Create React App (CRA)](https://create-react
 
 The Example app configuration is set with global variables that are stored in the `window.APIHUB_CONFIG` object. The config files are in the `./config` folder of the Example app. Each file corresponds to a different environment. For example, the `config-dev.js` file corresponds to the configuration of the `dev` environment.
 
-When deploying the app, copy the corresponding config file for the enviroment into the `./public` folder. These files are not involved in the webpack build process of the Example app.
+When deploying the app, copy the corresponding config file for the environment into the `./public` folder and rename to config.js. These files are not involved in the webpack build process of the Example app.
 
 For more information about how to use the `public` folder, see [the Create React App documentation](https://create-react-app.dev/docs/using-the-public-folder).
 
@@ -23,18 +23,18 @@ The following is an example of the `config.js` file:
 ``` js
 window.APIHUB_CONFIG = {
     PAGE_TITLE: 'Layer7 API Hub | Broadcom', // The html page title
-    APIHUB_URL: 'https://apim.dev.ca.com', // The Portal API (PAPI) domain
+    APIHUB_URL: 'https://apim.dev.ca.com', // The Portal domain
     TENANT_NAME: 'apim', // The tenant name
-    ORIGIN_HUB_NAME: 'APIHub-Default',  // The identifier of the API Hub
+    ORIGIN_HUB_NAME: 'APIHub-Custom',  // The identifier of the API Hub
     ENABLE_MOCK: false, // Enable/disable the Layer7 API Hub mock server
     MOCK_SERVER_INDICATOR_LINK:  // A link opened when clicking on the mock server running indicator
         'https://github.com/CAAPIM/APIHub/blob/master/packages/layer7-apihub-mock/README.md',
-    USE_BRANDING_THEME: false, // Use the branding theme from PAPI
+    USE_BRANDING_THEME: true, // Use the branding theme from PAPI
     USE_BRANDING_ICONS: true, // Use the branding favicon from PAPI
 };
 ```
 
-The `ORIGIN_HUB_NAME` variable is sent to PAPI servers to identify your API Hub. The Portal Admin uses this value in the `APIHUB_SETTINGS` to enable remote hosting.
+The `ORIGIN_HUB_NAME` variable is sent to API Portal server to identify your API Hub. The Portal Admin uses this value to set the `name` attribute in the `APIHUB_SETTINGS` to enable remote hosting. For more information, see the API Portal documentation on how to Register the hosting domain of your customized API Hub with API Portal. 
 
 2. Prefix the `deploy` command during the deploy process with `DEPLOY_ENV=XXX make deploy`.
 
@@ -68,7 +68,7 @@ For more information, see [Change the configuration](./README.md#change-the-conf
 
 You can make calls to the Layer7 API Hub mock server without having to connect to API Portal. The mock server mimics PAPI responses to ease local development.
 
-For more information about the mock server, see [Layer7 API Hub Mock Server](../layer7-apihub-mock).
+For more information about the mock server, see [Layer7 API Hub Mock Server](https://github.gwd.broadcom.net/ESD/APIHub/tree/develop/packages/layer7-apihub-mock).
 
 ### Use the Mock Server
 
@@ -84,6 +84,7 @@ Use one of the following options to use the PAPI:
 - Use fetch directly.
 
 #### Use react-admin Resource Hooks
+
 Use react-admin resource [hooks](https://marmelab.com/react-admin/Actions.html#specialized-hooks) and components for APIs, applications, or documents.
 
 #### Use fetch
@@ -198,8 +199,8 @@ import { ApiHubAdmin } from 'layer7-apihub';
 
 import { ContactUs } from './ui'; // Import the component you've just created
 
-function ContactUsRoute() {
-    return <Route
+const ContactUsRoute = () => {
+    <Route
         path="/contact-us"
         component={ContactUs}
         noLayout // Do not use the layout from ApiHub

@@ -1,24 +1,26 @@
-import { useNotify } from 'react-admin';
 import get from 'lodash/get';
+
+import { useLayer7Notify } from '../useLayer7Notify';
 
 export const useCopyToClipboard = ({
     successMessage = '',
     errorMessage = '',
 } = {}) => {
-    const notify = useNotify();
+    const notify = useLayer7Notify();
 
     async function copyToClipboard(event) {
         if (!navigator || !navigator.clipboard) {
-            // Error message 'Copy to clipboard not supported'
+            console.warning('Copy to clipboard not supported');
             return;
         }
         const textToCopy = get(event, 'currentTarget.value', '');
         try {
             await navigator.clipboard.writeText(textToCopy);
-            notify(successMessage);
-            // Success message 'Copied to clipboard!'
-        } catch (err) {
-            notify(errorMessage);
+            if (successMessage) {
+                notify(successMessage);
+            }
+        } catch (error) {
+            notify(errorMessage || error, 'error');
         }
     }
 

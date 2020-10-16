@@ -14,19 +14,19 @@
         "test": "kcd-scripts test"
     },
     "dependencies": {
-        "@stoplight/prism-http": "~3.2.8",
+        "@stoplight/prism-http": "3.3.5",
+        "date-fns": "2.14.0",
         "faker": "Marak/faker.js",
-        "date-fns": "~2.12.0",
-        "kcd-scripts": "~5.0.0",
-        "lodash": "~4.17.15",
-        "minimist": "~1.2.5",
-        "minimongo": "~6.5.0",
-        "miragejs": "~0.1.37",
-        "yamljs": "~0.3.0"
+        "kcd-scripts": "6.3.0",
+        "lodash": "4.17.15",
+        "minimist": "1.2.5",
+        "minimongo": "6.5.1",
+        "miragejs": "0.1.40",
+        "yamljs": "0.3.0"
     },
     "devDependencies": {
-        "rimraf": "~3.0.2",
-        "typescript": "~3.7.5"
+        "rimraf": "3.0.2",
+        "typescript": "3.7.5"
     },
     "files": [
         "*.md",

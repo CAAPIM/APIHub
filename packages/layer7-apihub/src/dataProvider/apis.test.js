@@ -19,7 +19,7 @@ describe('dataProvider - APIs', () => {
                 expect(
                     fetchJson
                 ).toHaveBeenCalledWith(
-                    'https://apim.marmelab.com/admin/api-management/internal/permissions/apis/covfefe/permitted',
+                    'https://apim.marmelab.com/api/apim/api-management/internal/permissions/apis/covfefe/permitted',
                     { credentials: 'include' }
                 );
             });

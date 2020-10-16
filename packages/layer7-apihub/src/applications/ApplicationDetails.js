@@ -3,20 +3,19 @@ import { Labeled, TextField } from 'react-admin';
 import { useTranslate } from 'ra-core';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
+import Chip from '@material-ui/core/Chip';
 import { makeStyles } from '@material-ui/core/styles';
 
 import { useUserContext } from '../userContexts';
 import { ApplicationApisList } from './ApplicationApisList';
 import { ApplicationDetailsOverviewField } from './ApplicationDetailsOverviewField';
 import { ApplicationKeyClient } from './ApplicationKeyClient';
-import { ApplicationKeySecret } from './ApplicationKeySecret';
 import { isApplicationPendingOrDisabled } from './isApplicationPending';
 import { isPublisher, isOrgAdmin, isOrgBoundUser } from '../userContexts';
 
 export const ApplicationDetails = ({ record }) => {
     const classes = useStyles();
     const gridClasses = useGridStyles();
-    const rightGridClasses = useRightGridStyles();
     const contentLabelClasses = useContentStyles();
     const applicationDetailsOverviewClasses = useApplicationDetailsOverviewStyles();
     const translate = useTranslate();
@@ -26,6 +25,7 @@ export const ApplicationDetails = ({ record }) => {
     const [userContext] = useUserContext();
     const canEdit = isPublisher(userContext) || isOrgAdmin(userContext);
     const isEditDisabled = isEditApplicationDisabled(userContext, record);
+    const isOrgUser = isOrgBoundUser(userContext);
     return (
         <>
             <Grid className={classes.root} container spacing={3}>
@@ -44,7 +44,7 @@ export const ApplicationDetails = ({ record }) => {
                             id="overview"
                             label="resources.applications.fields.overview"
                             classes={contentLabelClasses}
-                            className={classes.field}
+                            className={classes.mainField}
                         >
                             <ApplicationDetailsOverviewField
                                 id="overview"
@@ -55,40 +55,25 @@ export const ApplicationDetails = ({ record }) => {
                         </Labeled>
                     </Grid>
                     <Grid item>
-                        <ApplicationKeyClient
-                            id={record.id}
-                            record={record}
-                            labelClasses={contentLabelClasses}
-                        />
-                    </Grid>
-                    {record.keySecret && (
-                        <Grid item>
-                            <ApplicationKeySecret
-                                id={record.id}
-                                record={record}
-                                isEditDisabled={isEditDisabled}
-                                labelClasses={contentLabelClasses}
-                            />
-                        </Grid>
-                    )}
-                </Grid>
-                <Grid
-                    container
-                    item
-                    md={4}
-                    sm={12}
-                    direction="column"
-                    classes={rightGridClasses}
-                    className={classes.configuration}
-                    justify="flex-start"
-                >
-                    <Grid item>
+                        {!isOrgUser && (
+                            <Labeled
+                                // On <Labeled />, this will translate in a correct `for` attribute on the label
+                                label="resources.applications.fields.organization"
+                                classes={contentLabelClasses}
+                                className={classes.mainField}
+                            >
+                                <TextField
+                                    id="organizationName"
+                                    record={record}
+                                    source="organizationName"
+                                />
+                            </Labeled>
+                        )}
                         <Labeled
                             // On <Labeled />, this will translate in a correct `for` attribute on the label
-                            id="description"
                             label="resources.applications.fields.description"
                             classes={contentLabelClasses}
-                            className={classes.field}
+                            className={classes.mainField}
                         >
                             <TextField
                                 id="description"
@@ -100,15 +85,65 @@ export const ApplicationDetails = ({ record }) => {
                     <Grid item>
                         <Typography variant="h3" className={classes.subtitle}>
                             {translate(
-                                'resources.applications.notifications.configuration'
+                                'resources.applications.fields.customField'
                             )}
+                        </Typography>
+                        {record.customFieldValues &&
+                            record.customFieldValues.map(item => (
+                                <Labeled
+                                    // On <Labeled />, this will translate in a correct `for` attribute on the label
+                                    label={item.Name}
+                                    classes={contentLabelClasses}
+                                    className={classes.field}
+                                >
+                                    <TextField record={item} source="Value" />
+                                </Labeled>
+                            ))}
+
+                        {apiIds.length > 0 && (
+                            <Grid className={classes.root} container>
+                                <Grid
+                                    item
+                                    container
+                                    direction="row"
+                                    justify="center"
+                                    md={12}
+                                    sm={12}
+                                >
+                                    <ApplicationApisList application={record} />
+                                </Grid>
+                            </Grid>
+                        )}
+                    </Grid>
+                </Grid>
+                <Grid
+                    container
+                    item
+                    md={8}
+                    sm={12}
+                    direction="column"
+                    classes={gridClasses}
+                    className={classes.configuration}
+                    justify="flex-start"
+                >
+                    <Grid item>
+                        <Typography variant="h3" className={classes.subtitle}>
+                            {translate(
+                                'resources.applications.fields.authCredentials'
+                            )}
+                            <Chip
+                                className={classes.chip}
+                                label={translate(
+                                    'resources.applications.fields.default'
+                                )}
+                            />
                         </Typography>
                     </Grid>
                     <Grid item>
                         <Labeled
                             // On <Labeled />, this will translate in a correct `for` attribute on the label
                             id="oauthCallbackUrl"
-                            label="resources.applications.fields.oauthCallbackUrl"
+                            label="resources.applications.fields.callbackUrl"
                             classes={contentLabelClasses}
                             className={classes.field}
                         >
@@ -123,7 +158,7 @@ export const ApplicationDetails = ({ record }) => {
                         <Labeled
                             // On <Labeled />, this will translate in a correct `for` attribute on the label
                             id="oauthScope"
-                            label="resources.applications.fields.oauthScope"
+                            label="resources.applications.fields.scope"
                             classes={contentLabelClasses}
                             className={classes.field}
                         >
@@ -138,7 +173,7 @@ export const ApplicationDetails = ({ record }) => {
                         <Labeled
                             // On <Labeled />, this will translate in a correct `for` attribute on the label
                             id="oauthType"
-                            label="resources.applications.fields.oauthType"
+                            label="resources.applications.fields.type"
                             classes={contentLabelClasses}
                             className={classes.field}
                         >
@@ -149,22 +184,16 @@ export const ApplicationDetails = ({ record }) => {
                             />
                         </Labeled>
                     </Grid>
-                </Grid>
-            </Grid>
-            {apiIds.length > 0 && (
-                <Grid className={classes.root} container>
-                    <Grid
-                        item
-                        container
-                        direction="row"
-                        justify="center"
-                        md={12}
-                        sm={12}
-                    >
-                        <ApplicationApisList apis={apiIds} />
+                    <Grid item className={classes.mainField}>
+                        <ApplicationKeyClient
+                            id={record.id}
+                            data={record}
+                            includeSecret={true}
+                            labelClasses={contentLabelClasses}
+                        />
                     </Grid>
                 </Grid>
-            )}
+            </Grid>
         </>
     );
 };
@@ -187,12 +216,17 @@ const useStyles = makeStyles(
         details: {},
         configuration: {},
         subtitle: {
-            textTransform: 'uppercase',
             fontWeight: theme.typography.fontWeightBold,
             fontSize: '1rem',
             margin: theme.spacing(1, 1, 2, 1),
         },
         field: {
+            marginLeft: theme.spacing(2),
+            marginRight: theme.spacing(1),
+            minWidth: '100px',
+            width: '100%',
+        },
+        mainField: {
             marginLeft: theme.spacing(1),
             marginRight: theme.spacing(1),
             minWidth: '100px',
@@ -203,6 +237,10 @@ const useStyles = makeStyles(
         },
         icon: {
             fontSize: '1rem',
+        },
+        chip: {
+            marginLeft: theme.spacing(1),
+            height: theme.spacing(3),
         },
     }),
     {
@@ -215,25 +253,23 @@ const useApplicationDetailsOverviewStyles = makeStyles(theme => ({
         overflowY: 'scroll',
         height: '200px',
         paddingRight: theme.spacing(2),
+        marginBottom: theme.spacing(1),
     },
 }));
 
 const useContentStyles = makeStyles(theme => ({
     label: {
         fontWeight: theme.typography.fontWeightBold,
-        fontSize: '1.5rem',
+        fontSize: '1.4rem',
+    },
+    mainLabel: {
+        fontWeight: theme.typography.fontWeightBold,
+        fontSize: '1.7rem',
     },
 }));
 
 const useGridStyles = makeStyles(theme => ({
     root: {
-        borderBottom: `1px solid ${theme.palette.divider}`,
-    },
-}));
-
-const useRightGridStyles = makeStyles(theme => ({
-    root: {
-        borderBottom: `1px solid ${theme.palette.divider}`,
-        borderLeft: `1px solid ${theme.palette.divider}`,
+        borderBottom: 'none',
     },
 }));

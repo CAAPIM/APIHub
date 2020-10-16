@@ -29,7 +29,6 @@ export const ResetPassword = props => {
                 >
                     {translate('apihub.reset_password.title')}
                 </Typography>
-
                 <ResetPasswordConfirm {...props} />
             </>
         );

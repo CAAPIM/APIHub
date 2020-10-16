@@ -2,11 +2,21 @@
 
 import { login } from '../support/login';
 
-import apiData from '../data/apiData.json';
+describe.skip('Apis', () => {
+    before(() => {
+        cy.clearLocalStorageCache();
+    });
 
-describe('Apis', () => {
+    beforeEach(() => {
+        cy.restoreLocalStorageCache();
+    });
+
+    afterEach(() => {
+        cy.saveLocalStorageCache();
+    });
+
     it('should find an api in the datagrid and in the list of cards', () => {
-        cy.loadData(apiData);
+        cy.loadData();
 
         login('portalAdmin', 'Password@1');
 
@@ -20,17 +30,17 @@ describe('Apis', () => {
 
         cy.findByText('Created').click({ force: true }); // Sort by created date
 
-        cy.findByTitle('GB National Configuration');
+        cy.findByTitle('GB International Tactics');
 
         // As a list of cards
 
         cy.findByTitle('Display as cards').click();
 
-        cy.findByTitle('GB National Configuration');
+        cy.findByTitle('GB International Tactics');
     });
 
     it('should show an api details', () => {
-        cy.loadData(apiData);
+        cy.loadData();
 
         login('portalAdmin', 'Password@1');
 
@@ -42,18 +52,16 @@ describe('Apis', () => {
 
         cy.findByText('Created').click({ force: true }); // Sort by created date
 
-        cy.findByTitle('GB National Configuration').click();
+        cy.findByTitle('GB International Tactics').click();
 
         // Overview Tab
-        cy.findByLabelText('State').should('contain', 'Unpublished');
-        // cy.findByLabelText('Type').should('contain', 'REST');
-        cy.findByLabelText('Version').should('contain', 'v5.2.1');
+        cy.findByLabelText('State').should('contain', 'Enabled');
+        cy.findByLabelText('Version').should('contain', 'v5.2.5');
         cy.findByLabelText('Visibility').should('contain', 'Public');
         cy.findByLabelText('Modified').should('contain', '4/28/2020');
-        // cy.findByLabelText('Applications').should('contain', '3');
         cy.findByLabelText('Description').should(
             'contain',
-            'Monitored analyzing neural-net'
+            'Vision-oriented 24/7 moderator'
         );
         cy.findByLabelText('Tags').should('contain', 'Accounts');
         cy.findByLabelText('Tags').should('contain', 'Organizations');
@@ -72,13 +80,15 @@ describe('Apis', () => {
 
         // Documentation Tab
         cy.findByText('Documentation').click();
-        cy.findByLabelText('en-US - Integrated high-level encoding').click();
+        cy.findByLabelText(
+            'en-US - Synergized transitional application'
+        ).click();
         // Documentation content
-        cy.contains(
-            'Quam temporibus maxime voluptatem aliquam sunt nostrum accusamus.'
-        );
+        cy.contains('Quo sunt tempore id sequi nesciunt illo quod aut.');
         // Documentation children
-        cy.findAllByLabelText('en-US - Realigned encompassing forecast');
+        cy.findAllByLabelText(
+            'en-US - Multi-channelled systemic knowledge base'
+        );
     });
 
     it('should open the first document by default', () => {
@@ -89,19 +99,20 @@ describe('Apis', () => {
             .click();
 
         cy.findByTitle('Display as list').click();
+
         cy.findByText('Created').click({ force: true }); // Sort by created date
 
-        cy.findByTitle('GB National Configuration').click();
+        cy.findByTitle('GB International Tactics').click();
 
         cy.findByText('Documentation').click();
         cy.findByText('en-US - Integrated high-level encoding');
         cy.contains(
-            'Quam temporibus maxime voluptatem aliquam sunt nostrum accusamus.'
+            'Quam temporibus maxime voluptatem aliquam sunt nostrum accusamus'
         );
     });
 
     it('should allow to create, edit and delete documents', () => {
-        cy.loadData(apiData);
+        cy.loadData();
 
         login('portalAdmin', 'Password@1');
 
@@ -110,9 +121,10 @@ describe('Apis', () => {
             .click();
 
         cy.findByTitle('Display as list').click();
+
         cy.findByText('Created').click({ force: true }); // Sort by created date
 
-        cy.findByTitle('GB National Configuration').click();
+        cy.findByTitle('XML Customer Integration').click();
 
         cy.findByText('Documentation').click();
         cy.findByLabelText('New root document').click();
@@ -173,7 +185,7 @@ describe('Apis', () => {
     });
 
     it('should allow to edit other languages for documentation', () => {
-        cy.loadData(apiData);
+        cy.loadData();
 
         login('portalAdmin', 'Password@1');
 
@@ -185,20 +197,20 @@ describe('Apis', () => {
 
         cy.findByText('Created').click({ force: true }); // Sort by created date
 
-        cy.findByTitle('GB National Configuration').click();
+        cy.findByTitle('PCI Direct Functionality').click();
 
         cy.findByText('Documentation').click();
 
         // Has english documentation by default
-        cy.findByText('en-US - Integrated high-level encoding');
+        cy.findByText('en-US - Up-sized high-level pricing structure');
 
         cy.findByLabelText('Selected language').click();
         cy.findByText('Français').click();
 
         // Has french documentation loaded
-        cy.findByText('fr-FR - Intuitive actuating moderator').click();
+        cy.findByText('fr-FR - Managed even-keeled architecture').click();
         cy.findByLabelText('Edit').click();
-        cy.findByDisplayValue('fr-FR - Intuitive actuating moderator')
+        cy.findByDisplayValue('fr-FR - Managed even-keeled architecture')
             .clear()
             .type('fr-FR Une baguette!');
         cy.findByLabelText('Publish').click();
@@ -207,11 +219,11 @@ describe('Apis', () => {
         cy.findByLabelText('Selected language').click();
         cy.findByText('English', { selector: '[role=menuitem]' }).click();
         cy.findAllByText('fr-FR Une baguette!').should('have.length', 0);
-        cy.findByText('en-US - Integrated high-level encoding');
+        cy.findByText('en-US - Up-sized high-level pricing structure');
     });
 
     it('should not allow a user without edition rights to edit the documentation', () => {
-        cy.loadData(apiData);
+        cy.loadData();
 
         login('user', 'Password@1');
 
@@ -223,14 +235,12 @@ describe('Apis', () => {
 
         cy.findByText('Created').click({ force: true }); // Sort by created date
 
-        cy.findByTitle('GB National Configuration').click();
+        cy.findByTitle('GB International Tactics').click();
 
         cy.findByText('Documentation').click();
 
-        cy.findByText('en-US - Integrated high-level encoding').click();
-        cy.contains(
-            'Quam temporibus maxime voluptatem aliquam sunt nostrum accusamus.'
-        );
+        cy.findByText('en-US - Synergized transitional application').click();
+        cy.contains('Quo sunt tempore id sequi nesciunt illo quod aut.');
         cy.findAllByLabelText('Edit').should('have.length', 0);
     });
 });

@@ -1,11 +1,18 @@
 import { mergeTranslations } from 'react-admin';
-import raMessages from '@blackbox-vision/ra-language-spanish';
+import raMessages from 'ra-language-english';
 
 const apiHubMessages = {
     ra: {
         ...raMessages,
         page: {
-            dashboard: 'Inicio',
+            dashboard: 'Página principal',
+        },
+        action: {
+            add_filter: 'Añadir filtro',
+            show: 'Mostrar',
+            edit: 'Editar',
+            bulk_actions:
+                '1 artículo seleccionado |||| %{smart_count} elementos seleccionados',
         },
         actions: {
             ...raMessages.actions,
@@ -15,6 +22,11 @@ const apiHubMessages = {
         navigation: {
             ...raMessages.navigation,
             page_rows_per_page: 'Elementos por página:',
+            next: 'Sigu',
+            prev: 'Ante',
+        },
+        auth: {
+            logout: 'Cerrar Sesión',
         },
     },
     apihub: {
@@ -51,7 +63,7 @@ const apiHubMessages = {
                 open_login_page: 'Ir a Iniciar sesión',
             },
             validation: {
-                error_password_match: 'Las contraseñas no coinciden.',
+                error_password_match: 'Las contraseñas no coinciden',
                 error_username_not_unique:
                     'Este nombre de usuario no es único.',
                 tooltip_username:
@@ -104,16 +116,16 @@ const apiHubMessages = {
         new_password: {
             title: 'Crear nueva contraseña',
             fields: {
-                password: 'Contraseña actual',
-                newPassword: 'Contraseña',
-                confirmNewPassword: 'Confirmar contraseña',
+                current_password: 'Contraseña actual',
+                password: 'Contraseña',
+                confirm_password: 'Confirmar contraseña',
             },
             actions: {
                 change_password: 'Cambiar contraseña',
                 open_login_page: 'Ir a Iniciar sesión',
             },
             validation: {
-                error_password_match: 'Las contraseñas no coinciden.',
+                error_password_match: 'Las contraseñas no coinciden',
                 tooltip_password:
                     'Requisitos de la contraseña:\n- 8 caracteres como mínimo\n- 60 caracteres como máximo\n- Al menos un carácter en minúscula\n- Al menos un carácter en mayúscula\n- Al menos un número\n- Al menos un carácter especial: !@#$%^&*',
                 tooltip_password_confirm: 'Repita la contraseña',
@@ -134,13 +146,14 @@ const apiHubMessages = {
         },
         homepage: {
             placeholder_empty_content:
-                'El contenido de la página de inicio no se ha proporcionado todavía. Los administradores del portal pueden hacer clic en Crear para añadir contenido.',
+                'Todavía no se ha proporcionado el contenido de la página principal. Los administradores del portal pueden hacer clic en Crear para agregar contenido.',
         },
         actions: {
             view_as_cards: 'Mostrar como tarjetas',
             view_as_list: 'Mostrar como lista',
             tree_drop_before: 'Antes de %{title}',
             tree_drop_after: 'Después de %{title}',
+            select_an_api_plan: 'Seleccionar un plan de la API (obligatorio)',
         },
         validation: {
             password: {
@@ -156,15 +169,21 @@ const apiHubMessages = {
         markdown_editor: {
             fonts: {
                 bold: 'Negrita',
-                italic: 'Itálico',
+                italic: 'Cursiva',
                 strikethrough: 'Tachado',
                 unordered: 'Lista desordenada',
                 order: 'Lista ordenada',
-                quote: 'Citar',
+                quote: 'Comillas',
                 hr: 'Salto de línea',
                 inlinecode: 'Código en línea',
                 code: 'Código de bloque',
             },
+        },
+        terms_and_conditions: {
+            api_label:
+                'Al hacer clic en Seleccionar API, acepto los términos y condiciones.',
+            api_group_label:
+                'Al hacer clic en Seleccionar grupo de API, acepto los términos y condiciones.',
         },
     },
     resources: {
@@ -186,7 +205,7 @@ const apiHubMessages = {
                 applicationUsage: 'Aplicaciones',
                 assets: 'Activos',
                 apiLocation: 'Ubicación de la API',
-                apiGroup: 'Grupo API',
+                apiGroup: 'Grupo de API',
             },
             portalStatus: {
                 enabled: 'Activado',
@@ -209,7 +228,7 @@ const apiHubMessages = {
                     fields: {
                         updated: 'Modificada el %{date}',
                         version: 'v%{version}',
-                        applications: '%{smart_count} aplicaciones',
+                        applications: '% {smart_count} aplicaciones',
                         applications_long:
                             '1 aplicación que utiliza esta API |||| %{smart_count} aplicaciones que utilizan esta API',
                         averageLatency: '%{ms} ms',
@@ -265,26 +284,67 @@ const apiHubMessages = {
                 title: 'Documentación',
             },
         },
+        apiGroups: {
+            name: 'Grupo de API |||| Grupos de API',
+            short_name: 'Grupo |||| Grupos',
+            fields: {
+                name: 'Nombre',
+            },
+        },
+        apiPlans: {
+            name: 'Plan de la API ||| Planes de la API',
+            fields: {
+                name: 'Nombre',
+                description: 'Descripción',
+                rate_limit: 'Límite de frecuencia',
+                quota: 'Cuota',
+                quota_interval: 'Intervalo de cuota',
+            },
+        },
         applications: {
             name: 'Aplicación |||| Aplicaciones',
             fields: {
                 name: 'Nombre',
                 apiKey: 'Clave de la API:',
                 keySecret: 'Secreto compartido:',
-                apiKeyClientID: 'Clave de la API / ID de cliente',
+                apiKeyClientID: 'Clave de la API/ID de cliente',
                 apisIncluded: 'API incluidas',
                 authentication: 'Autenticación',
                 description: 'Descripción',
                 encrypted: 'Cifrado',
                 sharedSecretClientSecret:
-                    'Secreto compartido / Secreto de cliente',
+                    'Secreto compartido/secreto de cliente',
                 oauthType: 'Tipo de OAuth',
                 oauthCallbackUrl:
                     'Dirección URL de la devolución de llamada de OAuth',
                 oauthScope: 'Ámbito de OAuth',
                 overview: 'Descripción general',
                 status: 'Estado',
-                apiGroups: 'API Grupos',
+                apiGroups: 'Grupos de API',
+                apiGroup: 'Grupo de API',
+                organization: 'Organización',
+                applicationInformation: 'Información de la aplicación',
+                customField: 'Campo personalizado',
+                noCustomFields: 'No hay campos personalizados disponibles',
+                noApplications: 'No hay aplicaciones disponibles',
+                apiManagement: 'Gestión de la API',
+                authCredentials: 'Autenticación y credenciales',
+                callbackUrl:
+                    'Direcciones URL de devolución de llamada o redirección',
+                scope: 'Ámbito',
+                type: 'Tipo',
+                none: 'Ninguno',
+                public: 'Público',
+                confidential: 'Confidencial',
+                sharedSecretFormat: 'Formato del secreto compartido',
+                selectOrganization: 'Seleccionar organización',
+                apiPlan: 'Plan de la API',
+                quota: 'Cuota',
+                rateLimit: 'Límite de frecuencia',
+                termsOfUseApi:
+                    'Al hacer clic en Agregar API, acepto los términos y condiciones.',
+                actions: 'Comportamiento',
+                default: 'Defecto',
             },
             actions: {
                 generateSecret: 'Generar nuevo secreto',
@@ -292,7 +352,27 @@ const apiHubMessages = {
                 plainTextSecret: 'Secreto de texto sin formato',
                 hashedSecret: 'Secreto con hash',
                 cancel: 'Cancelar',
-                save: 'Publicar',
+                save: 'Guardar',
+                addApplication: 'Agregar aplicación',
+                createApplication: 'Crear aplicación',
+                deleteApplication: 'Suprimir aplicación',
+                select_api: 'Seleccionar API',
+                addApi: 'Agregar API',
+                addApiGroup: 'Agregar grupo de API',
+                searchByApiTitle: 'Buscar',
+                filterByTag: 'Filtrar por etiqueta',
+                accept_terms_and_conditions:
+                    'Acepto los términos y condiciones.',
+                edit: 'Editar',
+                delete: 'Suprimir',
+            },
+            validation: {
+                error_application_name_not_unique:
+                    'Este nombre de aplicación no es exclusivo.',
+                callback_url_caption: 'Utilizar valores separados por comas',
+                scope_caption: 'Utilizar valores separados por espacios',
+                application_name_caption:
+                    'Utilizar nombre único de 50 caracteres como máximo',
             },
             status: {
                 enabled: 'Activado',
@@ -322,14 +402,25 @@ const apiHubMessages = {
                     'Esto rompe el acceso para todos los usuarios que utilicen la clave de la API actual. Comparta y utilice el secreto recién generado con los desarrolladores que codifican la aplicación que utiliza las API.',
                 secret_generated_heading: 'Nuevo secreto generado',
                 secret_generated_heading_error:
-                    'Se produjo un error al generar el secreto',
+                    'Se ha producido un error al generar el secreto.',
                 secret_generated_message:
                     'El texto del secreto solo será visible durante la sesión actual del explorador y se aplicará un algoritmo hash después de que se haya actualizado la página.',
                 copy_secret_now: 'Copiar el secreto compartido ahora',
-                copy_to_clipboard: 'Copiar al portapapeles',
-                edit_overview: 'Editar la descripción general',
-                empty_overview: 'No hay una descripción general',
+                copy_to_clipboard: 'Copiar a portapapeles',
+                edit_overview: 'Editar descripción general',
+                empty_overview: 'Sin valor',
+                create_success: 'La aplicación se ha creado correctamente.',
+                create_error:
+                    'Se ha producido un error al crear la aplicación.',
+                edit_success: 'La aplicación se ha actualizado correctamente.',
+                edit_error:
+                    'Se ha producido un error al actualizar la aplicación.',
+                delete_success: 'La aplicación se ha suprimido correctamente.',
+                delete_error:
+                    'Se ha producido un error al suprimir la aplicación.',
             },
+            confirm_delete:
+                'Está a punto de suprimir este aplicación. ¿Está seguro?',
         },
         documents: {
             name: 'Wiki |||| Wiki',
@@ -344,23 +435,22 @@ const apiHubMessages = {
             },
             actions: {
                 // Toolbar
-                new_document_button: 'Nuevo elemento raíz',
+                new_document_button: 'New root document',
                 new_child_document_button: 'Nuevo elemento secundario',
                 edit_document_button: 'Editar',
                 delete_document_button: 'Suprimir',
-                // Tree
-                expand_documentation:
-                    'Ampliar la documentación del nodo {title}',
-                collapse_documentation:
-                    'Colapsar la documentación del nodo {title}',
-                // Drag & Drop
                 change_document_parent_button: 'Cambiar elemento principal',
-                move_as_first_child: 'Primer documento',
+                // Tree
+                expand_documentation: 'Expand documentation of node {title}',
+                collapse_documentation:
+                    'Contraer la documentación del nodo {title}',
+                // Drag & Drop
+                move_as_first_child: 'First document',
                 move_after_document: 'Después de %{title}',
                 move_as_root_item:
                     'Seleccionar para desplazarse al elemento raíz',
                 // Form
-                save: 'Publicar',
+                save: 'Publish',
                 cancel: 'Cancelar',
             },
             validation: {
@@ -393,30 +483,30 @@ const apiHubMessages = {
             title: 'Crear una nueva cuenta',
             fields: {
                 email: 'Correo electrónico',
-                email_confirmation: 'Confirme el correo electrónico',
-                organization: 'Organización o Espacio de Trabajo',
+                email_confirmation: 'Confirmar correo electrónico',
+                organization: 'Organización o espacio de trabajo',
                 organization_description: 'Descripción de la organización',
                 robot: 'No soy un robot',
             },
             actions: {
-                submit: 'submit',
-                login: 'Ingresar a una cuenta existente',
-                return_to_homepage: 'regresar a la página principal',
+                submit: 'Enviar',
+                login: 'Iniciar sesión en una cuenta existente',
+                return_to_homepage: 'Volver a la página principal',
             },
             notifications: {
-                confirmation_required: 'Se requiere confirmación',
-                error: 'Hubo un problema al registrar su cuenta',
-                confirmation_title: 'Consultar Su Correo Electrónico',
+                confirmation_required: 'Confirmación obligatoria',
+                error: 'Se ha producido un problema al registrar la cuenta.',
+                confirmation_title: 'Comprobación del correo electrónico',
                 confirmation:
-                    'Registro recibido. Se enviará un correo electrónico de notificación a la dirección proporcionada.',
-                email_confirmation_error: 'El email no coincide.',
-                form_confirmation_error: 'Se requiere confirmación.',
+                    'Se ha recibido el registro. Se enviará un correo electrónico de notificación a la dirección proporcionada.',
+                email_confirmation_error: 'El correo electrónico no coincide.',
+                form_confirmation_error: 'Se necesita la confirmación.',
                 limituserregistration:
-                    'La solicitud de registro de este correo electrónico está pendiente de aprobación/activación. No se permiten solicitudes múltiples.',
+                    'La solicitud de registro para este correo electrónico está pendiente de aprobación o activación. No se permiten varias solicitudes.',
             },
             slider: {
                 confirmed: 'Confirmado',
-                unconfirmed: 'Diapositiva para confirmar',
+                unconfirmed: 'Deslizar para confirmar',
             },
         },
         userContexts: {
@@ -435,11 +525,10 @@ const apiHubMessages = {
             },
             actions: {
                 edit_profile: 'Mi perfil',
-                change_password: 'Cambiar contraseña',
                 cancel: 'Cancelar',
             },
             notifications: {
-                profile_not_exist_error: 'Este perfil no existe',
+                profile_not_exist_error: 'Este perfile no existe.',
                 update_success: 'Perfil actualizado',
                 update_error:
                     'Se ha producido un error al actualizar el perfil.',
@@ -449,7 +538,7 @@ const apiHubMessages = {
             },
             validation: {
                 error_current_password_empty:
-                    'Por favor, introduzca su contraseña actual',
+                    'Introduzca la contraseña actual.',
                 error_password_match: 'Las contraseñas no coinciden',
                 tooltip_password:
                     'Requisitos de la contraseña:\n- 8 caracteres como mínimo\n- 60 caracteres como máximo\n- Al menos un carácter en minúscula\n- Al menos un carácter en mayúscula\n- Al menos un número\n- Al menos un carácter especial: !@#$%^&*',

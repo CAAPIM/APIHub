@@ -1,13 +1,19 @@
+import { getFetchJson } from '../fetchUtils';
+
+import { accountPlansDataProvider } from './accountPlans';
+import { apiEulasDataProvider } from './apiEulas';
 import { apiGroupsDataProvider } from './apiGroups';
+import { apiPlansDataProvider } from './apiPlans';
 import { apisDataProvider } from './apis';
 import { applicationsDataProvider } from './applications';
 import { assetsDataProvider } from './assets';
+import { customFieldsDataProvider } from './customFields';
+import { documentsDataProvider } from './documents';
+import { organizationsDataProvider } from './organizations';
+import { registrationsDataProvider } from './registrations';
 import { specsDataProvider } from './specs';
 import { tagsDataProvider } from './tags';
-import { documentsDataProvider } from './documents';
-import { registrationsDataProvider } from './registrations';
 import { userContextsDataProvider } from './userContexts';
-import { getFetchJson } from '../fetchUtils';
 
 export const dataProvider = (
     baseUrl,
@@ -23,14 +29,19 @@ export const dataProvider = (
     };
 
     const resourcesMap = {
+        accountPlans: accountPlansDataProvider(context),
+        apiEulas: apiEulasDataProvider(context),
         apiGroups: apiGroupsDataProvider(context),
+        apiPlans: apiPlansDataProvider(context),
         apis: apisDataProvider(context),
         applications: applicationsDataProvider(context),
         assets: assetsDataProvider(context),
-        tags: tagsDataProvider(context),
-        specs: specsDataProvider(context),
+        customFields: customFieldsDataProvider(context),
         documents: documentsDataProvider(context),
+        organizations: organizationsDataProvider(context),
         registrations: registrationsDataProvider(context),
+        specs: specsDataProvider(context),
+        tags: tagsDataProvider(context),
         userContexts: userContextsDataProvider(context),
     };
 

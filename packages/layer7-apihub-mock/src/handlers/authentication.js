@@ -7,6 +7,9 @@ import {
 } from './currentUser';
 import { promisify } from '../promisify';
 
+const PUBLIC_KEY =
+    'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAgVL6G4zaK+ngqrBheIqP1HcqZIdT8cyHJhvZ9rqOSRdemmvMTFsBoJScPAQQl/jlb7VVVvkGdkvSompszpHaIMQxWG6QuBF23v72nu5NmpYDBsyHZHgIROzqdzqycfKhvWrdDFfq17eZmarsNzvc4KVF3CVv+aM4aXmLPXCIMhrq6M+MYcwMYMS5G6JEYXQtvpw5GQHDm6nfTHNds3wBzooakaOMIldae56jRnX+ILeb+yPWmjsPPwbaOjU2cbygNKMHBfnLEFRz05J2XcGh/DGm4x0s12jnPNiH8hkHd8U8bviwvLlreNBM1XCThL0V07HCETzUPQOhpLtplUh7RwIDAQAB';
+
 export function login(database) {
     return async (schema, request) => {
         const { username, password } = JSON.parse(request.requestBody);
@@ -48,8 +51,7 @@ export function getPublicKey(database) {
         return {
             respCode: 200,
             respMsg: 'Successfully fetched public key',
-            publicKey:
-                'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAgVL6G4zaK+ngqrBheIqP1HcqZIdT8cyHJhvZ9rqOSRdemmvMTFsBoJScPAQQl/jlb7VVVvkGdkvSompszpHaIMQxWG6QuBF23v72nu5NmpYDBsyHZHgIROzqdzqycfKhvWrdDFfq17eZmarsNzvc4KVF3CVv+aM4aXmLPXCIMhrq6M+MYcwMYMS5G6JEYXQtvpw5GQHDm6nfTHNds3wBzooakaOMIldae56jRnX+ILeb+yPWmjsPPwbaOjU2cbygNKMHBfnLEFRz05J2XcGh/DGm4x0s12jnPNiH8hkHd8U8bviwvLlreNBM1XCThL0V07HCETzUPQOhpLtplUh7RwIDAQAB',
+            publicKey: PUBLIC_KEY,
         };
     };
 }
@@ -85,6 +87,11 @@ export function checkUserNameIsUnique(database) {
 
 export function passwordResetTokenValidate(database) {
     return (schema, request) => {
+        const token = request.queryParams.token;
+        if (!['Mithrandir', 'Saruman'].includes(token)) {
+            return new Response(401, {}, { errors: ['Token Invalid'] });
+        }
+
         return {
             status: 200,
         };
@@ -93,9 +100,45 @@ export function passwordResetTokenValidate(database) {
 
 export function updateMyPassword(database) {
     return (schema, request) => {
-        return {
-            status: 200,
-        };
+        const { uuid, newPassword } = JSON.parse(request.requestBody);
+        if (
+            // The password is encrypted, so we rely on the token to return an error
+            uuid === 'Saruman'
+        ) {
+            return new Response(
+                400,
+                {},
+                {
+                    error: {
+                        code: 'ValidationException',
+                        detail: {
+                            devErrorMessage: 'Invalid new password',
+                            errorCode: '4755',
+                            userErrorKey:
+                                'error.validation.password.sameExistingPassword',
+                            userErrorMessage:
+                                'New password cannot be same as previous passwords.',
+                            validationErrors: [
+                                {
+                                    error:
+                                        'Validation Error : New password cannot be same as previous passwords.',
+                                    field: 'Password',
+                                    key:
+                                        'error.validation.password.sameExistingPassword',
+                                },
+                            ],
+                        },
+                        message: {
+                            lang: 'en',
+                            value:
+                                'New password cannot be same as previous passwords.',
+                        },
+                    },
+                }
+            );
+        } else {
+            return { status: 200 };
+        }
     };
 }
 

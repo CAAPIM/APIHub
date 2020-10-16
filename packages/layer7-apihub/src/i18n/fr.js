@@ -1,11 +1,18 @@
 import { mergeTranslations } from 'react-admin';
-import raMessages from 'ra-language-french';
+import raMessages from 'ra-language-english';
 
 const apiHubMessages = {
     ra: {
         ...raMessages,
         page: {
             dashboard: 'Accueil',
+        },
+        action: {
+            add_filter: 'Ajouter un filtre',
+            show: 'Spectacle',
+            edit: 'Éditer',
+            bulk_actions:
+                '1 élément sélectionné |||| %{smart_count} articles sélectionnés',
         },
         actions: {
             ...raMessages.actions,
@@ -15,6 +22,11 @@ const apiHubMessages = {
         navigation: {
             ...raMessages.navigation,
             page_rows_per_page: 'Eléments par page :',
+            next: 'Proc',
+            prev: 'Préc',
+        },
+        auth: {
+            logout: 'Se déconnecter',
         },
     },
     apihub: {
@@ -34,7 +46,7 @@ const apiHubMessages = {
             notifications: {
                 invalid_credentials:
                     "Informations d'identification non valides",
-                selected_scheme: 'Se connecter avec',
+                selected_scheme: 'Connexion avec',
             },
         },
         account_setup: {
@@ -52,8 +64,7 @@ const apiHubMessages = {
                 open_login_page: 'Accéder à la page de connexion',
             },
             validation: {
-                error_password_match:
-                    'Les deux mots de passes ne sont pas identiques',
+                error_password_match: 'Les mots de passe sont différents.',
                 error_username_not_unique:
                     "Ce nom d'utilisateur n'est pas unique.",
                 tooltip_username: '6 caractères minimum\n60 caractères maximum',
@@ -113,7 +124,7 @@ const apiHubMessages = {
                 open_login_page: 'Accéder à la page de connexion',
             },
             validation: {
-                error_password_match: 'Les mots de passe ne correspondent pas.',
+                error_password_match: 'Les mots de passe sont différents.',
                 tooltip_password:
                     'Exigences relatives au mot de passe : \n- 8 caractères minimum\n- 60 caractères maximum\n- Au moins une minuscule\n- Au moins une majuscule\n- Au moins un chiffre\n- Au moins un caractère spécial parmi ceux ci-après : !@#$%^&*',
                 tooltip_password_confirm: 'Resaisissez votre mot de passe',
@@ -139,8 +150,9 @@ const apiHubMessages = {
         actions: {
             view_as_cards: 'Afficher sous forme de cartes',
             view_as_list: 'Afficher sous forme de liste',
-            tree_drop_before: 'Après %{title}',
-            tree_drop_after: 'Avant %{title}',
+            tree_drop_before: 'Avant %{title}',
+            tree_drop_after: 'Après %{title}',
+            select_an_api_plan: "Sélectionner un plan d'API (obligatoire)",
         },
         validation: {
             password: {
@@ -156,13 +168,19 @@ const apiHubMessages = {
                 bold: 'Gras',
                 italic: 'Italique',
                 strikethrough: 'Barré',
-                unordered: 'Liste non ordonnée',
-                order: 'Liste ordonnée',
+                unordered: 'Liste non triée',
+                order: 'Liste numérotée',
                 quote: 'Citation',
                 hr: 'Saut de ligne',
-                inlinecode: 'Code en ligne',
-                code: 'Bloc de code',
+                inlinecode: 'Code intégré',
+                code: 'Code de bloc',
             },
+        },
+        terms_and_conditions: {
+            api_label:
+                "En cliquant sur Sélectionner une API, j'accepte les termes et conditions.",
+            api_group_label:
+                "En cliquant sur Sélectionner un groupe d'API, j'accepte les termes et conditions.",
         },
     },
     resources: {
@@ -178,9 +196,9 @@ const apiHubMessages = {
                 modifyTs: 'Modifié',
                 version: 'Version',
                 versionShort: 'V',
-                description: 'Description',
+                description: 'Description ',
                 privateDescription: 'Description privée',
-                tags: 'Balises',
+                tags: 'Etiquettes',
                 applicationUsage: 'Applications',
                 assets: 'Actifs',
                 apiLocation: "Emplacement de l'API",
@@ -189,7 +207,7 @@ const apiHubMessages = {
             portalStatus: {
                 enabled: 'Activé',
                 disabled: 'Désactivé',
-                deprecated: 'Déprécié',
+                deprecated: 'Désapprouvé',
                 unpublished: 'Non publié',
                 incomplete: 'Incomplet',
             },
@@ -243,10 +261,10 @@ const apiHubMessages = {
                     version: 'v%{version}',
                 },
                 actions: {
-                    download_assets: 'Télécharger les ressources',
+                    download_assets: 'Télécharger les actifs',
                 },
                 notifications: {
-                    no_assets: "Aucune ressource n'est associée à cette API.",
+                    no_assets: "Aucun actif n'est associé à cette API.",
                 },
             },
             specification: {
@@ -263,23 +281,65 @@ const apiHubMessages = {
                 title: 'Documentation',
             },
         },
+        apiGroups: {
+            name: "Groupe d'API |||| Groupes d'API",
+            short_name: 'Groupe |||| Groupes',
+            fields: {
+                name: 'Nom ',
+            },
+        },
+        apiPlans: {
+            name: "Plan d'API |||| Plans d'API",
+            fields: {
+                name: 'Nom ',
+                description: 'Description ',
+                rate_limit: 'Limite de taux',
+                quota: 'Quota',
+                quota_interval: 'Intervalle de quota',
+            },
+        },
         applications: {
             name: 'Application |||| Applications',
             fields: {
-                name: 'Nom',
+                name: 'Nom ',
                 apiKey: "Clé d'API :",
                 keySecret: 'Secret partagé :',
-                apiKeyClientID: "Clé d'API / ID de client",
+                apiKeyClientID: "Clé d'API/ID de client",
                 apisIncluded: 'API incluses',
                 authentication: 'Authentification',
-                description: 'Description',
+                description: 'Description ',
                 encrypted: 'Chiffré',
-                sharedSecretClientSecret: 'Secret partagé / Secret de client',
+                sharedSecretClientSecret: 'Secret partagé/Secret de client',
                 oauthType: 'Type OAuth',
                 oauthCallbackUrl: 'URL de rappel OAuth',
                 oauthScope: 'Etendue OAuth',
                 overview: 'Présentation',
                 status: 'Etat',
+                apiGroups: "Groupes d'API",
+                apiGroup: "Groupe d'API",
+                organization: 'Organisation',
+                applicationInformation: "Informations sur l'application",
+                customField: 'Champ personnalisé',
+                noCustomFields: "Aucun champ personnalisé n'est disponible.",
+                noApplications: "Aucune application n'est disponible",
+                apiManagement: 'Gestion des API',
+                authCredentials:
+                    "Authentification et informations d'identification",
+                callbackUrl: 'URL(s) de rappel/redirection',
+                scope: 'Portée ',
+                type: 'Type',
+                none: 'Aucun(e)',
+                public: 'Public',
+                confidential: 'Confidentiel',
+                sharedSecretFormat: 'Format du secret partagé',
+                selectOrganization: "Sélectionner l'organisation",
+                apiPlan: "Plan d'API",
+                quota: 'Quota',
+                rateLimit: 'Limite de taux',
+                termsOfUseApi:
+                    "En cliquant sur Ajouter une API, j'accepte les termes et conditions.",
+                actions: 'Actions',
+                default: 'Défaut',
             },
             actions: {
                 generateSecret: 'Générer un nouveau secret',
@@ -287,12 +347,33 @@ const apiHubMessages = {
                 plainTextSecret: 'Secret en texte brut',
                 hashedSecret: 'Secret haché',
                 cancel: 'Annuler',
-                save: 'Publier',
+                save: 'Enregistrer',
+                addApplication: 'Ajouter une application',
+                createApplication: 'Créer une application',
+                deleteApplication: "Supprimer l'application",
+                select_api: "Sélectionner l'API",
+                addApi: 'Ajouter une API',
+                addApiGroup: "Ajouter un groupe d'API",
+                searchByApiTitle: 'Rechercher',
+                filterByTag: 'Filtrer par étiquette',
+                accept_terms_and_conditions:
+                    "J'accepte les termes et conditions",
+                edit: 'Modifier',
+                delete: 'Supprimer',
+            },
+            validation: {
+                error_application_name_not_unique:
+                    "Le nom de cette application n'est pas unique.",
+                callback_url_caption:
+                    'Utiliser des valeurs séparées par des virgules',
+                scope_caption: 'Utiliser des valeurs séparées par des espaces',
+                application_name_caption:
+                    'Utiliser un nom unique de 50 caractères max.',
             },
             status: {
                 enabled: 'Activé',
                 disabled: 'Désactivé',
-                deprecated: 'Déprécié',
+                deprecated: 'Désapprouvé',
                 unpublished: 'Non publié',
                 rejected: 'Rejeté',
                 application_pending_approval: "En attente d'approbation",
@@ -316,14 +397,25 @@ const apiHubMessages = {
                     "Cette option permet d'empêcher l'accès à quiconque utilise la clé d'API actuelle. Partagez le nouveau secret généré avec les développeurs qui codent une application utilisant les API.",
                 secret_generated_heading: 'Nouveau secret généré',
                 secret_generated_heading_error:
-                    'Une erreur est survenue en générant le nouveau code secret',
+                    "Une erreur s'est produite lors de la génération du secret.",
                 secret_generated_message:
                     "Le secret de texte est visible uniquement pendant la session de navigation actuelle ; il est haché après l'actualisation de la page.",
                 copy_secret_now: 'Copier le secret partagé maintenant',
-                copy_to_clipboard: 'Copier dans le presse-papier',
+                copy_to_clipboard: 'Copier dans le presse-papiers',
                 edit_overview: 'Modifier la présentation',
-                empty_overview: "Aucune présentation n'existe",
+                empty_overview: 'Aucune valeur',
+                create_success: "L'application a été créée.",
+                create_error:
+                    "Une erreur s'est produite lors de la création de l'application.",
+                edit_success: "L'application a été mise à jour.",
+                edit_error:
+                    "Une erreur s'est produite lors de la mise à jour de l'application.",
+                delete_success: "L'application a été supprimée.",
+                delete_error:
+                    "Une erreur s'est produite lors de la suppression de l'application.",
             },
+            confirm_delete:
+                'Vous êtes sur le point de supprimer cette application. Voulez-vous continuer ?',
         },
         documents: {
             name: 'Wiki |||| Wiki',
@@ -338,23 +430,22 @@ const apiHubMessages = {
             },
             actions: {
                 // Toolbar
-                new_document_button: 'Nouveau document racine',
-                new_child_document_button: 'Nouveau sous-document',
+                new_document_button: 'New root document',
+                new_child_document_button: 'Nouvel enfant',
                 edit_document_button: 'Modifier',
                 delete_document_button: 'Supprimer',
                 change_document_parent_button: 'Modifier le parent',
                 // Tree
-                expand_documentation:
-                    'Dérouler la documentation du noeud {title}',
+                expand_documentation: 'Expand documentation of node {title}',
                 collapse_documentation:
-                    'Rétracter la documentation du noeud {title}',
+                    'Réduire la documentation du noeud {title}',
                 // Drag & Drop
-                move_as_first_child: 'Premier document',
+                move_as_first_child: 'First document',
                 move_after_document: 'Après %{title}',
                 move_as_root_item:
                     'Sélectionnez cette option pour accéder à la racine.',
                 // Form
-                save: 'Publier',
+                save: 'Publish',
                 cancel: 'Annuler',
             },
             validation: {
@@ -364,7 +455,7 @@ const apiHubMessages = {
             },
             notifications: {
                 tree_updated_success:
-                    "L'arborescence de la documentation a été mise à jour.",
+                    "L'arborescence de documentation a été mise à jour.",
                 tree_updated_error:
                     "Echec de la mise à jour de l'arborescence de la documentation",
                 create_success: 'Le document a été créé.',
@@ -385,34 +476,35 @@ const apiHubMessages = {
                 'Vous êtes sur le point de supprimer ce document et ses documents enfants. Voulez-vous continuer ?',
         },
         registrations: {
-            title: 'Créer un nouveau compte',
+            title: 'Créer un compte',
             fields: {
                 email: 'Courriel',
-                email_confirmation: 'Confirmer le courriel',
-                organization: 'Organisation ou Espace de travail',
-                organization_description: 'Description',
-                robot: 'Je ne suis pas un robot',
+                email_confirmation: "Confirmer l'adresse de messagerie",
+                organization: 'Organisation ou espace de travail',
+                organization_description: "Description de l'organisation",
+                robot: "I'm not a robot",
             },
             actions: {
                 submit: 'Soumettre',
                 login: 'Se connecter à un compte existant',
-                return_to_homepage: "Retour à la page d'accueil",
+                return_to_homepage: "Revenir à la page d'accueil",
             },
             notifications: {
                 confirmation_required: 'Confirmation requise',
                 error:
-                    "Un problème est survenu lors de l'enregistrement de votre compte",
-                confirmation_title: 'Vérifiez votre e-mail',
+                    "Un problème est survenu lors de l'enregistrement de votre compte.",
+                confirmation_title: 'Consulter votre boîte de réception',
                 confirmation:
-                    "Inscription reçue. Un e-mail de notification sera envoyé à l'adresse fournie",
-                email_confirmation_error: 'Email ne correspond pas.',
-                form_confirmation_error: 'Une confirmation est requise.',
+                    "Enregistrement reçu. Un courriel de notification sera envoyé à l'adresse indiquée.",
+                email_confirmation_error:
+                    "L'adresse de messagerie ne correspond pas.",
+                form_confirmation_error: 'Confirmation requise.',
                 limituserregistration:
-                    "La demande d'enregistrement de ce courriel est en attente d'approbation/activation. Les demandes multiples ne sont pas autorisées.",
+                    "La demande d'enregistrement de cette adresse électronique est en attente d'approbation/activation. Les demandes multiples ne sont pas autorisées.",
             },
             slider: {
-                confirmed: 'Confirmé',
-                unconfirmed: 'Glisser pour confirmer',
+                confirmed: 'Confirmé(e)',
+                unconfirmed: 'Faire glisser pour confirmer',
             },
         },
         userContexts: {
@@ -431,11 +523,10 @@ const apiHubMessages = {
             },
             actions: {
                 edit_profile: 'Mon profil',
-                change_password: 'Modifier le mot de passe',
                 cancel: 'Annuler',
             },
             notifications: {
-                profile_not_exist_error: "Ce profil n'existe pas",
+                profile_not_exist_error: "Ce profil n'existe pas.",
                 update_success: 'Profil mis à jour',
                 update_error: 'La mise à jour du profil a échoué.',
                 invalid_password: "Le mot de passe actuel n'est pas valide.",
@@ -444,9 +535,8 @@ const apiHubMessages = {
             },
             validation: {
                 error_current_password_empty:
-                    'Veuillez entrer votre mot de passe actuel',
-                error_password_match:
-                    'Les deux mots de passes ne sont pas identiques',
+                    'Saisissez votre mot de passe actuel',
+                error_password_match: 'Les mots de passe sont différents.',
                 tooltip_password:
                     'Exigences relatives au mot de passe : \n- 8 caractères minimum\n- 60 caractères maximum\n- Au moins une minuscule\n- Au moins une majuscule\n- Au moins un chiffre\n- Au moins un caractère spécial parmi ceux ci-après : !@#$%^&*',
                 tooltip_password_confirm: 'Resaisissez votre mot de passe',

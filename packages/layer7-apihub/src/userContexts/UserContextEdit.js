@@ -12,12 +12,12 @@ import {
     email,
     useEditController,
     useTranslate,
-    useNotify,
 } from 'react-admin';
 import { Link } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 
+import { useLayer7Notify } from '../useLayer7Notify';
 import { ViewTitle, PasswordInput } from '../ui';
 import { useApiHub } from '../ApiHubContext';
 import { usePasswordEncryption, validatePassword } from '../authentication';
@@ -196,8 +196,8 @@ export const UserContextEditForm = ({ record, basePath, save, ...rest }) => {
 };
 
 const useUpdatePassword = user => {
-    const { url, originHubName } = useApiHub();
-    const notify = useNotify();
+    const { urlWithTenant, originHubName } = useApiHub();
+    const notify = useLayer7Notify();
     const [publicKey, encrypt] = usePasswordEncryption();
     const uuid = user?.uuid;
 
@@ -221,9 +221,9 @@ const useUpdatePassword = user => {
 
             const fetchJson = getFetchJson(originHubName);
             // This is need to get a special cookie required for password change
-            await fetchJson(`${url}/admin/sessionCheck`);
+            await fetchJson(`${urlWithTenant}/sessionCheck`);
 
-            return fetchJson(`${url}/admin/v2/users/password/change`, {
+            return fetchJson(`${urlWithTenant}/v2/users/password/change`, {
                 credentials: 'include',
                 body: JSON.stringify({
                     password: finalPassword,
@@ -240,16 +240,18 @@ const useUpdatePassword = user => {
                 .catch(error => {
                     if (error.status === 400) {
                         notify(
-                            'resources.userContexts.notifications.invalid_password',
-                            'warning'
+                            error ||
+                                'resources.userContexts.notifications.invalid_password',
+                            'error'
                         );
                     }
                     notify(
-                        'resources.userContexts.notifications.update_error',
-                        'warning'
+                        error ||
+                            'resources.userContexts.notifications.update_error',
+                        'error'
                     );
                 });
         },
-        [encrypt, notify, originHubName, publicKey, url, uuid]
+        [encrypt, notify, originHubName, publicKey, urlWithTenant, uuid]
     );
 };

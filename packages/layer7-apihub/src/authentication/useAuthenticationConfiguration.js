@@ -7,9 +7,12 @@ const DEFAULT_SIMPLE_CREDENTIALS_ENABLED = true;
 const DEFAULT_SSO_ENABLED = false;
 const DEFAULT_TERMS_OF_USE = '';
 
-export const fetchAuthenticationConfiguration = async (url, originHubName) => {
+export const fetchAuthenticationConfiguration = async (
+    urlWithTenant,
+    originHubName
+) => {
     const fetchJson = getFetchJson(originHubName);
-    const { json } = await fetchJson(`${url}/admin/cmsSettings`);
+    const { json } = await fetchJson(`${urlWithTenant}/cmsSettings`);
 
     return {
         signUpEnabled: json.REGISTRATION_STATUS === 'ENABLED',
@@ -26,7 +29,7 @@ export const useAuthenticationConfiguration = (
     ssoEnabled = DEFAULT_SSO_ENABLED,
     termsOfUse = null
 ) => {
-    const { url, originHubName } = useApiHub();
+    const { urlWithTenant, originHubName } = useApiHub();
 
     const [configuration, setConfiguration] = useState({
         signUpEnabled,
@@ -36,10 +39,10 @@ export const useAuthenticationConfiguration = (
     });
 
     useEffect(() => {
-        fetchAuthenticationConfiguration(url, originHubName).then(
+        fetchAuthenticationConfiguration(urlWithTenant, originHubName).then(
             setConfiguration
         );
-    }, [originHubName, url]);
+    }, [originHubName, urlWithTenant]);
 
     return configuration;
 };

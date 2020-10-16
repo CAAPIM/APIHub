@@ -18,7 +18,7 @@ export const LoginForm = props => {
     const login = useLogin();
     const classes = useStyles(rest);
     const translate = useTranslate();
-    const authSchemes = useAuthSchemes();
+    const [authSchemes, defaultAuthScheme] = useAuthSchemes();
     const [publicKey, encrypt] = usePasswordEncryption();
 
     const [isLoading, setIsLoading] = useState(null);
@@ -50,6 +50,11 @@ export const LoginForm = props => {
 
         setIsLoading(false);
     };
+
+    if (defaultAuthScheme && !defaultAuthScheme.credsReqd) {
+        window.location = defaultAuthScheme.url;
+        return;
+    }
 
     return (
         <>

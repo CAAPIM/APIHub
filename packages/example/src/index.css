@@ -2,3 +2,62 @@ body {
   background-color: silver;
   margin: 0;
 }
+@font-face {
+  font-family: "ca-sans-regular";
+  src:
+    url("./fonts/ca-sans/ca_sans-regular-webfont.woff2") format("woff2"),
+    url("./fonts/ca-sans/ca_sans-regular-webfont.woff") format("woff");
+}
+@font-face {
+  font-family: "ca-sans-bold";
+  src:
+    url("./fonts/ca-sans/ca_sans-bold-webfont.woff2") format("woff2"),
+    url("./fonts/ca-sans/ca_sans-bold-webfont.woff") format("woff");
+}
+@font-face {
+  font-family: "ca-sans-light";
+  src:
+    url("./fonts/ca-sans/ca_sans-light-webfont.woff2") format("woff2"),
+    url("./fonts/ca-sans/ca_sans-light-webfont.woff") format("woff");
+}
+@font-face {
+  font-family: "clear-sans-regular";
+  src:
+    url("./fonts/clearsans/ClearSans-Regular-webfont.woff2") format("woff2"),
+    url("./fonts/clearsans/ClearSans-Regular-webfont.woff") format("woff");
+}
+@font-face {
+  font-family: "clear-sans-bold";
+  src:
+    url("./fonts/clearsans/ClearSans-Bold-webfont.woff") format("woff");
+}
+@font-face {
+  font-family: "open-sans-bold";
+  src:
+    url("./fonts/open-sans/OpenSans-Bold.woff2") format("woff2"),
+    url("./fonts/open-sans/OpenSans-Bold.woff") format("woff");
+}
+@font-face {
+  font-family: "open-sans-extra-bold";
+  src:
+    url("./fonts/open-sans/OpenSans-ExtraBold.woff2") format("woff2"),
+    url("./fonts/open-sans/OpenSans-ExtraBold.woff") format("woff");
+}
+@font-face {
+  font-family: "open-sans-light";
+  src:
+    url("./fonts/open-sans/OpenSans-Light.woff2") format("woff2"),
+    url("./fonts/open-sans/OpenSans-Light.woff") format("woff");
+}
+@font-face {
+  font-family: "open-sans-regular";
+  src:
+    url("./fonts/open-sans/OpenSans-Regular.woff2") format("woff2"),
+    url("./fonts/open-sans/OpenSans-Regular.woff") format("woff");
+}
+@font-face {
+  font-family: "open-sans-semi-bold";
+  src:
+    url("./fonts/open-sans/OpenSans-Semibold.woff2") format("woff2"),
+    url("./fonts/open-sans/OpenSans-Semibold.woff") format("woff");
+}

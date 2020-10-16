@@ -1,5 +1,6 @@
 import React from 'react';
 import { ApiHubAdmin, readApiHubPreference } from 'layer7-apihub';
+import { Route } from 'react-router-dom';
 
 import {
     LoginPage,
@@ -12,6 +13,7 @@ import {
 import { Layout, HomePage } from './layout';
 import { themeReducer } from './theme';
 import { i18nProvider } from './i18n/i18nProvider';
+import { TestPage } from './TestPage';
 
 const App = () => {
     const { APIHUB_URL, TENANT_NAME, ORIGIN_HUB_NAME } = global.APIHUB_CONFIG;
@@ -54,6 +56,7 @@ const App = () => {
             customReducers={{ theme: themeReducer }}
             i18nProvider={i18nProvider(defaultLocaleFromPreferences)}
             initialState={initialState}
+            customRoutes={[<Route path="/test" component={TestPage} />]}
         />
     );
 };

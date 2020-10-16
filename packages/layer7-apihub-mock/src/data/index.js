@@ -2,10 +2,12 @@ const faker = require('faker');
 const merge = require('lodash/merge');
 
 function generateData() {
-    const organizations = generateOrganisations();
+    const accountPlans = generateAccountPlans();
+    const organizations = generateOrganizations({ accountPlans });
     const tags = generateTags();
     const userContexts = generateUserContexts({ organizations });
-    const apis = generateApis({ tags });
+    const apiEulas = generateApiEulas();
+    const apis = generateApis({ tags, apiEulas });
     const apiGroups = generateApiGroups({ apis });
     const applications = generateApplications({ apis });
     const documents = [
@@ -15,23 +17,47 @@ function generateData() {
     ];
     const assets = generateAssetsForApis({ apis });
     const registrations = generateRegistrations();
+    const customFields = generateCustomFields();
 
     return {
-        userContexts,
+        accountPlans,
+        apiEulas,
+        apiGroups,
         apis,
         applications,
-        tags,
-        documents,
         assets,
-        apiGroups,
+        customFields,
+        documents,
+        organizations,
         registrations,
+        tags,
+        userContexts,
     };
 }
 
-function generateOrganisations() {
+function generateAccountPlans() {
+    return [
+        {
+            uuid: faker.random.uuid(),
+            defaultPlan: false,
+            description: faker.company.catchPhrase(),
+            name: faker.company.companyName(),
+            organizationUsage: '0',
+            quota: 100,
+            quotaInterval: 'DAY',
+            rateLimit: 100,
+        },
+    ];
+}
+
+function generateOrganizations({ accountPlans }) {
     return Array.from(Array(5).keys()).map(() => ({
         uuid: faker.random.uuid(),
+        accountPlanUuid: faker.random.arrayElement(accountPlans),
+        tenantId: 'apim',
         name: faker.company.companyName(),
+        description: faker.company.catchPhrase(),
+        status: faker.random.arrayElement(['ENABLED']),
     }));
 }
 
@@ -152,11 +178,27 @@ function generateUserContext({ organizations, ...data }) {
     );
 }
 
+function generateApiEulas() {
+    return [
+        {
+            Uuid: 'c9406345-eb76-11e3-b0cd-000nosaj86a8',
+            Name: 'Standard EULA',
+            ApiUsage: '2',
+            ApplicationUsage: '2',
+            Content:
+                '<span>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do\n  eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad\n  minim veniam, quis nostrud exercitation ullamco laboris nisi ut\n  aliquip ex ea commodo consequat. Duis aute irure dolor in\n  reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla\n  pariatur. Excepteur sint occaecat cupidatat non proident, sunt in\n  culpa qui officia deserunt mollit anim id est laborum.</span>',
+            PossibleActions: {
+                results: ['DELETE', 'EDIT'],
+            },
+        },
+    ];
+}
+
 function generateApis(data) {
     return Array.from(Array(25).keys()).map(() => generateApi(data));
 }
 
-function generateApi({ tags, apiGroups, ...data }) {
+function generateApi({ tags, apiGroups, apiEulas, ...data }) {
     const createTs = faker.date.past();
     const modifyTs = faker.date.recent();
     const uuid = faker.random.uuid();
@@ -183,6 +225,7 @@ function generateApi({ tags, apiGroups, ...data }) {
             tags: faker.random
                 .arrayElements(tags, faker.random.number({ min: 1, max: 3 }))
                 .map(({ name }) => name),
+            apiEulaUuid: faker.random.arrayElement(apiEulas).Uuid,
         },
         data
     );
@@ -428,9 +471,66 @@ function generateRegistrations() {
     return [];
 }
 
+function generateCustomFields() {
+    return [
+        {
+            Name: 'custom-text-field-disabled',
+            Uuid: '64e9c94f-c724-4749-9470-db096a3788d4',
+            Status: 'DISABLED',
+            Required: true,
+            Description: 'A disabled custom text field',
+            Type: 'TEXT',
+            EntityType: 'APPLICATION',
+        },
+        {
+            Name: 'custom-text-field-api',
+            Uuid: 'c0b3ff30-6c7a-4d4c-84af-56e8dc3c06bc',
+            Status: 'ENABLED',
+            Required: true,
+            Description: 'A custom text field for APIs',
+            Type: 'TEXT',
+            EntityType: 'API',
+        },
+        {
+            Name: 'custom-text-field',
+            Uuid: '0e93c523-ca24-46e4-bd0d-20fd361e205c',
+            Status: 'ENABLED',
+            Required: true,
+            Description: 'A custom text field',
+            Type: 'TEXT',
+            EntityType: 'APPLICATION',
+        },
+        {
+            Name: 'custom-select-field',
+            Uuid: 'bb683549-ddf4-4aad-9761-1e5cad981672',
+            Status: 'ENABLED',
+            Required: true,
+            Description: 'A custom select field',
+            Type: 'SINGLE_SELECT',
+            EntityType: 'APPLICATION',
+            OptionsList: {
+                results: [
+                    {
+                        Value: 'Choice 2',
+                        Ordinal: 1,
+                    },
+                    {
+                        Value: 'Choice 1',
+                        Ordinal: 0,
+                    },
+                    {
+                        Value: 'Choice 3',
+                        Ordinal: 2,
+                    },
+                ],
+            },
+        },
+    ];
+}
+
 module.exports = {
     generateData,
-    generateOrganisations,
+    generateOrganizations,
     generateUserContexts,
     generateUserContext,
     generateApis,

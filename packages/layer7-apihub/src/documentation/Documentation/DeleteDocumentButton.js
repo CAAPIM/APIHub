@@ -1,12 +1,8 @@
 import React from 'react';
 import Button from '@material-ui/core/Button';
-import {
-    CRUD_DELETE,
-    useDelete,
-    useNotify,
-    useTranslate,
-    useRefresh,
-} from 'ra-core';
+import { CRUD_DELETE, useDelete, useTranslate, useRefresh } from 'ra-core';
+
+import { useLayer7Notify } from '../../useLayer7Notify';
 
 export const DeleteDocumentButton = ({
     document,
@@ -17,7 +13,7 @@ export const DeleteDocumentButton = ({
     ...rest
 }) => {
     const translate = useTranslate();
-    const notify = useNotify();
+    const notify = useLayer7Notify();
     const refresh = useRefresh();
 
     const [deleteDocument] = useDelete('documents', document.id, document, {
@@ -29,8 +25,11 @@ export const DeleteDocumentButton = ({
             refresh();
             onClick();
         },
-        onFailure: () => {
-            notify('resources.documents.notifications.delete_error', 'warning');
+        onFailure: error => {
+            notify(
+                error || 'resources.documents.notifications.delete_error',
+                'error'
+            );
         },
     });
 

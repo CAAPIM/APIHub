@@ -28,13 +28,30 @@ import {
     listApiGroups,
     getApiGroup,
     getApiGroupApis,
+    getApiGroupEula,
 } from './handlers/apiGroups';
+import {
+    listApiPlans,
+    getApiPlan,
+    getApiApiPlanAssociation,
+    getApiPlansFeatureFlag,
+} from './handlers/apiPlans';
+import { listAccountPlans, getAccountPlan } from './handlers/accountPlans';
 import {
     listApplications,
     getApplication,
+    postApplication,
     getGenerateSharedSecret,
     getSecretHashMetadata,
+    deleteApplication,
 } from './handlers/applications';
+import {
+    listOrganizations,
+    getOrganization,
+    postOrganization,
+    putOrganization,
+    deleteOrganization,
+} from './handlers/organizations';
 import {
     getDocumentsTree,
     postDocument,
@@ -51,6 +68,8 @@ import { postRegistration } from './handlers/registrations';
 
 import { initializeRunningIndicator } from './running/indicator';
 import { getMetricsHits, getMetricsLatency } from './handlers/metrics';
+import { listCustomFields } from './handlers/customFields';
+import { getApiEula } from './handlers/apiEulas';
 
 let database;
 
@@ -94,30 +113,30 @@ export const startApiHubMockedServer = async (
         },
         routes() {
             this.get(
-                `${urlPrefix}admin/Portal.svc/GenerateNewSharedSecret`,
+                `${urlPrefix}api/apim/GenerateNewSharedSecret`,
                 getGenerateSharedSecret(database),
                 options
             );
 
             this.get(
-                `${urlPrefix}admin/passwordResetTokenValidate`,
+                `${urlPrefix}api/apim/passwordResetTokenValidate`,
                 passwordResetTokenValidate(database),
                 options
             );
 
             this.put(
-                `${urlPrefix}admin/v2/users/password/reset/:uuid`,
+                `${urlPrefix}api/apim/v2/users/password/reset/:uuid`,
                 updateMyPassword(database),
                 options
             );
 
             this.get(
-                `${urlPrefix}admin/Portal.svc/ResetMyPassword()`,
+                `${urlPrefix}api/apim/ResetMyPassword()`,
                 resetPassword(database),
                 options
             );
 
-            this.get(`${urlPrefix}admin/logout`, logout(database), options);
+            this.get(`${urlPrefix}api/apim/logout`, logout(database), options);
 
             this.post(
                 `${urlPrefix}api/apim/authenticate/login`,
@@ -126,19 +145,19 @@ export const startApiHubMockedServer = async (
             );
 
             this.get(
-                `${urlPrefix}admin/Portal.svc/UserNameUnique()`,
+                `${urlPrefix}api/apim/UserNameUnique()`,
                 checkUserNameIsUnique(database),
                 options
             );
 
             this.get(
-                `${urlPrefix}admin/accountSetup`,
+                `${urlPrefix}api/apim/accountSetup`,
                 getAccountSetup(database),
                 options
             );
 
             this.put(
-                `${urlPrefix}admin/accountSetup`,
+                `${urlPrefix}api/apim/accountSetup`,
                 putAccountSetup(database),
                 options
             );
@@ -176,6 +195,24 @@ export const startApiHubMockedServer = async (
             this.get(
                 `${urlPrefix}api/apim/api-management/1.0/applications`,
                 listApplications(database),
+                options
+            );
+
+            this.post(
+                `${urlPrefix}api/apim/Applications`,
+                postApplication(database),
+                options
+            );
+
+            this.get(
+                `${urlPrefix}api/apim/api-management/1.0/account-plans`,
+                listAccountPlans(database),
+                options
+            );
+
+            this.get(
+                `${urlPrefix}api/apim/api-management/1.0/account-plans/:id`,
+                getAccountPlan(database),
                 options
             );
 
@@ -228,6 +265,18 @@ export const startApiHubMockedServer = async (
             );
 
             this.get(
+                `${urlPrefix}tenant-admin/internal/organizations`,
+                listOrganizations(database),
+                options
+            );
+
+            this.get(
+                `${urlPrefix}api/apim/api-management/1.0/organizations/:id`,
+                getOrganization(database),
+                options
+            );
+
+            this.get(
                 `${urlPrefix}api/apim/api-management/1.0/apis/:id/assets`,
                 listApiAssets(database),
                 options
@@ -236,7 +285,7 @@ export const startApiHubMockedServer = async (
             this.get(`${urlPrefix}api/apim/tags`, listTags(database), options);
 
             this.get(
-                `${urlPrefix}admin/api-management/internal/permissions/apis/:id/permitted`,
+                `${urlPrefix}api/apim/api-management/internal/permissions/apis/:id/permitted`,
                 listApiPermissions(database),
                 options
             );
@@ -254,7 +303,7 @@ export const startApiHubMockedServer = async (
             );
 
             this.get(
-                `${urlPrefix}api/apim/api-management/1.0/api-groups`,
+                `${urlPrefix}admin/api-management/internal/OrganizationApiGroups`,
                 listApiGroups(database),
                 options
             );
@@ -272,8 +321,44 @@ export const startApiHubMockedServer = async (
             );
 
             this.get(
+                `${urlPrefix}api/apim/api-management/internal/ApiGroups/:id/Eulas`,
+                getApiGroupEula(database),
+                options
+            );
+
+            this.get(
+                `${urlPrefix}api/apim/api-management/1.0/api-plans`,
+                listApiPlans(database),
+                options
+            );
+
+            this.get(
+                `${urlPrefix}api/apim/api-management/1.0/api-plans/:id`,
+                getApiPlan(database),
+                options
+            );
+
+            this.get(
+                `${urlPrefix}admin/api-management/internal/api-plans`,
+                getApiApiPlanAssociation(database),
+                options
+            );
+
+            this.get(
+                `${urlPrefix}api/apim/Settings('FEATURE_FLAG_API_PLANS')`,
+                getApiPlansFeatureFlag(database),
+                options
+            );
+
+            this.get(
                 `${urlPrefix}api/apim/Settings('APP_SECRET_HASHING_METADATA')`,
                 getSecretHashMetadata(database),
+                options
+            );
+
+            this.delete(
+                `${urlPrefix}api/apim/Applications(':uuid')`,
+                deleteApplication(database),
                 options
             );
 
@@ -309,19 +394,19 @@ export const startApiHubMockedServer = async (
             );
 
             this.post(
-                `${urlPrefix}admin/Portal.svc/Registrations`,
+                `${urlPrefix}api/apim/Registrations`,
                 postRegistration(database),
                 options
             );
 
             this.get(
-                `${urlPrefix}admin/cmsSettings`,
+                `${urlPrefix}api/apim/cmsSettings`,
                 getCmsSettings(database),
                 options
             );
 
             this.get(
-                `${urlPrefix}admin/public/auth/schemes`,
+                `${urlPrefix}api/apim/public/auth/schemes`,
                 getAuthSchemes(database),
                 options
             );
@@ -339,19 +424,90 @@ export const startApiHubMockedServer = async (
                 options
             );
 
-            // This is the only way I found to make the Applications route work.
+            this.get(
+                `${urlPrefix}api/apim/CustomFields`,
+                listCustomFields(database),
+                options
+            );
+
+            // This is the only way I found to make the legacy routes work.
             // Its url looks api/apim/api-management/1.0/Applications(':uuid').
             // It seems either the parenthesises or the quotes make the route parameter
             // parsing fail.
+
             this.get(
                 `${urlPrefix}api/apim/*path`,
                 async (schema, request) => {
-                    console.log('Catch all', request.params.path);
+                    console.log('GET - Catch all', request.params.path);
                     const path = request.params.path;
+
+                    if (path.match(/ApiEulas\('.*'\)/)) {
+                        return await getApiEula(database)(schema, request);
+                    }
 
                     if (path.match(/Applications\('.*'\)/)) {
                         const uuid = path.substring(14, path.length - 2);
                         return await getApplication(database)(schema, {
+                            params: {
+                                uuid,
+                            },
+                        });
+                    }
+
+                    return {};
+                },
+                options
+            );
+
+            this.put(
+                `${urlPrefix}api/apim/*path`,
+                async (schema, request) => {
+                    console.log('PUT - Catch all', request.params.path);
+                    const path = request.params.path;
+
+                    if (path.match(/Organizations\('.*'\)/)) {
+                        const uuid = path.substring(15, path.length - 2);
+                        return await putOrganization(database)(schema, {
+                            params: {
+                                uuid,
+                            },
+                        });
+                    }
+
+                    return {};
+                },
+                options
+            );
+
+            this.post(
+                `${urlPrefix}api/apim/*path`,
+                async (schema, request) => {
+                    console.log('POST - Catch all', request.params.path);
+                    const path = request.params.path;
+
+                    if (path.match(/Organizations\('.*'\)/)) {
+                        const uuid = path.substring(15, path.length - 2);
+                        return await postOrganization(database)(schema, {
+                            params: {
+                                uuid,
+                            },
+                        });
+                    }
+
+                    return {};
+                },
+                options
+            );
+
+            this.delete(
+                `${urlPrefix}api/apim/*path`,
+                async (schema, request) => {
+                    console.log('DELETE - Catch all', request.params.path);
+                    const path = request.params.path;
+
+                    if (path.match(/Organizations\('.*'\)/)) {
+                        const uuid = path.substring(15, path.length - 2);
+                        return await deleteOrganization(database)(schema, {
                             params: {
                                 uuid,
                             },
@@ -406,7 +562,9 @@ async function getDatabase() {
 async function clearDatabase() {
     await Promise.all([
         promisify(database.removeCollection.bind(database), 'apis'),
+        promisify(database.removeCollection.bind(database), 'apiEulas'),
         promisify(database.removeCollection.bind(database), 'apiGroups'),
+        promisify(database.removeCollection.bind(database), 'apiPlans'),
         promisify(database.removeCollection.bind(database), 'applications'),
         promisify(database.removeCollection.bind(database), 'userContexts'),
         promisify(database.removeCollection.bind(database), 'documents'),
@@ -414,6 +572,7 @@ async function clearDatabase() {
         promisify(database.removeCollection.bind(database), 'assets'),
         promisify(database.removeCollection.bind(database), 'tags'),
         promisify(database.removeCollection.bind(database), 'registrations'),
+        promisify(database.removeCollection.bind(database), 'customFields'),
     ]);
     console.log('Mock database cleared');
 }
@@ -421,7 +580,9 @@ async function clearDatabase() {
 async function initDatabase(db, initialData = defaultData) {
     await Promise.all([
         promisify(db.addCollection.bind(db), 'apis'),
+        promisify(db.addCollection.bind(db), 'apiEulas'),
         promisify(db.addCollection.bind(db), 'apiGroups'),
+        promisify(db.addCollection.bind(db), 'apiPlans'),
         promisify(db.addCollection.bind(db), 'applications'),
         promisify(db.addCollection.bind(db), 'userContexts'),
         promisify(db.addCollection.bind(db), 'documents'),
@@ -429,6 +590,7 @@ async function initDatabase(db, initialData = defaultData) {
         promisify(db.addCollection.bind(db), 'assets'),
         promisify(db.addCollection.bind(db), 'tags'),
         promisify(db.addCollection.bind(db), 'registrations'),
+        promisify(db.addCollection.bind(db), 'customFields'),
     ]);
 
     const hasData = (await promisify(db.apis.find().fetch)).length > 0;
@@ -450,6 +612,10 @@ async function initDatabase(db, initialData = defaultData) {
                 initialData.apiGroups
             ),
             promisify(
+                db.apiPlans.upsert.bind(db.apiPlans),
+                initialData.apiPlans
+            ),
+            promisify(
                 db.userContexts.upsert.bind(db.userContexts),
                 initialData.userContexts
             ),
@@ -458,6 +624,14 @@ async function initDatabase(db, initialData = defaultData) {
                 initialData.documents
             ),
             promisify(db.assets.upsert.bind(db.assets), initialData.assets),
+            promisify(
+                db.customFields.upsert.bind(db.customFields),
+                initialData.customFields
+            ),
+            promisify(
+                db.apiEulas.upsert.bind(db.apiEulas),
+                initialData.apiEulas
+            ),
         ]);
     }
     console.log('Mock database initialized');

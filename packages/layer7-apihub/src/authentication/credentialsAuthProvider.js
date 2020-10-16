@@ -1,4 +1,4 @@
-export const credentialsAuthProvider = (apiUrl, adminUrl, fetchJson) => ({
+export const credentialsAuthProvider = (apiUrl, fetchJson) => ({
     login: async ({ username, password, ...params }) => {
         try {
             const { json } = await fetchJson(`${apiUrl}/authenticate/login`, {
@@ -26,7 +26,7 @@ export const credentialsAuthProvider = (apiUrl, adminUrl, fetchJson) => ({
     },
     logout: async () => {
         try {
-            await fetchJson(`${adminUrl}/logout`);
+            await fetchJson(`${apiUrl}/logout`);
             return Promise.resolve();
         } catch (error) {
             console.error(error);

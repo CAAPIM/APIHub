@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.ca.apim</groupId>
+  <artifactId>apihub</artifactId>
+  <version>22.7-SNAPSHOT</version>
+  <packaging>jar</packaging>
+
+  <properties>
+<!--    <nexus.host>https://artifactory-lvn.broadcom.net</nexus.host>
+    <nexus.uri.releases>artifactory/maven-integration-local/</nexus.uri.releases>
+    <nexus.uri.snapshot>artifactory/maven-integration-local/</nexus.uri.snapshot>-->
+    <jar.classifier>${git.branch}</jar.classifier>
+    <nexus.host>http://apim-blackforest.lvn.broadcom.net:8080</nexus.host>
+    <nexus.uri.releases>nexus/content/repositories/releases/</nexus.uri.releases>
+    <nexus.uri.snapshot>nexus/content/repositories/snapshots/</nexus.uri.snapshot>
+  </properties>
+
+  <distributionManagement>
+    <snapshotRepository>
+      <id>layer7-snapshot-repo</id>
+      <name>Layer 7 - Snapshot Repository for internal projects.</name>
+      <url>${nexus.host}/${nexus.uri.snapshot}</url>
+    </snapshotRepository>
+  </distributionManagement>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>blackforest</id>
+      <name>Layer7/Broadcom Internal</name>
+      <url>http://apim-blackforest.lvn.broadcom.net:8080/nexus/content/groups/public</url>
+    </pluginRepository>
+    <pluginRepository>
+      <id>apache</id>
+      <name>Apache Central Maven Repo</name>
+      <url>https://repo.maven.apache.org/maven2</url>
+    </pluginRepository>
+  </pluginRepositories>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>com.github.eirslett</groupId>
+        <artifactId>frontend-maven-plugin</artifactId>
+        <version>1.6</version>
+
+        <executions>
+
+          <execution>
+            <id>install node and yarn</id>
+            <goals>
+              <goal>install-node-and-yarn</goal>
+            </goals>
+            <configuration>
+              <nodeVersion>v10.19.0</nodeVersion>
+              <yarnVersion>v1.19.2</yarnVersion>
+            </configuration>
+          </execution>
+
+          <execution>
+            <id>yarn install</id>
+            <goals>
+              <goal>yarn</goal>
+            </goals>
+            <configuration>
+              <arguments>install</arguments>
+            </configuration>
+          </execution>
+
+          <execution>
+            <id>yarn build</id>
+            <goals>
+              <goal>yarn</goal>
+            </goals>
+            <configuration>
+              <arguments>build</arguments>
+            </configuration>
+          </execution>
+
+          <execution>
+            <id>yarn build-example</id>
+            <goals>
+              <goal>yarn</goal>
+            </goals>
+            <configuration>
+              <arguments>build-example</arguments>
+              <environmentVariables>
+                      <NODE_OPTIONS>--max-old-space-size=8192</NODE_OPTIONS>
+              </environmentVariables>
+            </configuration>
+          </execution>
+
+        </executions>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>3.1.0</version>
+        <executions>
+          <execution>
+            <id>copy-config</id>
+            <phase>compile</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${basedir}/packages/example/build</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>${basedir}/packages/example/config</directory>
+                  <include>config.js</include>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>2.6</version>
+        <configuration>
+          <classesDirectory>${basedir}/packages/example/build</classesDirectory>
+          <outputDirectory>${basedir}/target/</outputDirectory>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>package</phase>
+              <goals>
+                <goal>jar</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-deploy-plugin</artifactId>
+          <executions>
+            <execution>
+              <id>Classifier for deployed war file</id>
+              <goals>
+                <goal>deploy-file</goal>
+              </goals>
+              <phase>deploy</phase>
+              <configuration>
+                <groupId>com.ca.apim</groupId>
+                <artifactId>apihub</artifactId>
+                <classifier>${jar.classifier}</classifier>
+                <repositoryId>layer7-snapshot-repo</repositoryId>
+                <url>${nexus.host}/${nexus.uri.snapshot}</url>
+                <file>./target/${build.finalName}.jar</file>
+                <version>${version}</version>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
+
+    </plugins>
+  </build>
+</project>
+

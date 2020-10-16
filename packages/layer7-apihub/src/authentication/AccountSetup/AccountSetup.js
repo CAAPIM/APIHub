@@ -14,7 +14,7 @@ import { useAccountData } from './useAccountData';
  *
  */
 export const AccountSetup = props => {
-    const [state, accountData, submitAccountData] = useAccountData();
+    const [state, accountData, submitAccountData, error] = useAccountData();
     const translate = useTranslate();
 
     const handleSubmit = data => {
@@ -44,6 +44,25 @@ export const AccountSetup = props => {
             );
         case 'invalid_request':
             return <AccountSetupInvalidRequest {...props} />;
+        case 'error':
+            return (
+                <>
+                    <Typography
+                        variant="h4"
+                        component="h2"
+                        color="textPrimary"
+                        gutterBottom
+                    >
+                        {translate('apihub.account_setup.title')}
+                    </Typography>
+                    <AccountSetupForm
+                        initialValues={accountData}
+                        onSubmit={handleSubmit}
+                        error={error}
+                        {...props}
+                    />
+                </>
+            );
         case 'success':
             return <AccountSetupSuccess {...props} />;
         default:

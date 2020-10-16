@@ -7,13 +7,11 @@
         "build-mock": "cd packages/layer7-apihub-mock && yarn build",
         "build-example": "cd packages/example && yarn build",
         "build-healthcare": "cd packages/healthcare && yarn build",
-        "build-storybook": "cd packages/layer7-apihub && yarn build-storybook",
         "start-example": "concurrently \"yarn start-lib\" \"yarn start-mock\" \"cd packages/example && yarn start\"",
         "start-healthcare": "concurrently \"yarn start-lib\" \"yarn start-mock\" \"cd packages/healthcare && yarn start\"",
         "start-lib": "cd packages/layer7-apihub && yarn dev",
         "start-mock": "cd packages/layer7-apihub-mock && yarn dev",
         "test": "cd packages/layer7-apihub && yarn test",
-        "storybook": "cd packages/layer7-apihub && yarn storybook",
         "lint": "eslint --fix ."
     },
     "workspaces": [
@@ -21,23 +19,25 @@
         "cypress"
     ],
     "devDependencies": {
-        "concurrently": "~5.1.0",
-        "eslint": "~6.8.0",
-        "eslint-config-prettier": "~6.10.0",
-        "eslint-plugin-prettier": "~3.1.2",
-        "husky": "~4.2.3",
-        "lint-staged": "~10.0.7",
-        "prettier": "~1.19.1"
+        "concurrently": "5.1.0",
+        "eslint": "6.8.0",
+        "eslint-config-prettier": "6.10.0",
+        "eslint-plugin-prettier": "3.1.2",
+        "husky": "4.2.3",
+        "lint-staged": "10.0.7",
+        "prettier": "1.19.1"
     },
     "resolutions": {
-        "@testing-library/dom": "~6.11.0",
-        "@testing-library/react": "~9.3.2",
+        "@testing-library/dom": "6.11.0",
+        "@testing-library/react": "11.0.0",
         "@material-ui/core": "4.10.0",
         "@material-ui/lab": "4.0.0-alpha.54",
         "@material-ui/styles": "4.10.0",
         "@material-ui/system": "4.9.14",
         "@material-ui/types": "5.1.0",
-        "cypress": "~4.8.0",
-        "date-fns": "~2.9.0"
+        "bl": "4.0.3",
+        "cypress": "4.9.0",
+        "date-fns": "2.9.0",
+        "serialize-javascript": "3.1.0"
     }
 }

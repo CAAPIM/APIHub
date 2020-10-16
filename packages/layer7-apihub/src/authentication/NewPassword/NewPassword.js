@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslate } from 'ra-core';
+import { useLocation } from 'react-router';
 import Typography from '@material-ui/core/Typography';
 
 import { useApiHub } from '../../ApiHubContext';
@@ -11,6 +12,7 @@ import { NewPasswordSuccess } from './NewPasswordSuccess';
 import { AuthenticationLayout } from '../AuthenticationLayout';
 import { usePasswordEncryption } from '../usePasswordEncryption';
 import { getFetchJson } from '../../fetchUtils';
+import { useLayer7Notify } from '../../useLayer7Notify';
 
 /**
  * The component used to create a new password
@@ -87,31 +89,34 @@ export const NewPasswordPage = props => (
  * It returns a tupple containing the current status (verifying_token, invalid_token, request_new_password and success)
  * and a function to actually submit the new password.
  */
-export const useSetNewPassword = (location = window.location.href) => {
+export const useSetNewPassword = () => {
     const [state, setState] = useState('verifying_token');
+    const location = useLocation();
 
-    const { url, originHubName } = useApiHub();
-    const token = extractTokenFromUrl(location);
+    const { urlWithTenant, originHubName } = useApiHub();
+    const token = extractTokenFromUrl(location.pathname);
     const [publicKey, encrypt] = usePasswordEncryption();
+    const notify = useLayer7Notify();
 
     useEffect(() => {
         if (state === 'verifying_token') {
-            verifyNewPasswordTokenValid(url, originHubName, token).then(
-                isVerified => {
-                    setState(
-                        isVerified ? 'request_new_password' : 'invalid_token'
-                    );
-                }
-            );
+            verifyNewPasswordTokenValid(
+                urlWithTenant,
+                originHubName,
+                notify,
+                token
+            ).then(isVerified => {
+                setState(isVerified ? 'request_new_password' : 'invalid_token');
+            });
         }
-    }, [url, token, state, originHubName]);
+    }, [urlWithTenant, token, state, originHubName, notify]);
 
     const handleSubmit = async ({ password }) => {
         let finalPassword = password;
         if (publicKey) {
             finalPassword = await encrypt(password);
         }
-        return submitNewPassword(url, originHubName, {
+        return submitNewPassword(urlWithTenant, originHubName, notify, {
             newPassword: finalPassword,
             token,
         }).then(isSuccessful =>
@@ -123,25 +128,38 @@ export const useSetNewPassword = (location = window.location.href) => {
 };
 
 const submitNewPassword = (
-    apiBaseUrl,
+    urlWithTenant,
     originHubName,
+    notify,
     { newPassword, token }
 ) => {
     const fetchJson = getFetchJson(originHubName);
-    return fetchJson(`${apiBaseUrl}/admin/v2/users/password/reset/${token}`, {
+    return fetchJson(`${urlWithTenant}/v2/users/password/reset/${token}`, {
         method: 'put',
         body: JSON.stringify({ newPassword, uuid: token }),
     })
         .then(() => true)
-        .catch(error => console.error(error) || false);
+        .catch(error => {
+            notify(error, 'error');
+        });
 };
 
-const verifyNewPasswordTokenValid = (apiBaseUrl, originHubName, token) => {
+const verifyNewPasswordTokenValid = (
+    urlWithTenant,
+    originHubName,
+    notify,
+    token
+) => {
     const fetchJson = getFetchJson(originHubName);
 
     return fetchJson(
-        `${apiBaseUrl}/admin/passwordResetTokenValidate?token=${token}`
+        `${urlWithTenant}/passwordResetTokenValidate?token=${token}`
     )
         .then(({ json }) => !!json)
-        .catch(error => console.error(error) || false);
+        .catch(error => {
+            notify(
+                error || 'apihub.new_password.notifications.invalid_token',
+                'error'
+            );
+        });
 };
