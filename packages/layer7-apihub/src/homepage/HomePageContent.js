@@ -37,7 +37,7 @@ import { useMarkdownContent } from '../documentation';
 export const HomePageContent = props => {
     const { navtitle = 'home1', entityUuid = 'home1', ...rest } = props;
 
-    const [{ data, loaded }, handleUpdate] = useMarkdownContent({
+    const [{ data, loading }, handleUpdate] = useMarkdownContent({
         entityType: ENTITY_TYPE_HOME,
         entityUuid,
         navtitle,
@@ -56,7 +56,7 @@ export const HomePageContent = props => {
         setMode('view');
     }, [data]);
 
-    if (!loaded) {
+    if (loading) {
         return (
             <Fade
                 in

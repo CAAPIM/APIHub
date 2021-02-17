@@ -1,6 +1,12 @@
 export const credentialsAuthProvider = (apiUrl, fetchJson) => ({
-    login: async ({ username, password, ...params }) => {
+    login: async ({ username, password, publicKey, ...params }) => {
         try {
+            const headers = new Headers({
+                'Content-Type': 'application/json; charset=UTF-8',
+            });
+            if (publicKey) {
+                headers.set('Public-Key', publicKey);
+            }
             const { json } = await fetchJson(`${apiUrl}/authenticate/login`, {
                 method: 'POST',
                 body: JSON.stringify({
@@ -9,9 +15,7 @@ export const credentialsAuthProvider = (apiUrl, fetchJson) => ({
                     eula: 'accept',
                     ...params,
                 }),
-                headers: new Headers({
-                    'Content-Type': 'application/json; charset=UTF-8',
-                }),
+                headers: headers,
             });
 
             const { respCode, respMsg } = json;

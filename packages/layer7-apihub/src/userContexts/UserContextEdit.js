@@ -16,6 +16,7 @@ import {
 import { Link } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
+import get from 'lodash/get';
 
 import { useLayer7Notify } from '../useLayer7Notify';
 import { ViewTitle, PasswordInput } from '../ui';
@@ -196,15 +197,19 @@ export const UserContextEditForm = ({ record, basePath, save, ...rest }) => {
 };
 
 const useUpdatePassword = user => {
-    const { urlWithTenant, originHubName } = useApiHub();
+    const { url, urlWithTenant, originHubName } = useApiHub();
     const notify = useLayer7Notify();
     const [publicKey, encrypt] = usePasswordEncryption();
-    const uuid = user?.uuid;
+    const uuid = get(user, 'userDetails.uuid');
 
     return useCallback(
         async ({ currentPassword, newPassword }) => {
             let finalPassword = currentPassword;
             let finalNewPassword = newPassword;
+            const headers = new Headers({
+                'Content-Type': 'application/json; charset=UTF-8',
+                Accept: 'text/plain, */*; q=0.01',
+            });
 
             if (publicKey) {
                 const [
@@ -217,18 +222,20 @@ const useUpdatePassword = user => {
 
                 finalPassword = encryptedPassword;
                 finalNewPassword = encryptedNewPassword;
+                headers.set('Public-Key', publicKey);
             }
 
             const fetchJson = getFetchJson(originHubName);
             // This is need to get a special cookie required for password change
             await fetchJson(`${urlWithTenant}/sessionCheck`);
 
-            return fetchJson(`${urlWithTenant}/v2/users/password/change`, {
+            return fetchJson(`${url}/admin/v2/users/password/change`, {
                 credentials: 'include',
+                headers: headers,
                 body: JSON.stringify({
+                    uuid: uuid,
                     password: finalPassword,
                     newPassword: finalNewPassword,
-                    uuid,
                 }),
                 method: 'PUT',
             })
@@ -252,6 +259,6 @@ const useUpdatePassword = user => {
                     );
                 });
         },
-        [encrypt, notify, originHubName, publicKey, urlWithTenant, uuid]
+        [encrypt, notify, originHubName, publicKey, url, urlWithTenant, uuid]
     );
 };

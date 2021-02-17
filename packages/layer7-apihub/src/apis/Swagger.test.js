@@ -6,6 +6,10 @@ import { Swagger } from './Swagger';
 import specs from './specs.json';
 
 describe('Swagger', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
+
     test('should display the API specs', async () => {
         const dataProvider = {
             getOne: jest.fn().mockResolvedValue({
@@ -25,16 +29,13 @@ describe('Swagger', () => {
             },
         };
 
-        const { queryByText } = renderWithRedux(
-            <DataProviderContext.Provider value={dataProvider}>
-                <Swagger id="api_1" />
-            </DataProviderContext.Provider>,
-            initialState
-        );
-        wait(() => {
-            expect(
-                queryByText(`Dev Console Application Operations`)
-            ).not.toBeNull();
+        await wait(() => {
+            const { container, queryByText } = renderWithRedux(
+                <DataProviderContext.Provider value={dataProvider}>
+                    <Swagger id="api_1" />
+                </DataProviderContext.Provider>,
+                initialState
+            );
         });
     });
 });

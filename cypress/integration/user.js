@@ -8,7 +8,7 @@ import { openUserMenu } from '../support/userMenu';
 
 import defaultData from '../../packages/layer7-apihub-mock/src/defaultData.json';
 
-describe.skip('User', () => {
+describe('User', () => {
     before(() => {
         cy.clearLocalStorageCache();
     });
@@ -123,7 +123,7 @@ describe.skip('User', () => {
 
         cy.contains('Applications').click();
         cy.findAllByText('Applications').should('have.length', 3);
-        cy.findByText('No applications yet.');
+        cy.findByText('No available applications');
         openUserMenu();
         cy.findByText('Jacobson LLC').click({ force: true });
         cy.contains('Your organization updated successfully');

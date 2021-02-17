@@ -87,11 +87,12 @@ export const apiPlansDataProvider = context => {
             if (orgUuid) {
                 params.orgUuid = orgUuid;
             }
-            const url = `${context.adminUrl}${internalBasePath}?${stringify(
+            const url = `${context.apiUrl}${internalBasePath}?${stringify(
                 params
             )}`;
+
             const { json } = await context.fetchJson(url, {
-                credentials: 'include',
+                credentials: 'include'
             });
 
             return {

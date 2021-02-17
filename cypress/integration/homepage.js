@@ -1,7 +1,7 @@
 import { login } from '../support/login';
 import defaultData from '../../packages/layer7-apihub-mock/src/defaultData.json';
 
-describe.skip('Homepage', () => {
+describe('Homepage', () => {
     before(() => {
         cy.clearLocalStorageCache();
     });
@@ -36,9 +36,7 @@ describe.skip('Homepage', () => {
                 .should('exist')
                 .click();
 
-            cy.findByLabelText('Content')
-                .clear()
-                .type('My New Homepage');
+            cy.findByLabelText('Content').type('My New Homepage');
 
             cy.findByText('Publish').click();
 

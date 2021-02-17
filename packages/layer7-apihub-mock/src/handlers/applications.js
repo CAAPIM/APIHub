@@ -10,6 +10,7 @@ export function listApplications(database) {
             order,
             sort,
             apiUuid,
+            name,
             $select,
             ...filter
         } = request.queryParams;
@@ -57,11 +58,17 @@ export function listApplications(database) {
 
 export function getApplication(database) {
     return async (schema, request) => {
-        return await promisify(
+        const application = await promisify(
             database.applications.findOne.bind(database.applications),
             { uuid: request.params.uuid },
             {}
         );
+        const keys = Object.keys(application);
+        keys.map(k => {
+            application[`${k[0].toUpperCase()}${k.slice(1)}`] = application[k];
+        });
+
+        return application;
     };
 }
 

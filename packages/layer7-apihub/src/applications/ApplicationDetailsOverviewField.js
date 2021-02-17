@@ -22,7 +22,7 @@ export const ApplicationDetailsOverviewField = ({
     const markdownElementRef = useRef();
     const [isEditingOverview, setIsEditingOverview] = useState(false);
     const [isOverviewScrollBottom, setIsOverviewScrollBottom] = useState(false);
-    const [{ data, loaded }, handleUpdate] = useMarkdownContent({
+    const [{ data, loading }, handleUpdate] = useMarkdownContent({
         entityType: 'application',
         entityUuid: record.id,
         navtitle: 'overview',
@@ -64,7 +64,7 @@ export const ApplicationDetailsOverviewField = ({
         setIsEditingOverview(false);
     };
 
-    if (!loaded) {
+    if (loading) {
         return (
             <Fade
                 in

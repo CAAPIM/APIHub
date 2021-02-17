@@ -13,18 +13,18 @@
     "dependencies": {
         "layer7-apihub": "1.0.0",
         "layer7-apihub-mock": "1.0.0",
-        "react": "16.13.1",
-        "react-admin": "3.6.2",
-        "react-dom": "16.13.1",
-        "react-helmet": "5.2.1",
-        "react-scripts": "3.4.3"
+        "react": ">=16.8.0",
+        "react-dom": ">=16.8.0",
+        "react-admin": "~3.10.3",
+        "react-helmet": "~5.2.1",
+        "react-scripts": "~4.0.1"
     },
     "devDependencies": {
-        "@testing-library/jest-dom": "5.11.4",
-        "@testing-library/react": "11.0.0",
-        "@testing-library/user-event": "12.1.6",
+        "@testing-library/jest-dom": "~5.11.6",
+        "@testing-library/react": "~11.2.2",
+        "@testing-library/user-event": "~12.1.6",
         "kcd-scripts": "6.3.0",
-        "serve": "11.3.2"
+        "serve": "~11.3.2"
     },
     "browserslist": {
         "production": [

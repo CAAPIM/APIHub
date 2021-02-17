@@ -9,6 +9,7 @@ import {
 } from 'react-admin';
 import { Link as RouterLink } from 'react-router-dom';
 import { makeStyles, Link, Typography } from '@material-ui/core';
+import get from 'lodash/get';
 import { AuthSchemeList, LoginToolbar } from '.';
 import { useAuthSchemes, usePasswordEncryption } from '..';
 
@@ -18,7 +19,11 @@ export const LoginForm = props => {
     const login = useLogin();
     const classes = useStyles(rest);
     const translate = useTranslate();
-    const [authSchemes, defaultAuthScheme] = useAuthSchemes();
+    const [
+        authSchemes,
+        defaultAuthScheme,
+        defaultEnhancedPasswordSecurity,
+    ] = useAuthSchemes();
     const [publicKey, encrypt] = usePasswordEncryption();
 
     const [isLoading, setIsLoading] = useState(null);
@@ -29,17 +34,21 @@ export const LoginForm = props => {
         setError(null);
         setIsLoading(true);
 
-        const params = { scheme: 'credentials', username, password };
-        if (authScheme) {
-            const enhancedPasswordSecurity =
-                authScheme.advancedConfigurations &&
-                authScheme.advancedConfigurations.enhancedPasswordSecurity ===
-                    'yes';
-            params.provider = authScheme.uuid;
-
-            if (enhancedPasswordSecurity && publicKey) {
-                params.password = await encrypt(password);
-            }
+        const params = {
+            scheme: 'credentials',
+            provider: get(authScheme, 'uuid', null),
+            username,
+            password,
+        };
+        const enhancedPasswordSecurity = authScheme
+            ? get(
+                  authScheme,
+                  'advancedConfigurations.enhancedPasswordSecurity'
+              ) === 'yes'
+            : defaultEnhancedPasswordSecurity;
+        if (enhancedPasswordSecurity && publicKey) {
+            params.password = await encrypt(password);
+            params.publicKey = publicKey;
         }
 
         try {

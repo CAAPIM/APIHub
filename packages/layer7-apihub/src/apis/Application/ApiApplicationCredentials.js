@@ -1,9 +1,10 @@
-import React from 'react';
-import { useTranslate, useGetOne } from 'react-admin';
+import React, { useState } from 'react';
+import { useTranslate, useDataProvider } from 'react-admin';
 import { makeStyles } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Typography from '@material-ui/core/Typography';
 
+import { useLayer7Notify } from '../../useLayer7Notify';
 /**
  * Component responsible for fetching and displaying an application's credentials
  * @param {String} id. The application identifier
@@ -11,22 +12,34 @@ import Typography from '@material-ui/core/Typography';
 export const ApiApplicationCredentials = ({ id }) => {
     const classes = useStyles();
     const translate = useTranslate();
+    const dataProvider = useDataProvider();
+    const notify = useLayer7Notify();
+    const [application, setApplication] = useState();
 
-    const { data, loaded, error } = useGetOne('applications', id);
+    const fetchApplication = async id => {
+        const { data } = await dataProvider.getOne(
+            'applications',
+            {
+                id: id,
+            },
+            {
+                onFailure: error => notify(error),
+            }
+        );
 
-    if (!loaded) {
+        return data;
+    };
+
+    React.useEffect(() => {
+        (async () => {
+            const data = await fetchApplication(id);
+            setApplication(data);
+        })();
+    }, [id]);
+
+    if (!application) {
         return <CircularProgress color="primary" />;
     }
-
-    if (!data || error) {
-        return (
-            <Typography variant="body2" color="error">
-                {translate('ra.page.error')}
-            </Typography>
-        );
-    }
-
-    const { apiKey, keySecret } = data;
 
     return (
         <div className={classes.root}>
@@ -34,13 +47,17 @@ export const ApiApplicationCredentials = ({ id }) => {
                 <span className={classes.label}>
                     {translate('resources.applications.fields.apiKey')}
                 </span>
-                {apiKey}
+                <span id={`api-key-${application.id}`}>
+                    {application.apiKey}
+                </span>
             </Typography>
             <Typography variant="body2" className={classes.secondaryKey}>
                 <span className={classes.label}>
                     {translate('resources.applications.fields.keySecret')}
                 </span>
-                {keySecret}
+                <span id={`shared-secret-${application.id}`}>
+                    {application.keySecret}
+                </span>
             </Typography>
         </div>
     );

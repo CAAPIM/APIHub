@@ -51,6 +51,9 @@ test: test-unit test-e2e ## Runs the tests. Usage BROWSER=[chrome|firefox] make 
 test-unit: ## Runs the unit tests. Usage make test-unit.
 	@yarn test
 
+test-unit-coverage: ## Runs the unit tests with coverage report. Usage make test-unit-coverage.
+	@yarn test:coverage
+
 test-e2e: copy-config-example build build-example ## Runs the end-to-end tests. Usage BROWSER=[chrome|firefox] make test-e2e.
 	@NODE_ENV=test cd cypress && yarn -s start
 

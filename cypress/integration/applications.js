@@ -2,7 +2,7 @@
 
 import { login } from '../support/login';
 
-describe.skip('Applications', () => {
+describe('Applications', () => {
     before(() => {
         cy.clearLocalStorageCache();
     });
@@ -55,30 +55,33 @@ describe.skip('Applications', () => {
         // Overview
 
         cy.findByLabelText('Overview').should('contain', 'No value');
+
+        cy.get('#description').should(
+            'contain',
+            'Self-enabling global workforce'
+        );
+
         cy.findByLabelText('API Key / Client ID').should(
             'contain',
             'b43b8e38-511a-4234-b533-4264a8fcaa26'
         );
+
         cy.findByLabelText('Shared Secret / Client Secret').should(
             'contain',
             'cf4f15ea-b8c5-453c-8072-9b5115db5eb9'
         );
 
-        cy.findByLabelText('Description').should(
-            'contain',
-            'Self-enabling global workforce'
-        );
-        cy.findByLabelText('OAuth Callback URL').should(
+        cy.findByLabelText('Callback/Redirect URL(s)').should(
             'contain',
             'https://example.com/oauthCallback'
         );
-        cy.findByLabelText('OAuth Scope').should('contain', 'OOB');
-        cy.findByLabelText('OAuth Type').should('contain', 'confidential');
 
-        cy.findByLabelText('Generate New Secret').should('exist');
+        cy.findByLabelText('Scope').should('contain', 'OOB');
+
+        cy.findByLabelText('Type').should('contain', 'confidential');
     });
 
-    it('should show generate secret ', () => {
+    it.skip('should show generate secret ', () => {
         login('orgPublisher', 'Password@1');
 
         cy.findAllByText('Applications')
@@ -89,7 +92,7 @@ describe.skip('Applications', () => {
 
         cy.findByTitle('CSS Human Intranet').click({ force: true });
 
-        // Overview
+        cy.findByText('Edit').click();
 
         cy.findByLabelText('Generate New Secret').should('exist');
     });
@@ -108,7 +111,8 @@ describe.skip('Applications', () => {
         // Details
         cy.findByLabelText('Generate New Secret').should('not.exist');
     });
-    it('should show Generate New Secret when Application status is APPLICATION_PENDING_APPROVAL for a portal admin', () => {
+
+    it.skip('should show Generate New Secret when Application status is APPLICATION_PENDING_APPROVAL for a portal admin', () => {
         login('portalAdmin', 'Password@1');
 
         cy.findAllByText('Applications')

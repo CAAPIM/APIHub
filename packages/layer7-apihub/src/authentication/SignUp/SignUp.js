@@ -118,7 +118,7 @@ export const useSignup = () => {
     return [signup, state];
 };
 
-const SignUpConfirmation = () => {
+export const SignUpConfirmation = () => {
     const translate = useTranslate();
     return (
         <>

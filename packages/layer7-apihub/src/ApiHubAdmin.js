@@ -129,7 +129,7 @@ export const ApiHubAdmin = ({
                     // The Wiki Page displays a list of documents in a non standard way.
                     <Route path="/wiki" component={documents.list} />,
                     <Route
-                        path="/reset-password"
+                        path="/reset-password*"
                         component={resetPasswordPage}
                         noLayout
                     />,

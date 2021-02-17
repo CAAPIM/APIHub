@@ -234,13 +234,14 @@ VI. The governing law and venue for any disputes or claims arising out of or rel
 export function getAuthSchemes(database) {
     return (schema, request) => {
         return {
+            isOktaProxied: false,
             respCode: 200,
             respMsg: 'Successfully fetched Authentication Schemes',
             publicKey:
                 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAj1h7QmwcUR8qW4GtcilTxMmrr/6LYyUuHeBFfeIenZ7aodWOnzDqTl9iAVEOmldcR9QZKq2uzwXyEeiCxnNFf9QK5IFbdF3J1QUteuEhdE1xMQJVn4rjksORpggGGm2HxcrBQFHbeJhmUeNIGEQ+t4Lt+vPzB/6QLwKXppQKK9cgd8cPckVmdQ73g3/LpRDm+VymGkFmTn26ModOJMk0IKJ/8SE5kAPPK8Tmikqj4/TdCxO/JEkgW+JjgigCzmupip+8EZjJT7aYEBYzq9XuQ+008p1/U3dVpR6ngwHYLMBCSufPaP6OuIVvA/VyP8iKqzD6vf1CJ0CBctzEY7bpDQIDAQAB',
             authSchemes: [
                 {
-                    advancedConfigurations: { enhancedPasswordSecurity: 'no' },
+                    authMethod: 'DEFAULT',
                     credsReqd: true,
                     defaultConfig: true,
                     description: '',

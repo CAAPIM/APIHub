@@ -2,7 +2,7 @@
 
 import { login } from '../support/login';
 
-describe.skip('Apis', () => {
+describe('Apis', () => {
     before(() => {
         cy.clearLocalStorageCache();
     });
@@ -242,5 +242,40 @@ describe.skip('Apis', () => {
         cy.findByText('en-US - Synergized transitional application').click();
         cy.contains('Quo sunt tempore id sequi nesciunt illo quod aut.');
         cy.findAllByLabelText('Edit').should('have.length', 0);
+    });
+
+    context('specs tab', () => {
+        it('autocomplete to find api key and shared secret', () => {
+            cy.loadData();
+
+            login('portalAdmin', 'Password@1');
+
+            cy.findAllByText('APIs')
+                .first()
+                .click();
+
+            cy.findByTitle('Display as list').click();
+
+            cy.findByText('Name').click({ force: true });
+
+            cy.findByText('HTTP Global Branding').click();
+
+            cy.findByText('Specs').click();
+
+            cy.findByLabelText('Search or Select Application')
+                .click()
+                .clear()
+                .type('AD');
+
+            cy.findByText('ADP Dynamic Integration').click();
+
+            /* cy.get('#api-key-ed3b7fce-df49-4c23-ac1a-8ff4cf1c6fe2').findByText(
+                '69a3c6c2-100b-4c01-9a38-87f7ce238fb4'
+            );
+
+            cy.get(
+                '#shared-secret-ed3b7fce-df49-4c23-ac1a-8ff4cf1c6fe2'
+            ).findByText('6eaf450f-4ab8-4666-9a78-6ccdaf5bbbb7'); */
+        });
     });
 });

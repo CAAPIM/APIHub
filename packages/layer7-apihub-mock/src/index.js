@@ -125,7 +125,7 @@ export const startApiHubMockedServer = async (
             );
 
             this.put(
-                `${urlPrefix}api/apim/v2/users/password/reset/:uuid`,
+                `${urlPrefix}admin/v2/users/password/reset/:uuid`,
                 updateMyPassword(database),
                 options
             );

@@ -41,7 +41,9 @@ describe('HomePageContent', () => {
             initialState
         );
 
-        await findByText('apihub.homepage.placeholder_empty_content');
+        await wait(() => {
+            findByText('apihub.homepage.placeholder_empty_content');
+        });
     });
 
     test('should not render the create button when the document does not exist and the user is not a portal admin', async () => {
@@ -70,7 +72,9 @@ describe('HomePageContent', () => {
             initialState
         );
 
-        await findByText('apihub.homepage.placeholder_empty_content');
+        await wait(() => {
+            findByText('apihub.homepage.placeholder_empty_content');
+        });
         expect(queryByText('ra.action.create')).toBeNull();
     });
 
@@ -106,13 +110,15 @@ describe('HomePageContent', () => {
             initialState
         );
 
-        await findByText('some markdown');
+        await wait(() => {
+            findByText('some markdown');
+        });
         expect(queryByText('ra.action.edit')).toBeNull();
     });
 
     test('should allow to create a new document when the document does not exist and the user is a portal admin', async () => {
         jest.setTimeout(10000);
-        let document = {};
+        let document = { id: CurrentUserId };
         const dataProvider = {
             getOne: jest.fn().mockImplementation(resource => {
                 if (resource === 'documents') {

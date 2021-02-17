@@ -108,7 +108,13 @@ export const TagsFieldScrollButton = props => {
         onClick(event);
     };
 
-    return <TabScrollButton onClick={handleClick} {...rest} />;
+    return (
+        <TabScrollButton
+            data-layer7-test="tags-scroll-button"
+            onClick={handleClick}
+            {...rest}
+        />
+    );
 };
 
 const useStyles = makeStyles(

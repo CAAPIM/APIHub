@@ -20,14 +20,23 @@ export const submitAccountData = async (
     originHubName,
     token,
     notify,
+    publicKey,
     data = {}
 ) => {
     const { confirm_password, terms, ...account } = data;
     const fetchJson = getFetchJson(originHubName);
+    const headers = new Headers({
+        'Content-Type': 'application/json; charset=UTF-8',
+        Accept: 'text/plain, */*; q=0.01',
+    });
+    if (publicKey) {
+        headers.set('Public-Key', publicKey);
+    }
     const { json } = await fetchJson(
         `${urlWithTenant}/accountSetup?token=${token}`,
         {
             method: 'put',
+            headers: headers,
             body: JSON.stringify({
                 token,
                 ...account,
@@ -95,6 +104,7 @@ export const useAccountData = (location = window.location.href) => {
             originHubName,
             token,
             notify,
+            publicKey,
             finalData
         )
             .then(() => {

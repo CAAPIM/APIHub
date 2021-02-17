@@ -7,6 +7,9 @@ const apiHubMessages = {
         page: {
             dashboard: 'Pagina iniziale',
         },
+        action: {
+            loading: 'Caricamento in corso',
+        },
         actions: {
             ...raMessages.actions,
             open_sidebar: 'Apri il menu',
@@ -266,7 +269,9 @@ const apiHubMessages = {
                 },
                 actions: {
                     select_application:
-                        "Seleziona un'applicazione per ottenere la chiave API",
+                        "Seleziona l'applicazione per utilizzare la sua chiave predefinita",
+                    search_or_select_application:
+                        'Cerca o seleziona applicazione',
                 },
             },
             documentation: {
