@@ -66,9 +66,11 @@ describe('Applications', () => {
 
         await wait(() => {
             const select = getByLabelText(
-                'resources.apis.specification.fields.select_application_label'
+                'resources.apis.specification.actions.search_or_select_application'
             );
             fireEvent.mouseDown(select);
+            // Enter search criteria
+            fireEvent.change(select, { target: { value: 'application' } });
         });
 
         await wait(() => {
@@ -127,9 +129,11 @@ describe('Applications', () => {
 
         await wait(() => {
             const select = getByLabelText(
-                'resources.apis.specification.fields.select_application_label'
+                'resources.apis.specification.actions.search_or_select_application'
             );
             fireEvent.mouseDown(select);
+            // Enter search criteria
+            fireEvent.change(select, { target: { value: 'application' } });
         });
 
         await wait(() => {

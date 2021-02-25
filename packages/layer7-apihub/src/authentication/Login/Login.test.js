@@ -50,7 +50,7 @@ describe('Login page', () => {
         // The following ensure we wait for the side effect to apply
         // before exiting the tests, avoiding unstable tests and react warnings
         await findByText('apihub.login.actions.sign_up');
-        await findByText('apihub.login.actions.sign_in_with');
+        await findByText('apihub.login.actions.sign_in');
     });
 
     test('should display a custom Footer if provided', async () => {
@@ -66,7 +66,7 @@ describe('Login page', () => {
         // The following ensure we wait for the side effect to apply
         // before exiting the tests, avoiding unstable tests and react warnings
         await findByText('apihub.login.actions.sign_up');
-        await findByText('apihub.login.actions.sign_in_with');
+        await findByText('apihub.login.actions.sign_in');
     });
 
     test('should display a custom Content if provided', async () => {
@@ -82,7 +82,7 @@ describe('Login page', () => {
         // The following ensure we wait for the side effect to apply
         // before exiting the tests, avoiding unstable tests and react warnings
         await findByText('apihub.login.actions.sign_up');
-        await findByText('apihub.login.actions.sign_in_with');
+        await findByText('apihub.login.actions.sign_in');
     });
 
     test('should display the credentials login form', async () => {
@@ -97,6 +97,6 @@ describe('Login page', () => {
         // The following ensure we wait for the side effect to apply
         // before exiting the tests, avoiding unstable tests and react warnings
         await findByText('apihub.login.actions.sign_up');
-        await findByText('apihub.login.actions.sign_in_with');
+        await findByText('apihub.login.actions.sign_in');
     });
 });

@@ -1,6 +1,6 @@
 // / <reference types="Cypress" />
 
-describe.skip('New Password', () => {
+describe('New Password', () => {
     it('should not load the new password form', () => {
         cy.loadData();
 

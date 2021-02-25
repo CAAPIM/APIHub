@@ -2,7 +2,7 @@ import React from 'react';
 import expect from 'expect';
 import { renderWithRedux } from 'react-admin';
 
-import { SignUpPage } from './SignUp';
+import { SignUpPage, SignUpConfirmation } from './SignUp';
 
 describe('SignUp page', () => {
     test('should display a custom Header if provided', () => {
@@ -47,5 +47,15 @@ describe('SignUp page', () => {
                 'resources.registrations.fields.organization_description'
             )
         ).not.toBeNull();
+    });
+});
+
+describe('SignUpConfirmation', () => {
+    it('displays a sign up confirmation message', () => {
+        const { getByText } = renderWithRedux(<SignUpConfirmation />);
+
+        expect(getByText('resources.registrations.notifications.confirmation_title')).not.toBeNull();
+        expect(getByText('resources.registrations.notifications.confirmation')).not.toBeNull();
+        expect(getByText('resources.registrations.actions.return_to_homepage')).not.toBeNull();
     });
 });

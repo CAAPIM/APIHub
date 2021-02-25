@@ -2,7 +2,7 @@
 
 import { login } from '../support/login';
 
-describe.skip('Wiki', () => {
+describe('Wiki', () => {
     before(() => {
         cy.clearLocalStorageCache();
     });

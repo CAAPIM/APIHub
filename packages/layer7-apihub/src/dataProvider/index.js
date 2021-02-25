@@ -26,6 +26,7 @@ export const dataProvider = (
         adminUrl: `${baseUrl}/admin`,
         apiUrl: `${baseUrl}/api/${tenantName}`,
         fetchJson,
+        originHubName,
     };
 
     const resourcesMap = {

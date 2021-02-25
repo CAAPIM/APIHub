@@ -75,11 +75,14 @@ export const ApplicationDetails = ({ record }) => {
                             classes={contentLabelClasses}
                             className={classes.mainField}
                         >
-                            <TextField
-                                id="description"
-                                record={record}
-                                source="description"
-                            />
+                            <Typography
+                                variant="body2"
+                                className={classes.fieldContent}
+                            >
+                                <span id="description">
+                                    {record.description}
+                                </span>
+                            </Typography>
                         </Labeled>
                     </Grid>
                     <Grid item>
@@ -261,10 +264,6 @@ const useContentStyles = makeStyles(theme => ({
     label: {
         fontWeight: theme.typography.fontWeightBold,
         fontSize: '1.4rem',
-    },
-    mainLabel: {
-        fontWeight: theme.typography.fontWeightBold,
-        fontSize: '1.7rem',
     },
 }));
 

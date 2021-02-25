@@ -1,88 +1,155 @@
 import React, { useState } from 'react';
-import { useTranslate, useGetList } from 'ra-core';
+import { useTranslate, useDataProvider } from 'ra-core';
 import { makeStyles } from '@material-ui/core/styles';
 import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel';
 import Grid from '@material-ui/core/Grid';
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
-import LinearProgress from '@material-ui/core/LinearProgress';
 import Typography from '@material-ui/core/Typography';
+import TextField from '@material-ui/core/TextField';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import uniqBy from 'lodash/uniqBy';
 
 import { ApiApplicationCredentials } from './ApiApplicationCredentials';
+import { useLayer7Notify } from '../../useLayer7Notify';
 
 export const ApiApplications = ({ id }) => {
     const translate = useTranslate();
     const classes = useStyles();
+    const dataProvider = useDataProvider();
+    const notify = useLayer7Notify();
+    const [selectedApp, setSelectedApp] = useState();
+    const [open, setOpen] = React.useState(false);
+    const [applications, setApplications] = useState([]);
+    const [search, setSearch] = React.useState(undefined);
+    const [loading, setLoading] = React.useState(false);
+    const [currentPage, setCurrentPage] = React.useState(1);
 
-    const { data, loaded, error } = useGetList(
-        'applications',
-        undefined,
-        { field: 'name', order: 'ASC' },
-        {
-            apiUuid: id,
-        }
-    );
+    const fetchApplications = async searchValue => {
+        const { data, total } = await dataProvider.getList(
+            'applications',
+            {
+                filter: {
+                    apiUuid: id,
+                    name: search,
+                },
+                pagination: { page: currentPage, perPage: 10 },
+                sort: { field: 'name', order: 'ASC' },
+            },
+            {
+                onFailure: error => notify(error),
+            }
+        );
 
-    const [selectedApi, setSelectedApi] = useState(null);
-
-    const handleChange = event => {
-        const selectedApiId = event.target.value;
-        if (!data) {
-            return;
-        }
-        setSelectedApi(data[selectedApiId]);
+        return [data, total];
     };
 
-    if (!loaded) {
-        return <LinearProgress />;
-    }
+    const onSearch = event => {
+        setCurrentPage(1);
+        setLoading(true);
+        setSearch(event.target.value);
+    };
 
-    if (!data || error) {
-        return (
-            <Typography variant="body2" color="error">
-                {translate('ra.page.error')}
-            </Typography>
-        );
-    }
+    React.useEffect(() => {
+        if (!open) {
+            setLoading(false);
+            setSearch(undefined);
+        }
+    }, [open]);
 
-    const applications = Object.keys(data).map(key => data[key]);
+    React.useEffect(() => {
+        let active = true;
 
-    if (applications.length === 0) {
-        return null;
-    }
+        if (!search || search.length < 2) {
+            return undefined;
+        }
+
+        (async () => {
+            const [data, total] = await fetchApplications(search);
+
+            if (active) {
+                if (data.length == total) {
+                    setApplications(data);
+                    setLoading(false);
+                } else if (applications.length < total) {
+                    setApplications(
+                      uniqBy([ ...applications, ...data ], 'id')
+                    );
+                    setCurrentPage(currentPage+1);
+                } else {
+                    setLoading(false);
+                }
+            }
+        })();
+
+        return () => {
+            active = false;
+        };
+    }, [search, currentPage]);
 
     return (
         <div className={classes.root}>
             <Grid container spacing={3}>
                 <Grid item xs={7}>
                     <Typography variant="h6" color="textSecondary" gutterBottom>
+                        {translate('resources.applications.name', {
+                            smart_count: 1,
+                        })}
+                    </Typography>
+                    <FormControl className={classes.formControl}>
+                        <Autocomplete
+                            style={{ width: 500 }}
+                            freeSolo
+                            open={open}
+                            onOpen={() => setOpen(true)}
+                            onClose={(event, reason) => setOpen(false)}
+                            onChange={(event, app, reason) => { 
+                                setSelectedApp(app)
+                                if (reason == 'clear') {
+                                    setApplications([])  
+                                }
+                            }}
+                            getOptionSelected={(option, value) =>
+                                option.name === value.name
+                            }
+                            getOptionLabel={option => option.name}
+                            options={applications}
+                            loading={loading}
+                            loadingText={translate('ra.action.loading')}
+                            renderInput={params => (
+                                <TextField
+                                    {...params}
+                                    variant="outlined"
+                                    onChange={onSearch}
+                                    label={translate(
+                                        'resources.apis.specification.actions.search_or_select_application'
+                                    )}
+                                    InputProps={{
+                                        ...params.InputProps,
+                                        endAdornment: (
+                                            <React.Fragment>
+                                                {loading ? (
+                                                    <CircularProgress
+                                                        color="inherit"
+                                                        size={20}
+                                                    />
+                                                ) : null}
+                                                {params.InputProps.endAdornment}
+                                            </React.Fragment>
+                                        ),
+                                    }}
+                                />
+                            )}
+                        />
+                    </FormControl>
+                    <Typography color="textSecondary">
                         {translate(
                             'resources.apis.specification.actions.select_application'
                         )}
                     </Typography>
-                    <FormControl className={classes.formControl}>
-                        <InputLabel id="select-application-label">
-                            {translate(
-                                'resources.apis.specification.fields.select_application_label'
-                            )}
-                        </InputLabel>
-                        <Select
-                            labelId="select-application-label"
-                            value={selectedApi ? selectedApi.id : ''}
-                            onChange={handleChange}
-                        >
-                            {applications.map(({ id, name }) => (
-                                <MenuItem key={id} value={id}>
-                                    {name}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
                 </Grid>
                 <Grid item xs={5}>
-                    {selectedApi && (
-                        <ApiApplicationCredentials id={selectedApi.id} />
+                    {selectedApp && (
+                        <ApiApplicationCredentials id={selectedApp.id} />
                     )}
                 </Grid>
             </Grid>

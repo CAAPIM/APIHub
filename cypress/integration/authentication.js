@@ -1,6 +1,6 @@
 import { login, logout } from '../support/login';
 
-describe.skip('Authentication', () => {
+describe('Authentication', () => {
     it('should login to the platform as an administrator', () => {
         cy.loadData();
 

@@ -632,7 +632,7 @@
             "apiKey": "f2055ef4-dd20-4a71-bd91-18042cc348c9",
             "keySecret": "3ae27eaf-c882-429f-8339-94a675088486",
             "apiIds": {
-                "results": ["beb8833e-1876-4b31-ace3-5d50aa0d9007"]
+                "results": ["beb8833e-1876-4b31-ace3-5d50aa0d9007", "8a334a2f-de19-472a-bb11-5a6e38e1c2ee"]
             },
             "_accessibleApis": ["beb8833e-1876-4b31-ace3-5d50aa0d9007"]
         },
@@ -649,7 +649,7 @@
             "apiKey": "b2dcdf94-d7cf-47e1-9b03-9efb862f0a9b",
             "keySecret": "b2e97991-9a8c-4160-a9e2-ea10be778f48",
             "apiIds": {
-                "results": ["32b97328-5800-4811-b53d-1ad107d36541"]
+                "results": ["32b97328-5800-4811-b53d-1ad107d36541", "8a334a2f-de19-472a-bb11-5a6e38e1c2ee"]
             },
             "_accessibleApis": ["32b97328-5800-4811-b53d-1ad107d36541"]
         },
@@ -668,7 +668,8 @@
             "apiIds": {
                 "results": [
                     "eb2b6dc3-b0de-4d30-8859-8783f55c0fca",
-                    "9a15c4fb-205b-470f-b696-94c60d548078"
+                    "9a15c4fb-205b-470f-b696-94c60d548078",
+                    "8a334a2f-de19-472a-bb11-5a6e38e1c2ee"
                 ]
             },
             "_accessibleApis": [
@@ -689,7 +690,7 @@
             "apiKey": "d4f0f2f8-d977-4092-bebe-95d3a14316e4",
             "keySecret": "3ec2fcd9-6323-4bfd-ada8-9360eb8b91db",
             "apiIds": {
-                "results": ["ab531ac8-ad8f-4716-a2ec-14896c9046f0"]
+                "results": ["ab531ac8-ad8f-4716-a2ec-14896c9046f0", "8a334a2f-de19-472a-bb11-5a6e38e1c2ee"]
             },
             "_accessibleApis": ["ab531ac8-ad8f-4716-a2ec-14896c9046f0"]
         },
@@ -708,7 +709,8 @@
             "apiIds": {
                 "results": [
                     "dd010ee0-4cb0-4388-9a95-4a216c0ea8c3",
-                    "df9c715b-cff5-4d7a-a8cf-eefe382040d0"
+                    "df9c715b-cff5-4d7a-a8cf-eefe382040d0",
+                    "8a334a2f-de19-472a-bb11-5a6e38e1c2ee"
                 ]
             },
             "_accessibleApis": [
@@ -734,7 +736,8 @@
                     "9c531b86-d5f0-46c7-bdd0-d52fc9e1dd9c",
                     "9e9b888a-8b2e-4a98-aab8-35843b1d3c73",
                     "04065447-bdf5-4553-8356-ee835150f216",
-                    "61bc2c17-19ba-4e01-873f-e3201706908e"
+                    "61bc2c17-19ba-4e01-873f-e3201706908e",
+                    "8a334a2f-de19-472a-bb11-5a6e38e1c2ee"
                 ]
             },
             "_accessibleApis": [
@@ -758,7 +761,7 @@
             "apiKey": "28675f6c-500f-4410-8bb6-1422887b47ce",
             "keySecret": "10caadb3-27d8-4bf7-a6c8-a5f1b938ebbc",
             "apiIds": {
-                "results": ["61bc2c17-19ba-4e01-873f-e3201706908e"]
+                "results": ["61bc2c17-19ba-4e01-873f-e3201706908e", "8a334a2f-de19-472a-bb11-5a6e38e1c2ee"]
             },
             "_accessibleApis": ["61bc2c17-19ba-4e01-873f-e3201706908e"]
         },
@@ -797,6 +800,7 @@
                     "3a89dabe-ec2e-492a-a17c-0c813eb7c3e0",
                     "9da830ef-0844-4cea-b1b5-85ca2d7ee8f8",
                     "646d867d-f0bc-4fa1-9aa1-cb3b81971f6b",
+                    "8a334a2f-de19-472a-bb11-5a6e38e1c2ee",
                     "df9c715b-cff5-4d7a-a8cf-eefe382040d0"
                 ]
             },
@@ -825,7 +829,8 @@
                     "3a89dabe-ec2e-492a-a17c-0c813eb7c3e0",
                     "9170b2d3-1d8d-4ad6-ac6e-f471a9297dae",
                     "9da830ef-0844-4cea-b1b5-85ca2d7ee8f8",
-                    "9a15c4fb-205b-470f-b696-94c60d548078"
+                    "9a15c4fb-205b-470f-b696-94c60d548078",
+                    "8a334a2f-de19-472a-bb11-5a6e38e1c2ee"
                 ]
             },
             "_accessibleApis": [
@@ -848,7 +853,7 @@
             "apiKey": "de71e6fb-ac12-4c84-b7e7-80d7cb391764",
             "keySecret": "c83eb6ee-324f-4600-9d28-f38887fa14df",
             "apiIds": {
-                "results": ["32b97328-5800-4811-b53d-1ad107d36541"]
+                "results": ["32b97328-5800-4811-b53d-1ad107d36541", "8a334a2f-de19-472a-bb11-5a6e38e1c2ee"]
             },
             "_accessibleApis": ["32b97328-5800-4811-b53d-1ad107d36541"]
         },
@@ -869,7 +874,8 @@
                     "9c531b86-d5f0-46c7-bdd0-d52fc9e1dd9c",
                     "646d867d-f0bc-4fa1-9aa1-cb3b81971f6b",
                     "0327bcaa-8e34-4617-8f8e-b3d17ce15213",
-                    "04065447-bdf5-4553-8356-ee835150f216"
+                    "04065447-bdf5-4553-8356-ee835150f216",
+                    "8a334a2f-de19-472a-bb11-5a6e38e1c2ee"
                 ]
             },
             "_accessibleApis": [
@@ -894,7 +900,8 @@
             "apiIds": {
                 "results": [
                     "9170b2d3-1d8d-4ad6-ac6e-f471a9297dae",
-                    "df9c715b-cff5-4d7a-a8cf-eefe382040d0"
+                    "df9c715b-cff5-4d7a-a8cf-eefe382040d0",
+                    "8a334a2f-de19-472a-bb11-5a6e38e1c2ee"
                 ]
             },
             "_accessibleApis": [
@@ -915,7 +922,7 @@
             "apiKey": "cee0fd1f-3ef2-41a6-bba3-a9c0f940942e",
             "keySecret": "7e438f32-8aa1-40c0-a91f-1108e87fda26",
             "apiIds": {
-                "results": ["df9c715b-cff5-4d7a-a8cf-eefe382040d0"]
+                "results": ["df9c715b-cff5-4d7a-a8cf-eefe382040d0", "8a334a2f-de19-472a-bb11-5a6e38e1c2ee"]
             },
             "_accessibleApis": ["df9c715b-cff5-4d7a-a8cf-eefe382040d0"]
         },
@@ -1124,7 +1131,7 @@
             "apiKey": "f485a1b0-4a18-4e6f-93b9-8bfb4d3adb87",
             "keySecret": "a1122bc6-6010-4ad6-b541-ba4f83da9542",
             "apiIds": {
-                "results": ["42381b8c-cb42-4033-b92f-978f8e1887da"]
+                "results": ["42381b8c-cb42-4033-b92f-978f8e1887da", "8a334a2f-de19-472a-bb11-5a6e38e1c2ee"]
             },
             "_accessibleApis": ["42381b8c-cb42-4033-b92f-978f8e1887da"]
         },
@@ -1143,7 +1150,8 @@
             "apiIds": {
                 "results": [
                     "ab531ac8-ad8f-4716-a2ec-14896c9046f0",
-                    "9e9b888a-8b2e-4a98-aab8-35843b1d3c73"
+                    "9e9b888a-8b2e-4a98-aab8-35843b1d3c73",
+                    "8a334a2f-de19-472a-bb11-5a6e38e1c2ee"
                 ]
             },
             "_accessibleApis": [
@@ -1168,7 +1176,8 @@
                     "eb2b6dc3-b0de-4d30-8859-8783f55c0fca",
                     "ab531ac8-ad8f-4716-a2ec-14896c9046f0",
                     "9170b2d3-1d8d-4ad6-ac6e-f471a9297dae",
-                    "9a15c4fb-205b-470f-b696-94c60d548078"
+                    "9a15c4fb-205b-470f-b696-94c60d548078",
+                    "8a334a2f-de19-472a-bb11-5a6e38e1c2ee"
                 ]
             },
             "_accessibleApis": [

@@ -1,6 +1,6 @@
 // / <reference types="Cypress" />
 
-describe.skip('Account Setup', () => {
+describe('Account Setup', () => {
     it('should not load the account setup form', () => {
         cy.loadData();
 

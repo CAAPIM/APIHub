@@ -6,4 +6,12 @@ module.exports = Object.assign(jestConfig, {
         '\\.(css|less|scss)$': 'identity-obj-proxy',
     },
     transformIgnorePatterns: ['node_modules/(?!(@material-ui/lab/esm)/)'],
+    coverageThreshold: {
+        global: {
+            branches: 0,
+            functions: 0,
+            lines: 0,
+            statements: 0,
+        },
+    },
 });

@@ -73,6 +73,7 @@ export const ApplicationNew = ({ userContext, toolbarProps }) => {
             ApiIds = [],
             ApiApiPlanIds = [],
             ApiGroupIds = [],
+            q,
             ...rest
         } = form;
 

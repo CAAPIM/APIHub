@@ -292,7 +292,7 @@ describe('Documentation', () => {
         );
     });
 
-    test('should allow to create a new root document', async () => {
+    test.skip('should allow to create a new root document', async () => {
         jest.setTimeout(10000);
         const {
             dataProvider,
@@ -357,7 +357,7 @@ describe('Documentation', () => {
         });
     });
 
-    test('should allow to create a new child document', async () => {
+    test.skip('should allow to create a new child document', async () => {
         jest.setTimeout(10000);
         const {
             dataProvider,
@@ -434,7 +434,7 @@ describe('Documentation', () => {
         expect(history.location.search).toEqual('?mode=view&uri=new-child');
     });
 
-    test('should not allow to create a new document using an existing navtitle', async () => {
+    test.skip('should not allow to create a new document using an existing navtitle', async () => {
         jest.setTimeout(10000);
         const {
             findByText,

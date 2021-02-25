@@ -13,6 +13,7 @@ const apiHubMessages = {
             edit: 'Editar',
             bulk_actions:
                 '1 artículo seleccionado |||| %{smart_count} elementos seleccionados',
+            loading: 'Cargando...',
         },
         actions: {
             ...raMessages.actions,
@@ -277,7 +278,9 @@ const apiHubMessages = {
                 },
                 actions: {
                     select_application:
-                        'Seleccione una aplicación para obtener la clave de la API.',
+                        'Seleccione la aplicación para usar su clave predeterminada',
+                    search_or_select_application:
+                        'Buscar o seleccionar aplicación',
                 },
             },
             documentation: {

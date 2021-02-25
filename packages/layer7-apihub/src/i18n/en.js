@@ -12,6 +12,7 @@ const apiHubMessages = {
             show: 'Show',
             edit: 'Edit',
             bulk_actions: '1 item selected |||| %{smart_count} items selected',
+            loading: 'Loading...',
         },
         actions: {
             ...raMessages.actions,
@@ -265,7 +266,10 @@ const apiHubMessages = {
                     select_application_label: 'Apps being used',
                 },
                 actions: {
-                    select_application: 'Select an app to get the API key',
+                    select_application:
+                        'Select application to use its default key.',
+                    search_or_select_application:
+                        'Search or Select Application',
                 },
             },
             documentation: {

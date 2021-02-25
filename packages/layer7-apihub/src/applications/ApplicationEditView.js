@@ -20,7 +20,6 @@ import {
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import { isPublisher, isOrgAdmin, isOrgBoundUser } from '../userContexts';
-import { useApiHub } from '../ApiHubContext';
 import { getFetchJson } from '../fetchUtils';
 import { ApplicationToolbar } from './ApplicationToolbar';
 import { ApiSelector } from './ApiSelector';
@@ -183,12 +182,7 @@ export const ApplicationEditView = ({
                         variant="filled"
                         fullWidth
                         helperText="resources.applications.validation.application_name_caption"
-                        validate={[
-                            required(),
-                            minLength(2),
-                            maxLength(50),
-                            //checkUnicity(url, originHubName),
-                        ]}
+                        validate={[required(), minLength(2), maxLength(50)]}
                     />
                     {record.status !== 'REJECTED' && (
                         <ToggleSwitchInput
@@ -321,30 +315,6 @@ export const ApplicationEditView = ({
             </Grid>
         </Grid>
     );
-};
-
-const checkUnicity = (url, applicationName) => async value => {
-    if (value.length < 3) {
-        return;
-    }
-    try {
-        await checkApplicationNameUnicity(url, applicationName, value);
-    } catch (error) {
-        return 'resources.applications.validation.error_application_name_not_unique';
-    }
-};
-
-const checkApplicationNameUnicity = async (
-    url,
-    originHubName,
-    applicationName
-) => {
-    const fetchJson = getFetchJson(originHubName);
-    const { json } = await fetchJson(
-        `${url}/admin/Portal.svc/ApplicationNameUnique()?Name='${applicationName}'`
-    );
-
-    return json;
 };
 
 const useStyles = makeStyles(

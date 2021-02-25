@@ -52,7 +52,11 @@ export const ApplicationApisList = ({ application }) => {
 
     React.useEffect(() => {
         async function fetchInitialSelectedItems() {
-            if (apiGroupIds.results?.length && !selectedApiGroups.length) {
+            if (
+                apiGroupIds &&
+                apiGroupIds.results?.length &&
+                !selectedApiGroups.length
+            ) {
                 const { data: apiGroups } = await dataProvider.getList(
                     'apiGroups',
                     {
@@ -84,14 +88,10 @@ export const ApplicationApisList = ({ application }) => {
                 setAppApis(listedApis);
             }
         }
-    }, [
-        apis,
-        allApis,
-        selectedApiGroups,
-    ]);
+    }, [apis, allApis, selectedApiGroups]);
 
     return (
-        <ExpansionPanel square defaultExpanded="true">
+        <ExpansionPanel square defaultExpanded>
             <ExpansionPanelSummary
                 expandIcon={<ExpandMoreIcon />}
                 aria-controls="apilistpanel-content"
@@ -106,7 +106,10 @@ export const ApplicationApisList = ({ application }) => {
                 <div className={classes.details}>
                     {appApis &&
                         appApis.map(row => (
-                            <div className={classes.additionalDetails}>
+                            <div
+                                className={classes.additionalDetails}
+                                key={row.id}
+                            >
                                 <div className={classes.title}>
                                     <Link
                                         component={RouterLink}

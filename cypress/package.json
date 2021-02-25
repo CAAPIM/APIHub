@@ -3,13 +3,14 @@
     "name": "e2e",
     "version": "0.1.0",
     "scripts": {
+        "clear": "LANGUAGE=en npx cypress cache clear",
         "start-gui": "LANGUAGE=en npx cypress open",
         "start": "LANGUAGE=en node ./start.js"
     },
     "devDependencies": {
         "@cypress/webpack-preprocessor": "5.4.1",
         "@testing-library/cypress": "7.0.1",
-        "cypress": "5.3.0",
+        "cypress": "5.6.0",
         "cypress-skip-and-only-ui": "1.2.6",
         "eslint-plugin-cypress": "2.11.1"
     }

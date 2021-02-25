@@ -130,12 +130,7 @@ export const ApplicationShow = props => {
             classes={classes}
             title={<ApplicationTitle />}
             id={id}
-            actions={
-                <AppShowActions
-                    userContext={userContext}
-                    className={classes.topToolbar}
-                />
-            }
+            actions={<AppShowActions userContext={userContext} />}
             {...rest}
         >
             <ApplicationDetails />
@@ -146,9 +141,6 @@ export const ApplicationShow = props => {
 const useStyles = makeStyles(
     theme => ({
         root: {},
-        topToolbar: {
-            paddingTop: '0px',
-        },
     }),
     {
         name: 'Layer7ApplicationShow',

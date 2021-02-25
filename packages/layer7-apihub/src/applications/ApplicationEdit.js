@@ -21,13 +21,7 @@ const useStyles = makeStyles(
     }
 );
 
-const AppEditActions = ({
-    basePath,
-    data,
-    resource,
-    userContext,
-    className,
-}) => {
+const AppEditActions = ({ basePath, data, resource, className }) => {
     return (
         <TopToolbar className={className}>
             <div>
@@ -51,12 +45,7 @@ export const ApplicationEdit = props => {
             className={rootClassName}
             classes={classes}
             title={<ApplicationTitle />}
-            actions={
-                <AppEditActions
-                    userContext={userContext}
-                    className={classes.topToolbar}
-                />
-            }
+            actions={<AppEditActions className={classes.topToolbar} />}
             {...props}
         >
             <ApplicationEditView userContext={userContext} />

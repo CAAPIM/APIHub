@@ -1,6 +1,6 @@
 import { stringify } from 'query-string';
 
-const adminBasePath = '/api-management/internal/OrganizationApiGroups';
+const apiGroupsBasePath = '/api-management/internal/OrganizationApiGroups';
 const eulaBasePath = '/api-management/internal/ApiGroups/';
 
 const SearchFields = ['name', 'description'];
@@ -10,7 +10,7 @@ export const apiGroupsDataProvider = context => {
             filter = {},
             pagination = { page: 1, perPage: 24 },
         }) => {
-            const url = `${context.adminUrl}${adminBasePath}?${stringify({
+            const url = `${context.apiUrl}${apiGroupsBasePath}?${stringify({
                 ...getFilter(filter),
                 page: pagination.page - 1,
                 size: pagination.perPage,

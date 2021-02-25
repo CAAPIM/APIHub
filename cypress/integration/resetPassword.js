@@ -1,6 +1,6 @@
 // / <reference types="Cypress" />
 
-describe.skip('Reset Password', () => {
+describe('Reset Password', () => {
     it('should fill the reset password form', () => {
         cy.loadData();
 

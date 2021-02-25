@@ -93,8 +93,8 @@ export const useSetNewPassword = () => {
     const [state, setState] = useState('verifying_token');
     const location = useLocation();
 
-    const { urlWithTenant, originHubName } = useApiHub();
-    const token = extractTokenFromUrl(location.pathname);
+    const { url, urlWithTenant, originHubName } = useApiHub();
+    const token = extractTokenFromUrl(window.location.hash);
     const [publicKey, encrypt] = usePasswordEncryption();
     const notify = useLayer7Notify();
 
@@ -116,10 +116,17 @@ export const useSetNewPassword = () => {
         if (publicKey) {
             finalPassword = await encrypt(password);
         }
-        return submitNewPassword(urlWithTenant, originHubName, notify, {
-            newPassword: finalPassword,
-            token,
-        }).then(isSuccessful =>
+        return submitNewPassword(
+            url,
+            urlWithTenant,
+            originHubName,
+            notify,
+            publicKey,
+            {
+                newPassword: finalPassword,
+                token,
+            }
+        ).then(isSuccessful =>
             setState(isSuccessful ? 'success' : 'request_new_password')
         );
     };
@@ -128,18 +135,29 @@ export const useSetNewPassword = () => {
 };
 
 const submitNewPassword = (
+    url,
     urlWithTenant,
     originHubName,
     notify,
+    publicKey,
     { newPassword, token }
 ) => {
     const fetchJson = getFetchJson(originHubName);
+    const headers = new Headers({
+        'Content-Type': 'application/json; charset=UTF-8',
+        Accept: 'text/plain, */*; q=0.01',
+    });
+    if (publicKey) {
+        headers.set('Public-Key', publicKey);
+    }
     return fetchJson(`${urlWithTenant}/v2/users/password/reset/${token}`, {
         method: 'put',
+        headers: headers,
         body: JSON.stringify({ newPassword, uuid: token }),
     })
         .then(() => true)
         .catch(error => {
+            console.log('error', error);
             notify(error, 'error');
         });
 };
