@@ -194,15 +194,6 @@ export const ApplicationDetails = ({ record }) => {
                         labelClasses={contentClasses}
                     />
                 </Grid>
-                {record.keySecret && (
-                    <Grid item>
-                        <ApplicationKeySecret
-                            id={record.id}
-                            record={record}
-                            labelClasses={contentClasses}
-                        />
-                    </Grid>
-                )}
                 <Grid item>
                     <ApplicationApisList apis={apiIds} />
                 </Grid>

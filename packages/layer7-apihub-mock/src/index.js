@@ -303,7 +303,7 @@ export const startApiHubMockedServer = async (
             );
 
             this.get(
-                `${urlPrefix}admin/api-management/internal/OrganizationApiGroups`,
+                `${urlPrefix}api/apim/api-management/internal/OrganizationApiGroups`,
                 listApiGroups(database),
                 options
             );
