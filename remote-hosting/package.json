@@ -1,0 +1,13 @@
+{
+  "name": "remote-hosting",
+  "version": "1.0.0",
+  "description": "Remote Hosting setup for API Hub",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "HOST=local.portal.ca.com node index.js"
+  },
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}

@@ -1,5 +1,6 @@
 import React from 'react';
-import { CRUD_DELETE, useDelete, useRefresh, useTranslate } from 'ra-core';
+import { useHistory } from 'react-router-dom';
+import { CRUD_DELETE, useDelete, useTranslate } from 'ra-core';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -12,6 +13,7 @@ import { isEditApplicationDisabled } from './isApplicationPending';
 import { useUserContext } from '../userContexts';
 import { useLayer7Notify } from '../useLayer7Notify';
 import { ConfirmDialog } from '../ui/ConfirmDialog';
+import { LoadingDialog } from '../ui/LoadingDialog';
 
 const useContentStyles = makeStyles(theme => ({
     label: {
@@ -31,8 +33,9 @@ const AppShowActions = ({
     const [deleteConfirm, setDeleteConfirm] = React.useState(false);
     const translate = useTranslate();
     const notify = useLayer7Notify();
-    const refresh = useRefresh();
     const contentLabelClasses = useContentStyles();
+    const history = useHistory();
+    const [deleting, setDeleting] = React.useState(false);
 
     React.useEffect(() => {
         if (data && !isEditApplicationDisabled(userContext, data)) {
@@ -65,9 +68,11 @@ const AppShowActions = ({
                     smart_count: 1,
                 }
             );
-            refresh();
+            setDeleting(false);
+            history.push('/applications');
         },
         onFailure: error => {
+            setDeleting(false);
             notify(
                 error || 'resources.applications.notifications.delete_error',
                 'error'
@@ -110,10 +115,18 @@ const AppShowActions = ({
                 )}
                 open={deleteConfirm}
                 onConfirm={() => {
-                    deleteApplication();
                     setDeleteConfirm(false);
+                    setDeleting(true);
+                    deleteApplication();
                 }}
                 onCancel={() => setDeleteConfirm(false)}
+            />
+            <LoadingDialog
+                title={translate(
+                    'resources.applications.actions.deleting_title'
+                )}
+                content={translate('resources.applications.deleting_content')}
+                open={deleting}
             />
         </TopToolbar>
     );

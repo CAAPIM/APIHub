@@ -36,7 +36,7 @@ export const AppBar = ({
         <HideOnScroll>
             <MuiAppBar
                 className={className}
-                color="#FFFFFF"
+                color="default"
                 elevation={2}
                 {...rest}
             >

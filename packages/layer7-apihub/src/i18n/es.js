@@ -302,6 +302,9 @@ const apiHubMessages = {
                 rate_limit: 'Límite de frecuencia',
                 quota: 'Cuota',
                 quota_interval: 'Intervalo de cuota',
+                second: 'segundo',
+                day: 'día',
+                month: 'mes',
             },
         },
         applications: {
@@ -359,6 +362,7 @@ const apiHubMessages = {
                 addApplication: 'Agregar aplicación',
                 createApplication: 'Crear aplicación',
                 deleteApplication: 'Suprimir aplicación',
+                deleting_title: 'Eliminando aplicación',
                 select_api: 'Seleccionar API',
                 addApi: 'Agregar API',
                 addApiGroup: 'Agregar grupo de API',
@@ -424,6 +428,8 @@ const apiHubMessages = {
             },
             confirm_delete:
                 'Está a punto de suprimir este aplicación. ¿Está seguro?',
+            deleting_content:
+                'Anulación de la implementación de claves y eliminación de la aplicación. Esto puede tomar varios minutos.',
         },
         documents: {
             name: 'Wiki |||| Wiki',

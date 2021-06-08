@@ -45,6 +45,7 @@ import {
     getSecretHashMetadata,
     deleteApplication,
 } from './handlers/applications';
+import { listApiKeys } from './handlers/apiKeys';
 import {
     listOrganizations,
     getOrganization,
@@ -205,6 +206,12 @@ export const startApiHubMockedServer = async (
             );
 
             this.get(
+                `${urlPrefix}api/apim/api-management/1.0/applications/:applicationUuid/api-keys`,
+                listApiKeys(database),
+                options
+            );
+
+            this.get(
                 `${urlPrefix}api/apim/api-management/1.0/account-plans`,
                 listAccountPlans(database),
                 options
@@ -327,7 +334,7 @@ export const startApiHubMockedServer = async (
             );
 
             this.get(
-                `${urlPrefix}api/apim/api-management/1.0/api-plans`,
+                `${urlPrefix}api/apim/api-management/internal/api-plans`,
                 listApiPlans(database),
                 options
             );
@@ -438,7 +445,7 @@ export const startApiHubMockedServer = async (
             this.get(
                 `${urlPrefix}api/apim/*path`,
                 async (schema, request) => {
-                    console.log('GET - Catch all', request.params.path);
+                    console.log('GET - Catch all', request.url);
                     const path = request.params.path;
 
                     if (path.match(/ApiEulas\('.*'\)/)) {
@@ -564,6 +571,7 @@ async function clearDatabase() {
         promisify(database.removeCollection.bind(database), 'apis'),
         promisify(database.removeCollection.bind(database), 'apiEulas'),
         promisify(database.removeCollection.bind(database), 'apiGroups'),
+        promisify(database.removeCollection.bind(database), 'apiKeys'),
         promisify(database.removeCollection.bind(database), 'apiPlans'),
         promisify(database.removeCollection.bind(database), 'applications'),
         promisify(database.removeCollection.bind(database), 'userContexts'),
@@ -582,6 +590,7 @@ async function initDatabase(db, initialData = defaultData) {
         promisify(db.addCollection.bind(db), 'apis'),
         promisify(db.addCollection.bind(db), 'apiEulas'),
         promisify(db.addCollection.bind(db), 'apiGroups'),
+        promisify(db.addCollection.bind(db), 'apiKeys'),
         promisify(db.addCollection.bind(db), 'apiPlans'),
         promisify(db.addCollection.bind(db), 'applications'),
         promisify(db.addCollection.bind(db), 'userContexts'),
@@ -610,6 +619,10 @@ async function initDatabase(db, initialData = defaultData) {
             promisify(
                 db.apiGroups.upsert.bind(db.apiGroups),
                 initialData.apiGroups
+            ),
+            promisify(
+                db.apiGroups.upsert.bind(db.apiKeys),
+                initialData.apiKeys
             ),
             promisify(
                 db.apiPlans.upsert.bind(db.apiPlans),

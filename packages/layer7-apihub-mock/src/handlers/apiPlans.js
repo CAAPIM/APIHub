@@ -7,12 +7,7 @@ export function listApiPlans(database) {
         const totalElements = (await promisify(database.apiPlans.find().fetch))
             .length;
 
-        const results = await promisify(database.apiPlans.find().fetch);
-
-        return {
-            results,
-            totalElements,
-        };
+        return await promisify(database.apiPlans.find().fetch);
     };
 }
 
@@ -78,7 +73,7 @@ export function getApiPlansFeatureFlag(database) {
         Uuid: faker.random.uuid(),
         CreatedBy: 'SYSTEM',
         ModifyTs: 0,
-        Value: false,
+        Value: true,
         Name: 'FEATURE_FLAG_API_PLANS',
     };
 }

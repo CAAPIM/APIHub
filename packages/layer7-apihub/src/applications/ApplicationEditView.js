@@ -295,6 +295,7 @@ export const ApplicationEditView = ({
                             data={record}
                             includeSecret={false}
                             labelClasses={labelClasses}
+                            isEditMode={true}
                         />
                     )}
                     {record.keySecret && (
