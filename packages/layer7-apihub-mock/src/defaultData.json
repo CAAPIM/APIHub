@@ -110,7 +110,7 @@
                 {
                     "uuid": "dd010ee0-4cb0-4388-9a95-4a216c0ea8c3",
                     "name": "SMTP Chief Accounts",
-                    "status": "DEPRECATED"
+                    "status": "ENABLED"
                 },
                 {
                     "uuid": "9170b2d3-1d8d-4ad6-ac6e-f471a9297dae",
@@ -354,7 +354,7 @@
             "modifyTs": 1592887894715,
             "version": "5.7.8",
             "ssgServiceType": "SOAP",
-            "portalStatus": "DEPRECATED",
+            "portalStatus": "ENABLED",
             "accessStatus": "PUBLIC",
             "apiEulaUuid": "c9406345-eb76-11e3-b0cd-000nosaj86a8",
             "applicationUsage": 1,
@@ -490,7 +490,7 @@
             "modifyTs": 1592897689575,
             "version": "3.1.4",
             "ssgServiceType": "REST",
-            "portalStatus": "DEPRECATED",
+            "portalStatus": "ENABLED",
             "accessStatus": "PUBLIC",
             "apiEulaUuid": "c9406345-eb76-11e3-b0cd-000nosaj86a8",
             "applicationUsage": 2,
@@ -541,7 +541,7 @@
             "modifyTs": 1592862643594,
             "version": "8.1.2",
             "ssgServiceType": "SOAP",
-            "portalStatus": "DISABLED",
+            "portalStatus": "ENABLED",
             "accessStatus": "PRIVATE",
             "apiEulaUuid": "c9406345-eb76-11e3-b0cd-000nosaj86a8",
             "applicationUsage": 6,
@@ -711,6 +711,13 @@
                     "dd010ee0-4cb0-4388-9a95-4a216c0ea8c3",
                     "df9c715b-cff5-4d7a-a8cf-eefe382040d0",
                     "8a334a2f-de19-472a-bb11-5a6e38e1c2ee"
+                ]
+            },
+            "apiApiPlanIds": {
+                "results": [
+                    { "ApiUuid": "dd010ee0-4cb0-4388-9a95-4a216c0ea8c3", "ApiPlanUuid": "791cc920-2147-4125-91ae-955206a043b5" },
+                    { "ApiUuid": "df9c715b-cff5-4d7a-a8cf-eefe382040d0", "ApiPlanUuid": "8910fe1f-34df-4451-b053-7101a314e8b3" },
+                    { "ApiUuid": "8a334a2f-de19-472a-bb11-5a6e38e1c2ee", "ApiPlanUuid": "d9d300dd-931e-4b74-82a4-85a44242f89b" }
                 ]
             },
             "_accessibleApis": [
@@ -1186,6 +1193,24 @@
                 "9170b2d3-1d8d-4ad6-ac6e-f471a9297dae",
                 "9a15c4fb-205b-470f-b696-94c60d548078"
             ]
+        }
+    ],
+    "apiKeys": [
+        {
+            "id": "a27767e6-2000-49c2-80ae-6bd6cb8e2873",
+            "apiKey": "l7286a421be91244e79a43faf333fbdd14",
+            "keySecret": "********",
+            "uuid": "a27767e6-2000-49c2-80ae-6bd6cb8e2873",
+            "name": "JSON Chief Directives",
+            "applicationUuid": "17694075-6d09-4df0-8307-90f41de2f35a",
+            "defaultKey": true,
+            "status": "ENABLED",
+            "keySecretHashed": false,
+            "oauthCallbackUrl": "https://example.com/oauthCallback",
+            "oauthScope": "OOB",
+            "oauthType": "public",
+            "createTs": 1576962923790,
+            "modifyTs": 1592874748358
         }
     ],
     "assets": [

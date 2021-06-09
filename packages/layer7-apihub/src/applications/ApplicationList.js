@@ -29,7 +29,6 @@ import {
 import { useUserContext } from '../userContexts';
 import { isAdminUser } from '../userContexts';
 import { ApplicationCard } from './ApplicationCard';
-import { ApplicationActions } from './ApplicationActions';
 import Inbox from '@material-ui/icons/Inbox';
 
 const defaultSort = { field: 'name', order: 'ASC' };
@@ -174,7 +173,6 @@ const ApplicationListDisplay = props => {
                     translationKey="resources.applications.status"
                     cellClassName={classes.status}
                 />
-                <ApplicationActions source="actions" sortable={false} list />
             </Datagrid>
         </Card>
     );

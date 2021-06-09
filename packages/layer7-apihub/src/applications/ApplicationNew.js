@@ -153,12 +153,7 @@ export const ApplicationNew = ({ userContext, toolbarProps }) => {
                         variant="filled"
                         fullWidth
                         helperText="resources.applications.validation.application_name_caption"
-                        validate={[
-                            required(),
-                            minLength(2),
-                            maxLength(50),
-                            //checkUnicity(url, originHubName),
-                        ]}
+                        validate={[required(), minLength(2), maxLength(50)]}
                     />
                     <Labeled
                         // On <Labeled />, this will translate in a correct `for` attribute on the label
@@ -254,30 +249,6 @@ export const ApplicationNew = ({ userContext, toolbarProps }) => {
             </Grid>
         </Grid>
     );
-};
-
-const checkUnicity = (url, applicationName) => async value => {
-    if (value.length < 3) {
-        return;
-    }
-    try {
-        await checkApplicationNameUnicity(url, applicationName, value);
-    } catch (error) {
-        return 'resources.applications.validation.error_application_name_not_unique';
-    }
-};
-
-const checkApplicationNameUnicity = async (
-    url,
-    originHubName,
-    applicationName
-) => {
-    const fetchJson = getFetchJson(originHubName);
-    const { json } = await fetchJson(
-        `${url}/admin/Portal.svc/ApplicationNameUnique()?Name='${applicationName}'`
-    );
-
-    return json;
 };
 
 const useStyles = makeStyles(

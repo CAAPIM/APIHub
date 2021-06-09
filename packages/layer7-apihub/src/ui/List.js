@@ -50,12 +50,12 @@ const Pagination = props => {
 
     useEffect(() => {
         if (perPagePreference !== perPage) {
-            setPerPage(perPagePreference);
+            setPerPagePreference(perPagePreference);
         }
-    }, [perPage, perPagePreference, setPerPage]);
+    }, [perPage, perPagePreference, setPerPage, setPerPagePreference]);
 
     const handleSetPerPage = newPerPage => {
-        setPerPagePreference(newPerPage);
+        setPerPage(newPerPage);
     };
 
     return (

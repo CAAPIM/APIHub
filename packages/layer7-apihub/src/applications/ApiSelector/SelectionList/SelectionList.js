@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { List, Typography } from '@material-ui/core';
+import { Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslate } from 'ra-core';
 
@@ -7,7 +7,7 @@ import { ApiSelectionListItem } from './ApiSelectionListItem';
 import { ApiGroupSelectionListItem } from './ApiGroupSelectionListItem';
 
 export function SelectionList(props) {
-    const { onItemRemoved, selectedItems } = props;
+    const { onItemRemoved, onApiPlanChanged, selectedItems, orgUuid } = props;
     const translate = useTranslate();
     const classes = useStyles(props);
 
@@ -24,23 +24,33 @@ export function SelectionList(props) {
                 <div className={classes.empty} />
             ) : (
                 <div>
-                    {selectedItems.map((item, index) => {
-                        return item.type === 'apis' ? (
-                            <ApiSelectionListItem
-                                className={classes.item}
-                                key={item.record.id}
-                                onRemoved={onItemRemoved}
-                                item={item}
-                            />
-                        ) : (
-                            <ApiGroupSelectionListItem
-                                className={classes.item}
-                                key={item.record.id}
-                                onRemoved={onItemRemoved}
-                                item={item}
-                            />
-                        );
-                    })}
+                    {selectedItems
+                        .sort((a, b) =>
+                            a.record.name > b.record.name
+                                ? 1
+                                : b.record.name > a.record.name
+                                ? -1
+                                : 0
+                        )
+                        .map((item, index) => {
+                            return item.type === 'apis' ? (
+                                <ApiSelectionListItem
+                                    className={classes.item}
+                                    key={item.record.id}
+                                    onRemoved={onItemRemoved}
+                                    onApiPlanChanged={onApiPlanChanged}
+                                    item={item}
+                                    orgUuid={orgUuid}
+                                />
+                            ) : (
+                                <ApiGroupSelectionListItem
+                                    className={classes.item}
+                                    key={item.record.id}
+                                    onRemoved={onItemRemoved}
+                                    item={item}
+                                />
+                            );
+                        })}
                 </div>
             )}
         </div>

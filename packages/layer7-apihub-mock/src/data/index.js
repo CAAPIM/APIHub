@@ -10,6 +10,7 @@ function generateData() {
     const apis = generateApis({ tags, apiEulas });
     const apiGroups = generateApiGroups({ apis });
     const applications = generateApplications({ apis });
+    const apiKeys = generateApiKeys({ applications });
     const documents = [
         ...generateDocumentationForApis({ apis }),
         ...generateDocumentationForWiki(),
@@ -319,6 +320,49 @@ function generateApplication({ apis, ...data }) {
     );
 }
 
+function generateApiKeys({ applications }) {
+    return Array.from(Array(25).keys()).map((el) =>
+        generateApiKey({ applicationUuid: applications[0].uuid, el })
+    );
+}
+
+function generateApiKey({ applicationUuid, el, ...data }) {
+    const uuid = faker.random.uuid();
+
+    const apiKey = faker.random.uuid();
+    const keySecret = faker.random.uuid();
+    const defaultKey = (el === 0);
+    const status = defaultKey ? 'ENABLED' : faker.random.arrayElement([
+        'ENABLED',
+        'ENABLED',
+        'ENABLED',
+        'ENABLED',
+        'DISABLED',
+        'DISABLED',
+    ]);
+
+    return merge(
+        {
+            id: uuid,
+            apiKey,
+            name: faker.fake(
+                '{{hacker.abbreviation}} {{name.jobDescriptor}} {{name.jobArea}}'
+            ),
+            keySecret,
+            applicationUuid,
+            defaultKey,
+            status,
+            keySecretHashed: false,
+            oauthCallbackUrl: 'https://example.com/oauthCallback',
+            oauthScope: 'OOB',
+            oauthType: faker.random.arrayElement(['public', 'confidential']),
+            createTs: Date.now(),
+            modifyTs: Date.now(),
+        },
+        data
+    );
+}
+
 function generateTags() {
     return [
         { uuid: faker.random.uuid(), name: 'Accounts' },
@@ -536,5 +580,6 @@ module.exports = {
     generateApis,
     generateApiGroups,
     generateApplications,
+    generateApiKeys,
     generateRegistrations,
 };

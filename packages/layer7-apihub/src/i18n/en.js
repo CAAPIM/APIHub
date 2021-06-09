@@ -291,6 +291,9 @@ const apiHubMessages = {
                 rate_limit: 'Rate Limit',
                 quota: 'Quota',
                 quota_interval: 'Quota Interval',
+                second: 'second',
+                day: 'day',
+                month: 'month',
             },
         },
         applications: {
@@ -314,7 +317,7 @@ const apiHubMessages = {
                 apiGroup: 'API Group',
                 organization: 'Organization',
                 applicationInformation: 'Application Information',
-                customField: 'Custom Field',
+                customField: 'Custom Fields',
                 noCustomFields: 'No available custom fields',
                 noApplications: 'No available applications',
                 apiManagement: 'API Management',
@@ -345,6 +348,7 @@ const apiHubMessages = {
                 addApplication: 'Add Application',
                 createApplication: 'Create Application',
                 deleteApplication: 'Delete Application',
+                deleting_title: 'Deleting Application',
                 select_api: 'Select API',
                 addApi: 'Add API',
                 addApiGroup: 'Add API Group',
@@ -406,6 +410,8 @@ const apiHubMessages = {
             },
             confirm_delete:
                 'You are about to delete this application. Are you sure?',
+            deleting_content:
+                'Undeploying keys and deleting application. This may take several minutes.',
         },
         documents: {
             name: 'Wiki |||| Wiki',

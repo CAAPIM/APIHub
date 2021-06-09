@@ -13,6 +13,7 @@ import {
 import { makeStyles } from '@material-ui/core/styles';
 import { useDataProvider, useQuery, useTranslate } from 'ra-core';
 import { useForm } from 'react-final-form';
+import get from 'lodash/get';
 
 import { ListArrayInput, ReferenceArrayInput } from '../../ui';
 import { SelectionList } from './SelectionList';
@@ -25,7 +26,7 @@ import { ApiGroupSelectionModal } from './ApiGroupSelectionModal';
 import { useLayer7Notify } from '../../useLayer7Notify';
 
 export function ApiSelector(props) {
-    const { record, application, resource = '', orgUuid, apis = [] } = props;
+    const { application, resource = '', orgUuid, apis = [] } = props;
     const translate = useTranslate();
     const [selectedTab, setSelectedTab] = React.useState('apis');
     const [selectedItems, setSelectedItems] = React.useState(apis);
@@ -42,7 +43,6 @@ export function ApiSelector(props) {
 
     const {
         data: apiPlanFeatureFlag,
-        error,
         loading: isLoadingApiPlansFeatureFlag,
     } = useQuery({
         type: 'getApiPlansFeatureFlag',
@@ -78,7 +78,6 @@ export function ApiSelector(props) {
     // to avoid dealing with many loaded/loading states and prevent some rerender issues
     React.useEffect(() => {
         async function fetchInitialSelectedItems() {
-            const initialSelectedItems = [];
             if (application.ApiIds && application.ApiIds.results.length > 0) {
                 const { data: selectedApis } = await dataProvider.getMany(
                     'apis',
@@ -89,7 +88,37 @@ export function ApiSelector(props) {
                         onFailure: error => notify(error),
                     }
                 );
-                setInitialSelectedApis(selectedApis);
+
+                let selectedApiPlans = [];
+                if (get(application, 'ApiApiPlanIds.results.length', 0)) {
+                    form.change(
+                        'ApiApiPlanIds',
+                        Array.from(application.ApiApiPlanIds.results)
+                    );
+
+                    const { data: apiPlans } = await dataProvider.getMany(
+                        'apiPlans',
+                        {
+                            ids: Array.from(
+                                new Set(
+                                    application.ApiApiPlanIds.results
+                                        .map(result => result.ApiPlanUuid)
+                                        .filter(uuid => uuid)
+                                )
+                            ),
+                        },
+                        {
+                            onFailure: error => notify(error),
+                        }
+                    );
+                    selectedApiPlans = apiPlans;
+                }
+
+                setInitialSelectedApis(
+                    selectedApis,
+                    selectedApiPlans,
+                    get(application, 'ApiApiPlanIds.results', [])
+                );
             }
             if (
                 application.ApiGroupIds &&
@@ -115,12 +144,6 @@ export function ApiSelector(props) {
                 );
                 setInitialSelectedApiGroups(selectedApiGroups);
             }
-            if (
-                application.ApiApiPlanIds &&
-                application.ApiApiPlanIds.results.length > 0
-            ) {
-                setInitialApiPlans(application.ApiApiPlanIds.results);
-            }
         }
 
         if (application) {
@@ -137,17 +160,30 @@ export function ApiSelector(props) {
         form.change('ApiGroupIds', undefined);
     }, [form, orgUuid]);
 
-    const setInitialSelectedApis = records => {
-        const selectedApis = records.map(item => item.id);
-
-        form.change('ApiIds', Array.from(selectedApis));
+    const setInitialSelectedApis = (records, apiPlans, results) => {
+        const apiIds = records.map(item => item.id);
+        form.change('ApiIds', Array.from(apiIds));
 
         setSelectedItems(previousSelectedItems => {
             const newSelectedItems = new Set(previousSelectedItems);
             records.forEach(record => {
                 newSelectedItems.add({
                     type: 'apis',
-                    record: record,
+                    record: {
+                        ...record,
+                        apiPlan: apiPlans.find(
+                            apiPlan =>
+                                apiPlan.id ===
+                                get(
+                                    results.find(
+                                        result =>
+                                            result.ApiUuid === record.id &&
+                                            result.ApiPlanUuid === apiPlan.id
+                                    ),
+                                    'ApiPlanUuid'
+                                )
+                        ),
+                    },
                 });
             });
 
@@ -171,10 +207,6 @@ export function ApiSelector(props) {
 
             return Array.from(newSelectedItems);
         });
-    };
-
-    const setInitialApiPlans = records => {
-        form.change('ApiApiPlanIds', Array.from(records));
     };
 
     const handleTabChange = (event, newSelectedTab) =>
@@ -222,6 +254,31 @@ export function ApiSelector(props) {
 
         // Close the modal
         setSelectedApi(undefined);
+    };
+
+    const handleApiPlanChanged = (event, api) => {
+        const selectedApiPlanIds = (
+            form.getState().values.ApiApiPlanIds || []
+        ).map(apiPlanId => {
+            const newApiPlanId = { ...apiPlanId };
+            if (newApiPlanId.ApiUuid === api.id) {
+                newApiPlanId.ApiPlanUuid = api.apiPlan.uuid;
+            }
+            return newApiPlanId;
+        });
+        form.change('ApiApiPlanIds', selectedApiPlanIds);
+
+        setSelectedItems(previousSelectedItems => {
+            const newSelectedItems = previousSelectedItems.map(item => {
+                const newRecord = { ...item.record };
+                if (newRecord.id === api.id) {
+                    newRecord.apiPlan = api.apiPlan;
+                }
+                return { type: 'apis', record: newRecord };
+            });
+
+            return newSelectedItems;
+        });
     };
 
     const handleApiCancelled = event => {
@@ -275,11 +332,19 @@ export function ApiSelector(props) {
         // We can't use form.getFieldState here because the tab containing
         // the input for the field may not be active and getFieldState returns
         // undefined in this case.
-        const currentValue = form.getState().values[field] || [];
+        const selectedItemIds = form.getState().values[field] || [];
         form.change(
             field,
-            currentValue.filter(id => id !== itemToRemove.record.id)
+            selectedItemIds.filter(id => id !== itemToRemove.record.id)
         );
+
+        if (apiPlansEnabled) {
+            const selectedApiPlanIds = form.getState().values['ApiApiPlanIds'] || [];
+            form.change(
+                'ApiApiPlanIds',
+                selectedApiPlanIds.filter(object => object.ApiUuid !== itemToRemove.record.id)
+            );
+        }
     };
 
     if (isLoadingApiPlansFeatureFlag) {
@@ -336,6 +401,8 @@ export function ApiSelector(props) {
                     <SelectionList
                         selectedItems={selectedItems}
                         onItemRemoved={handleItemRemoved}
+                        onApiPlanChanged={handleApiPlanChanged}
+                        orgUuid={orgUuid}
                     />
                 </Grid>
                 <Grid item xs={7}>

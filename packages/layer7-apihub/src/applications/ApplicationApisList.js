@@ -93,6 +93,7 @@ export const ApplicationApisList = ({ application }) => {
     return (
         <ExpansionPanel square defaultExpanded>
             <ExpansionPanelSummary
+                className={classes.expansionPanelSummary}
                 expandIcon={<ExpandMoreIcon />}
                 aria-controls="apilistpanel-content"
                 id="apilistpanel-header"
@@ -195,13 +196,20 @@ const useStyles = makeStyles(
         container: {
             maxHeight: '100%',
         },
+        expansionPanelSummary: {
+            '& > div': {
+                margin: `${theme.spacing(1)}px 0 !important`,
+            },
+        },
         heading: {
-            fontSize: theme.typography.pxToRem(15),
+            color: theme.palette.primary.textHub || '#333333',
+            fontFamily: theme.typography.textHub,
             fontWeight: theme.typography.fontWeightBold,
+            fontSize: '21px',
+            lineHeight: '22px',
+            margin: theme.spacing(1, 0, 1, 0),
+            transform: 'unset',
             textTransform: 'titlecase',
-            color: theme.palette.grey[600],
-            marginLeft: theme.spacing(1),
-            marginRight: theme.spacing(1),
         },
         title: {
             width: '100%',

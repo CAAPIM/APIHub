@@ -91,12 +91,12 @@ export const useAccountData = (location = window.location.href) => {
         }
     }, [urlWithTenant, token, state, accountData, originHubName]);
 
-    const handleSubmitAccountData = data => {
+    const handleSubmitAccountData = async data => {
         let finalData = data;
         if (publicKey) {
             finalData = {
                 ...data,
-                password: encrypt(data.password),
+                password: await encrypt(data.password),
             };
         }
         return submitAccountData(

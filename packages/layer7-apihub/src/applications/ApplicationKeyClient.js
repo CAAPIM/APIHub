@@ -6,11 +6,12 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
 import IconFileCopy from '@material-ui/icons/FileCopy';
+import Chip from '@material-ui/core/Chip';
 
 import { useCopyToClipboard } from '../ui';
 
 export const ApplicationKeyClient = props => {
-    const { labelClasses, record, data, includeSecret } = props;
+    const { labelClasses, record, data, includeSecret, isEditMode } = props;
     const classes = useStyles(props);
     const translate = useTranslate();
     const copyToClipboard = useCopyToClipboard({
@@ -26,7 +27,23 @@ export const ApplicationKeyClient = props => {
                 <Labeled
                     // On <Labeled />, this will translate in a correct `for` attribute on the label
                     id="apiKeyClientID"
-                    label="resources.applications.fields.apiKeyClientID"
+                    label={
+                        <span>
+                            <span>
+                                {translate(
+                                    'resources.applications.fields.apiKeyClientID'
+                                )}
+                            </span>
+                            {isEditMode ? (
+                                <Chip
+                                    className={classes.chip}
+                                    label={translate(
+                                        'resources.applications.fields.default'
+                                    )}
+                                />
+                            ) : null}
+                        </span>
+                    }
                     classes={labelClasses}
                     className={classes.field}
                 >
@@ -96,6 +113,9 @@ const useStyles = makeStyles(
             marginRight: theme.spacing(1),
             marginBottom: theme.spacing(1),
             minWidth: '100px',
+        },
+        chip: {
+            marginLeft: theme.spacing(1),
         },
         fieldContent: {},
         buttonCopy: {},
