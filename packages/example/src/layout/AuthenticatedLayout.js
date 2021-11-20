@@ -2,14 +2,14 @@ import React from 'react';
 import { ThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 
 import { useTheme } from '../theme';
-import { ThemedAuthenticationLayout } from './ThemedAuthenticationLayout';
+import { ThemedLayout } from './ThemedLayout';
 
-export const AuthenticationLayout = props => {
+export const AuthenticatedLayout = props => {
     const { theme } = useTheme();
 
     return (
         <ThemeProvider theme={createMuiTheme(theme)}>
-            <ThemedAuthenticationLayout {...props} />
+            <ThemedLayout {...props} />
         </ThemeProvider>
     );
 };
