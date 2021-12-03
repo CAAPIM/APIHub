@@ -2,19 +2,18 @@ import React from 'react';
 import { HomePageContent } from 'layer7-apihub';
 import { makeStyles } from '@material-ui/core';
 
-import { AuthenticatedLayout } from './AuthenticatedLayout';
 import { Footer } from '../ui';
 
 export const HomePage = () => {
     const classes = useStyles();
 
     return (
-        <AuthenticatedLayout>
+        <>
             <div className={classes.root}>
                 <HomePageContent className={classes.markdown} />
             </div>
             <Footer />
-        </AuthenticatedLayout>
+        </>
     );
 };
 

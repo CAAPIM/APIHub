@@ -4,6 +4,7 @@ import { Helmet } from 'react-helmet';
 import get from 'lodash/get';
 
 import { AppBar } from './AppBar';
+import { useTheme } from '../theme';
 
 export const Layout = props => {
     const {
@@ -18,10 +19,8 @@ export const Layout = props => {
     const URL = APIHUB_URL || guessApihubUrl();
     const API_URL_WITH_TENANT = `${URL}/api/${TENANT}`;
 
-    const { favicon, theme } = useBranding(
-        API_URL_WITH_TENANT,
-        ORIGIN_HUB_NAME
-    );
+    const { favicon } = useBranding(API_URL_WITH_TENANT, ORIGIN_HUB_NAME);
+    const { theme } = useTheme();
 
     return (
         <>
