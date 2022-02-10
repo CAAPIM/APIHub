@@ -44,7 +44,8 @@ const apiHubMessages = {
                 forgot_password: 'Forgot password?',
             },
             notifications: {
-                invalid_credentials: 'Invalid credentials',
+                invalid_credentials:
+                    'Invalid credentials. Please try again or use the forgot password link below',
                 selected_scheme: 'Signing in with',
             },
         },
@@ -369,6 +370,7 @@ const apiHubMessages = {
                 enabled: 'Enabled',
                 disabled: 'Disabled',
                 deprecated: 'Deprecated',
+                incomplete: 'Incomplete',
                 unpublished: 'Unpublished',
                 rejected: 'Rejected',
                 application_pending_approval: 'Pending Approval',
@@ -541,6 +543,46 @@ const apiHubMessages = {
                     update_success: 'Your organization updated successfully',
                     update_error: 'The organization update has failed',
                 },
+            },
+        },
+        userProfiles: {
+            passwordDialogTitle: 'Enter Current Password',
+            fields: {
+                userName: 'Username',
+                lastName: 'Last Name',
+                firstName: 'First Name',
+                email: 'Email',
+                password: 'Password',
+                currentPassword: 'Current Password',
+                newPassword: 'New Password',
+                confirmNewPassword: 'Confirm New Password',
+            },
+            actions: {
+                edit_profile: 'My Profile',
+                cancel: 'Cancel',
+                submit: 'Submit',
+            },
+            notifications: {
+                update_success: 'Profile updated',
+            },
+            validation: {
+                error_password_empty: "Password can't be blank",
+                error_password_match: 'The passwords do not match',
+                error_password_not_matching_criteria:
+                    'Password must meet the specified password requirements.',
+                tooltip_current_password:
+                    'Password required to make changes. Please enter your current password.',
+                tooltip_password_title: 'Password requirements:',
+                tooltip_password_min: '-Minimum %{num} characters',
+                tooltip_password_max: '-Maximum %{num} characters',
+                tooltip_password_lower:
+                    '-At least %{num} lowercase character(s)',
+                tooltip_password_upper:
+                    '-At least %{num} uppercase character(s)',
+                tooltip_password_number: '-At least %{num} number(s)',
+                tooltip_password_special:
+                    '-At least %{num} special character(s): %{symbols}',
+                tooltip_password_confirm: 'Repeat your password',
             },
         },
     },

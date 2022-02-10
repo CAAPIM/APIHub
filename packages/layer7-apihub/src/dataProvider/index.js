@@ -15,6 +15,7 @@ import { registrationsDataProvider } from './registrations';
 import { specsDataProvider } from './specs';
 import { tagsDataProvider } from './tags';
 import { userContextsDataProvider } from './userContexts';
+import { userProfilesDataProvider } from './userProfiles';
 
 export const dataProvider = (
     baseUrl,
@@ -46,6 +47,7 @@ export const dataProvider = (
         specs: specsDataProvider(context),
         tags: tagsDataProvider(context),
         userContexts: userContextsDataProvider(context),
+        userProfiles: userProfilesDataProvider(context),
     };
 
     const proxy = new Proxy(fakeDataProvider, {

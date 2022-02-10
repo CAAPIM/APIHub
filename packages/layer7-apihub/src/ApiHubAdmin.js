@@ -22,7 +22,7 @@ import { HomePageContent } from './homepage';
 import { apis } from './apis';
 import { applications } from './applications';
 import { documents } from './documentation';
-import { userContexts } from './userContexts';
+import { userProfiles } from './userProfiles';
 import { ApiHubLayout } from './ApiHubLayout';
 
 import { readApiHubPreference } from './preferences';
@@ -86,6 +86,7 @@ export const ApiHubAdmin = ({
         <Resource key="organizations" name="organizations" />,
         <Resource key="specs" name="specs" />,
         <Resource key="tags" name="tags" />,
+        <Resource key="userContexts" name="userContexts" />,
     ];
 
     // If the user provided their own resources, they should override the defaults.
@@ -100,9 +101,9 @@ export const ApiHubAdmin = ({
                 {...applications}
             />,
             <Resource
-                key="userContexts"
-                name="userContexts"
-                {...userContexts}
+                key="userProfiles"
+                name="userProfiles"
+                {...userProfiles}
             />
         );
     }

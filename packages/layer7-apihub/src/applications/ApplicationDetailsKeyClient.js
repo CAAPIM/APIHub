@@ -76,7 +76,9 @@ export const ApplicationDetailsKeyClient = props => {
                                 statusColorClass
                             )}
                         >
-                            {statusLabel}
+                            {translate(
+                                `resources.applications.status.${statusLabel.toLowerCase()}`
+                            )}
                         </span>
                         {data.defaultKey && (
                             <Chip

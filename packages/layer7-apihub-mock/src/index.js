@@ -16,7 +16,9 @@ import {
     putUserContexts,
     getCmsSettings,
     getAuthSchemes,
+    getPasswordPolicy,
 } from './handlers/authentication';
+import { getUserProfile, putUserProfile } from './handlers/userProfile';
 import { getTheme } from './handlers/branding';
 import {
     listApis,
@@ -170,6 +172,12 @@ export const startApiHubMockedServer = async (
             );
 
             this.get(
+                `${urlPrefix}api/apim/public/auth/schemes/passwordpolicy`,
+                getPasswordPolicy(database),
+                options
+            );
+
+            this.get(
                 `${urlPrefix}api/apim/userContexts`,
                 getUserContexts(database),
                 options
@@ -178,6 +186,18 @@ export const startApiHubMockedServer = async (
             this.put(
                 `${urlPrefix}api/apim/userContexts`,
                 putUserContexts(database),
+                options
+            );
+
+            this.get(
+                `${urlPrefix}api/apim/userProfile`,
+                getUserProfile(database),
+                options
+            );
+
+            this.put(
+                `${urlPrefix}api/apim/userProfile`,
+                putUserProfile(database),
                 options
             );
 
@@ -346,7 +366,7 @@ export const startApiHubMockedServer = async (
             );
 
             this.get(
-                `${urlPrefix}admin/api-management/internal/api-plans`,
+                `${urlPrefix}api/apim/api-management/internal/api-plans`,
                 getApiApiPlanAssociation(database),
                 options
             );

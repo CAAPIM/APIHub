@@ -23,6 +23,7 @@ import {
     ListDisplayButton,
     ListDisplayProvider,
     LIST_DISPLAY_CARDS,
+    LIST_DISPLAY_DATAGRID,
     MarkdownField,
     SortButton,
     SortMenuItem,
@@ -38,7 +39,7 @@ import { readApiHubPreference } from '../preferences';
 export const ApiList = props => {
     const initialListDisplay = readApiHubPreference(
         listDisplayPreferenceName,
-        LIST_DISPLAY_CARDS
+        LIST_DISPLAY_DATAGRID
     );
 
     return (
@@ -103,6 +104,10 @@ const ApiFilter = props => {
                     {
                         id: 'New',
                         name: 'resources.apis.portalStatus.unpublished',
+                    },
+                    {
+                        id: 'Incomplete',
+                        name: 'resources.apis.portalStatus.incomplete',
                     },
                 ]}
             />

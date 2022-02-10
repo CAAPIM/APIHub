@@ -7,7 +7,7 @@ import {
     useLogin,
     useTranslate,
 } from 'react-admin';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useLocation } from 'react-router-dom';
 import { makeStyles, Link, Typography } from '@material-ui/core';
 import get from 'lodash/get';
 import { AuthSchemeList, LoginToolbar } from '.';
@@ -19,11 +19,12 @@ export const LoginForm = props => {
     const login = useLogin();
     const classes = useStyles(rest);
     const translate = useTranslate();
+    const location = useLocation();
     const [
         authSchemes,
         defaultAuthScheme,
         defaultEnhancedPasswordSecurity,
-    ] = useAuthSchemes();
+    ] = useAuthSchemes(location);
     const [publicKey, encrypt] = usePasswordEncryption();
 
     const [isLoading, setIsLoading] = useState(null);

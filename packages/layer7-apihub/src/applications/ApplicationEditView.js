@@ -63,7 +63,7 @@ export const ApplicationEditView = ({
         organizationName: record.organizationName,
         oAuthCallbackUrl: record.OauthCallbackUrl || '',
         oAuthScope: record.OauthScope || '',
-        oAuthType: record.OauthType?.toLowerCase() || 'none',
+        oAuthType: record.OauthType?.toLowerCase() || 'public',
         sharedSecret: null,
         selected: record.ApiIds?.results,
         customFields: record.CustomFieldValues?.results || [],
@@ -120,7 +120,7 @@ export const ApplicationEditView = ({
             OrganizationName: organizationName,
             OauthCallbackUrl: oAuthCallbackUrl,
             OauthScope: oAuthScope,
-            OauthType: oAuthType === 'none' ? null : oAuthType,
+            OauthType: oAuthType,
             Uuid: id,
             ApiIds: { results: ApiIds },
             ApiApiPlanIds: { results: ApiApiPlanIds },
@@ -269,12 +269,6 @@ export const ApplicationEditView = ({
                         className={classes.input}
                         required
                         choices={[
-                            {
-                                id: 'none',
-                                name: translate(
-                                    'resources.applications.fields.none'
-                                ),
-                            },
                             {
                                 id: 'public',
                                 name: translate(
