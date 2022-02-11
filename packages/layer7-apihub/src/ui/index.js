@@ -6,6 +6,7 @@ export * from './Create';
 export * from './CustomFieldInput';
 export * from './Datagrid';
 export * from './Edit';
+export * from './FormDialog';
 export * from './HtmlTooltip';
 export * from './LinkField';
 export * from './List';

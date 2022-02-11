@@ -3,7 +3,11 @@ import get from 'lodash/get';
 import { useApiHub } from '../ApiHubContext';
 import { getFetchJson } from '../fetchUtils';
 
-export const getAuthSchemes = async (urlWithTenant, originHubName) => {
+export const getAuthSchemes = async (
+    urlWithTenant,
+    originHubName,
+    location
+) => {
     const fetchJson = getFetchJson(originHubName);
     const timestamp = Date.now();
     const { json } = await fetchJson(
@@ -17,15 +21,31 @@ export const getAuthSchemes = async (urlWithTenant, originHubName) => {
     const defaultLoginScheme = json.authSchemes.find(
         scheme => scheme.defaultConfig
     );
-    if (defaultLoginScheme && (defaultLoginScheme.authMethod === 'SAML')) {
+    if (defaultLoginScheme && defaultLoginScheme.authMethod === 'SAML') {
         isSamlDefaultConfig = true;
     }
+
+    let host = window.location.href;
+    if (location && location.state) {
+        host =
+            host.replace(window.location.hash, '') +
+            '#' +
+            location.state.nextPathname;
+    }
+
+    var encoded_query_param = encodeURIComponent(host);
+    schemesList.forEach((authScheme, i) => {
+        if (authScheme.authMethod === 'SAML') {
+            authScheme.url = authScheme.url + '?fromUrl=' + encoded_query_param;
+        } else if (authScheme.authMethod === 'SAML_DEPRECATED') {
+            authScheme.url = authScheme.url + '?fromUrl=' + encoded_query_param;
+        }
+    });
 
     if (json.isOktaProxied) {
         schemesList = schemesList.filter(
             scheme => scheme.authMethod !== 'SAML'
         );
-        const host = window.location.href;
         const a = document.createElement('a');
         a.href = urlWithTenant;
         const baseUrl = a.protocol + '//' + a.hostname;
@@ -41,7 +61,7 @@ export const getAuthSchemes = async (urlWithTenant, originHubName) => {
             authMethod: 'SAML',
             links: [],
         };
-        var encoded_query_param = encodeURIComponent(host);
+
         okta_saml.url = `${baseUrl}/admin/login?fromApiHub=true&fromUrl=${encoded_query_param}`;
         schemesList.push(okta_saml);
     }
@@ -56,7 +76,7 @@ export const getAuthSchemes = async (urlWithTenant, originHubName) => {
     return [schemesList, enhancedPasswordSecurity === 'yes'];
 };
 
-export const useAuthSchemes = () => {
+export const useAuthSchemes = location => {
     const { urlWithTenant, originHubName } = useApiHub();
     const [authSchemes, setAuthSchemes] = useState([]);
     const [enhancedPasswordSecurity, setEnhancedPasswordSecurity] = useState(
@@ -64,11 +84,11 @@ export const useAuthSchemes = () => {
     );
 
     useEffect(() => {
-        getAuthSchemes(urlWithTenant, originHubName).then(resp => {
+        getAuthSchemes(urlWithTenant, originHubName, location).then(resp => {
             setAuthSchemes(resp[0]);
             setEnhancedPasswordSecurity(resp[1]);
         });
-    }, [originHubName, urlWithTenant]);
+    }, [location, originHubName, urlWithTenant]);
 
     const defaultScheme = authSchemes.find(scheme => scheme.defaultConfig);
 

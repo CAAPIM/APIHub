@@ -1,6 +1,7 @@
 const { jest: jestConfig } = require('kcd-scripts/config');
 
 module.exports = Object.assign(jestConfig, {
+    testTimeout: 10000,
     testMatch: ['/**/*.test.(js|jsx|ts|tsx)'],
     moduleNameMapper: {
         '\\.(css|less|scss)$': 'identity-obj-proxy',

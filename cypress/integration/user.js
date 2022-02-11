@@ -21,9 +21,123 @@ describe('User', () => {
         cy.saveLocalStorageCache();
     });
 
-    // User Profile
+    // User Profile update for admin
 
     it('should display and edit the user profile', () => {
+        cy.loadData();
+
+        login('portalAdmin', 'Password@1');
+
+        openUserProfile();
+
+        // Open the user profile show view
+
+        checkUserProfileDetails({
+            username: 'portalAdmin',
+            lastName: 'Mertz',
+            firstName: 'Porter',
+            email: 'Porter.Mertz52@example.com',
+        });
+
+        // Open the user profile edit view
+
+        cy.findByText('Edit').click();
+
+        checkUserProfileEditDetails({
+            username: 'portalAdmin',
+            lastName: 'Mertz',
+            firstName: 'Porter',
+            email: 'Porter.Mertz52@example.com',
+        });
+
+        // Last Name
+
+        cy.findByLabelText('Last Name *')
+            .clear()
+            .type('Hertz');
+
+        // First Name
+
+        cy.findByLabelText('First Name *')
+            .clear()
+            .type('Borter');
+
+        cy.findByText('Save').click();
+
+        // Discard notification
+        cy.findByText('My Profile').click();
+        cy.wait(250);
+
+        // Open the user profile show view
+        checkUserProfileDetails({
+            username: 'portalAdmin',
+            lastName: 'Hertz',
+            firstName: 'Borter',
+            email: 'Porter.Mertz52@example.com',
+        });
+    });
+
+    // User profile update for non-admin
+
+    it('Non-admin users cannot update email field', () => {
+        cy.loadData();
+
+        login('orgPublisher', 'Password@1');
+
+        openUserProfile();
+
+        // Open the user profile show view
+
+        checkUserProfileDetails({
+            username: 'orgPublisher',
+            lastName: 'Kulas',
+            firstName: 'Darby',
+            email: 'Darby.Kulas@example.com',
+        });
+
+        // Open the user profile edit view
+
+        cy.findByText('Edit').click();
+
+        checkUserProfileEditDetails({
+            username: 'orgPublisher',
+            lastName: 'Kulas',
+            firstName: 'Darby',
+            email: 'Darby.Kulas@example.com',
+        });
+
+        // Last Name
+
+        cy.findByLabelText('Last Name *')
+            .clear()
+            .type('Mertz');
+
+        // First Name
+
+        cy.findByLabelText('First Name *')
+            .clear()
+            .type('Porter');
+
+        // email field should be in disabled state
+        cy.findByLabelText('Email *').should('be.disabled');
+
+        cy.findByText('Save').click();
+
+        // Discard notification
+        cy.findByText('My Profile').click();
+        cy.wait(250);
+
+        // Open the user profile show view
+        checkUserProfileDetails({
+            username: 'orgPublisher',
+            lastName: 'Mertz',
+            firstName: 'Porter',
+            email: 'Darby.Kulas@example.com',
+        });
+    });
+
+    // Updating email-id requires password
+    it('should prompt for password on email update', () => {
         cy.loadData();
 
         login('portalAdmin', 'Password@1');
@@ -70,6 +184,12 @@ describe('User', () => {
 
         cy.findByText('Save').click();
 
+        cy.findByLabelText('Enter Current Password')
+            .clear()
+            .type('Password@1');
+
+        cy.findByText('Submit').click();
+
         // Discard notification
         cy.findByText('My Profile').click();
         cy.wait(250);
@@ -80,6 +200,78 @@ describe('User', () => {
             lastName: 'Hertz',
             firstName: 'Borter',
             email: 'Borter.Hertz52@example.com',
+        });
+    });
+
+    // Setting new password should prompt for existing password
+    // admin user
+    it('admin: should prompt for existing password if user is changing password', () => {
+        cy.loadData();
+
+        login('portalAdmin', 'Password@1');
+
+        openUserProfile();
+
+        // Open the user profile show view
+
+        checkUserProfileDetails({
+            username: 'portalAdmin',
+            lastName: 'Mertz',
+            firstName: 'Porter',
+            email: 'Porter.Mertz52@example.com',
+        });
+
+        // Open the user profile edit view
+
+        cy.findByText('Edit').click();
+
+        checkUserProfileEditDetails({
+            username: 'portalAdmin',
+            lastName: 'Mertz',
+            firstName: 'Porter',
+            email: 'Porter.Mertz52@example.com',
+        });
+
+        // Last Name
+
+        cy.findByLabelText('Last Name *')
+            .clear()
+            .type('Hertz');
+
+        // First Name
+
+        cy.findByLabelText('First Name *')
+            .clear()
+            .type('Borter');
+
+        cy.findByText('Update password').click();
+
+        cy.get('[data-testid="new-password"] input')
+            .clear()
+            .type('Password@1');
+
+        cy.get('[data-testid="confirm-new-password"] input')
+            .clear()
+            .type('Password@1');
+
+        cy.findByText('Save').click();
+
+        cy.findByLabelText('Enter Current Password')
+            .clear()
+            .type('Password@1');
+
+        cy.findByText('Submit').click();
+
+        // Discard notification
+        cy.findByText('My Profile').click();
+        cy.wait(250);
+
+        // Open the user profile show view
+        checkUserProfileDetails({
+            username: 'portalAdmin',
+            lastName: 'Hertz',
+            firstName: 'Borter',
+            email: 'Porter.Mertz52@example.com',
         });
     });
 

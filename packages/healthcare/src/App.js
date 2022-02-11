@@ -1,5 +1,5 @@
 import React from 'react';
-import { ApiHubAdmin, userContexts } from 'layer7-apihub';
+import { ApiHubAdmin, userProfiles } from 'layer7-apihub';
 import { Resource } from 'react-admin';
 import { Helmet } from 'react-helmet';
 import { Route } from 'react-router-dom';
@@ -46,7 +46,7 @@ const App = () => {
             >
                 <Resource name="apis" {...apis} />
                 <Resource name="applications" {...applications} />
-                <Resource name="userContexts" {...userContexts} />
+                <Resource name="userProfiles" {...userProfiles} />
             </ApiHubAdmin>
         </>
     );

@@ -32,3 +32,5 @@ packages/healthcare/public/config.js
 
 # cypress
 cypress/screenshots
+/.idea/
+/apihub.iml

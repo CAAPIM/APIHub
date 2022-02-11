@@ -38,7 +38,8 @@ const apiHubMessages = {
                 forgot_password: 'Password dimenticata?',
             },
             notifications: {
-                invalid_credentials: 'Credenziali non valide',
+                invalid_credentials:
+                    'Credenziali non valide. Riprova o usa il link di seguito per la password dimenticata',
                 selected_scheme: 'Accesso con',
             },
         },

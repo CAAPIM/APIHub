@@ -68,8 +68,12 @@ export const ApiHubUserMenu = props => {
 
     const userName = userContext
         ? translate('apihub.menu.user_details.full_name', {
-              last_name: userContext?.userDetails?.lastName,
-              first_name: userContext?.userDetails?.firstName,
+              last_name: userContext?.userDetails?.lastName
+                  ? userContext.userDetails.lastName
+                  : '',
+              first_name: userContext?.userDetails?.firstName
+                  ? userContext.userDetails.firstName
+                  : '',
           })
         : '';
 
@@ -115,14 +119,14 @@ export const ApiHubUserMenu = props => {
             >
                 <MenuItem
                     component={Link}
-                    to={`/userContexts/${CurrentUserId}/show`}
+                    to={`/userProfiles/${CurrentUserId}/show`}
                     onClick={handleClose}
                     className={classes.menuItem}
                 >
                     <ListItemIcon className={classes.icon}>
                         <AccountCircle />
                     </ListItemIcon>
-                    {translate('resources.userContexts.actions.edit_profile')}
+                    {translate('resources.userProfiles.actions.edit_profile')}
                 </MenuItem>
                 <Divider className={classes.divider} />
                 <UserOrganizationSwitcher

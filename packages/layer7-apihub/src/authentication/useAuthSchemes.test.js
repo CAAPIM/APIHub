@@ -10,7 +10,13 @@ describe('useAuthSchemes', () => {
         afterEach(() => {
             windowSpy.mockRestore();
         });
+
         test('should only return all non-default auth schemes when isOktaProxied is false', async () => {
+            windowSpy.mockImplementation(() => ({
+                location: {
+                    href: 'https://apim.dev.ca.com/admin',
+                },
+            }));
             global.fetch = jest.fn().mockResolvedValue({
                 text: () =>
                     Promise.resolve(
@@ -33,6 +39,7 @@ describe('useAuthSchemes', () => {
                                     description: 'description two',
                                     name: 'name two',
                                     uuid: 'uuid two',
+                                    url: '',
                                 },
                                 {
                                     authMethod: 'SOME_AUTH',
@@ -56,6 +63,7 @@ describe('useAuthSchemes', () => {
                         description: 'description two',
                         name: 'name two',
                         uuid: 'uuid two',
+                        url: '?fromUrl=https%3A%2F%2Fapim.dev.ca.com%2Fadmin',
                     },
                     {
                         authMethod: 'SOME_AUTH',

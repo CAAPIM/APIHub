@@ -45,7 +45,8 @@ const apiHubMessages = {
                 forgot_password: '¿Ha olvidado la contraseña?',
             },
             notifications: {
-                invalid_credentials: 'Credenciales no válidas',
+                invalid_credentials:
+                    'Credenciales no válidas. Vuelva a intentarlo o utilice el enlace de contraseña olvidada a continuación',
                 selected_scheme: 'Iniciando sesión con',
             },
         },

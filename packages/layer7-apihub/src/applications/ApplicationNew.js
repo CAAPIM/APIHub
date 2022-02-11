@@ -49,7 +49,7 @@ export const ApplicationNew = ({ userContext, toolbarProps }) => {
         organizationName: activeOrg?.name || '',
         oAuthCallbackUrl: '',
         oAuthScope: '',
-        oAuthType: 'none',
+        oAuthType: 'public',
         sharedSecret: null,
     };
     useEffect(() => {
@@ -92,7 +92,7 @@ export const ApplicationNew = ({ userContext, toolbarProps }) => {
             OrganizationUuid: selectedOrganization,
             OauthCallbackUrl: oAuthCallbackUrl,
             OauthScope: oAuthScope,
-            OauthType: oAuthType === 'none' ? null : oAuthType,
+            OauthType: oAuthType,
             Uuid: '{{GENERATED_GUID}}',
             ApiIds: { results: ApiIds },
             ApiApiPlanIds: { results: ApiApiPlanIds },
@@ -218,12 +218,6 @@ export const ApplicationNew = ({ userContext, toolbarProps }) => {
                         label="resources.applications.fields.type"
                         className={classes.input}
                         choices={[
-                            {
-                                id: 'none',
-                                name: translate(
-                                    'resources.applications.fields.none'
-                                ),
-                            },
                             {
                                 id: 'public',
                                 name: translate(

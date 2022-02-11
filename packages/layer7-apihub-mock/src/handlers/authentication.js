@@ -380,3 +380,62 @@ export function putUserContexts(database) {
         };
     };
 }
+
+export function getPasswordPolicy() {
+    return (schema, request) => {
+        return {
+            respCode: 200,
+            respMsg: 'Successfully fetched Password Policies',
+            authScheme: {
+                links: [],
+                passwordPolicies: {
+                    regexConfig: {
+                        UPPERCASE: {
+                            value: 1,
+                            enabled: true,
+                        },
+                        NUMBER: {
+                            value: 1,
+                            enabled: true,
+                        },
+                        MAXIMUM_LENGTH: {
+                            value: 60,
+                            enabled: true,
+                        },
+                        MINIMUM_LENGTH: {
+                            value: 8,
+                            enabled: true,
+                        },
+                        REGEX: {
+                            value:
+                                '^(?=(.*[A-Z]){1})(?=(.*[a-z]){1})(?=(.*[0-9]){1})(?=(.*[!@#$%^&*-]){1})[ A-Za-z0-9!@#$%^&*-]{8,60}$',
+                            enabled: true,
+                        },
+                        SUPPORTED_SYMBOLS: {
+                            value: '!@#$%^&*-',
+                            enabled: true,
+                        },
+                        SYMBOL: {
+                            value: 1,
+                            enabled: true,
+                        },
+                        LOWERCASE: {
+                            value: 1,
+                            enabled: true,
+                        },
+                    },
+                    passwordConfig: {
+                        PASSWORD_HISTORY: {
+                            value: 5,
+                            enabled: false,
+                        },
+                        PASSWORD_EXPIRY: {
+                            value: 60,
+                            enabled: false,
+                        },
+                    },
+                },
+            },
+        };
+    };
+}

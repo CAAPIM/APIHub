@@ -56,7 +56,9 @@ describe('ApplicationDetailsKeyClient', () => {
         expect(
             getByText('resources.applications.fields.default')
         ).not.toBeNull();
-        expect(getByText('Enabled')).not.toBeNull();
+        expect(
+            getByText('resources.applications.status.enabled')
+        ).not.toBeNull();
         expect(
             getAllByLabelText('resources.applications.fields.scope')
         ).not.toBeNull();

@@ -86,18 +86,15 @@ export const useTheme = () => {
     const URL = APIHUB_URL || guessApihubUrl();
     const API_URL_WITH_TENANT = `${URL}/api/${TENANT}`;
 
-    const { logo, brandingTheme } = useBranding(
-        API_URL_WITH_TENANT,
-        ORIGIN_HUB_NAME
-    );
+    const { logo, theme } = useBranding(API_URL_WITH_TENANT, ORIGIN_HUB_NAME);
     const themeMode = useSelector(state => state.theme);
 
-    const theme = useMemo(() => {
+    const selectedTheme = useMemo(() => {
         if (USE_BRANDING_THEME) {
-            return brandingTheme;
+            return theme;
         }
         return themeMode === 'light' ? lightTheme : darkTheme;
-    }, [USE_BRANDING_THEME, brandingTheme, themeMode]);
+    }, [USE_BRANDING_THEME, theme, themeMode]);
 
-    return { theme, logo };
+    return { theme: selectedTheme, logo };
 };

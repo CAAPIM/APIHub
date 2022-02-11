@@ -46,7 +46,7 @@ const apiHubMessages = {
             },
             notifications: {
                 invalid_credentials:
-                    "Informations d'identification non valides",
+                    "Informations d'identification non valides. Veuillez réessayer ou utiliser le lien mot de passe oublié ci-dessous",
                 selected_scheme: 'Connexion avec',
             },
         },
