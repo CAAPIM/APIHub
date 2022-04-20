@@ -101,7 +101,7 @@ export const ApplicationEditView = ({
                 Uuid: '{{GENERATED_UUID}}',
                 EntityUuid: '{{GENERATED_UUID}}',
                 CustomFieldUuid: item,
-                Value: rest[item],
+                Value: rest[item] ? rest[item] : '',
             };
         });
 
