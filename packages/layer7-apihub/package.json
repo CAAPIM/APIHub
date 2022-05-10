@@ -28,7 +28,7 @@
         "react-dnd": "~10.0.2",
         "react-dnd-html5-backend": "~10.0.2",
         "react-markdown-editor-lite": "~1.0.2",
-        "remark-parse": "~9.0.0",
+        "remark-parse": "7.0.2",
         "remark-react": "~7.0.1",
         "remove-markdown": "~0.3.0",
         "slugify": "~1.4.4",
