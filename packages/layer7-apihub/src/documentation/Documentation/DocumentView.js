@@ -74,6 +74,31 @@ const useStyles = makeStyles(
     theme => ({
         markdown: {
             padding: theme.spacing(2),
+            '& table': {
+                fontSize: '14px',
+                lineHeight: '1.7',
+                maxWidth: '100%',
+                overflow: 'auto',
+                border: '1px solid #f6f6f6',
+                borderCollapse: 'collapse',
+                borderSpacing: 0,
+                boxSizing: 'border-box',
+            },
+            '& table th': {
+                textAlign: 'center',
+                fontWeight: 700,
+                border: '1px solid #efefef',
+                padding: '10px 6px',
+                backgroundColor: '#f5f7fa',
+                wordBreak: 'break-word',
+            },
+            '& table td': {
+                border: '1px solid #efefef',
+                textAlign: 'left',
+                padding: '10px 15px',
+                wordBreak: 'break-word',
+                minWidth: '60px',
+            },
         },
     }),
     {
