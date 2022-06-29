@@ -10,6 +10,7 @@ import Typography from '@material-ui/core/Typography';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import { makeStyles } from '@material-ui/core/styles';
 import { Close } from '@material-ui/icons';
+import isEmpty from 'lodash/isEmpty';
 
 import { useAuthenticationConfiguration } from '../useAuthenticationConfiguration';
 
@@ -92,11 +93,15 @@ const DialogTitle = ({ children, onClose, ...rest }) => {
 const TermsField = ({ content }) => {
     return (
         <>
-            {content.split('\n').map((section, index) => (
-                <Typography key={index} variant="body2" paragraph>
-                    {section}
-                </Typography>
-            ))}
+            {content.split('\\n').map((section, index) =>
+                isEmpty(section) ? (
+                    <br />
+                ) : (
+                    <Typography key={index} variant="body2" paragraph>
+                        {section}
+                    </Typography>
+                )
+            )}
         </>
     );
 };
