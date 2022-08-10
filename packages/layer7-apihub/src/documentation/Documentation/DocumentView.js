@@ -74,6 +74,9 @@ const useStyles = makeStyles(
     theme => ({
         markdown: {
             padding: theme.spacing(2),
+            '& code': {
+                whiteSpace: 'pre-wrap',
+            },
             '& table': {
                 fontSize: '14px',
                 lineHeight: '1.7',
