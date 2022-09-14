@@ -59,6 +59,9 @@ const useStyles = makeStyles(
                 width: '100%',
                 height: '40vh',
             },
+            '& code': {
+                whiteSpace: 'pre-wrap',
+            },
         },
     },
     {
