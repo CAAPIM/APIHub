@@ -2,7 +2,7 @@
 
 describe('New Password', () => {
     it('should not load the new password form', () => {
-        cy.loadData();
+        // cy.loadData();
 
         cy.visit('#/new-password/#token/GildasAndAdrien');
 
@@ -18,7 +18,7 @@ describe('New Password', () => {
     });
 
     it('should fill the new password form', () => {
-        cy.loadData();
+        // cy.loadData();
 
         cy.visit('#/new-password/#token/Mithrandir');
 
@@ -58,7 +58,7 @@ describe('New Password', () => {
     });
 
     it('should return an error if the password is the same than before', () => {
-        cy.loadData();
+        // cy.loadData();
 
         cy.visit('#/new-password/#token/Saruman'); // Mocks will trigger an error for this token
 

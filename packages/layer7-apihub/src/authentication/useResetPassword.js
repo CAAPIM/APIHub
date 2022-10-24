@@ -9,10 +9,16 @@ export const fetchResetPassword = async (
     username
 ) => {
     const fetchJson = getFetchJson(originHubName);
+    const headers = new Headers({
+        'Content-Type': 'application/json; charset=UTF-8',
+        Accept: 'text/plain, */*; q=0.01',
+    });
 
-    const { json } = await fetchJson(
-        `${urlWithTenant}/ResetMyPassword()?Username='${username}'`
-    );
+    const { json } = await fetchJson(`${urlWithTenant}/reset-my-password`, {
+        method: 'put',
+        headers: headers,
+        body: JSON.stringify({ userName: username }),
+    });
 
     return await json;
 };

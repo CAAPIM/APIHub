@@ -376,6 +376,7 @@ const apiHubMessages = {
                 rejected: 'Rifiutato',
                 application_pending_approval: 'In attesa di approvazione',
                 edit_application_pending_approval: 'In attesa di approvazione',
+                delete_application_pending_approval: 'In attesa di approvazione',
             },
             list: {
                 sort: {

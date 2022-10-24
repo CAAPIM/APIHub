@@ -1,10 +1,10 @@
 import React from 'react';
 import { useHistory } from 'react-router-dom';
-import { CRUD_DELETE, useDelete, useTranslate } from 'ra-core';
+import { useTranslate } from 'ra-core';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import DeleteIcon from '@material-ui/icons/Delete';
-
+import { useDataProvider, useTranslate } from 'ra-core';
 import { EditButton, TopToolbar } from 'react-admin';
 import { Show } from '../ui';
 import { ApplicationDetails } from './ApplicationDetails';
@@ -35,6 +35,7 @@ const AppShowActions = ({
     const notify = useLayer7Notify();
     const contentLabelClasses = useContentStyles();
     const history = useHistory();
+    const dataProvider = useDataProvider();
     const [deleting, setDeleting] = React.useState(false);
 
     React.useEffect(() => {
@@ -48,7 +49,9 @@ const AppShowActions = ({
     React.useEffect(() => {
         if (data && userContext) {
             if (
+                data.status !== 'APPLICATION_PENDING_APPROVAL' &&
                 data.status !== 'EDIT_APPLICATION_PENDING_APPROVAL' &&
+                data.status !== 'DELETE_APPLICATION_PENDING_APPROVAL' &&
                 !userContext.userDetails.developer
             ) {
                 setCanDelete(true);
@@ -57,29 +60,44 @@ const AppShowActions = ({
             }
         }
     }, [canDelete, data, userContext]);
-
-    const [deleteApplication] = useDelete('applications', data?.id, data, {
-        action: CRUD_DELETE,
-        onSuccess: () => {
-            notify(
-                'resources.applications.notifications.delete_success',
-                'info',
-                {
-                    smart_count: 1,
+    const notifyAndNavigate = () => {
+        setDeleting(false);
+        notify('resources.applications.notifications.delete_success', 'info');
+        history.push('/applications');
+    };
+    const deleteApplication = () => {
+        dataProvider.delete(
+            'applications',
+            {
+                id: data.id,
+            },
+            {
+                onFailure: error => {
+                  setDeleting(false);
+                  notify(error || 'resources.applications.notifications.delete_error',
+                    'error');
+                },
+                onSuccess: delData => {
+                    dataProvider.getOne(
+                        'applications',
+                        {
+                            id: data.id,
+                        },
+                        {
+                            onFailure: error => notifyAndNavigate(error),
+                            onSuccess: getData => {
+                                setDeleting(false);
+                                notify('resources.applications.notifications.delete_request_success',
+                                'info');
+                                history.go(0);
+                            }
+                        }
+                    );
                 }
-            );
-            setDeleting(false);
-            history.push('/applications');
-        },
-        onFailure: error => {
-            setDeleting(false);
-            notify(
-                error || 'resources.applications.notifications.delete_error',
-                'error'
-            );
-        },
-    });
-
+            }
+        );
+    };
+    
     const confirmDelete = event => {
         setDeleteConfirm(true);
     };

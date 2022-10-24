@@ -9,29 +9,21 @@
   <packaging>jar</packaging>
 
   <properties>
-<!--    <nexus.host>https://artifactory-lvn.broadcom.net</nexus.host>
-    <nexus.uri.releases>artifactory/maven-integration-local/</nexus.uri.releases>
-    <nexus.uri.snapshot>artifactory/maven-integration-local/</nexus.uri.snapshot>-->
     <jar.classifier>${git.branch}</jar.classifier>
-    <nexus.host>http://apim-blackforest.lvn.broadcom.net:8080</nexus.host>
-    <nexus.uri.releases>nexus/content/repositories/releases/</nexus.uri.releases>
-    <nexus.uri.snapshot>nexus/content/repositories/snapshots/</nexus.uri.snapshot>
+    <artifactory.host>https://artifactory-lvn.broadcom.net:443/artifactory</artifactory.host>
+    <artifactory.uri.releases>apim-maven-release-local</artifactory.uri.releases>
+    <artifactory.uri.snapshot>apim-maven-dev-local</artifactory.uri.snapshot>
   </properties>
 
   <distributionManagement>
     <snapshotRepository>
       <id>layer7-snapshot-repo</id>
       <name>Layer 7 - Snapshot Repository for internal projects.</name>
-      <url>${nexus.host}/${nexus.uri.snapshot}</url>
+      <url>${artifactory.host}/${artifactory.uri.snapshot}</url>
     </snapshotRepository>
   </distributionManagement>
 
   <pluginRepositories>
-    <pluginRepository>
-      <id>blackforest</id>
-      <name>Layer7/Broadcom Internal</name>
-      <url>http://apim-blackforest.lvn.broadcom.net:8080/nexus/content/groups/public</url>
-    </pluginRepository>
     <pluginRepository>
       <id>apache</id>
       <name>Apache Central Maven Repo</name>
@@ -150,7 +142,7 @@
                 <artifactId>apihub</artifactId>
                 <classifier>${jar.classifier}</classifier>
                 <repositoryId>layer7-snapshot-repo</repositoryId>
-                <url>${nexus.host}/${nexus.uri.snapshot}</url>
+                <url>${artifactory.host}/${artifactory.uri.snapshot}</url>
                 <file>./target/${build.finalName}.jar</file>
                 <version>${version}</version>
               </configuration>

@@ -97,6 +97,22 @@ describe('Applications', () => {
         // Details
         cy.findByLabelText('Generate New Secret').should('not.exist');
     });
+    it('should NOT show Generate New Secret when Application status is DELETE_APPLICATION_PENDING_APPROVAL for an org user', () => {
+        login('orgPublisher', 'Password@1');
+
+        cy.findAllByText('Applications')
+            .first()
+            .click();
+
+        cy.findByTitle('Display as list').click();
+
+        cy.findByTitle('GB International Interactions(Deleting)').click({
+            force: true,
+        });
+
+        // Details
+        cy.findByLabelText('Generate New Secret').should('not.exist');
+    });
 
     context('when editing an application', () => {
         it('should allow the changing of an API plan on a selected API', () => {
