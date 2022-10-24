@@ -375,6 +375,7 @@ const apiHubMessages = {
                 rejected: 'Rejected',
                 application_pending_approval: 'Pending Approval',
                 edit_application_pending_approval: 'Pending Approval',
+                delete_application_pending_approval: 'Pending Approval',
             },
             list: {
                 sort: {
@@ -407,6 +408,7 @@ const apiHubMessages = {
                 edit_success: 'Application successfully updated.',
                 edit_error: 'An error occurred while updating the application.',
                 delete_success: 'Application successfully deleted.',
+                delete_request_success: 'Application Delete requested successfully.',
                 delete_error:
                     'An error occurred while deleting the application.',
             },

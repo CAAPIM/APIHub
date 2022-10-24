@@ -756,6 +756,36 @@
             ]
         },
         {
+            "id": "f6a72eb7-d848-48d2-b33f-5823672cfea5",
+            "uuid": "f6a72eb7-d848-48d2-b33f-5823672cfea5",
+            "name": "GB International Interactions(Deleting)",
+            "status": "DELETE_APPLICATION_PENDING_APPROVAL",
+            "disabledByType": "EXTERNAL",
+            "description": "Enhanced bi-directional complexity",
+            "OauthCallbackUrl": "https://example.com/oauthCallback",
+            "OauthScope": "OOB",
+            "OauthType": "confidential",
+            "apiKey": "fbb71539-e654-434c-ab4d-b83a612fcb6b",
+            "keySecret": "b47ac256-769d-47f5-9640-8bdc25f1e9b5",
+            "apiIds": {
+                "results": [
+                    "9f0ee511-c6ec-4380-8057-43b6bcf49ac4",
+                    "9c531b86-d5f0-46c7-bdd0-d52fc9e1dd9c",
+                    "9e9b888a-8b2e-4a98-aab8-35843b1d3c73",
+                    "04065447-bdf5-4553-8356-ee835150f216",
+                    "61bc2c17-19ba-4e01-873f-e3201706908e",
+                    "8a334a2f-de19-472a-bb11-5a6e38e1c2ee"
+                ]
+            },
+            "_accessibleApis": [
+                "9f0ee511-c6ec-4380-8057-43b6bcf49ac4",
+                "9c531b86-d5f0-46c7-bdd0-d52fc9e1dd9c",
+                "9e9b888a-8b2e-4a98-aab8-35843b1d3c73",
+                "04065447-bdf5-4553-8356-ee835150f216",
+                "61bc2c17-19ba-4e01-873f-e3201706908e"
+            ]
+        },
+        {
             "id": "fefbfb9a-9dda-47fd-ba0c-73fbcb17211d",
             "uuid": "fefbfb9a-9dda-47fd-ba0c-73fbcb17211d",
             "name": "HTTP Lead Tactics",

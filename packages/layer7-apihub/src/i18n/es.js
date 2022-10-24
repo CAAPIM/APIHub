@@ -390,6 +390,7 @@ const apiHubMessages = {
                 rejected: 'Rechazado',
                 application_pending_approval: 'Pendiente de aprobación',
                 edit_application_pending_approval: 'Pendiente de aprobación',
+                delete_application_pending_approval: 'Pendiente de aprobación',
             },
             list: {
                 sort: {
