@@ -10,7 +10,7 @@
 
   <properties>
     <jar.classifier>${git.branch}</jar.classifier>
-    <artifactory.host>https://artifactory-lvn.broadcom.net:443/artifactory</artifactory.host>
+    <artifactory.host>https://usw1.packages.broadcom.com:443/artifactory</artifactory.host>
     <artifactory.uri.releases>apim-maven-release-local</artifactory.uri.releases>
     <artifactory.uri.snapshot>apim-maven-dev-local</artifactory.uri.snapshot>
   </properties>
