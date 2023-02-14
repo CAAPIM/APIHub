@@ -15,7 +15,7 @@
         "layer7-apihub-mock": "1.0.0",
         "react": ">=16.8.0",
         "react-dom": ">=16.8.0",
-        "react-admin": "~3.10.3",
+        "react-admin": "~3.19.12",
         "react-helmet": "~5.2.1",
         "react-scripts": "~4.0.1"
     },
