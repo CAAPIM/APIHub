@@ -12,9 +12,6 @@ const useStyles = makeStyles(
     {
         root: {},
         card: {},
-        topToolbar: {
-            paddingTop: '0px',
-        },
     },
     {
         name: 'Layer7ApplicationCreate',
@@ -24,9 +21,7 @@ const useStyles = makeStyles(
 const AppEditActions = ({ basePath, data, resource, className }) => {
     return (
         <TopToolbar className={className}>
-            <div>
-                <ShowButton basePath={basePath} record={data} />
-            </div>
+            <div />
         </TopToolbar>
     );
 };
@@ -39,7 +34,6 @@ export const ApplicationEdit = props => {
     if (!userContext) {
         return null;
     }
-
     return (
         <Edit
             className={rootClassName}

@@ -17,6 +17,10 @@ export const validatePassword = composeValidators([
         /[!@#$%^&*-]+/,
         'apihub.validation.password.at_least_one_special_character'
     ),
+    regex(
+        /^[\da-zA-Z!@#$%^&*-]*$/,
+        'apihub.validation.password.no_other_characters_accepted'
+    ),
 ]);
 
 export const getPwdTooltip = (regConfig, translate) => {

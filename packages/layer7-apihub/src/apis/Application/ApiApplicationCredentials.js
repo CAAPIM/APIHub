@@ -3,6 +3,7 @@ import { useTranslate, useDataProvider } from 'react-admin';
 import { makeStyles } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Typography from '@material-ui/core/Typography';
+import sortBy from 'lodash/sortBy';
 
 import { useLayer7Notify } from '../../useLayer7Notify';
 /**
@@ -15,6 +16,7 @@ export const ApiApplicationCredentials = ({ id }) => {
     const dataProvider = useDataProvider();
     const notify = useLayer7Notify();
     const [application, setApplication] = useState();
+    const [apiKey, setApiKey] = useState({});
 
     const fetchApplication = async id => {
         const { data } = await dataProvider.getOne(
@@ -30,11 +32,28 @@ export const ApiApplicationCredentials = ({ id }) => {
         return data;
     };
 
+    const fetchApiKeys = async (appId) => {
+        const { data } = await dataProvider.getList(
+            'apiKeys',
+            {
+                applicationUuid: appId,
+                pagination: { page: 1, perPage: 100 },
+                sort: { field: 'createTs', order: 'DESC' },
+            },
+            {
+                onFailure: error => notify(error),
+            }
+        );
+        const apiKeys = sortBy(data, ({ defaultKey }) => !defaultKey);
+        setApiKey(apiKeys.length > 0 ? apiKeys[0] : {});
+    };
+
     React.useEffect(() => {
         (async () => {
             const data = await fetchApplication(id);
             setApplication(data);
         })();
+        fetchApiKeys(id);
     }, [id]);
 
     if (!application) {
@@ -47,16 +66,14 @@ export const ApiApplicationCredentials = ({ id }) => {
                 <span className={classes.label}>
                     {translate('resources.applications.fields.apiKey')}
                 </span>
-                <span id={`api-key-${application.id}`}>
-                    {application.apiKey}
-                </span>
+                <span id={`api-key-${application.id}`}>{apiKey.apiKey}</span>
             </Typography>
             <Typography variant="body2" className={classes.secondaryKey}>
                 <span className={classes.label}>
                     {translate('resources.applications.fields.keySecret')}
                 </span>
                 <span id={`shared-secret-${application.id}`}>
-                    {application.keySecret}
+                    {apiKey.keySecret}
                 </span>
             </Typography>
         </div>

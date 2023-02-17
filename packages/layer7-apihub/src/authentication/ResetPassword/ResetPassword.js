@@ -6,15 +6,17 @@ import { ResetPasswordForm } from './ResetPasswordForm';
 import { ResetPasswordConfirm } from './ResetPasswordConfirm';
 import { useResetPassword } from '../useResetPassword';
 import { AuthenticationLayout } from '../AuthenticationLayout';
+import { useAuthenticationConfiguration } from '..';
 
 /**
  * The component used to reset a password
  */
 export const ResetPassword = props => {
     const [username, setUsername] = useResetPassword();
+    const { localLoginsDisabled } = useAuthenticationConfiguration();
     const translate = useTranslate();
 
-    const handleSubmit = ({ username }) => {
+    const handleSubmit = username => {
         setUsername(username);
     };
 
@@ -43,7 +45,11 @@ export const ResetPassword = props => {
             >
                 {translate('apihub.reset_password.title')}
             </Typography>
-            <ResetPasswordForm onSubmit={handleSubmit} {...props} />
+            <ResetPasswordForm
+                handleSubmit={handleSubmit}
+                localLoginsDisabled={localLoginsDisabled}
+                {...props}
+            />
         </>
     );
 };

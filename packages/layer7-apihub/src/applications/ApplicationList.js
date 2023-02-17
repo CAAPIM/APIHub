@@ -134,9 +134,18 @@ const ApplicationFilter = props => {
                         name: 'resources.applications.status.disabled',
                     },
                     {
-                        id: 'APPLICATION_PENDING_APPROVAL,EDIT_APPLICATION_PENDING_APPROVAL,DELETE_APPLICATION_PENDING_APPROVAL',
+                        id:
+                            'APPLICATION_PENDING_APPROVAL,EDIT_APPLICATION_PENDING_APPROVAL,DELETE_APPLICATION_PENDING_APPROVAL',
                         name:
                             'resources.applications.status.application_pending_approval',
+                    },
+                    {
+                        id: 'INCOMPLETE',
+                        name: 'resources.applications.status.incomplete',
+                    },
+                    {
+                        id: 'DELETE_FAILED',
+                        name: 'resources.applications.status.delete_failed',
                     },
                 ]}
             />

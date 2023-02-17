@@ -17,9 +17,8 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { ApiStatus } from '../apis/ApiStatus';
 import { useLayer7Notify } from '../useLayer7Notify';
 
-export const ApplicationApisList = ({ application }) => {
-    const { apiIds, apiGroupIds } = application;
-    const { results: apis } = apiIds;
+export const ApplicationApisList = ({ apiIds, apiGroupIds, application }) => {
+    const apis = apiIds;
 
     const classes = useStyles();
     const translate = useTranslate();
@@ -54,7 +53,7 @@ export const ApplicationApisList = ({ application }) => {
         async function fetchInitialSelectedItems() {
             if (
                 apiGroupIds &&
-                apiGroupIds.results?.length &&
+                apiGroupIds.length &&
                 !selectedApiGroups.length
             ) {
                 const { data: apiGroups } = await dataProvider.getList(
@@ -71,9 +70,7 @@ export const ApplicationApisList = ({ application }) => {
                     }
                 );
                 const appApiGroups = apiGroups.filter(apiGroup =>
-                    application.apiGroupIds.results.find(
-                        id => apiGroup.id === id
-                    )
+                    apiGroupIds.find(id => apiGroup.id === id)
                 );
                 setSelectedApiGroups(appApiGroups);
             }
@@ -94,12 +91,14 @@ export const ApplicationApisList = ({ application }) => {
         <ExpansionPanel square defaultExpanded>
             <ExpansionPanelSummary
                 className={classes.expansionPanelSummary}
-                expandIcon={<ExpandMoreIcon />}
+                expandIcon={
+                    <ExpandMoreIcon className={classes.expandMoreIconSummary} />
+                }
                 aria-controls="apilistpanel-content"
                 id="apilistpanel-header"
             >
                 <Typography variant="subtitle1" className={classes.heading}>
-                    {translate('resources.applications.fields.apisIncluded')} (
+                    {translate('resources.applications.fields.apis')} (
                     {appApis.length})
                 </Typography>
             </ExpansionPanelSummary>
@@ -196,13 +195,16 @@ const useStyles = makeStyles(
         container: {
             maxHeight: '100%',
         },
+        expandMoreIconSummary: {
+            color: theme.palette.primary.main || '#333333',
+        },
         expansionPanelSummary: {
             '& > div': {
                 margin: `${theme.spacing(1)}px 0 !important`,
             },
         },
         heading: {
-            color: theme.palette.primary.textHub || '#333333',
+            color: theme.palette.primary.main || '#333333',
             fontFamily: theme.typography.textHub,
             fontWeight: theme.typography.fontWeightBold,
             fontSize: '21px',

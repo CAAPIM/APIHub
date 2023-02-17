@@ -1,12 +1,23 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { required, SimpleForm, TextInput, useTranslate } from 'react-admin';
 import { makeStyles, Typography } from '@material-ui/core';
 import { ResetPasswordToolbar } from './ResetPasswordToolbar';
 
 export const ResetPasswordForm = props => {
-    const { onSubmit = () => {}, toolbarProps, ...rest } = props;
+    const { handleSubmit, localLoginsDisabled, toolbarProps, ...rest } = props;
     const classes = useStyles(rest);
     const translate = useTranslate();
+    const [error, setError] = useState(null);
+
+    const onSubmit = ({ username }) => {
+        if (localLoginsDisabled) {
+            setError(
+                'apihub.reset_password.notifications.local_logins_disabled'
+            );
+        } else {
+            handleSubmit(username);
+        }
+    };
 
     return (
         <div className={classes.root}>
@@ -27,8 +38,11 @@ export const ResetPasswordForm = props => {
             </Typography>
             <SimpleForm
                 className={classes.form}
+                error={error}
                 save={onSubmit}
-                toolbar={<ResetPasswordToolbar {...toolbarProps} />}
+                toolbar={
+                    <ResetPasswordToolbar error={error} {...toolbarProps} />
+                }
                 {...rest}
             >
                 <TextInput

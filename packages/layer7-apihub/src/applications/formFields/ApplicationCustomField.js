@@ -29,7 +29,7 @@ export const ApplicationCustomField = props => {
     );
 };
 
-export const EditCustomFieldData = ({ fields, type, ...rest }) => {
+export const EditCustomFieldData = ({ fields, type, disabled, ...rest }) => {
     const { ids = [], data, loaded, error } = useGetList('customFields');
     const selectInputClasses = useSelectInputStyles();
     const labelClasses = useLabelStyles();
@@ -42,7 +42,7 @@ export const EditCustomFieldData = ({ fields, type, ...rest }) => {
     // Merging all CustomFields and application > customfields values.
     const mergedData = Object.values(data).map((item, i) => ({
         ...item,
-        ...fields.find(itmInner => itmInner.CustomFieldUuid === item.id),
+        ...fields.find(itmInner => itmInner.customFieldUuid === item.Uuid),
     }));
 
     form.change('CustomFieldsArr', Array.from(ids));
@@ -61,12 +61,13 @@ export const EditCustomFieldData = ({ fields, type, ...rest }) => {
             ) : (
                 mergedData.map(item => (
                     <CustomFieldInput
-                        key={item.id}
+                        disabled={disabled}
+                        key={item.customFieldUuid}
                         // source is required to properly link the label to the input
-                        source={item.id}
+                        source={item.customFieldUuid}
                         customField={item}
                         className={selectInputClasses.SelectInput}
-                        initialValue={item.Value}
+                        initialValue={item.value}
                     />
                 ))
             )}

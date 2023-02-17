@@ -1,15 +1,10 @@
 import { useState, useEffect } from 'react';
-import { useGetOne, CRUD_GET_ONE } from 'ra-core';
 import merge from 'lodash/fp/merge';
 import createMuiTheme from '@material-ui/core/styles/createMuiTheme';
 import defaultMuiTheme from '@material-ui/core/styles/defaultTheme';
-import get from 'lodash/get';
 
 import { theme } from './theme';
-import { isOrgBoundUser } from '../userContexts';
 import { getFetchJson } from '../fetchUtils';
-
-const LOGGED_IN = '@layer7/authentication/loggedIn';
 
 const convertBrandingToMuiTheme = themeBranding => {
     const { color, typography } = themeBranding;
@@ -114,23 +109,9 @@ const convertBrandingToMuiTheme = themeBranding => {
     };
 };
 
-export const fetchBranding = async (url, originHubName, userContext) => {
+export const fetchBranding = async (url, originHubName) => {
     const fetchJson = getFetchJson(originHubName);
-    // Pass a orgId to fetch org based theme
-    const options = {};
-    const isOrgUser = userContext ? isOrgBoundUser(userContext) : false;
-    if (isOrgUser) {
-        const orgUuid = get(userContext, 'userDetails.organizationUuid');
-        options.headers = new Headers({ Accept: 'application/json' });
-        options.headers.set('APIM-OrgUuid', orgUuid);
-    }
-    const { json } = await fetchJson(`${url}/branding/1.0/themes`, options);
-    return json;
-};
-
-export const fetchUserContext = async (url, originHubName) => {
-    const fetchJson = getFetchJson(originHubName);
-    const { json } = await fetchJson(`${url}/userContexts`);
+    const { json } = await fetchJson(`${url}/branding/1.0/themes`);
     return json;
 };
 
@@ -138,19 +119,9 @@ export const useBranding = (url, originHubName, defaultTheme = theme) => {
     const [brandingTheme, setBrandingTheme] = useState(defaultTheme);
     const [brandingLogo, setBrandingLogo] = useState('');
     const [brandingFavicon, setBrandingFavicon] = useState('');
-    const [userContext, setUserContext] = useState('');
-
-    useEffect(() => {
-        if (JSON.parse(sessionStorage.getItem(LOGGED_IN))) {
-            fetchUserContext(url, originHubName).then(response => {
-                setUserContext(get(response, 'userContexts[0]'));
-            });
-        }
-    }, [originHubName, url]);
-
     useEffect(() => {
         if (global.APIHUB_CONFIG.USE_BRANDING_THEME) {
-            fetchBranding(url, originHubName, userContext)
+            fetchBranding(url, originHubName)
                 .then(theme => {
                     return {
                         logo: theme.logo,
@@ -168,7 +139,7 @@ export const useBranding = (url, originHubName, defaultTheme = theme) => {
             setBrandingFavicon(null);
             setBrandingTheme(defaultTheme);
         }
-    }, [defaultTheme, originHubName, url, userContext]);
+    }, [defaultTheme, originHubName, url]);
 
     return {
         logo: brandingLogo,

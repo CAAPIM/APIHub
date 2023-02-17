@@ -1,6 +1,7 @@
 import React from 'react';
 import { SaveButton, Toolbar } from 'react-admin';
-import { makeStyles } from '@material-ui/core';
+import { makeStyles, Typography} from '@material-ui/core';
+import { ValidationError } from 'ra-core';
 import get from 'lodash/get';
 
 /**
@@ -15,12 +16,23 @@ export const ResetPasswordToolbar = props => {
     const classes = useStyles(props);
 
     const { button } = props;
+    const { error } = props;
     const color = get(button, 'color', 'primary');
     const variant = get(button, 'variant', 'outlined');
     const size = get(button, 'size', 'small');
 
     return (
-        <Toolbar className={classes.toolbar} {...props}>
+        <>
+          {error ? (
+                <Typography
+                    variant="body1"
+                    color="error"
+                    className={classes.error}
+                >
+                    <ValidationError error={error} />
+                </Typography>
+            ) : null}
+            <Toolbar className={classes.toolbar} {...props}>
             <SaveButton
                 className={classes.submit}
                 icon={<span />}
@@ -30,6 +42,7 @@ export const ResetPasswordToolbar = props => {
                 size={size}
             />
         </Toolbar>
+        </>
     );
 };
 

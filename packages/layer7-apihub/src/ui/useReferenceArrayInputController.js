@@ -128,7 +128,7 @@ export const useReferenceArrayInputController = ({
     // CHANGE: Reset the pagination whenever the filter change
     useEffect(() => {
         setPage(1);
-    }, [finalFilter, setPage]);
+    }, [JSON.stringify(finalFilter), setPage]); // eslint-disable-line
 
     const { data: referenceRecordsFetched, loaded } = useGetMany(
         reference,

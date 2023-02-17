@@ -29,7 +29,7 @@ export function ApiChoiceItem(props) {
                         <IconButton
                             aria-label={translate('ra.action.add')}
                             className={classes.add}
-                            disabled={selected}
+                            disabled={selected || props.disabled}
                             onClick={onAdd}
                             color="primary"
                         >

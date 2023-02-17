@@ -48,6 +48,8 @@ const apiHubMessages = {
                 invalid_credentials:
                     'Credenciales no válidas. Vuelva a intentarlo o utilice el enlace de contraseña olvidada a continuación',
                 selected_scheme: 'Iniciando sesión con',
+                local_logins_disabled:
+                    'El inicio de sesión directo está deshabilitado. Puede elegir un método de autenticación de la lista a continuación. Póngase en contacto con su administrador para obtener más información.',
             },
         },
         account_setup: {
@@ -102,6 +104,10 @@ const apiHubMessages = {
                 instructions: 'Introduzca el nombre de usuario',
                 description:
                     'Le enviaremos un vínculo para restablecer la contraseña.',
+            },
+            notifications: {
+                local_logins_disabled:
+                    'La contraseña no se puede restablecer si los inicios de sesión locales están deshabilitados',
             },
         },
         reset_password_confirm: {
@@ -166,6 +172,8 @@ const apiHubMessages = {
                 at_least_one_number: 'Al menos un número',
                 at_least_one_special_character:
                     'Al menos un carácter especial: !@#$%^&*',
+                no_other_characters_accepted:
+                    'Solo alfanumérico y !@#$%^&*- permitido',
             },
         },
         markdown_editor: {
@@ -194,7 +202,7 @@ const apiHubMessages = {
             fields: {
                 name: 'Nombre',
                 portalStatus: 'Estado',
-                accessStatus: 'Visibilidad',
+                accessStatus: 'Acceso',
                 apiServiceType: 'Tipo',
                 ssgServiceType: 'Tipo',
                 createTs: 'Creada',
@@ -316,6 +324,8 @@ const apiHubMessages = {
                 keySecret: 'Secreto compartido:',
                 apiKeyClientID: 'Clave de la API/ID de cliente',
                 apisIncluded: 'API incluidas',
+                apis: 'APIs',
+                apisCount: '%{count}',
                 authentication: 'Autenticación',
                 description: 'Descripción',
                 encrypted: 'Cifrado',
@@ -328,21 +338,26 @@ const apiHubMessages = {
                 overview: 'Descripción general',
                 status: 'Estado',
                 apiGroups: 'Grupos de API',
+                apiGroupsCount: '%{count}',
                 apiGroup: 'Grupo de API',
                 organization: 'Organización',
                 applicationInformation: 'Información de la aplicación',
                 customField: 'Campo personalizado',
+                details: 'detalles',
                 noCustomFields: 'No hay campos personalizados disponibles',
                 noApplications: 'No hay aplicaciones disponibles',
                 apiManagement: 'Gestión de la API',
-                authCredentials: 'Autenticación y credenciales',
+                authCredentials: 'Autenticación y Credenciales',
                 callbackUrl:
                     'Direcciones URL de devolución de llamada o redirección',
                 scope: 'Ámbito',
                 type: 'Tipo',
+                secretType: 'Tipo de Secreto',
                 none: 'Ninguno',
                 public: 'Público',
                 confidential: 'Confidencial',
+                hashed: 'Hashed',
+                plain: 'Texto Plano',
                 sharedSecretFormat: 'Formato del secreto compartido',
                 selectOrganization: 'Seleccionar organización',
                 apiPlan: 'Plan de la API',
@@ -359,6 +374,7 @@ const apiHubMessages = {
                 plainTextSecret: 'Secreto de texto sin formato',
                 hashedSecret: 'Secreto con hash',
                 cancel: 'Cancelar',
+                publish: 'Publicar',
                 save: 'Guardar',
                 addApplication: 'Agregar aplicación',
                 createApplication: 'Crear aplicación',
@@ -373,24 +389,46 @@ const apiHubMessages = {
                     'Acepto los términos y condiciones.',
                 edit: 'Editar',
                 delete: 'Suprimir',
+                force_delete: 'Forzar Eliminación',
+                no: 'No',
+                yes: 'Si',
             },
             validation: {
+                apikey_name_caption:
+                    'El nombre de la clave debe ser único para esta aplicación. La cantidad máxima es de 255 caracteres.',
                 error_application_name_not_unique:
                     'Este nombre de aplicación no es exclusivo.',
                 callback_url_caption: 'Utilizar valores separados por comas',
                 scope_caption: 'Utilizar valores separados por espacios',
                 application_name_caption:
-                    'Utilizar nombre único de 50 caracteres como máximo',
+                    'El nombre de la clave debe ser único para esta aplicación. El largo máximo es de 255 caracteres.',
+                apikey_name_caption:
+                    'El nombre de la clave debe ser único para esta aplicación. La longitud máxima es de 255 caracteres.',
+                apikey_name_empty_error: 'El nombre no puede estar vacío',
             },
             status: {
                 enabled: 'Activado',
                 disabled: 'Desactivado',
                 deprecated: 'Obsoleto',
+                delete_failed: 'Forzar eliminación',
+                incomplete: 'Incompleto',
                 unpublished: 'Sin publicar',
                 rejected: 'Rechazado',
                 application_pending_approval: 'Pendiente de aprobación',
                 edit_application_pending_approval: 'Pendiente de aprobación',
                 delete_application_pending_approval: 'Pendiente de aprobación',
+                apis_help_text:
+                    'Se requiere al menos 1 API (o grupo de API) para publicar una aplicación.',
+                api_keys_help_text:
+                    'Se requiere al menos 1 clave API para publicar una aplicación.',
+                partial_lock:
+                    'Las partes de esta sección están bloqueadas en espera de la aprobación de una edición anterior.',
+                complete_lock:
+                    'Esta sección está bloqueada en espera de la aprobación de una edición anterior',
+                create_apis_help_text:
+                    'Se requiere guardar antes de que se puedan agregar las API. Se requiere al menos 1 API (o grupo de API) para publicar una aplicación.',
+                create_api_keys_help_text:
+                    'Es necesario guardar antes de que se puedan crear las claves. Se requiere al menos 1 clave API para publicar una aplicación',
             },
             list: {
                 sort: {
@@ -419,19 +457,52 @@ const apiHubMessages = {
                 edit_overview: 'Editar descripción general',
                 empty_overview: 'Sin valor',
                 create_success: 'La aplicación se ha creado correctamente.',
+                key_create_success: 'la Clave de API creada con éxito.',
                 create_error:
                     'Se ha producido un error al crear la aplicación.',
+                edit_request_success:
+                    'Solicitud de actualización de la aplicación enviada.',
                 edit_success: 'La aplicación se ha actualizado correctamente.',
                 edit_error:
                     'Se ha producido un error al actualizar la aplicación.',
                 delete_success: 'La aplicación se ha suprimido correctamente.',
+                delete_request_success:
+                    'Eliminación de la aplicación solicitada con éxito.',
                 delete_error:
                     'Se ha producido un error al suprimir la aplicación.',
+                publish_request_success:
+                    'Solicitud de publicación de la aplicación enviada.',
+                unsaved_changes: 'Cambios no guardados',
+                unsaved_changes_content:
+                    'Esta sección contiene cambios no guardados. ¿Aún deseas salir de esta sección?',
+                delete_key_success:
+                    'La clave de la aplicación se eliminó con éxito.',
+                publish_success: 'Solicitud publicada con éxito.',
             },
             confirm_delete:
                 'Está a punto de suprimir este aplicación. ¿Está seguro?',
             deleting_content:
                 'Anulación de la implementación de claves y eliminación de la aplicación. Esto puede tomar varios minutos.',
+            proxy_check_alert:
+                'No se puede conectar a todos los proxies donde la aplicación ha implementado claves. Es probable que esto resulte en una eliminación incompleta, donde algunas claves permanecerán en algunos proxies. Deberán eliminarse directamente de la puerta de enlace. Habrá una opción para forzar la eliminación del registro de la aplicación del portal.',
+            publish_help_text:
+                'Se puede publicar una aplicación completa con al menos 1 API y 1 clave y sus claves se pueden implementar en proxies',
+        },
+        apikeys: {
+            confirm_delete:
+                'Está a punto de eliminar esta clave de API. ¿Está seguro?',
+            deleting_content:
+                'Desinstalación de claves y eliminación de API-Key. Esto puede tomar varios minutos.',
+            proxy_check_alert:
+                'No se puede conectar a todos los proxies donde se implementó la clave de API. Es probable que esto resulte en una eliminación incompleta, donde esta clave permanecerá en algunos proxies. Tendrá que ser eliminado de la puerta de enlace directamente. Habrá una opción para forzar la eliminación del registro de clave API del portal.',
+            actions: {
+                addKey: 'Agregar Clave',
+                deleteApiKey: 'Eliminar Clave',
+                deleting_title: 'Eliminando Clave de API',
+                force_delete: 'Forzar Eliminación',
+                cancel: 'Cancelar',
+                delete: 'Eliminar',
+            },
         },
         documents: {
             name: 'Wiki |||| Wiki',
@@ -569,6 +640,46 @@ const apiHubMessages = {
                     update_error:
                         'Se ha producido un error al actualizar la organización.',
                 },
+            },
+        },
+        userProfiles: {
+            passwordDialogTitle: 'Introducir la contraseña actual',
+            fields: {
+                userName: 'Nombre de usuario',
+                lastName: 'Apellido',
+                firstName: 'Nombre de pila',
+                email: 'correo electrónico',
+                password: 'contraseña',
+                currentPassword: 'Contraseña actual',
+                newPassword: 'Nueva contraseña',
+                confirmNewPassword: 'Confirmar nueva contraseña',
+            },
+            actions: {
+                edit_profile: 'Mi perfil',
+                cancel: 'Cancelar',
+                submit: 'Entregar',
+            },
+            notifications: {
+                update_success: 'Perfil actualizado',
+            },
+            validation: {
+                error_password_empty: 'La contraseña no puede estar en blanco',
+                error_password_match: 'las contraseñas no coinciden',
+                error_password_not_matching_criteria:
+                    'La contraseña debe cumplir con los requisitos de contraseña especificados.',
+                tooltip_current_password:
+                    'Se requiere contraseña para hacer cambios. Por favor ingrese su contraseña actual.',
+                tooltip_password_title: 'Requisitos de contraseña:',
+                tooltip_password_min: '-Mínimo %{num} caracteres',
+                tooltip_password_max: '-Máximo %{num} caracteres',
+                tooltip_password_lower:
+                    '-Al menos %{num} minúsculos caracteres)',
+                tooltip_password_upper:
+                    '-Al menos %{num} mayúscula caracteres)',
+                tooltip_password_number: '-Al menos %{num} números)',
+                tooltip_password_special:
+                    '-Al menos %{num} especial caracteres): %{symbols}',
+                tooltip_password_confirm: 'repita su contraseña',
             },
         },
     },

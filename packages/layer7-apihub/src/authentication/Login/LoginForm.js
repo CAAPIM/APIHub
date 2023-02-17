@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     PasswordInput,
     required,
@@ -14,7 +14,7 @@ import { AuthSchemeList, LoginToolbar } from '.';
 import { useAuthSchemes, usePasswordEncryption } from '..';
 
 export const LoginForm = props => {
-    const { toolbarProps, ...rest } = props;
+    const { toolbarProps,localLoginsDisabled, ...rest } = props;
 
     const login = useLogin();
     const classes = useStyles(rest);
@@ -30,6 +30,10 @@ export const LoginForm = props => {
     const [isLoading, setIsLoading] = useState(null);
     const [error, setError] = useState(null);
     const [authScheme, setAuthScheme] = useState(null);
+
+	useEffect(() => {
+		setAuthScheme(defaultAuthScheme);
+	}, [defaultAuthScheme]);
 
     const submit = async ({ username, password }) => {
         setError(null);
@@ -53,8 +57,13 @@ export const LoginForm = props => {
         }
 
         try {
-            await login(params);
-        } catch {
+            if(!params.provider && localLoginsDisabled) {
+                setError('apihub.login.notifications.local_logins_disabled');
+            } else {
+                await login(params);
+            }
+        } catch(error) {
+            console.error(error.message);
             setError('apihub.login.notifications.invalid_credentials');
         }
 
@@ -66,8 +75,11 @@ export const LoginForm = props => {
         return;
     }
 
+    let credsReqd = !localLoginsDisabled || authScheme;
+
     return (
         <>
+          { credsReqd && (
             <SimpleForm
                 className={classes.form}
                 save={submit}
@@ -95,17 +107,20 @@ export const LoginForm = props => {
                     fullWidth
                     validate={required()}
                 />
-            </SimpleForm>
-
+            </SimpleForm> ) }
+            { !localLoginsDisabled ? (
             <Typography variant="body1">
                 <Link component={RouterLink} to="/reset-password">
                     {translate('apihub.login.actions.forgot_password')}
                 </Link>
             </Typography>
+            ) : null}
             {authSchemes.length > 0 ? (
                 <AuthSchemeList
                     onClick={setAuthScheme}
                     authSchemes={authSchemes}
+                    defaultAuthScheme={defaultAuthScheme}
+                    credsReqd={credsReqd}
                 />
             ) : null}
         </>

@@ -51,7 +51,7 @@ const useOneTimePasswordDialogStyles = makeStyles(
     }
 );
 
-export const OneTimePasswordDialog = ({ id, keySecret, ...props }) => {
+export const OneTimePasswordDialog = ({ id, keySecret, apiKey, isPlainTextKey, handleClose, ...props }) => {
     const [open, setOpen] = useState(true);
     const history = useHistory();
     const classes = useOneTimePasswordDialogStyles();
@@ -63,8 +63,8 @@ export const OneTimePasswordDialog = ({ id, keySecret, ...props }) => {
     const handleDialogClose = () => {
         if (open) {
             setOpen(false);
+            handleClose();
         }
-        history.push(linkToRecord('/applications', id, 'show'));
     };
     return (
         <Dialog
@@ -95,11 +95,36 @@ export const OneTimePasswordDialog = ({ id, keySecret, ...props }) => {
                                 'resources.applications.notifications.copy_secret_now'
                             )}
                         </Typography>
-                        <Typography variant="body1" gutterBottom>
-                            {translate(
-                                'resources.applications.notifications.secret_generated_message'
-                            )}
-                        </Typography>
+                        {!isPlainTextKey &&
+                            <Typography variant="body1" gutterBottom>
+                                {translate(
+                                    'resources.applications.notifications.secret_generated_message'
+                                )}
+                            </Typography>
+                        }
+                        {apiKey &&
+                            <div className={classes.copyHashSection}>
+                                <Typography variant="subtitle2" gutterBottom>
+                                    {translate(
+                                        'resources.applications.fields.apiKeyClientID'
+                                    )}
+                                </Typography>
+                                <Typography variant="body1" gutterBottom>
+                                    {apiKey}
+                                </Typography>
+                                <Button
+                                    onClick={copyToClipboard}
+                                    value={apiKey}
+                                    align="center"
+                                    variant="contained"
+                                    color="primary"
+                                >
+                                    {translate(
+                                        'resources.applications.notifications.copy_to_clipboard'
+                                    )}
+                                </Button>
+                            </div>
+                        }
                         <div className={classes.copyHashSection}>
                             <Typography variant="subtitle2" gutterBottom>
                                 {translate(
