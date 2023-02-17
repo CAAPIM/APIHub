@@ -1,6 +1,7 @@
 import { stringify } from 'query-string';
 
 export const apiKeysDataProvider = context => {
+    const basePath = `${context.apiUrl}/api-management/1.0/applications`;
     return {
         getList: async ({
             applicationUuid,
@@ -8,8 +9,8 @@ export const apiKeysDataProvider = context => {
             pagination = { page: 1, perPage: 24 },
             sort = null,
         }) => {
-            const basePath = `${context.apiUrl}/api-management/1.0/applications/${applicationUuid}/api-keys`;
-            const url = `${basePath}?${stringify({
+            const path = `${basePath}/${applicationUuid}/api-keys`;
+            const url = `${path}?${stringify({
                 ...filter,
                 page: pagination.page - 1,
                 size: pagination.perPage,
@@ -28,6 +29,36 @@ export const apiKeysDataProvider = context => {
                         ...item,
                     })) || [],
                 total: json.totalElements || 0,
+            };
+        },
+        create: async({appUuid, data}) => {
+            const path = `${basePath}/${appUuid}/api-keys`;
+            const { json } = await context.fetchJson(path, {
+                credentials: 'include',
+                method: 'POST',
+                body: JSON.stringify({...data, applicationUuid: appUuid}),
+            });
+            console.log('json', json);
+            return {
+                data: {
+                    ...json,
+                    id: json.apiKey,
+                },
+            };
+        },
+        delete: async ({ appUuid, keyId, params }) => {
+            const path = `${basePath}/${appUuid}/api-keys/${keyId}?${params}`;
+
+            const {
+                json: { ...data },
+            } = await context.fetchJson(path, {
+                credentials: 'include',
+                method: 'DELETE',
+            })
+            .catch();
+
+            return {
+                data: { data },
             };
         },
     };

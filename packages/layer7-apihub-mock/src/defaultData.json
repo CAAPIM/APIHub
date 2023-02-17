@@ -898,7 +898,7 @@
             "id": "8282683c-ea5e-4451-95bc-b562598fd5ee",
             "uuid": "8282683c-ea5e-4451-95bc-b562598fd5ee",
             "name": "EXE Future Marketing",
-            "status": "DISABLED",
+            "status": "DELETE_FAILED",
             "disabledByType": null,
             "description": "Sharable cohesive capability",
             "OauthCallbackUrl": "https://example.com/oauthCallback",

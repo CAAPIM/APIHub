@@ -15,6 +15,7 @@ describe('useAuthenticationConfiguration', () => {
             const configuration = await fetchAuthenticationConfiguration();
 
             expect(configuration).toEqual({
+                localLoginsDisabled: false,
                 signUpEnabled: false,
                 simpleCredentialsEnabled: true,
                 ssoEnabled: false,
@@ -35,6 +36,7 @@ describe('useAuthenticationConfiguration', () => {
             const configuration = await fetchAuthenticationConfiguration();
 
             expect(configuration).toEqual({
+                localLoginsDisabled: false,
                 signUpEnabled: false,
                 simpleCredentialsEnabled: false,
                 ssoEnabled: false,
@@ -55,6 +57,7 @@ describe('useAuthenticationConfiguration', () => {
             const configuration = await fetchAuthenticationConfiguration();
 
             expect(configuration).toEqual({
+                localLoginsDisabled: false,
                 signUpEnabled: true,
                 simpleCredentialsEnabled: false,
                 ssoEnabled: false,
@@ -75,6 +78,7 @@ describe('useAuthenticationConfiguration', () => {
             const configuration = await fetchAuthenticationConfiguration();
 
             expect(configuration).toEqual({
+                localLoginsDisabled: false,
                 signUpEnabled: false,
                 simpleCredentialsEnabled: false,
                 ssoEnabled: false,
@@ -95,6 +99,7 @@ describe('useAuthenticationConfiguration', () => {
             const configuration = await fetchAuthenticationConfiguration();
 
             expect(configuration).toEqual({
+                localLoginsDisabled: false,
                 signUpEnabled: false,
                 simpleCredentialsEnabled: false,
                 ssoEnabled: true,
@@ -115,6 +120,7 @@ describe('useAuthenticationConfiguration', () => {
             const configuration = await fetchAuthenticationConfiguration();
 
             expect(configuration).toEqual({
+                localLoginsDisabled: false,
                 signUpEnabled: false,
                 simpleCredentialsEnabled: false,
                 ssoEnabled: false,
@@ -135,6 +141,7 @@ describe('useAuthenticationConfiguration', () => {
             const configuration = await fetchAuthenticationConfiguration();
 
             expect(configuration).toEqual({
+                localLoginsDisabled: false,
                 signUpEnabled: false,
                 simpleCredentialsEnabled: false,
                 ssoEnabled: false,
@@ -155,6 +162,7 @@ describe('useAuthenticationConfiguration', () => {
             const configuration = await fetchAuthenticationConfiguration();
 
             expect(configuration).toEqual({
+                localLoginsDisabled: false,
                 signUpEnabled: false,
                 simpleCredentialsEnabled: false,
                 ssoEnabled: false,
@@ -170,6 +178,7 @@ describe('useAuthenticationConfiguration', () => {
             const configuration = await fetchAuthenticationConfiguration();
 
             expect(configuration).toEqual({
+                localLoginsDisabled: false,
                 signUpEnabled: false,
                 simpleCredentialsEnabled: false,
                 ssoEnabled: false,

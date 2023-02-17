@@ -20,7 +20,14 @@ import { ApiSelectionModal } from '../ApiSelectionModal';
 import { ApiStatus } from '../../../apis/ApiStatus';
 
 export function ApiSelectionListItem(props) {
-    const { className, onRemoved, onApiPlanChanged, item, orgUuid } = props;
+    const {
+        className,
+        onRemoved,
+        onApiPlanChanged,
+        item,
+        orgUuid,
+        disabled,
+    } = props;
     const { record } = item;
     const [editApiPlan, setEditApiPlan] = React.useState(false);
     const translate = useTranslate();
@@ -57,6 +64,7 @@ export function ApiSelectionListItem(props) {
                         className={classes.delete}
                     >
                         <IconButton
+                            disabled={disabled}
                             onClick={handleItemRemoved}
                             edge="end"
                             aria-label={translate('ra.action.delete')}

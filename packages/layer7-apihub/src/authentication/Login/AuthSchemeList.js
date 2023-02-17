@@ -16,9 +16,9 @@ import { useTranslate } from 'react-admin';
 import { CALOGOSRC } from './CALogoSrc.png';
 
 export const AuthSchemeList = props => {
-    const { authSchemes, onClick } = props;
+    const { authSchemes, onClick, defaultAuthScheme, credsReqd } = props;
     const classes = useStyles(props);
-    const [selectedScheme, setSelectedScheme] = useState();
+    const [selectedScheme, setSelectedScheme] = useState(defaultAuthScheme);
     const translate = useTranslate();
 
     const onSelectScheme = scheme => {
@@ -88,9 +88,10 @@ export const AuthSchemeList = props => {
                 </Alert>
             </Snackbar>
             <Divider variant="middle" />
+            { credsReqd &&
             <Typography className={classes.divider} variant="body1">
                 or
-            </Typography>
+            </Typography> }
             <Typography variant="body1">
                 {translate('apihub.login.actions.sign_in_with')}
             </Typography>

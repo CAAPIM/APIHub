@@ -47,6 +47,8 @@ const apiHubMessages = {
                 invalid_credentials:
                     'Invalid credentials. Please try again or use the forgot password link below',
                 selected_scheme: 'Signing in with',
+                local_logins_disabled:
+                    'Direct login is disabled. You can choose an authentication method from the list below. Contact your administrator for more information.',
             },
         },
         account_setup: {
@@ -97,6 +99,10 @@ const apiHubMessages = {
             form_details: {
                 instructions: 'Enter your username',
                 description: 'We will email a link to reset your password.',
+            },
+            notifications: {
+                local_logins_disabled:
+                    'Password cannot be reset if local logins are disabled',
             },
         },
         reset_password_confirm: {
@@ -160,6 +166,8 @@ const apiHubMessages = {
                 at_least_one_number: 'At least one number',
                 at_least_one_special_character:
                     'At least one special character: !@#$%^&*',
+                no_other_characters_accepted:
+                    'Only alpha numeric and !@#$%^&*- allowed'
             },
         },
         markdown_editor: {
@@ -188,7 +196,7 @@ const apiHubMessages = {
             fields: {
                 name: 'Name',
                 portalStatus: 'State',
-                accessStatus: 'Visibility',
+                accessStatus: 'Access',
                 apiServiceType: 'Type',
                 ssgServiceType: 'Type',
                 createTs: 'Created',
@@ -305,6 +313,7 @@ const apiHubMessages = {
                 keySecret: 'Shared Secret:',
                 apiKeyClientID: 'API Key / Client ID',
                 apisIncluded: 'APIs Included',
+                apis: 'APIs',
                 authentication: 'Authentication',
                 description: 'Description',
                 encrypted: 'Encrypted',
@@ -319,16 +328,20 @@ const apiHubMessages = {
                 organization: 'Organization',
                 applicationInformation: 'Application Information',
                 customField: 'Custom Fields',
+                details: 'Details',
                 noCustomFields: 'No available custom fields',
                 noApplications: 'No available applications',
                 apiManagement: 'API Management',
-                authCredentials: 'Authentication and Credentials',
+                authCredentials: 'Authentication & Credentials',
                 callbackUrl: 'Callback/Redirect URL(s)',
                 scope: 'Scope',
                 type: 'Type',
+                secretType: 'Secret Type',
                 none: 'None',
                 public: 'Public',
                 confidential: 'Confidential',
+                hashed: 'Hashed',
+                plain: 'Plain Text',
                 sharedSecretFormat: 'Shared Secret Format',
                 selectOrganization: 'Select organization',
                 apiPlan: 'API Plan',
@@ -338,6 +351,8 @@ const apiHubMessages = {
                     'By clicking Add API, I accept Terms and Conditions',
                 actions: 'Actions',
                 default: 'Default',
+                apisCount: 'APIs: %{count}',
+                apiGroupsCount: 'API Groups: %{count}',
             },
             actions: {
                 generateSecret: 'Generate New Secret',
@@ -345,6 +360,7 @@ const apiHubMessages = {
                 plainTextSecret: 'Plain text secret',
                 hashedSecret: 'Hashed secret',
                 cancel: 'Cancel',
+                publish: 'Publish',
                 save: 'Save',
                 addApplication: 'Add Application',
                 createApplication: 'Create Application',
@@ -358,6 +374,9 @@ const apiHubMessages = {
                 accept_terms_and_conditions: 'I Accept the Terms & Conditions',
                 edit: 'Edit',
                 delete: 'Delete',
+                force_delete: 'Force Delete',
+                no: 'No',
+                yes: 'Yes',
             },
             validation: {
                 error_application_name_not_unique:
@@ -365,17 +384,33 @@ const apiHubMessages = {
                 callback_url_caption: 'Use comma separated values',
                 scope_caption: 'Use space separated values',
                 application_name_caption: 'Use unique name 50 characters (max)',
+                apikey_name_caption:
+                    'The key name must be unique to this application. Maximum length is 255 characters.',
+                apikey_name_empty_error: 'Name cannot be empty',
             },
             status: {
                 enabled: 'Enabled',
                 disabled: 'Disabled',
                 deprecated: 'Deprecated',
+                delete_failed: 'Delete Failed',
                 incomplete: 'Incomplete',
                 unpublished: 'Unpublished',
                 rejected: 'Rejected',
                 application_pending_approval: 'Pending Approval',
                 edit_application_pending_approval: 'Pending Approval',
                 delete_application_pending_approval: 'Pending Approval',
+                apis_help_text:
+                    'At least 1 API (or API Group) is required to publish an application.',
+                create_apis_help_text:
+                    'Save required before APIs can be added. At least 1 API (or API Group) is required to publish an application.',
+                api_keys_help_text:
+                    'At least 1 API Key is required to publish an application.',
+                create_api_keys_help_text:
+                    'Save required before keys can be created. At least 1 API Key is required to publish an application.',
+                partial_lock:
+                    'Part(s) of this section are locked pending the approval of a previous edit.',
+                complete_lock:
+                    'This section is locked pending the approval of a previous edit.',
             },
             list: {
                 sort: {
@@ -403,19 +438,49 @@ const apiHubMessages = {
                 edit_overview: 'Edit overview',
                 empty_overview: 'No value',
                 create_success: 'Application successfully created.',
+                key_create_success: 'API Key created successfully.',
                 create_error:
                     'An error occurred while creating the application.',
+                edit_request_success: 'Application update request submitted.',
                 edit_success: 'Application successfully updated.',
                 edit_error: 'An error occurred while updating the application.',
                 delete_success: 'Application successfully deleted.',
-                delete_request_success: 'Application Delete requested successfully.',
+                delete_key_success: 'Application key successfully deleted.',
+                delete_request_success:
+                    'Application delete requested successfully.',
                 delete_error:
                     'An error occurred while deleting the application.',
+                publish_request_success:
+                    'Application publish request submitted.',
+                publish_success: 'Application successfully published.',
+                unsaved_changes: 'Unsaved Changes',
+                unsaved_changes_content:
+                    'This section contains unsaved changes. Do you wish to leave this section without saving the changes?',
             },
             confirm_delete:
                 'You are about to delete this application. Are you sure?',
             deleting_content:
                 'Undeploying keys and deleting application. This may take several minutes.',
+            proxy_check_alert:
+                'Unable to connect to all proxies where the application has deployed keys. This will likely result with an incomplete deletion, where some keys will remain on some proxies. They will have to be removed from the gateway directly. There will be an option to force delete the application record from portal.',
+            publish_help_text:
+                'A complete appllication with at least 1 API and 1 Key can be published and its key(s) deployed to proxies.',
+        },
+        apikeys: {
+            confirm_delete:
+                'You are about to delete this API-Key. Are you sure?',
+            deleting_content:
+                'Undeploying keys and deleting API-Key. This may take several minutes.',
+            proxy_check_alert:
+                'Unable to connect to all proxies where the API-Key has been deployed. This will likely result with an incomplete deletion, where this key will remain on some proxies. It will have to be removed from the gateway directly. There will be an option to force delete the API-Key record from portal.',
+            actions: {
+                addKey: 'Add Key',
+                deleteApiKey: 'Delete Key',
+                deleting_title: 'Deleting API-Key',
+                force_delete: 'Force Delete',
+                cancel: 'Cancel',
+                delete: 'Delete',
+            },
         },
         documents: {
             name: 'Wiki |||| Wiki',

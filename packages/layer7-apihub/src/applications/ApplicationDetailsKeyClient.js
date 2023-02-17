@@ -28,6 +28,11 @@ const getStatusColor = (classes, status) => {
                 statusLabel: 'Disabled',
                 statusColorClass: classes.disabled,
             };
+        case 'DELETE_FAILED':
+            return {
+                statusLabel: 'Delete_Failed',
+                statusColorClass: classes.disabled,
+            };
         default:
             return {
                 statusLabel: 'Disabled',
@@ -44,7 +49,6 @@ export const ApplicationDetailsKeyClient = props => {
         successMessage: 'resources.applications.notifications.copy_success',
         errorMessage: 'resources.applications.notifications.copy_error',
     });
-
     if (!data || !data.apiKey) {
         return null;
     }
@@ -64,7 +68,11 @@ export const ApplicationDetailsKeyClient = props => {
             <ExpansionPanel className={classes.expansionPanel}>
                 <ExpansionPanelSummary
                     className={classes.expansionPanelSummary}
-                    expandIcon={<ExpandMoreIcon />}
+                    expandIcon={
+                        <ExpandMoreIcon
+                            className={classes.expandMoreIconSummary}
+                        />
+                    }
                     aria-controls="panel1a-content"
                     id="panel1a-header"
                 >
@@ -277,6 +285,9 @@ const useStyles = makeStyles(
         },
         expansionPanel: {
             boxShadow: 'none',
+        },
+        expandMoreIconSummary: {
+            color: theme.palette.primary.main || '#333333',
         },
         expansionPanelSummary: {
             '& > div': {

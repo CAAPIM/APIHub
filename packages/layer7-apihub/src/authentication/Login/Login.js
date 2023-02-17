@@ -22,7 +22,7 @@ export const Login = props => {
         clearNotifications();
     }, [clearNotifications]);
 
-    const { signUpEnabled } = useAuthenticationConfiguration();
+    const { signUpEnabled, localLoginsDisabled } = useAuthenticationConfiguration();
 
     const checkAuth = useCheckAuth();
     const redirect = useRedirect();
@@ -47,8 +47,8 @@ export const Login = props => {
             >
                 {translate('apihub.login.title')}
             </Typography>
-            <LoginForm {...props} />
-            {signUpEnabled ? <SignUpLink /> : null}
+            <LoginForm localLoginsDisabled={localLoginsDisabled} {...props} />
+            {signUpEnabled && !localLoginsDisabled ? <SignUpLink /> : null}
         </>
     );
 };

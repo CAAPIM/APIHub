@@ -1,11 +1,10 @@
 import React from 'react';
 import { useHistory } from 'react-router-dom';
-import { useTranslate } from 'ra-core';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
-import DeleteIcon from '@material-ui/icons/Delete';
 import { useDataProvider, useTranslate } from 'ra-core';
 import { EditButton, TopToolbar } from 'react-admin';
+import get from 'lodash/get';
 import { Show } from '../ui';
 import { ApplicationDetails } from './ApplicationDetails';
 import { ApplicationTitle } from './ApplicationTitle';
@@ -14,8 +13,14 @@ import { useUserContext } from '../userContexts';
 import { useLayer7Notify } from '../useLayer7Notify';
 import { ConfirmDialog } from '../ui/ConfirmDialog';
 import { LoadingDialog } from '../ui/LoadingDialog';
+import { useWorkFlowConfigurations } from './useWorkFlowConfigurations';
+import { isPortalAdmin, isOrgBoundUser } from '../userContexts';
 
 const useContentStyles = makeStyles(theme => ({
+    contained: {
+        height: 30,
+        marginRight: 20,
+    },
     label: {
         color: theme.palette.primary.main,
     },
@@ -37,6 +42,8 @@ const AppShowActions = ({
     const history = useHistory();
     const dataProvider = useDataProvider();
     const [deleting, setDeleting] = React.useState(false);
+    const [proxyCheckFailed, setProxyCheckFailed] = React.useState(false);
+    const workFlowConfigurations = useWorkFlowConfigurations();
 
     React.useEffect(() => {
         if (data && !isEditApplicationDisabled(userContext, data)) {
@@ -62,42 +69,70 @@ const AppShowActions = ({
     }, [canDelete, data, userContext]);
     const notifyAndNavigate = () => {
         setDeleting(false);
-        notify('resources.applications.notifications.delete_success', 'info');
+        if (
+            isOrgBoundUser(userContext) &&
+            workFlowConfigurations.deleteApplicationRequestWorkflowStatus ===
+                'ENABLED'
+        ) {
+            notify(
+                'resources.applications.notifications.delete_request_success',
+                'info'
+            );
+        } else {
+            notify(
+                'resources.applications.notifications.delete_success',
+                'info'
+            );
+        }
         history.push('/applications');
     };
-    const deleteApplication = () => {
-        dataProvider.delete(
-            'applications',
-            {
-                id: data.id,
-            },
-            {
-                onFailure: error => {
-                  setDeleting(false);
-                  notify(error || 'resources.applications.notifications.delete_error',
-                    'error');
+    const deleteApplication = (ignoreProxyCheck, forceDelete) => {
+        try {
+            dataProvider.delete(
+                'applications',
+                {
+                    id: data.id,
+                    params: {
+                        ...(ignoreProxyCheck && { ignoreProxyCheck: true }),
+                        ...(forceDelete && { forceDelete: true }),
+                    },
                 },
-                onSuccess: delData => {
-                    dataProvider.getOne(
-                        'applications',
-                        {
-                            id: data.id,
-                        },
-                        {
-                            onFailure: error => notifyAndNavigate(error),
-                            onSuccess: getData => {
-                                setDeleting(false);
-                                notify('resources.applications.notifications.delete_request_success',
-                                'info');
-                                history.go(0);
-                            }
+                {
+                    onFailure: error => {
+                        const validationErrors = get(
+                            error,
+                            'body.error.detail.validationErrors',
+                            []
+                        );
+                        setDeleting(false);
+                        if (
+                            isPortalAdmin(userContext) &&
+                            validationErrors &&
+                            validationErrors.length > 0 &&
+                            validationErrors[0].field === 'proxyCheck'
+                        ) {
+                            setProxyCheckFailed(true);
+                            notify(validationErrors[0].error, 'error');
+                            setDeleteConfirm(true);
+                        } else {
+                            notify(
+                                error ||
+                                    'resources.applications.notifications.delete_error',
+                                'error'
+                            );
+                            dataProvider.getOne('applications', {
+                                id: data.id,
+                            });
                         }
-                    );
+                    },
+                    onSuccess: () => {
+                        notifyAndNavigate();
+                    },
                 }
-            }
-        );
+            );
+        } catch (err) {}
     };
-    
+
     const confirmDelete = event => {
         setDeleteConfirm(true);
     };
@@ -106,25 +141,67 @@ const AppShowActions = ({
         return null;
     }
 
+    let deleteConfirmContent = '';
+    if (proxyCheckFailed) {
+        deleteConfirmContent = translate(
+            'resources.applications.proxy_check_alert'
+        );
+    } else {
+        deleteConfirmContent = translate(
+            'resources.applications.confirm_delete'
+        );
+    }
+
+    const handleConfirmDelete = () => {
+        setDeleteConfirm(false);
+        setDeleting(true);
+        const checkFlag =
+            isPortalAdmin(userContext) && data.status === 'DELETE_FAILED';
+        deleteApplication(checkFlag, checkFlag);
+    };
+
+    const handleProxyCheckConfirmDelete = () => {
+        setDeleteConfirm(false);
+        setProxyCheckFailed(false);
+        setDeleting(true);
+        deleteApplication(true, false);
+    };
+
+    const deleteFn = proxyCheckFailed
+        ? handleProxyCheckConfirmDelete
+        : handleConfirmDelete;
+
+    const deleteLabel =
+        isPortalAdmin(userContext) && data.status === 'DELETE_FAILED'
+            ? translate('resources.applications.actions.force_delete')
+            : translate('resources.applications.actions.delete');
+
     return (
         <TopToolbar className={className}>
             <div>
                 {canDelete && (
                     <Button
                         classes={contentLabelClasses}
-                        startIcon={<DeleteIcon />}
                         onClick={confirmDelete}
+                        variant="contained"
                     >
-                        {translate('resources.applications.actions.delete')}
+                        {deleteLabel}
                     </Button>
                 )}
-                {canEdit && <EditButton basePath={basePath} record={data} />}
+                {canEdit && (
+                    <EditButton
+                        basePath={basePath}
+                        icon={<span />}
+                        record={data}
+                        variant="contained"
+                    />
+                )}
             </div>
             <ConfirmDialog
                 title={translate(
                     'resources.applications.actions.deleteApplication'
                 )}
-                content={translate('resources.applications.confirm_delete')}
+                content={deleteConfirmContent}
                 buttonConfirm={translate(
                     'resources.applications.actions.delete'
                 )}
@@ -132,11 +209,7 @@ const AppShowActions = ({
                     'resources.applications.actions.cancel'
                 )}
                 open={deleteConfirm}
-                onConfirm={() => {
-                    setDeleteConfirm(false);
-                    setDeleting(true);
-                    deleteApplication();
-                }}
+                onConfirm={deleteFn}
                 onCancel={() => setDeleteConfirm(false)}
             />
             <LoadingDialog

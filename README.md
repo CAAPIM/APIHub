@@ -181,7 +181,7 @@ const App = () => {
 };
 ```
 
-6. Add the mock server to the `index.js` file:
+6. Add the mock server to the `index.js` file
 ```js
 // in packages/my-own-apihub/src/index.js
 import { startApiHubMockedServer } from 'layer7-apihub-mock';

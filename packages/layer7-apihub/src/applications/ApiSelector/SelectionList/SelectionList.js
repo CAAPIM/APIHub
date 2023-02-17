@@ -7,7 +7,14 @@ import { ApiSelectionListItem } from './ApiSelectionListItem';
 import { ApiGroupSelectionListItem } from './ApiGroupSelectionListItem';
 
 export function SelectionList(props) {
-    const { onItemRemoved, onApiPlanChanged, selectedItems, orgUuid } = props;
+    const {
+        onItemRemoved,
+        onApiPlanChanged,
+        selectedItems,
+        orgUuid,
+        isEditApisLocked,
+        isEditApiGroupsLocked,
+    } = props;
     const translate = useTranslate();
     const classes = useStyles(props);
 
@@ -36,6 +43,7 @@ export function SelectionList(props) {
                             return item.type === 'apis' ? (
                                 <ApiSelectionListItem
                                     className={classes.item}
+                                    disabled={isEditApisLocked}
                                     key={item.record.id}
                                     onRemoved={onItemRemoved}
                                     onApiPlanChanged={onApiPlanChanged}
@@ -45,6 +53,7 @@ export function SelectionList(props) {
                             ) : (
                                 <ApiGroupSelectionListItem
                                     className={classes.item}
+                                    disabled={isEditApiGroupsLocked}
                                     key={item.record.id}
                                     onRemoved={onItemRemoved}
                                     item={item}

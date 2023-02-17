@@ -384,7 +384,7 @@ export const startApiHubMockedServer = async (
             );
 
             this.delete(
-                `${urlPrefix}api/apim/Applications(':uuid')`,
+                `${urlPrefix}/api-management/1.0/applications/:uuid`,
                 deleteApplication(database),
                 options
             );

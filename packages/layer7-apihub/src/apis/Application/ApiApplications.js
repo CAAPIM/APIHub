@@ -72,7 +72,7 @@ export const ApiApplications = ({ id }) => {
                     setLoading(false);
                 } else if (applications.length < total) {
                     setApplications(
-                      uniqBy([ ...applications, ...data ], 'id')
+                      uniqBy([ ...applications, ...data ], 'uuid')
                     );
                     setCurrentPage(currentPage+1);
                 } else {

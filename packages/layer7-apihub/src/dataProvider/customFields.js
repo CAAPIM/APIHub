@@ -18,7 +18,7 @@ export const customFieldsDataProvider = context => {
             });
 
             if (!json) {
-                return { data: [] };
+                return { data: [], total: 0 };
             }
 
             return {

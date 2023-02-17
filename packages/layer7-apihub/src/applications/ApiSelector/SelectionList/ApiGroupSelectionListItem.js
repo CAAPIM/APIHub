@@ -20,7 +20,7 @@ import { ApiGroupSelectedItem } from './ApiGroupSelectedItem';
 import { ApiStatus } from '../../../apis/ApiStatus';
 
 export function ApiGroupSelectionListItem(props) {
-    const { className, onRemoved, item } = props;
+    const { className, onRemoved, item, disabled } = props;
     const translate = useTranslate();
     const classes = useStyles(props);
 
@@ -38,6 +38,7 @@ export function ApiGroupSelectionListItem(props) {
                     className={classes.delete}
                 >
                     <IconButton
+                        disabled={disabled}
                         onClick={handleItemRemoved}
                         edge="end"
                         aria-label={translate('ra.action.delete')}

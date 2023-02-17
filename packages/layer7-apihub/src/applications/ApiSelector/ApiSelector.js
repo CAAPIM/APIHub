@@ -26,7 +26,17 @@ import { ApiGroupSelectionModal } from './ApiGroupSelectionModal';
 import { useLayer7Notify } from '../../useLayer7Notify';
 
 export function ApiSelector(props) {
-    const { application, resource = '', orgUuid, apis = [] } = props;
+    const {
+        application,
+        resource = '',
+        orgUuid,
+        apiIds = [],
+        ApiGroupIds = [],
+        ApiApiPlanIds = [],
+        isEditApisLocked = false,
+        isEditApiGroupsLocked = false,
+    } = props;
+    const apis = apiIds;
     const translate = useTranslate();
     const [selectedTab, setSelectedTab] = React.useState('apis');
     const [selectedItems, setSelectedItems] = React.useState(apis);
@@ -35,11 +45,14 @@ export function ApiSelector(props) {
     const [apiPlansEnabled, setApiPlansEnabled] = React.useState(false);
     const [tags, setTags] = React.useState([]);
     const [filterTags, setFilterTags] = React.useState([]);
-
     const form = useForm();
     const classes = useStyles(props);
     const dataProvider = useDataProvider();
     const notify = useLayer7Notify();
+    const [
+        isLoadedApiPlansFeatureFlag,
+        setIsLoadedApiPlansFeatureFlag,
+    ] = React.useState(false);
 
     const {
         data: apiPlanFeatureFlag,
@@ -52,6 +65,7 @@ export function ApiSelector(props) {
 
     React.useEffect(() => {
         if (apiPlanFeatureFlag) {
+            setIsLoadedApiPlansFeatureFlag(true);
             setApiPlansEnabled(apiPlanFeatureFlag.value === 'true');
         }
     }, [apiPlanFeatureFlag]);
@@ -78,11 +92,11 @@ export function ApiSelector(props) {
     // to avoid dealing with many loaded/loading states and prevent some rerender issues
     React.useEffect(() => {
         async function fetchInitialSelectedItems() {
-            if (application.ApiIds && application.ApiIds.results.length > 0) {
+            if (apiIds && apiIds.length > 0) {
                 const { data: selectedApis } = await dataProvider.getMany(
                     'apis',
                     {
-                        ids: application.ApiIds.results || [],
+                        ids: apiIds || [],
                     },
                     {
                         onFailure: error => notify(error),
@@ -90,20 +104,16 @@ export function ApiSelector(props) {
                 );
 
                 let selectedApiPlans = [];
-                if (get(application, 'ApiApiPlanIds.results.length', 0)) {
-                    form.change(
-                        'ApiApiPlanIds',
-                        Array.from(application.ApiApiPlanIds.results)
-                    );
-
+                if (ApiApiPlanIds.length) {
+                    form.change('ApiApiPlanIds', Array.from(ApiApiPlanIds));
                     const { data: apiPlans } = await dataProvider.getMany(
                         'apiPlans',
                         {
                             ids: Array.from(
                                 new Set(
-                                    application.ApiApiPlanIds.results
-                                        .map(result => result.ApiPlanUuid)
-                                        .filter(uuid => uuid)
+                                    ApiApiPlanIds.map(
+                                        result => result.ApiPlanUuid
+                                    ).filter(uuid => uuid)
                                 )
                             ),
                         },
@@ -113,17 +123,13 @@ export function ApiSelector(props) {
                     );
                     selectedApiPlans = apiPlans;
                 }
-
                 setInitialSelectedApis(
                     selectedApis,
                     selectedApiPlans,
-                    get(application, 'ApiApiPlanIds.results', [])
+                    ApiApiPlanIds
                 );
             }
-            if (
-                application.ApiGroupIds &&
-                application.ApiGroupIds.results.length > 0
-            ) {
+            if (ApiGroupIds && ApiGroupIds.length > 0) {
                 const { data: apiGroups } = await dataProvider.getList(
                     'apiGroups',
                     {
@@ -138,32 +144,29 @@ export function ApiSelector(props) {
                     }
                 );
                 const selectedApiGroups = apiGroups.filter(apiGroup =>
-                    application.ApiGroupIds.results.find(
-                        id => apiGroup.id === id
-                    )
+                    ApiGroupIds.find(id => apiGroup.id === id)
                 );
                 setInitialSelectedApiGroups(selectedApiGroups);
             }
         }
 
-        if (application) {
+        if (isLoadedApiPlansFeatureFlag) {
             fetchInitialSelectedItems();
         }
-    }, [JSON.stringify(application)]); // eslint-disable-line
+    }, [isLoadedApiPlansFeatureFlag]); // eslint-disable-line
 
     React.useEffect(() => {
         setSelectedItems([]);
         setSelectedApi(undefined);
         setSelectedApiGroup(undefined);
         setSelectedTab('apis');
-        form.change('ApiIds', undefined);
+        form.change('apiIds', undefined);
         form.change('ApiGroupIds', undefined);
     }, [form, orgUuid]);
 
     const setInitialSelectedApis = (records, apiPlans, results) => {
         const apiIds = records.map(item => item.id);
-        form.change('ApiIds', Array.from(apiIds));
-
+        form.change('apiIds', Array.from(apiIds));
         setSelectedItems(previousSelectedItems => {
             const newSelectedItems = new Set(previousSelectedItems);
             records.forEach(record => {
@@ -222,11 +225,11 @@ export function ApiSelector(props) {
 
     const handleApiConfirmed = event => {
         // Get the current list of ApiIds
-        const selectedApis = new Set(form.getState().values.ApiIds || []);
+        const selectedApis = new Set(form.getState().values.apiIds || []);
         selectedApis.add(selectedApi.id);
 
         // Update the form by adding the selected API
-        form.change('ApiIds', Array.from(selectedApis));
+        form.change('apiIds', Array.from(selectedApis));
 
         const selectedApiPlans = new Set(
             form.getState().values.ApiApiPlanIds || []
@@ -328,7 +331,7 @@ export function ApiSelector(props) {
             })
         );
 
-        let field = itemToRemove.type === 'apis' ? 'ApiIds' : 'ApiGroupIds';
+        let field = itemToRemove.type === 'apis' ? 'apiIds' : 'ApiGroupIds';
         // We can't use form.getFieldState here because the tab containing
         // the input for the field may not be active and getFieldState returns
         // undefined in this case.
@@ -339,10 +342,13 @@ export function ApiSelector(props) {
         );
 
         if (apiPlansEnabled) {
-            const selectedApiPlanIds = form.getState().values['ApiApiPlanIds'] || [];
+            const selectedApiPlanIds =
+                form.getState().values['ApiApiPlanIds'] || [];
             form.change(
                 'ApiApiPlanIds',
-                selectedApiPlanIds.filter(object => object.ApiUuid !== itemToRemove.record.id)
+                selectedApiPlanIds.filter(
+                    object => object.ApiUuid !== itemToRemove.record.id
+                )
             );
         }
     };
@@ -403,6 +409,8 @@ export function ApiSelector(props) {
                         onItemRemoved={handleItemRemoved}
                         onApiPlanChanged={handleApiPlanChanged}
                         orgUuid={orgUuid}
+                        isEditApisLocked={isEditApisLocked}
+                        isEditApiGroupsLocked={isEditApiGroupsLocked}
                     />
                 </Grid>
                 <Grid item xs={7}>
@@ -436,7 +444,7 @@ export function ApiSelector(props) {
                         {orgUuid && (
                             <ReferenceArrayInput
                                 label=""
-                                source="ApiIds"
+                                source="apiIds"
                                 reference="apis"
                                 resource={resource}
                                 perPage={5}
@@ -450,7 +458,9 @@ export function ApiSelector(props) {
                                     filters={<TagSelector />}
                                     onAdd={handleApiAdded}
                                 >
-                                    <ApiChoiceItem />
+                                    <ApiChoiceItem
+                                        disabled={isEditApisLocked}
+                                    />
                                 </ListArrayInput>
                             </ReferenceArrayInput>
                         )}
@@ -470,7 +480,9 @@ export function ApiSelector(props) {
                                         filters={<ListArrayInputFilter />}
                                         onAdd={handleApiGroupAdded}
                                     >
-                                        <ApiGroupChoiceItem />
+                                        <ApiGroupChoiceItem
+                                            disabled={isEditApiGroupsLocked}
+                                        />
                                     </ListArrayInput>
                                 </ReferenceArrayInput>
                             )}
