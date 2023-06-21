@@ -64,7 +64,7 @@ export const applicationsDataProvider = context => {
 
             let [appResult, cfResult] = await Promise.all([
                 context.fetchJson(appURL, { credentials: 'include' }),
-                context.fetchJson(customFieldsURL, { credentials: 'include' })
+                context.fetchJson(customFieldsURL, { credentials: 'include' }),
             ]);
 
             const {
@@ -139,6 +139,23 @@ export const applicationsDataProvider = context => {
             };
         },
 
+        generateSecret: async ({ apiKey, appUuid, keySecretHashed }) => {
+            let secretGenerateURL = `${basePath}/${appUuid}/api-keys/${apiKey}/secret`;
+            const payload = {
+                keySecret: '',
+                keySecretHashed: keySecretHashed,
+            };
+            const responseData = await context.fetchJson(secretGenerateURL, {
+                body: JSON.stringify(payload),
+                credentials: 'include',
+                method: 'PATCH',
+            });
+            const { json: data } = responseData;
+            return {
+                data,
+            };
+        },
+
         getApis: async ({ id }) => {
             let apisURL = `${basePath}/${id}/apis`;
             const responseData = await context.fetchJson(apisURL, {
@@ -196,6 +213,19 @@ export const applicationsDataProvider = context => {
                     id: Uuid,
                     name: data.Name,
                     value: data.Value,
+                },
+            };
+        },
+
+        getKeyExpirySettings: async () => {
+            const url = `${context.apiUrl}/Settings('APPLICATION_API_KEY_EXPIRY')`;
+            const { json } = await context.fetchJson(url, {
+                credentials: 'include',
+            });
+            const settingsValue = JSON.parse(get(json, 'Value', '{}'));
+            return {
+                data: {
+                    ...settingsValue,
                 },
             };
         },

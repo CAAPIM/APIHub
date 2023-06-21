@@ -328,7 +328,10 @@ const apiHubMessages = {
                 apisCount: '%{count}',
                 authentication: 'Autenticación',
                 description: 'Descripción',
+                day: 'día',
+                days: 'días',
                 encrypted: 'Cifrado',
+                expiryDate: 'fecha de expiración',
                 sharedSecretClientSecret:
                     'Secreto compartido/secreto de cliente',
                 oauthType: 'Tipo de OAuth',
@@ -411,6 +414,7 @@ const apiHubMessages = {
                 disabled: 'Desactivado',
                 deprecated: 'Obsoleto',
                 delete_failed: 'Forzar eliminación',
+                expired: 'Caducado',
                 incomplete: 'Incompleto',
                 unpublished: 'Sin publicar',
                 rejected: 'Rechazado',
@@ -447,6 +451,8 @@ const apiHubMessages = {
                     'Al generar un nuevo secreto se cambia la clave de la API y se anula la clave de la API actual.',
                 generate_secret_warning_2:
                     'Esto rompe el acceso para todos los usuarios que utilicen la clave de la API actual. Comparta y utilice el secreto recién generado con los desarrolladores que codifican la aplicación que utiliza las API.',
+                hashed_secret_generated_message:
+                    'Copie este secreto compartido. No se volverá a mostrar.',
                 secret_generated_heading: 'Nuevo secreto generado',
                 secret_generated_heading_error:
                     'Se ha producido un error al generar el secreto.',

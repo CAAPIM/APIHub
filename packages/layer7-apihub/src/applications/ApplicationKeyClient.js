@@ -7,6 +7,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
 import IconFileCopy from '@material-ui/icons/FileCopy';
 import Chip from '@material-ui/core/Chip';
+import get from 'lodash/get';
 
 import { useCopyToClipboard } from '../ui';
 
@@ -34,7 +35,7 @@ export const ApplicationKeyClient = props => {
                                     'resources.applications.fields.apiKeyClientID'
                                 )}
                             </span>
-                            {isEditMode ? (
+                            {isEditMode && get(data, 'defaultKey') ? (
                                 <Chip
                                     className={classes.chip}
                                     label={translate(
@@ -80,24 +81,25 @@ export const ApplicationKeyClient = props => {
                             className={classes.fieldContent}
                         >
                             <span id="sharedSecretClientSecret">
-                                {data.keySecret}
+                                {data.keySecretHashed
+                                    ? '********'
+                                    : data.keySecret}
                             </span>
-                            {data.keySecret &&
-                                !data.keySecret.includes('****') && (
-                                    <IconButton
-                                        className={classes.buttonCopy}
-                                        color="primary"
-                                        title={translate(
-                                            'resources.applications.notifications.copy_to_clipboard'
-                                        )}
-                                        value={data.keySecret}
-                                        onClick={copyToClipboard}
-                                    >
-                                        <IconFileCopy
-                                            className={classes.iconCopy}
-                                        />
-                                    </IconButton>
-                                )}
+                            {data.keySecret && !data.keySecretHashed && (
+                                <IconButton
+                                    className={classes.buttonCopy}
+                                    color="primary"
+                                    title={translate(
+                                        'resources.applications.notifications.copy_to_clipboard'
+                                    )}
+                                    value={data.keySecret}
+                                    onClick={copyToClipboard}
+                                >
+                                    <IconFileCopy
+                                        className={classes.iconCopy}
+                                    />
+                                </IconButton>
+                            )}
                         </Typography>
                     </Labeled>
                 </Grid>

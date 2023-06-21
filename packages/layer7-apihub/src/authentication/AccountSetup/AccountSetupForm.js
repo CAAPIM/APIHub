@@ -10,12 +10,13 @@ import {
 import { makeStyles, InputAdornment } from '@material-ui/core';
 import { InfoOutlined } from '@material-ui/icons';
 import { FORM_ERROR } from 'final-form';
+import get from 'lodash/get';
 
 import { useApiHub } from '../../ApiHubContext';
 import { HtmlTooltip, PasswordInput } from '../../ui';
 import { TermsInput } from './TermsInput';
 import { AccountSetupToolbar } from './AccountSetupToolbar';
-import { validatePassword } from '../validatePassword';
+import { fetchPasswordPolicyData, getPwdTooltip, getPasswordValidators } from '../validatePassword';
 import isEmpty from 'lodash/isEmpty';
 import { getErrorMessage } from '../../useLayer7Notify';
 
@@ -30,6 +31,17 @@ export const AccountSetupForm = props => {
     const classes = useStyles(rest);
     const translate = useTranslate();
     const { urlWithTenant, originHubName } = useApiHub();
+    const [passwordPolicyData, setPasswordPolicyData] = React.useState({});
+    React.useEffect(() => {
+        fetchPasswordPolicyData(urlWithTenant, originHubName).then(data => {
+            setPasswordPolicyData(data);
+        }).catch((exception) => {
+            setPasswordPolicyData({});
+        });
+    }, []);
+    const regexConfig = get(passwordPolicyData, 'regexConfig', {});
+    const regexStr = get(regexConfig, 'REGEX.value', '');
+    const passwordTooltip = getPwdTooltip(regexConfig, translate);
 
     let flag = true;
     const validate = ({ password, confirm_password }) => {
@@ -114,8 +126,8 @@ export const AccountSetupForm = props => {
                     variant="outlined"
                     autoComplete="new_password"
                     fullWidth
-                    validate={[required(), validatePassword]}
-                    title="apihub.account_setup.validation.tooltip_password"
+                    validate={[required(), ...getPasswordValidators(regexStr)]}
+                    title={passwordTooltip}
                 />
                 <PasswordInput
                     source="confirm_password"

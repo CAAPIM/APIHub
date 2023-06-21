@@ -62,6 +62,7 @@ export const ApplicationToolbar = props => {
                             {showPublishBtn && (
                                 <Button
                                     className={classes.publish}
+                                    data-apim-test="publish"
                                     disabled={disablePublishButton}
                                     onClick={onPublish}
                                     variant={variant}

@@ -52,8 +52,16 @@ describe('Applications', () => {
                         id: 3,
                         name: 'application 3',
                     },
+                    {
+                        id: 4,
+                        name: 'app 4',
+                    },
+                    {
+                        id: 5,
+                        name: 'app 5',
+                    },
                 ],
-                total: 3,
+                total: 5,
             }),
         };
 
@@ -64,22 +72,29 @@ describe('Applications', () => {
             initialState
         );
 
-        await wait(() => {
-            const select = getByLabelText(
-                'resources.apis.specification.actions.search_or_select_application'
-            );
-            fireEvent.mouseDown(select);
-            // Enter search criteria
-            fireEvent.change(select, { target: { value: 'application' } });
-        });
+        const select = getByLabelText(
+            'resources.apis.specification.actions.search_or_select_application'
+        );
 
-        await wait(() => {
-            expect(queryByText('application 1')).not.toBeNull();
-            expect(queryByText('application 2')).not.toBeNull();
-            expect(queryByText('application 3')).not.toBeNull();
-        });
+        // Show all applications when select when no search criteria
+        await wait(() => fireEvent.mouseDown(select));
+        expect(queryByText('application 1')).not.toBeNull();
+        expect(queryByText('application 2')).not.toBeNull();
+        expect(queryByText('application 3')).not.toBeNull();
+        expect(queryByText('app 4')).not.toBeNull();
+        expect(queryByText('app 5')).not.toBeNull();
 
-        expect.assertions(3);
+        // Enter search criteria
+        await wait(() =>
+            fireEvent.change(select, { target: { value: 'application' } })
+        );
+        expect(queryByText('application 1')).not.toBeNull();
+        expect(queryByText('application 2')).not.toBeNull();
+        expect(queryByText('application 3')).not.toBeNull();
+        expect(queryByText('app 4')).toBeNull();
+        expect(queryByText('app 5')).toBeNull();
+
+        expect.assertions(10);
     });
 
     test('should display the selected application credentials', async () => {

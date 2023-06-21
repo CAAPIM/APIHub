@@ -5,7 +5,7 @@
 
   <groupId>com.ca.apim</groupId>
   <artifactId>apihub</artifactId>
-  <version>27.5-SNAPSHOT</version>
+  <version>33.2-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <properties>

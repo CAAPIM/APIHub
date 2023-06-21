@@ -31,12 +31,25 @@ export const apiKeysDataProvider = context => {
                 total: json.totalElements || 0,
             };
         },
-        create: async({appUuid, data}) => {
+        getOne: async ({ appUuid, apiKey }) => {
+            const url = `${basePath}/${appUuid}/api-keys/${apiKey}`;
+
+            const { json } = await context.fetchJson(url, {
+                credentials: 'include',
+            });
+            return {
+                data: {
+                    ...json,
+                    id: json.apiKey,
+                },
+            };
+        },
+        create: async ({ appUuid, data }) => {
             const path = `${basePath}/${appUuid}/api-keys`;
             const { json } = await context.fetchJson(path, {
                 credentials: 'include',
                 method: 'POST',
-                body: JSON.stringify({...data, applicationUuid: appUuid}),
+                body: JSON.stringify({ ...data, applicationUuid: appUuid }),
             });
             console.log('json', json);
             return {
@@ -51,11 +64,12 @@ export const apiKeysDataProvider = context => {
 
             const {
                 json: { ...data },
-            } = await context.fetchJson(path, {
-                credentials: 'include',
-                method: 'DELETE',
-            })
-            .catch();
+            } = await context
+                .fetchJson(path, {
+                    credentials: 'include',
+                    method: 'DELETE',
+                })
+                .catch();
 
             return {
                 data: { data },

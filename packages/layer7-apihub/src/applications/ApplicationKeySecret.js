@@ -3,6 +3,7 @@ import { useTranslate } from 'ra-core';
 import { Labeled, useQuery, useMutation } from 'react-admin';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
+import WarningIcon from '@material-ui/icons/Warning';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import IconFileCopy from '@material-ui/icons/FileCopy';
@@ -19,7 +20,14 @@ import { useLayer7Notify } from '../useLayer7Notify';
 import { useCopyToClipboard } from '../ui';
 
 export const ApplicationKeySecret = props => {
-    const { id: appUuid, record, isEditDisabled, labelClasses } = props;
+    const {
+        id: apiKey,
+        record,
+        isEditDisabled,
+        labelClasses,
+        onUpdateKeyDetails,
+        onGenerateKey,
+    } = props;
 
     const [open, setOpen] = useState(false);
     const classes = useStyles(props);
@@ -31,11 +39,14 @@ export const ApplicationKeySecret = props => {
     const notify = useLayer7Notify();
     const form = useForm();
 
-    const [keySecret, setKeySecret] = useState(record.keySecret);
+    const keySecret = record.keySecret;
+    const isSecretHashed = get(record, 'keySecretHashed');
+    const [generatedKeySecret, setGeneratedKeySecret] = useState();
     const [isPlainTextSelected, setIsPlainTextSelected] = useState(true);
     const [isHashedSecretSetting, setIsHashedSecretSetting] = useState(false);
     const [allowSelectHashing, setAllowSelectHashing] = useState(false);
-    const [oneTimePassword, setOneTimePassword] = useState(false);
+    const [showPasswordDialog, setShowPasswordDialog] = useState(false);
+    const [hashSelected, setHashSelected] = useState(false);
 
     const handleClick = event => {
         const value = event.target.value;
@@ -53,21 +64,66 @@ export const ApplicationKeySecret = props => {
     };
 
     const handleClose = () => {
-        setOneTimePassword(false);
+        onGenerateKey();
+        getKeyDetails();
+        setShowPasswordDialog(false);
         setOpen(false);
     };
+    const appUuid = record.applicationUuid;
 
-    const handleSecretClearAndClose = () => {
-        setKeySecret('***********');
-        setOneTimePassword(false);
-        setOpen(false);
-    };
+    const [
+        getKeyDetails,
+        { data: updatedKeyDetails, loading: apiKeyDetailsLoading },
+    ] = useMutation({
+        type: 'getOne',
+        resource: 'apiKeys',
+        payload: {
+            appUuid,
+            apiKey,
+        },
+    });
+
+    React.useEffect(() => {
+        if (!apiKeyDetailsLoading && updatedKeyDetails) {
+            onUpdateKeyDetails(updatedKeyDetails);
+        }
+    }, [apiKeyDetailsLoading, updatedKeyDetails]);
+
+    const [
+        regenerateMutate,
+        {
+            data: regeneratedSecret,
+            error: regenerateFailed,
+            loading: regeneratingSecret,
+        },
+    ] = useMutation();
+
+    const regenerateSecret = hashSelectedParam =>
+        regenerateMutate({
+            type: 'generateSecret',
+            resource: 'applications',
+            payload: {
+                apiKey,
+                appUuid,
+                keySecretHashed: hashSelectedParam,
+            },
+        });
+
+    React.useEffect(() => {
+        if (!regeneratingSecret && regeneratedSecret && !regenerateFailed) {
+            setGeneratedKeySecret(regeneratedSecret.keySecret);
+            notify(
+                'resources.applications.notifications.secret_generated_heading'
+            );
+        }
+    }, [regeneratedSecret, regeneratingSecret, regenerateFailed]);
 
     const { data, error, loading: isGetSecretHashMetadataLoading } = useQuery({
         type: 'getSecretHashMetadata',
         resource: 'applications',
         payload: {},
     });
+
     useEffect(() => {
         if (data && data.value) {
             const isPlainTextAllowed = get(
@@ -83,31 +139,16 @@ export const ApplicationKeySecret = props => {
         }
     }, [data, error]);
 
-    /*
-    To generate random uuid
-    */
-    const uuidv4 = () => {
-        return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
-            (
-                c ^
-                (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (c / 4)))
-            ).toString(16)
-        );
-    };
-
     const generateKeySecret = () => {
-        const key = uuidv4().replace(/-/g, '');
-        notify('resources.applications.notifications.secret_generated_heading');
+        let keySecretHashed = false;
         if (isHashedSecretSetting && !isPlainTextSelected) {
-            setOneTimePassword(true);
-            setKeySecret(key);
-            form.change('ShouldHash', true);
+            keySecretHashed = true;
         } else {
-            setKeySecret(key);
-            setOpen(false);
-            form.change('ShouldHash', false);
+            keySecretHashed = false;
         }
-        form.change('keySecret', key);
+        setShowPasswordDialog(true);
+        setHashSelected(keySecretHashed);
+        regenerateSecret(keySecretHashed);
     };
 
     if (isGetSecretHashMetadataLoading) {
@@ -127,8 +168,10 @@ export const ApplicationKeySecret = props => {
                         variant="body2"
                         className={classes.fieldContent}
                     >
-                        <span id="sharedSecretClientSecret">{keySecret}</span>
-                        {keySecret && !keySecret.includes('****') && (
+                        <span id="sharedSecretClientSecret">
+                            {isSecretHashed ? '********' : keySecret}
+                        </span>
+                        {keySecret && !isSecretHashed && (
                             <IconButton
                                 className={classes.buttonCopy}
                                 color="primary"
@@ -199,16 +242,17 @@ export const ApplicationKeySecret = props => {
                         </NativeSelect>
                     )}
                     <Dialog
-                        disableBackdropClick={oneTimePassword}
-                        disableEscapeKeyDown={oneTimePassword}
+                        disableBackdropClick={showPasswordDialog}
+                        disableEscapeKeyDown={showPasswordDialog}
                         open={open}
                         onClose={handleClose}
                         aria-labelledby="form-dialog-title"
                     >
-                        {oneTimePassword ? (
+                        {showPasswordDialog ? (
                             <OneTimePasswordDialog
                                 handleClose={handleClose}
-                                keySecret={keySecret}
+                                showHashWarning={hashSelected}
+                                keySecretToShow={generatedKeySecret}
                             />
                         ) : (
                             <ShowGenerateDialog
@@ -270,16 +314,6 @@ const useOneTimePasswordDialogStyles = makeStyles(
             display: 'flex',
             flexDirection: 'row',
         },
-        leftSection: {
-            flex: '1',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            margin: theme.spacing(0),
-            padding: theme.spacing(1),
-            backgroundColor: theme.palette.warning.main,
-            color: theme.palette.common.white,
-        },
         leftIcon: {
             fontSize: '5rem',
             color: theme.palette.common.white,
@@ -297,13 +331,31 @@ const useOneTimePasswordDialogStyles = makeStyles(
             padding: theme.spacing(1),
             textAlign: 'center',
         },
+        hashWarningIcon: {
+            paddingRight: 8,
+        },
+        hashWarningSection: {
+            alignItems: 'flex-start',
+            backgroundColor: 'rgba(255, 148, 77, 0.1)',
+            border: `1px solid ${theme.palette.warning.main}`,
+            display: 'flex',
+            marginTop: 24,
+            paddingBottom: 16,
+            paddingLeft: 12,
+            paddingRight: 12,
+            paddingTop: 16,
+        },
     }),
     {
         name: 'Layer7ApplicationOneTimePasswordDialog',
     }
 );
 
-const OneTimePasswordDialog = ({ handleClose, keySecret }) => {
+const OneTimePasswordDialog = ({
+    handleClose,
+    keySecretToShow,
+    showHashWarning,
+}) => {
     const classes = useOneTimePasswordDialogStyles();
     const copyToClipboard = useCopyToClipboard({
         successMessage: 'resources.applications.notifications.copy_success',
@@ -312,9 +364,6 @@ const OneTimePasswordDialog = ({ handleClose, keySecret }) => {
     const translate = useTranslate();
     return (
         <div className={classes.mainContent}>
-            <div className={classes.leftSection}>
-                <ReportProblemOutlinedIcon className={classes.leftIcon} />
-            </div>
             <div className={classes.rightSection}>
                 <DialogTitle id="form-dialog-title">
                     {translate(
@@ -332,11 +381,6 @@ const OneTimePasswordDialog = ({ handleClose, keySecret }) => {
                             'resources.applications.notifications.copy_secret_now'
                         )}
                     </Typography>
-                    <Typography variant="body1" gutterBottom>
-                        {translate(
-                            'resources.applications.notifications.secret_generated_message'
-                        )}
-                    </Typography>
                     <div className={classes.copyHashSection}>
                         <Typography variant="subtitle2" gutterBottom>
                             {translate(
@@ -344,11 +388,11 @@ const OneTimePasswordDialog = ({ handleClose, keySecret }) => {
                             )}
                         </Typography>
                         <Typography variant="body1" gutterBottom>
-                            {keySecret}
+                            {keySecretToShow}
                         </Typography>
                         <Button
                             onClick={copyToClipboard}
-                            value={keySecret}
+                            value={keySecretToShow}
                             align="center"
                             variant="contained"
                             color="primary"
@@ -358,6 +402,20 @@ const OneTimePasswordDialog = ({ handleClose, keySecret }) => {
                             )}
                         </Button>
                     </div>
+                    {showHashWarning && (
+                        <div className={classes.hashWarningSection}>
+                            <WarningIcon className={classes.hashWarningIcon} />
+                            <Typography
+                                display="inline"
+                                variant="body1"
+                                gutterBottom
+                            >
+                                {translate(
+                                    'resources.applications.notifications.hashed_secret_generated_message'
+                                )}
+                            </Typography>
+                        </div>
+                    )}
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleClose} color="secondary">

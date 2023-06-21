@@ -169,6 +169,7 @@ export const ApplicationNew = ({ userContext, toolbarProps }) => {
                             className={classes.field}
                         ></Labeled>
                         <TextInput
+                            data-apim-test="applicationName"
                             onChange={onNameChange}
                             source="name"
                             type="text"

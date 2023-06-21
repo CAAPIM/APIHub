@@ -167,7 +167,7 @@ const apiHubMessages = {
                 at_least_one_special_character:
                     'At least one special character: !@#$%^&*',
                 no_other_characters_accepted:
-                    'Only alpha numeric and !@#$%^&*- allowed'
+                    'Only alpha numeric and !@#$%^&*- allowed',
             },
         },
         markdown_editor: {
@@ -316,7 +316,10 @@ const apiHubMessages = {
                 apis: 'APIs',
                 authentication: 'Authentication',
                 description: 'Description',
+                day: 'day',
+                days: 'days',
                 encrypted: 'Encrypted',
+                expiryDate: 'Expiry Date',
                 sharedSecretClientSecret: 'Shared Secret / Client Secret',
                 oauthType: 'OAuth Type',
                 oauthCallbackUrl: 'OAuth Callback URL',
@@ -392,6 +395,7 @@ const apiHubMessages = {
                 enabled: 'Enabled',
                 disabled: 'Disabled',
                 deprecated: 'Deprecated',
+                expired: 'Expired',
                 delete_failed: 'Delete Failed',
                 incomplete: 'Incomplete',
                 unpublished: 'Unpublished',
@@ -428,6 +432,8 @@ const apiHubMessages = {
                     'Generating a new secret changes the API key and voids the current API key.',
                 generate_secret_warning_2:
                     'This breaks access for anyone using the current API key. Share and use the newly generated secret with developers coding their application that uses the APIs.',
+                hashed_secret_generated_message:
+                    'Copy this shared secret. It will not be shown again.',
                 secret_generated_heading: 'New Secret Generated',
                 secret_generated_heading_error:
                     'An error occurred while generating the secret',

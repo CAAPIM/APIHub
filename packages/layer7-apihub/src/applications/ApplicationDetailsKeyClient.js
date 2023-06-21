@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import { Labeled, TextField } from 'react-admin';
 import { useTranslate } from 'ra-core';
 import Grid from '@material-ui/core/Grid';
@@ -13,6 +13,7 @@ import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import classnames from 'classnames';
+import moment from 'moment';
 
 import { useCopyToClipboard } from '../ui';
 
@@ -33,6 +34,11 @@ const getStatusColor = (classes, status) => {
                 statusLabel: 'Delete_Failed',
                 statusColorClass: classes.disabled,
             };
+        case 'EXPIRED':
+            return {
+                statusLabel: 'Expired',
+                statusColorClass: classes.expired,
+            };
         default:
             return {
                 statusLabel: 'Disabled',
@@ -42,7 +48,7 @@ const getStatusColor = (classes, status) => {
 };
 
 export const ApplicationDetailsKeyClient = props => {
-    const { data, includeSecret } = props;
+    const { data, includeSecret, isKeyExpiryEnabled } = props;
     const classes = useStyles();
     const translate = useTranslate();
     const copyToClipboard = useCopyToClipboard({
@@ -57,6 +63,56 @@ export const ApplicationDetailsKeyClient = props => {
         classes,
         data.status
     );
+
+    const getExpiryDateText = data => {
+        let expiryDateText = translate(
+            'resources.applications.fields.none'
+        );
+        const secretExpiryTs = data.secretExpiryTs;
+        if (isKeyExpiryEnabled && secretExpiryTs) {
+            const keyExpiryDate = moment(secretExpiryTs);
+            expiryDateText = keyExpiryDate.format(
+                'dddd, MMMM Do YYYY, HH:mm:ss'
+            );
+        }
+        return expiryDateText;
+    };
+
+    const getExpiryDateSubText = data => {
+        let expiryDateSubText = '';
+        const secretExpiryTs = data.secretExpiryTs;
+        const keyStatus = data.status;
+        if (isKeyExpiryEnabled && secretExpiryTs) {
+            const keyExpiryDate = moment(secretExpiryTs);
+            const currentTime = moment();
+            if (keyStatus === 'EXPIRED') {
+                expiryDateSubText = translate(
+                    'resources.applications.status.expired'
+                );
+            } else {
+                const days = keyExpiryDate.diff(currentTime, 'days');
+                let suffix = translate(
+                    'resources.applications.fields.days'
+                );
+                if (days === 1) {
+                    suffix = translate(
+                        'resources.applications.fields.day'
+                    );
+                }
+                expiryDateSubText = `${days} ${suffix}`;
+            }
+        }
+        return expiryDateSubText;
+    };
+
+    const getExpiryDateSubTextClass = data => {
+        let expiryDateSubTextClass = '';
+        const keyStatus = data.status;
+        if (keyStatus === 'EXPIRED') {
+            expiryDateSubTextClass = classes.expiredKeyStatus;
+        }
+        return expiryDateSubTextClass;
+    };
 
     return (
         <ListItem
@@ -225,7 +281,7 @@ export const ApplicationDetailsKeyClient = props => {
                             </Grid>
                         )}
                     </Grid>
-                    <Grid>
+                    <Grid container>
                         {data.oauthType && (
                             <Grid item md={6} sm={6} xs={12}>
                                 <Labeled
@@ -242,6 +298,40 @@ export const ApplicationDetailsKeyClient = props => {
                                             source="oauthType"
                                         />
                                     </div>
+                                </Labeled>
+                            </Grid>
+                        )}
+                        {isKeyExpiryEnabled && (
+                            <Grid item md={6} sm={6} xs={12}>
+                                <Labeled
+                                    // On <Labeled />, this will translate in a correct `for` attribute on the label
+                                    id="expiryDate"
+                                    label={
+                                        'resources.applications.fields.expiryDate'
+                                    }
+                                    classes={classes}
+                                    className={classes.fieldLabel}
+                                >
+                                    <Fragment>
+                                        <Typography
+                                            variant="body2"
+                                            className={classes.fieldContent}
+                                        >
+                                            <span
+                                                className={classes.fieldValue}
+                                            >
+                                                {getExpiryDateText(data)}
+                                            </span>
+                                        </Typography>
+                                        <Typography
+                                            className={getExpiryDateSubTextClass(
+                                                data
+                                            )}
+                                            variant="body2"
+                                        >
+                                            {getExpiryDateSubText(data)}
+                                        </Typography>
+                                    </Fragment>
                                 </Labeled>
                             </Grid>
                         )}
@@ -276,6 +366,16 @@ const useStyles = makeStyles(
             '&:before': {
                 backgroundColor: '#4CAF50',
             },
+        },
+        expired: {
+            color: '#B30303',
+            '&:before': {
+                backgroundColor: '#B30303',
+            },
+        },
+        expiredKeyStatus: {
+            color: '#B30303',
+            fontFamily: 'clear-sans-bold',
         },
         disabled: {
             color: '#696969',
