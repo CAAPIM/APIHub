@@ -59,10 +59,6 @@ export const ApiApplications = ({ id }) => {
     React.useEffect(() => {
         let active = true;
 
-        if (!search || search.length < 2) {
-            return undefined;
-        }
-
         (async () => {
             const [data, total] = await fetchApplications(search);
 
@@ -71,10 +67,8 @@ export const ApiApplications = ({ id }) => {
                     setApplications(data);
                     setLoading(false);
                 } else if (applications.length < total) {
-                    setApplications(
-                      uniqBy([ ...applications, ...data ], 'uuid')
-                    );
-                    setCurrentPage(currentPage+1);
+                    setApplications(uniqBy([...applications, ...data], 'uuid'));
+                    setCurrentPage(currentPage + 1);
                 } else {
                     setLoading(false);
                 }
@@ -102,10 +96,10 @@ export const ApiApplications = ({ id }) => {
                             open={open}
                             onOpen={() => setOpen(true)}
                             onClose={(event, reason) => setOpen(false)}
-                            onChange={(event, app, reason) => { 
-                                setSelectedApp(app)
+                            onChange={(event, app, reason) => {
+                                setSelectedApp(app);
                                 if (reason == 'clear') {
-                                    setApplications([])  
+                                    setApplications([]);
                                 }
                             }}
                             getOptionSelected={(option, value) =>

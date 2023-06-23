@@ -33,7 +33,9 @@ export const isEditPendingApproval = status => {
 const STATUS_APPLICATION_DETAILS = 'APPLICATION_DETAILS';
 const STATUS_APPLICATION_CUSTOM_FIELDS = 'APPLICATION_CUSTOM_FIELDS';
 const STATUS_APPLICATION_API_PLANS = 'APPLICATION_API_PLANS';
+const STATUS_APPLICATION_PATCH_API_PLANS = 'PATCH_APPLICATION_API_PLANS';
 const STATUS_APPLICATION_APIS = 'APPLICATION_APIS';
+const STATUS_APPLICATION_PATCH_APIS = 'PATCH_APPLICATION_APIS';
 const STATUS_APPLICATION_API_GROUPS = 'APPLICATION_API_GROUPS';
 const STATUS_APPLICATION_API_KEYS = 'APPLICATION_API_KEYS';
 
@@ -68,16 +70,16 @@ export const isEditAPIPlansPending = (
     status
 ) => {
     return (
-        isOrgBoundUser(userContext) &&
-        appRequestStatus[STATUS_APPLICATION_API_PLANS] &&
+        (appRequestStatus[STATUS_APPLICATION_API_PLANS] ||
+            appRequestStatus[STATUS_APPLICATION_PATCH_API_PLANS]) &&
         isAppInLockableState(status)
     );
 };
 
 export const isEditAPIsPending = (userContext, appRequestStatus, status) => {
     return (
-        isOrgBoundUser(userContext) &&
-        appRequestStatus[STATUS_APPLICATION_APIS] &&
+        (appRequestStatus[STATUS_APPLICATION_APIS] ||
+            appRequestStatus[STATUS_APPLICATION_PATCH_APIS]) &&
         isAppInLockableState(status)
     );
 };

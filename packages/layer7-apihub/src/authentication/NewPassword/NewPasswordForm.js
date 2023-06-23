@@ -1,12 +1,14 @@
 import React from 'react';
-import { SimpleForm } from 'react-admin';
+import { SimpleForm, useTranslate } from 'react-admin';
 import { required } from 'ra-core';
 import { FORM_ERROR } from 'final-form';
 import { makeStyles } from '@material-ui/core';
+import get from 'lodash/get';
 
+import { useApiHub } from '../../ApiHubContext';
 import { NewPasswordToolbar } from './NewPasswordToolbar';
 import { PasswordInput } from '../../ui';
-import { validatePassword } from '../validatePassword';
+import { fetchPasswordPolicyData, getPwdTooltip, getPasswordValidators } from '../validatePassword';
 
 export const NewPasswordForm = props => {
     const { onSubmit, toolbarProps, ...rest } = props;
@@ -22,6 +24,20 @@ export const NewPasswordForm = props => {
         }
     };
 
+    const [passwordPolicyData, setPasswordPolicyData] = React.useState({});
+    const { urlWithTenant, originHubName } = useApiHub();
+    React.useEffect(() => {
+        fetchPasswordPolicyData(urlWithTenant, originHubName).then(data => {
+            setPasswordPolicyData(data);
+        }).catch((exception) => {
+            setPasswordPolicyData({});
+        });
+    }, []);
+    const regexConfig = get(passwordPolicyData, 'regexConfig', {});
+    const regexStr = get(regexConfig, 'REGEX.value', '');
+    const translate = useTranslate();
+    const passwordTooltip = getPwdTooltip(regexConfig, translate);
+
     return (
         <div className={classes.root}>
             <SimpleForm
@@ -36,8 +52,8 @@ export const NewPasswordForm = props => {
                     label="apihub.new_password.fields.password"
                     fullWidth
                     variant="outlined"
-                    validate={[required(), validatePassword]}
-                    title="apihub.new_password.validation.tooltip_password"
+                    validate={[required(), ...getPasswordValidators(regexStr)]}
+                    title={passwordTooltip}
                 />
                 <PasswordInput
                     source="confirm_password"

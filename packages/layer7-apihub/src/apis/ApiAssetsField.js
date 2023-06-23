@@ -61,7 +61,10 @@ export const ApiAssetsField = props => {
 
 export const AssetsList = ({ record, links, ...rest }) => {
     const { urlWithTenant } = useApiHub();
+    const { apiServiceType, publishedByPortal } = record;
 
+    const isGatewayPublishedSoapApi =
+        apiServiceType === 'SOAP' && !publishedByPortal;
     return (
         <>
             <List {...rest}>
@@ -70,7 +73,11 @@ export const AssetsList = ({ record, links, ...rest }) => {
                         <ListItem key={link.id} disableGutters>
                             <Link
                                 type={link.type}
-                                href={`${urlWithTenant}${link.href}`}
+                                href={
+                                    isGatewayPublishedSoapApi
+                                        ? `${link.href}`
+                                        : `${urlWithTenant}${link.href}`
+                                }
                                 download={link.name}
                             >
                                 {link.name}

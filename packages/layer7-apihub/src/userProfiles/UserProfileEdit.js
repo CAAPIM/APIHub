@@ -14,7 +14,6 @@ import {
     useEditController,
     useTranslate,
     FormDataConsumer,
-    useQuery,
 } from 'react-admin';
 import { Link } from 'react-router-dom';
 import { makeStyles, Collapse } from '@material-ui/core';
@@ -22,9 +21,9 @@ import Button from '@material-ui/core/Button';
 import createDecorator from 'final-form-calculate';
 import get from 'lodash/get';
 
+import { useApiHub } from '../ApiHubContext';
 import { FormDialog, ViewTitle, PasswordInput } from '../ui';
-import { usePasswordEncryption, getPwdTooltip } from '../authentication';
-import { regex } from 'ra-core';
+import { usePasswordEncryption, fetchPasswordPolicyData, getPwdTooltip, getPasswordValidators } from '../authentication';
 import { UserProfileTitle } from './UserProfileTitle';
 import { UserProfileSubtitle } from './UserProfileSubtitle';
 import { isPortalAdmin, useUserContext } from '../userContexts';
@@ -280,20 +279,17 @@ export const UserProfileEditForm = ({ record, basePath, save, ...rest }) => {
     };
     const [userContext] = useUserContext();
     const isAdmin = isPortalAdmin(userContext);
-    const { data } = useQuery({
-        type: 'getPasswordPolicy',
-        resource: 'userProfiles',
-    });
-    const regexConfig = get(data, 'regexConfig', {});
+    const [passwordPolicyData, setPasswordPolicyData] = React.useState({});
+    const { urlWithTenant, originHubName } = useApiHub();
+    React.useEffect(() => {
+        fetchPasswordPolicyData(urlWithTenant, originHubName).then(data => {
+            setPasswordPolicyData(data);
+        }).catch((exception) => {
+            setPasswordPolicyData({});
+        });
+    }, []);
+    const regexConfig = get(passwordPolicyData, 'regexConfig', {});
     const regexStr = get(regexConfig, 'REGEX.value', '');
-    const validatePassword = regexStr
-        ? [
-              regex(
-                  new RegExp(regexStr),
-                  'resources.userProfiles.validation.error_password_not_matching_criteria'
-              ),
-          ]
-        : [];
     const translate = useTranslate();
     const passwordTooltip = getPwdTooltip(regexConfig, translate);
     const isIdpUser = get(userContext, 'userDetails.isIdpUser', false);
@@ -350,7 +346,7 @@ export const UserProfileEditForm = ({ record, basePath, save, ...rest }) => {
                                 title={passwordTooltip}
                                 data-testid={'new-password'}
                                 className={className}
-                                validate={validatePassword}
+                                validate={getPasswordValidators(regexStr)}
                                 {...rest}
                             />
                             <br />

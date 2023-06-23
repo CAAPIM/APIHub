@@ -7,6 +7,7 @@ import Typography from '@material-ui/core/Typography';
 import List from '@material-ui/core/List';
 import { makeStyles } from '@material-ui/core/styles';
 import sortBy from 'lodash/sortBy';
+import get from 'lodash/get';
 
 import { useUserContext } from '../userContexts';
 import { ApplicationApisList } from './ApplicationApisList';
@@ -54,6 +55,19 @@ export const ApplicationDetails = ({ record }) => {
         resource: 'applications',
         payload: { id: record.id },
     });
+
+    const { data: applicationApiKeyExpirySettings } = useQuery({
+        type: 'getKeyExpirySettings',
+        resource: 'applications',
+        payload: {},
+    });
+
+    const isKeyExpiryEnabled = get(
+        applicationApiKeyExpirySettings,
+        'enabled',
+        false
+    );
+
     React.useEffect(() => {
         if (apisData && apisData.length > 0) {
             setApiIds(apisData.map(item => item.uuid));
@@ -256,6 +270,7 @@ export const ApplicationDetails = ({ record }) => {
                                 key={apiKey.id}
                                 data={apiKey}
                                 includeSecret={true}
+                                isKeyExpiryEnabled={isKeyExpiryEnabled}
                                 labelClasses={contentLabelClasses}
                                 dataProvider={dataProvider}
                                 refreshApiKeys={fetchApiKeys}
