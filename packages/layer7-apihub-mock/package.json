@@ -18,7 +18,7 @@
         "faker": "5.5.3",
         "kcd-scripts": "6.3.0",
         "lodash": "~4.17.21",
-        "minimist": "~1.2.5",
+        "minimist": "~1.2.6",
         "minimongo": "~6.5.1",
         "miragejs": "~0.1.40",
         "yamljs": "~0.3.0"
