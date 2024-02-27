@@ -206,6 +206,7 @@ const apiHubMessages = {
                 deprecated: 'Obsoleto',
                 unpublished: 'Non pubblicato',
                 incomplete: 'Incompleto',
+                new: 'Non pubblicato',
             },
             accessStatus: {
                 public: 'Pubblico',

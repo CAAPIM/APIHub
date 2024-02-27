@@ -14,7 +14,7 @@ import { AuthSchemeList, LoginToolbar } from '.';
 import { useAuthSchemes, usePasswordEncryption } from '..';
 
 export const LoginForm = props => {
-    const { toolbarProps,localLoginsDisabled, ...rest } = props;
+    const { toolbarProps, isShowingMultiSessionPrompt, localLoginsDisabled, setIsShowingMultiSessionPrompt, ...rest } = props;
 
     const login = useLogin();
     const classes = useStyles(rest);
@@ -30,20 +30,24 @@ export const LoginForm = props => {
     const [isLoading, setIsLoading] = useState(null);
     const [error, setError] = useState(null);
     const [authScheme, setAuthScheme] = useState(null);
+    const [multiSessionUserName, setMultiSessionUserName] = useState('');
 
 	useEffect(() => {
 		setAuthScheme(defaultAuthScheme);
 	}, [defaultAuthScheme]);
 
-    const submit = async ({ username, password }) => {
+    const submit = async ({ confirmpassword, username, password }) => {
         setError(null);
         setIsLoading(true);
+
+        const currentPassword = isShowingMultiSessionPrompt ? confirmpassword : password;
 
         const params = {
             scheme: 'credentials',
             provider: get(authScheme, 'uuid', null),
-            username,
-            password,
+            username : isShowingMultiSessionPrompt ? multiSessionUserName : username,
+            password : currentPassword,
+            ...(isShowingMultiSessionPrompt && { terminateExistingSessions: true }),
         };
         const enhancedPasswordSecurity = authScheme
             ? get(
@@ -52,10 +56,12 @@ export const LoginForm = props => {
               ) === 'yes'
             : defaultEnhancedPasswordSecurity;
         if (enhancedPasswordSecurity && publicKey) {
-            params.password = await encrypt(password);
+            params.password = await encrypt(currentPassword);
             params.publicKey = publicKey;
         }
 
+        let errorMessageObjString = '';
+        let errorOccured = false;
         try {
             if(!params.provider && localLoginsDisabled) {
                 setError('apihub.login.notifications.local_logins_disabled');
@@ -64,7 +70,27 @@ export const LoginForm = props => {
             }
         } catch(error) {
             console.error(error.message);
-            setError('apihub.login.notifications.invalid_credentials');
+            errorOccured = true;
+            errorMessageObjString = error.message;
+        }
+        if (errorOccured) {
+            let responseCode = '';
+            if (errorMessageObjString) {
+                try {
+                    let errorObj = JSON.parse(errorMessageObjString);
+                    responseCode = get(errorObj, 'body.respCode', '');
+                }
+                catch(parseError) {
+                }
+            }
+            if (responseCode === '14007') {
+                setIsShowingMultiSessionPrompt(true);
+                setMultiSessionUserName(username);
+            } else if (isShowingMultiSessionPrompt && (responseCode === '14002')) {
+                setError('apihub.login.notifications.multi_session_invalid_credentials');
+            } else {
+                setError('apihub.login.notifications.invalid_credentials');
+            }
         }
 
         setIsLoading(false);
@@ -76,46 +102,81 @@ export const LoginForm = props => {
     }
 
     let credsReqd = !localLoginsDisabled || authScheme;
+    const saveLabel = isShowingMultiSessionPrompt ? 'apihub.login.actions.multi_session_sign_in' : 'apihub.login.actions.sign_in';
+    const saveBtnAdditionalText = isShowingMultiSessionPrompt ? translate('apihub.login.actions.multi_session_sign_in_additional_text') : '';
+    const handleCancel = () => {
+        setIsShowingMultiSessionPrompt(false);
+    };
+
+    const renderNormalForm = () => (<SimpleForm
+        className={classes.form}
+        save={submit}
+        toolbar={
+            <LoginToolbar
+                loading={isLoading}
+                error={error}
+                handleCancel={handleCancel}
+                saveLabel={saveLabel}
+                saveBtnAdditionalText={saveBtnAdditionalText}
+                showCancelBtn={isShowingMultiSessionPrompt}
+                {...toolbarProps}
+            />
+        }
+        {...props}
+    >
+        <TextInput
+            source="username"
+            type="text"
+            label="apihub.login.fields.username"
+            variant="outlined"
+            fullWidth
+            validate={required()}
+        />
+        <PasswordInput
+            source="password"
+            label="apihub.login.fields.password"
+            variant="outlined"
+            fullWidth
+            validate={required()}
+        />
+    </SimpleForm>);
+
+    const renderMultipleSessionConfirmForm = () => (<SimpleForm
+        className={classes.form}
+        save={submit}
+        toolbar={
+            <LoginToolbar
+                loading={isLoading}
+                error={error}
+                handleCancel={handleCancel}
+                saveLabel={saveLabel}
+                saveBtnAdditionalText={saveBtnAdditionalText}
+                showCancelBtn={isShowingMultiSessionPrompt}
+                {...toolbarProps}
+            />
+        }
+        {...props}
+    >
+        {isShowingMultiSessionPrompt && <PasswordInput
+            source="confirmpassword"
+            label="apihub.login.fields.password"
+            variant="outlined"
+            fullWidth
+            validate={required()}
+        />}
+    </SimpleForm>);
 
     return (
         <>
-          { credsReqd && (
-            <SimpleForm
-                className={classes.form}
-                save={submit}
-                toolbar={
-                    <LoginToolbar
-                        loading={isLoading}
-                        error={error}
-                        {...toolbarProps}
-                    />
-                }
-                {...props}
-            >
-                <TextInput
-                    source="username"
-                    type="text"
-                    label="apihub.login.fields.username"
-                    variant="outlined"
-                    fullWidth
-                    validate={required()}
-                />
-                <PasswordInput
-                    source="password"
-                    label="apihub.login.fields.password"
-                    variant="outlined"
-                    fullWidth
-                    validate={required()}
-                />
-            </SimpleForm> ) }
-            { !localLoginsDisabled ? (
+          { credsReqd && ( isShowingMultiSessionPrompt ? renderMultipleSessionConfirmForm() : renderNormalForm() ) }
+            {(!isShowingMultiSessionPrompt && !localLoginsDisabled) ? (
             <Typography variant="body1">
                 <Link component={RouterLink} to="/reset-password">
                     {translate('apihub.login.actions.forgot_password')}
                 </Link>
             </Typography>
             ) : null}
-            {authSchemes.length > 0 ? (
+            {(!isShowingMultiSessionPrompt && (authSchemes.length > 0)) ? (
                 <AuthSchemeList
                     onClick={setAuthScheme}
                     authSchemes={authSchemes}
@@ -133,6 +194,10 @@ const useStyles = makeStyles(
             '& >:first-child': {
                 padding: 0,
             },
+        },
+        multi_session_btn: {
+            fontSize: 14,
+            fontWeight: 600,
         },
     }),
     {

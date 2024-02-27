@@ -25,7 +25,7 @@ export const credentialsAuthProvider = (apiUrl, fetchJson) => ({
             }
         } catch (error) {
             console.error(error);
-            throw new Error(error);
+            throw new Error(JSON.stringify(error));
         }
     },
     logout: async () => {

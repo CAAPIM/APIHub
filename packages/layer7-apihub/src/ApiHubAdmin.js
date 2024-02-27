@@ -17,6 +17,7 @@ import {
     ResetPasswordPage,
     AccountSetupPage,
     SignUpPage,
+    SAMLLoginConfirmPage,
 } from './authentication';
 import { HomePageContent } from './homepage';
 import { apis } from './apis';
@@ -46,6 +47,7 @@ export const ApiHubAdmin = ({
     newPasswordPage = NewPasswordPage,
     accountSetupPage = AccountSetupPage,
     signUpPage = SignUpPage,
+    samlLoginConfirmPage = SAMLLoginConfirmPage,
     // React Admin Settings
     theme = defaultTheme,
     customReducers,
@@ -142,6 +144,11 @@ export const ApiHubAdmin = ({
                     <Route
                         path="/account-setup*"
                         component={accountSetupPage}
+                        noLayout
+                    />,
+                    <Route
+                        path="/saml/login/confirm"
+                        component={samlLoginConfirmPage}
                         noLayout
                     />,
                     <Route path="/signup" component={signUpPage} noLayout />,

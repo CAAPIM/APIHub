@@ -1,20 +1,17 @@
 import React, { forwardRef } from 'react';
-
-import { markdownRenderer as defaultMarkdownRenderer } from '.';
+import MDPreview from '@uiw/react-markdown-preview';
 
 export const MarkdownView = forwardRef(
     (
         {
             value,
-            markdownRenderer = defaultMarkdownRenderer,
-            markdownOptions = {},
             ...props
         },
         ref
     ) => {
         return (
             <div ref={ref} {...props}>
-                {markdownRenderer(value, markdownOptions)}
+                <MDPreview data-color-mode="light" source={value} />
             </div>
         );
     }

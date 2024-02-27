@@ -114,7 +114,7 @@ export const ApplicationDetailsOverviewField = ({
                         <EditIcon className={classes.icon} />
                     </IconButton>
                     <ApplicationDetailsOverviewEditor
-                        initialValue={data ? data.markdown : null}
+                        initialValue={data ? data.markdown : ''}
                         onCancel={handleToggleViewing}
                         onSave={handleUpdate}
                         open={isEditingOverview}
@@ -137,7 +137,10 @@ const useStyles = makeStyles(
             width: '100%',
             overflowWrap: 'anywhere',
         },
-        markdown: {},
+        markdown: {
+            overflowY: 'scroll',
+            height: '200px',
+        },
         editButton: {
             marginLeft: theme.spacing(),
         },

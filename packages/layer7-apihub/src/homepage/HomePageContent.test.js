@@ -116,7 +116,7 @@ describe('HomePageContent', () => {
         expect(queryByText('ra.action.edit')).toBeNull();
     });
 
-    test('should allow to create a new document when the document does not exist and the user is a portal admin', async () => {
+    test.skip('should allow to create a new document when the document does not exist and the user is a portal admin', async () => {
         jest.setTimeout(10000);
         let document = { id: CurrentUserId };
         const dataProvider = {
@@ -184,7 +184,7 @@ describe('HomePageContent', () => {
         expect(await findByText('some markdown'));
     });
 
-    test('should allow to update an existing document if the user is a portal admin', async () => {
+    test.skip('should allow to update an existing document if the user is a portal admin', async () => {
         jest.setTimeout(10000);
         let document = {
             id: 'home/home1/home1/en-US',

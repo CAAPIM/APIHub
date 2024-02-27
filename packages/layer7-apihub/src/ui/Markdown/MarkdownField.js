@@ -1,8 +1,9 @@
 import React from 'react';
 import get from 'lodash/get';
 import { TextField } from 'react-admin';
+import removeMarkdown from 'remove-markdown';
 
-import { MarkdownView, removeTags } from '.';
+import { MarkdownView } from '.';
 import { TruncatedTextField } from '../';
 
 export const MarkdownField = ({
@@ -15,7 +16,7 @@ export const MarkdownField = ({
     const value = get(record, source, '');
 
     if (stripTags) {
-        const newRecord = { ...record, ...{ [source]: removeTags(value) } };
+        const newRecord = { ...record, ...{ [source]: removeMarkdown(value) } };
         return truncate ? (
             <TruncatedTextField record={newRecord} source={source} {...rest} />
         ) : (
