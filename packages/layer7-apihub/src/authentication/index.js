@@ -2,6 +2,7 @@ export * from './authProvider';
 export * from './AccountSetup';
 export * from './Login';
 export * from './SignUp';
+export * from './SAMLLoginConfirm';
 export * from './NewPassword';
 export * from './ResetPassword';
 export * from './AuthenticationLayout';

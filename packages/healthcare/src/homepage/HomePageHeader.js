@@ -3,7 +3,6 @@ import { HomePageContent } from 'layer7-apihub';
 import { makeStyles } from '@material-ui/core/styles';
 
 import developerCenter from './developer-center.png';
-import { markdownRenderer } from './markdownRenderer';
 
 export const HomePageHeader = props => {
     const classes = useStyles(props);
@@ -14,7 +13,6 @@ export const HomePageHeader = props => {
                 <HomePageContent
                     navtitle="home"
                     entityUuid="f92fb890-21c1-43f6-b7c8-b6cb08c15doc"
-                    markdownRenderer={markdownRenderer}
                 />
             </div>
             <div className={classes.logo}>

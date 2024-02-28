@@ -8,6 +8,7 @@ import {
     NewPasswordPage,
     AccountSetupPage,
     SignUpPage,
+    SAMLLoginConfirmPage,
 } from './authentication';
 
 import { Layout, HomePage } from './layout';
@@ -52,6 +53,7 @@ const App = () => {
             newPasswordPage={NewPasswordPage}
             accountSetupPage={AccountSetupPage}
             signUpPage={SignUpPage}
+            samlLoginConfirmPage={SAMLLoginConfirmPage}
             // React Admin Settings
             customReducers={{ theme: themeReducer }}
             i18nProvider={i18nProvider(defaultLocaleFromPreferences)}

@@ -32,11 +32,15 @@ const apiHubMessages = {
     apihub: {
         login: {
             title: 'Sign In To API Hub',
+            multiple_sessions_title: 'Multiple sessions detected',
+            multiple_sessions_text: 'An active session already exists for this account. Proceeding will terminate all other sessions for this account.',
             fields: {
                 username: 'Username',
                 password: 'Password',
             },
             actions: {
+                multi_session_sign_in: 'PROCEED',
+                multi_session_sign_in_additional_text: 'OTHER SESSIONS WILL TERMINATE',
                 sign_in: 'Sign in',
                 sign_in_with: 'Sign in with',
                 sign_up_title: 'New to API Hub?',
@@ -46,6 +50,7 @@ const apiHubMessages = {
             notifications: {
                 invalid_credentials:
                     'Invalid credentials. Please try again or use the forgot password link below',
+                multi_session_invalid_credentials: 'Invalid credentials. Please try again',
                 selected_scheme: 'Signing in with',
                 local_logins_disabled:
                     'Direct login is disabled. You can choose an authentication method from the list below. Contact your administrator for more information.',
@@ -217,6 +222,7 @@ const apiHubMessages = {
                 deprecated: 'Deprecated',
                 unpublished: 'Unpublished',
                 incomplete: 'Incomplete',
+                new: 'Unpublished',
             },
             accessStatus: {
                 public: 'Public',

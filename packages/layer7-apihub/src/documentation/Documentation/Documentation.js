@@ -446,7 +446,6 @@ const useStyles = makeStyles(
             paddingRight: theme.spacing(2),
             flexGrow: 0,
             flexShrink: 0,
-            flexBasis: '20%',
             borderStyle: 'solid',
             borderColor: theme.palette.divider,
             borderWidth: '0px 1px 0px 0px',

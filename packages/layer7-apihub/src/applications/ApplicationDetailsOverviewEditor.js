@@ -11,12 +11,10 @@ import SaveIcon from '@material-ui/icons/Save';
 
 import {
     MarkdownEditor,
-    markdownRenderer as defaultMarkdownRenderer,
 } from '../ui';
 
 export const ApplicationDetailsOverviewEditor = ({
     initialValue,
-    markdownRenderer = defaultMarkdownRenderer,
     onCancel,
     onSave,
     open,
@@ -54,7 +52,6 @@ export const ApplicationDetailsOverviewEditor = ({
                     className={classes.editor}
                     value={value}
                     onChange={setValue}
-                    markdownRenderer={markdownRenderer}
                 />
             </DialogContent>
             <DialogActions className={classes.actions}>

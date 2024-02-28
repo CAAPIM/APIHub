@@ -6,12 +6,9 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 
 import {
     MarkdownEditor,
-    markdownRenderer as defaultMarkdownRenderer,
 } from './';
 
 export const MarkdownInput = ({
-    markdownRenderer = defaultMarkdownRenderer,
-    options = {},
     helperText,
     formClassName,
     className,
@@ -36,8 +33,6 @@ export const MarkdownInput = ({
                 <MarkdownEditor
                     name={name}
                     value={value}
-                    markdownRenderer={markdownRenderer}
-                    options={options}
                     onChange={onChange}
                 />
                 <FormHelperText error={!!error} variant="filled" margin="dense">
@@ -55,10 +50,8 @@ export const MarkdownInput = ({
 const useStyles = makeStyles(
     {
         editor: {
-            '& .rc-md-editor': {
-                width: '100%',
-                height: '40vh',
-            },
+            width: '100%',
+            height: '40vh',
             '& code': {
                 whiteSpace: 'pre-wrap',
             },

@@ -16,7 +16,6 @@ import { ENTITY_TYPE_HOME } from '../dataProvider/documents';
 import { HomePageCreateButton, HomePageEditButton } from './HomePageButton';
 import {
     MarkdownEditor,
-    markdownRenderer as defaultMarkdownRenderer,
     MarkdownView,
 } from '../ui';
 import { useUserContext } from '../userContexts';
@@ -105,7 +104,6 @@ export const HomePageContent = props => {
 
 const HomePageContentEditor = ({
     initialValue,
-    markdownRenderer = defaultMarkdownRenderer,
     onCancel,
     onSave,
     open,
@@ -145,7 +143,6 @@ const HomePageContentEditor = ({
                     className={classes.editor}
                     value={value}
                     onChange={setValue}
-                    markdownRenderer={markdownRenderer}
                 />
             </DialogContent>
             <DialogActions className={classes.actions}>

@@ -17,7 +17,8 @@ export const ApiHubLayout = ({
     menu = ApiHubMenu,
     ...rest
 }) => {
-    // In order to let the components use Redux-based dataProvider
+
+  // In order to let the components use Redux-based dataProvider
     // hooks like useGetOne, we must wait for the resource registration before
     // displaying the dashboard.
     // This fix should be reverted after the release of React Admin v3.6.3.
