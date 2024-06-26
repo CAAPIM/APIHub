@@ -3,8 +3,15 @@ import { Labeled, TextField } from 'react-admin';
 import { useTranslate } from 'ra-core';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
+import {
+    makeStyles,
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableRow,
+} from '@material-ui/core';
 import IconFileCopy from '@material-ui/icons/FileCopy';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Chip from '@material-ui/core/Chip';
@@ -14,7 +21,9 @@ import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import classnames from 'classnames';
 import moment from 'moment';
+import momentTimeZone from 'moment-timezone';
 
+import { CERTIFICATE_DISPLAY_FORMAT } from './constants';
 import { useCopyToClipboard } from '../ui';
 
 const getStatusColor = (classes, status) => {
@@ -48,7 +57,7 @@ const getStatusColor = (classes, status) => {
 };
 
 export const ApplicationDetailsKeyClient = props => {
-    const { data, includeSecret, isKeyExpiryEnabled } = props;
+    const { appCertificates, data, includeSecret, isKeyExpiryEnabled } = props;
     const classes = useStyles();
     const translate = useTranslate();
     const copyToClipboard = useCopyToClipboard({
@@ -65,9 +74,7 @@ export const ApplicationDetailsKeyClient = props => {
     );
 
     const getExpiryDateText = data => {
-        let expiryDateText = translate(
-            'resources.applications.fields.none'
-        );
+        let expiryDateText = translate('resources.applications.fields.none');
         const secretExpiryTs = data.secretExpiryTs;
         if (isKeyExpiryEnabled && secretExpiryTs) {
             const keyExpiryDate = moment(secretExpiryTs);
@@ -91,13 +98,9 @@ export const ApplicationDetailsKeyClient = props => {
                 );
             } else {
                 const days = keyExpiryDate.diff(currentTime, 'days');
-                let suffix = translate(
-                    'resources.applications.fields.days'
-                );
+                let suffix = translate('resources.applications.fields.days');
                 if (days === 1) {
-                    suffix = translate(
-                        'resources.applications.fields.day'
-                    );
+                    suffix = translate('resources.applications.fields.day');
                 }
                 expiryDateSubText = `${days} ${suffix}`;
             }
@@ -112,6 +115,41 @@ export const ApplicationDetailsKeyClient = props => {
             expiryDateSubTextClass = classes.expiredKeyStatus;
         }
         return expiryDateSubTextClass;
+    };
+
+    const renderCertificate = item => {
+        const time = moment(item.expiryTs);
+        const dateString = time.format(CERTIFICATE_DISPLAY_FORMAT);
+        return (
+            <TableRow key={item.uuid}>
+                <TableCell>{item.name}</TableCell>
+                <TableCell>{dateString}</TableCell>
+            </TableRow>
+        );
+    };
+
+    const renderCertificates = () => {
+        const zone = moment.tz(momentTimeZone.tz.guess()).zoneAbbr();
+        return (
+            <div>
+                <Table>
+                    <TableHead className={classes.certificatesHeader}>
+                        <TableRow>
+                            <TableCell>Certificate</TableCell>
+                            <TableCell>
+                                {translate(
+                                    'resources.applications.fields.notValidAfter',
+                                    { zone }
+                                )}
+                            </TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {appCertificates.map(renderCertificate)}
+                    </TableBody>
+                </Table>
+            </div>
+        );
     };
 
     return (
@@ -214,6 +252,19 @@ export const ApplicationDetailsKeyClient = props => {
                                 </Typography>
                             </Labeled>
                         </Grid>
+                        <Grid item md={6} sm={6} xs={12}>
+                            {data.authMethod === 'CERTIFICATE' && (
+                                <Labeled
+                                    // On <Labeled />, this will translate in a correct `for` attribute on the label
+                                    id="certificates"
+                                    label="resources.applications.fields.certificates"
+                                    classes={classes}
+                                    className={classes.fieldLabel}
+                                >
+                                    {renderCertificates()}
+                                </Labeled>
+                            )}
+                        </Grid>
                     </Grid>
                     <Grid container>
                         {data.oauthScope && (
@@ -235,7 +286,7 @@ export const ApplicationDetailsKeyClient = props => {
                                 </Labeled>
                             </Grid>
                         )}
-                        {includeSecret && (
+                        {data.authMethod === 'SECRET' && includeSecret && (
                             <Grid item md={6} sm={6} xs={12}>
                                 <Labeled
                                     // on Labeled, this will translate in a correct `for` attribute on the label
@@ -301,7 +352,9 @@ export const ApplicationDetailsKeyClient = props => {
                                 </Labeled>
                             </Grid>
                         )}
-                        {isKeyExpiryEnabled && (
+                    </Grid>
+                    <Grid container>
+                        {data.authMethod === 'SECRET' && isKeyExpiryEnabled && (
                             <Grid item md={6} sm={6} xs={12}>
                                 <Labeled
                                     // On <Labeled />, this will translate in a correct `for` attribute on the label
@@ -447,6 +500,11 @@ const useStyles = makeStyles(
             marginBottom: theme.spacing(1),
             marginTop: theme.spacing(1),
             textTransform: 'none',
+        },
+        certificatesHeader: {
+            backgroundColor: theme.palette.background.default,
+            fontWeight: theme.typography.fontWeightBold,
+            textTransform: 'uppercase',
         },
     }),
     {

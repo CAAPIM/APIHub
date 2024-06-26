@@ -12,7 +12,7 @@ export const Footer = () => {
                 variant="body2"
                 className={classes.copyright}
             >
-                Copyright © 2020 Broadcom. All Rights Reserved
+                Copyright © 2024 Broadcom. All Rights Reserved
             </Typography>
         </div>
     );

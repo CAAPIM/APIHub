@@ -6,6 +6,7 @@ import IconButton from '@material-ui/core/IconButton';
 import EditIcon from '@material-ui/icons/Edit';
 import Fade from '@material-ui/core/Fade';
 import LinearProgress from '@material-ui/core/LinearProgress';
+import { get } from 'lodash';
 
 import { useMarkdownContent } from '../documentation';
 import { ApplicationDetailsOverviewEditor } from './ApplicationDetailsOverviewEditor';
@@ -30,12 +31,12 @@ export const ApplicationDetailsOverviewField = ({
 
     const handleOverviewScroll = event => {
         const { target } = event;
+        const scrollHeight = get(target, 'scrollHeight');
+        const scrollTop = get(target, 'scrollTop');
+        const clientHeight = get(target, 'clientHeight');
 
         setIsOverviewScrollBottom(
-            !(
-                target.scrollHeight - target.scrollTop <=
-                target.clientHeight + 20
-            )
+            !(scrollHeight - scrollTop <= clientHeight + 20)
         );
     };
 
@@ -45,10 +46,15 @@ export const ApplicationDetailsOverviewField = ({
             return;
         }
         setTimeout(() => {
-            setIsOverviewScrollBottom(
-                markdownElementRef.current.scrollHeight >
-                    markdownElementRef.current.clientHeight + 20
+            const scrollHeight = get(
+                markdownElementRef,
+                'current.scrollHeight'
             );
+            const clientHeight = get(
+                markdownElementRef,
+                'current.clientHeight'
+            );
+            setIsOverviewScrollBottom(scrollHeight > clientHeight + 20);
         }, 100);
     }, [data]);
 

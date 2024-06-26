@@ -33,11 +33,17 @@ const apiHubMessages = {
     apihub: {
         login: {
             title: 'Iniciar sesión en API Hub',
+            multiple_sessions_title: 'Varias sesiones detectadas',
+            multiple_sessions_text:
+                'Ya existe una sesión activa para esta cuenta. El procedimiento terminará todas las demás sesiones de esta cuenta.',
             fields: {
                 username: 'Nombre de usuario',
                 password: 'Contraseña',
             },
             actions: {
+                 multi_session_sign_in: 'PROCEDER',
+                multi_session_sign_in_additional_text:
+                    ' OTRAS SESIONES TERMINARÁN',
                 sign_in: 'Iniciar sesión',
                 sign_in_with: 'Iniciar sesión con',
                 sign_up_title: '¿Primera vez en API Hub?',
@@ -47,6 +53,8 @@ const apiHubMessages = {
             notifications: {
                 invalid_credentials:
                     'Credenciales no válidas. Vuelva a intentarlo o utilice el enlace de contraseña olvidada a continuación',
+                multi_session_invalid_credentials:
+                    'Credenciales no válidas. Inténtalo de nuevo',
                 selected_scheme: 'Iniciando sesión con',
                 local_logins_disabled:
                     'El inicio de sesión directo está deshabilitado. Puede elegir un método de autenticación de la lista a continuación. Póngase en contacto con su administrador para obtener más información.',
@@ -343,6 +351,7 @@ const apiHubMessages = {
                 status: 'Estado',
                 apiGroups: 'Grupos de API',
                 apiGroupsCount: '%{count}',
+                certificateName: 'Nombre',
                 apiGroup: 'Grupo de API',
                 organization: 'Organización',
                 applicationInformation: 'Información de la aplicación',
@@ -371,6 +380,13 @@ const apiHubMessages = {
                     'Al hacer clic en Agregar API, acepto los términos y condiciones.',
                 actions: 'Comportamiento',
                 default: 'Defecto',
+                certificate: 'Certificado',
+                shaThumbPrint: 'Huella digital SHA-256',
+                subjectDomain: 'Nombre del Dominio',
+                notValidAfter: 'No es válido después de #date (%{zone})',
+                certificates: 'Certificados',
+                authMethodCertificate: 'Certificado de cliente',
+                authMethodSecret: 'ID de cliente y password',
             },
             actions: {
                 generateSecret: 'Generar nuevo secreto',
@@ -396,6 +412,11 @@ const apiHubMessages = {
                 force_delete: 'Forzar Eliminación',
                 no: 'No',
                 yes: 'Si',
+                addCertificate: 'Agregar certificado',
+                submitForApproval: 'Enviar para Aprobación',
+                uploadCertificate: 'Cargar certificado',
+                confirm: 'Confirmar',
+                submitDelete: 'Enviar para Eliminar',
             },
             validation: {
                 apikey_name_caption:
@@ -406,9 +427,10 @@ const apiHubMessages = {
                 scope_caption: 'Utilizar valores separados por espacios',
                 application_name_caption:
                     'El nombre de la clave debe ser único para esta aplicación. El largo máximo es de 255 caracteres.',
-                apikey_name_caption:
-                    'El nombre de la clave debe ser único para esta aplicación. La longitud máxima es de 255 caracteres.',
                 apikey_name_empty_error: 'El nombre no puede estar vacío',
+                certificate_name_caption: 'Debe ser único por aplicación.',
+                certificate_file_input_caption:
+                    'Todos los certificados de claves de aplicación se volverán a redistribuir',
             },
             status: {
                 enabled: 'Activado',
@@ -434,6 +456,10 @@ const apiHubMessages = {
                     'Se requiere guardar antes de que se puedan agregar las API. Se requiere al menos 1 API (o grupo de API) para publicar una aplicación.',
                 create_api_keys_help_text:
                     'Es necesario guardar antes de que se puedan crear las claves. Se requiere al menos 1 clave API para publicar una aplicación',
+                add_certificates_help_text:
+                    'Se require Guardar antes que los certificados puedan ser agregados',
+                certificate_submission:
+                    'El certificado se enviará como solicitud y estará disponible tras su aprobación.',
             },
             list: {
                 sort: {
@@ -485,13 +511,27 @@ const apiHubMessages = {
                 delete_key_success:
                     'La clave de la aplicación se eliminó con éxito.',
                 publish_success: 'Solicitud publicada con éxito.',
+                certificate_upload_request_success:
+                    'Carga de solicitud de certificado enviada correctamente.',
+                certificate_upload_request_failure:
+                    'Error al cargar la solicitud de certificado.',
+                certificate_upload_success: 'Certificado cargado exitosamente.',
+                certificate_upload_failure: 'No se pudo cargar el certificado.',
+                certificate_delete_failure:
+                    'No se pudo eliminar el certificado.',
+                certificate_delete_success:
+                    'Certificado eliminado exitosamente.',
+                certificate_delete_request_failure:
+                    'Error en la solicitud de eliminación del certificado',
+                certificate_delete_request_success:
+                    'Eliminar la solicitud de certificado enviada correctamente.',
             },
             confirm_delete:
                 'Está a punto de suprimir este aplicación. ¿Está seguro?',
             deleting_content:
                 'Anulación de la implementación de claves y eliminación de la aplicación. Esto puede tomar varios minutos.',
             proxy_check_alert:
-                'No se puede conectar a todos los proxies donde la aplicación ha implementado claves. Es probable que esto resulte en una eliminación incompleta, donde algunas claves permanecerán en algunos proxies. Deberán eliminarse directamente de la puerta de enlace. Habrá una opción para forzar la eliminación del registro de la aplicación del portal.',
+                'No se puede conectar a todos los almacenes de claves donde está implementada la clave API. Es probable que esto resulte en una eliminación incompleta, donde esta clave permanecerá en algunos almacenes de claves. Será necesario eliminarlo directamente del almacén de claves. Habrá una opción para forzar la eliminación del registro de la clave API del portal.',
             publish_help_text:
                 'Se puede publicar una aplicación completa con al menos 1 API y 1 clave y sus claves se pueden implementar en proxies',
         },
@@ -501,7 +541,7 @@ const apiHubMessages = {
             deleting_content:
                 'Desinstalación de claves y eliminación de API-Key. Esto puede tomar varios minutos.',
             proxy_check_alert:
-                'No se puede conectar a todos los proxies donde se implementó la clave de API. Es probable que esto resulte en una eliminación incompleta, donde esta clave permanecerá en algunos proxies. Tendrá que ser eliminado de la puerta de enlace directamente. Habrá una opción para forzar la eliminación del registro de clave API del portal.',
+                'No se puede conectar a todos los almacenes de claves donde está implementada la clave API. Es probable que esto resulte en una eliminación incompleta, donde esta clave permanecerá en algunos almacenes de claves. Será necesario eliminarlo directamente del almacén de claves. Habrá una opción para forzar la eliminación del registro de la clave API del portal.',
             actions: {
                 addKey: 'Agregar Clave',
                 deleteApiKey: 'Eliminar Clave',

@@ -1,0 +1,1 @@
+export const CERTIFICATE_DISPLAY_FORMAT = 'MMM Do YYYY, HH:mm';

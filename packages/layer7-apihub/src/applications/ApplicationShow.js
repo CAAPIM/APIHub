@@ -93,7 +93,7 @@ const AppShowActions = ({
                 {
                     id: data.id,
                     params: {
-                        ...(ignoreProxyCheck && { ignoreProxyCheck: true }),
+                        ...(ignoreProxyCheck && { ignoreKeyStoreCheck: true }),
                         ...(forceDelete && { forceDelete: true }),
                     },
                 },
@@ -109,7 +109,7 @@ const AppShowActions = ({
                             isPortalAdmin(userContext) &&
                             validationErrors &&
                             validationErrors.length > 0 &&
-                            validationErrors[0].field === 'proxyCheck'
+                            validationErrors[0].field === 'keyStoreCheck'
                         ) {
                             setProxyCheckFailed(true);
                             notify(validationErrors[0].error, 'error');
