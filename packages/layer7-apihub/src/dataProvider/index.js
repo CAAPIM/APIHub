@@ -5,6 +5,7 @@ import { apiEulasDataProvider } from './apiEulas';
 import { apiGroupsDataProvider } from './apiGroups';
 import { apiPlansDataProvider } from './apiPlans';
 import { apisDataProvider } from './apis';
+import { applicationCertificatesDataProvider } from './applicationCertificates';
 import { apiKeysDataProvider } from './apiKeys';
 import { applicationsDataProvider } from './applications';
 import { assetsDataProvider } from './assets';
@@ -38,6 +39,7 @@ export const dataProvider = (
         apiPlans: apiPlansDataProvider(context),
         apis: apisDataProvider(context),
         apiKeys: apiKeysDataProvider(context),
+        applicationCertificates: applicationCertificatesDataProvider(context),
         applications: applicationsDataProvider(context),
         assets: assetsDataProvider(context),
         customFields: customFieldsDataProvider(context),

@@ -33,11 +33,17 @@ const apiHubMessages = {
     apihub: {
         login: {
             title: 'Se connecter à API Hub',
+            multiple_sessions_title: 'Plusieurs sessions détectées',
+            multiple_sessions_text:
+                'Une session active existe déjà pour ce compte. Cette procédure mettra fin à toutes les autres sessions pour ce compte.',
             fields: {
                 username: "Nom d'utilisateur",
                 password: 'Mot de passe',
             },
             actions: {
+                multi_session_sign_in: 'CONTINUER',
+                multi_session_sign_in_additional_text:
+                    'LES AUTRES SESSIONS SERONT INTERROMPUES',
                 sign_in: 'Connexion',
                 sign_in_with: 'Connexion avec',
                 sign_up_title: "Nouvel utilisateur d'API Hub ?",
@@ -47,6 +53,8 @@ const apiHubMessages = {
             notifications: {
                 invalid_credentials:
                     "Informations d'identification non valides. Veuillez réessayer ou utiliser le lien mot de passe oublié ci-dessous",
+                multi_session_invalid_credentials:
+                    'Les informations d’identification sont invalides. Veuillez essayer à nouveau.',
                 selected_scheme: 'Connexion avec',
                 local_logins_disabled:
                     'L’accès direct est interdit. Vous devez sélectionner une méthode d’authentification dans la liste ci-dessous. Vous pouvez contacter votre administrateur pour plus d’informations.',
@@ -337,6 +345,7 @@ const apiHubMessages = {
                 status: 'Etat',
                 apiGroups: "Groupes d'API",
                 apiGroupsCount: '%{count}',
+                certificateName: 'Nom ',
                 apiGroup: "Groupe d'API",
                 organization: 'Organisation',
                 applicationInformation: "Informations sur l'application",
@@ -364,6 +373,13 @@ const apiHubMessages = {
                     "En cliquant sur Ajouter une API, j'accepte les termes et conditions.",
                 actions: 'Actions',
                 default: 'Défaut',
+                certificate: 'Certificat',
+                shaThumbPrint: 'Empreinte digitale SHA-256',
+                subjectDomain: 'Domaine du sujet',
+                notValidAfter: 'Non valable après (%{zone})',
+                certificates: 'Certificats',
+                authMethodCertificate: 'Certificats',
+                authMethodSecret: 'Identifiant client et secret',
             },
             actions: {
                 generateSecret: 'Générer un nouveau secret',
@@ -389,6 +405,11 @@ const apiHubMessages = {
                 force_delete: 'Forcer la suppression',
                 no: 'Non',
                 yes: 'Oui',
+                addCertificate: 'Ajouter un certificat',
+                submitForApproval: 'Soumettre pour approbation',
+                uploadCertificate: 'Télécharger le certificat',
+                confirm: 'Confirmer',
+                submitDelete: 'Soumettre Supprimer',
             },
             validation: {
                 apikey_name_caption:
@@ -400,9 +421,10 @@ const apiHubMessages = {
                 scope_caption: 'Utiliser des valeurs séparées par des espaces',
                 application_name_caption:
                     'Le nom de la clé doit être unique pour l’application. La longueur maximale est de 255 caractères.',
-                apikey_name_caption:
-                    'Le nom de la clé doit être unique pour cette application. La longueur maximale est de 255 caractères.',
                 apikey_name_empty_error: 'Le nom ne peut pas être vide',
+                certificate_name_caption: 'Doit être unique par application.',
+                certificate_file_input_caption:
+                    'Tous les certificats de clés d’application seront redéployés.',
             },
             status: {
                 enabled: 'Activé',
@@ -428,6 +450,10 @@ const apiHubMessages = {
                     "Enregistrement requis avant de pouvoir ajouter des API. Au moins 1 API (ou groupe d'API) est nécessaire pour publier une application.",
                 create_api_keys_help_text:
                     'Enregistrement requis avant de pouvoir créer des clés. Au moins 1 clé API est requise pour publier une application',
+                add_certificates_help_text:
+                    "Sauvegarde nécessaire avant qu'un certificat puisse être ajouté.",
+                certificate_submission:
+                    'Le certificat sera soumis sous forme de demande et sera disponible après approbation.',
             },
             list: {
                 sort: {
@@ -477,13 +503,28 @@ const apiHubMessages = {
                     'Cette section contient des modifications qui n’ont pas été enregistrées. Souhaitez-vous toujours quitter cette section ?',
                 delete_key_success: "'Clé d'application supprimée avec succès.",
                 publish_success: 'Application publiée avec succès.',
+                certificate_upload_request_success:
+                    'Demande de téléchargement du certificat soumise avec succès.',
+                certificate_upload_request_failure:
+                    'Echec de la demande de téléchargement de certificat.',
+                certificate_upload_success:
+                    'Certificat téléchargé avec succès.',
+                certificate_upload_failure:
+                    'Échec du téléchargement du certificat.',
+                certificate_delete_failure:
+                    'Échec de la suppression du certificat.',
+                certificate_delete_success: 'Certificat supprimé avec succès.',
+                certificate_delete_request_failure:
+                    ' Échec de la demande de suppression du certificat',
+                certificate_delete_request_success:
+                    'Demande de suppression de certificat soumise avec succès.',
             },
             confirm_delete:
                 'Vous êtes sur le point de supprimer cette application. Voulez-vous continuer ?',
             deleting_content:
                 "Annulation du déploiement des clés et suppression de l'application. Cela peut prendre plusieurs minutes.",
             proxy_check_alert:
-                'Impossible de se connecter à tous les proxys sur lesquels des clés de l’application ont été déployées. Ceci va probablement résulter en une suppression partielle, où certaines clés vont rester sur certains proxys. Elles devront être supprimées directement à partir du proxy (gateway). Il y aura une option pour supprimer de force l’application à partir du portail.',
+                'Impossible de se connecter à tous les magasins de clés dans lesquels la clé API est déployée. Cela entraînera probablement une suppression incomplète, où cette clé restera dans certains magasins de clés. Il devra être supprimé directement du magasin de clés. Il y aura une option pour forcer la suppression de l’enregistrement de la clé API du portail.',
             publish_help_text:
                 'Une application complète avec au moins 1 API et 1 clé peut être publiée et sa clé déployée vers les proxys.',
         },
@@ -493,7 +534,7 @@ const apiHubMessages = {
             deleting_content:
                 'Suppression du déploiement et de la clé d’API. Ceci peut prendre quelques minutes.',
             proxy_check_alert:
-                'Impossible de se connecter à tous les proxys où la clé d’API a été déployée. Ceci va probablement résulter en une suppression partielle, où la clé va rester sur certains proxys. La clé devra alors être supprimée directement à partir du proxy (gateway). Il y aura une option pour supprimer de force la clé d’API à partir du portail.',
+                'Impossible de se connecter à tous les magasins de clés dans lesquels la clé API est déployée. Cela entraînera probablement une suppression incomplète, où cette clé restera dans certains magasins de clés. Il devra être supprimé directement du magasin de clés. Il y aura une option pour forcer la suppression de l’enregistrement de la clé API du portail.',
             actions: {
                 addKey: 'Ajouter une clé',
                 deleteApiKey: 'Supprimer une clé',

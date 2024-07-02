@@ -1,23 +1,39 @@
 import { useEffect, useState } from 'react';
 import { useApiHub } from '../ApiHubContext';
 import { getFetchJson } from '../fetchUtils';
+import { forEach, get } from 'lodash';
 
-const getWorkFlowConfigurations = async (url, originHubName) => {
+const getWorkFlowConfiguration = async (url, originHubName, setting) => {
     const fetchJson = getFetchJson(originHubName);
-    const { json } = await fetchJson(`${url}/admin/workflowConfigurations`);
-
-    return json;
+    const {
+        json: { Uuid, ...data },
+    } = await fetchJson(`${url}/Settings('${setting}')`);
+    return get(data, 'Value', '');
 };
 
 export const useWorkFlowConfigurations = () => {
-    const { url, originHubName } = useApiHub();
+    const { urlWithTenant, originHubName } = useApiHub();
     const [workFlowConfigurations, setWorkFlowConfigurations] = useState({});
 
     useEffect(() => {
-        getWorkFlowConfigurations(url, originHubName).then(resp => {
-            setWorkFlowConfigurations(resp);
+        const flagsMap = {
+            APPLICATION_REQUEST_WORKFLOW: 'applicationRequestWorkflowStatus',
+            EDIT_APPLICATION_REQUEST_WORKFLOW:
+                'editApplicationRequestWorkflowStatus',
+            DELETE_APPLICATION_REQUEST_WORKFLOW:
+                'deleteApplicationRequestWorkflowStatus',
+        };
+        forEach(flagsMap, (value, key) => {
+            getWorkFlowConfiguration(urlWithTenant, originHubName, key).then(
+                resp => {
+                    setWorkFlowConfigurations(previousValue => ({
+                        ...previousValue,
+                        [value]: resp,
+                    }));
+                }
+            );
         });
-    }, [originHubName, url]);
+    }, [originHubName, urlWithTenant]);
 
     return workFlowConfigurations;
 };

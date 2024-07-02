@@ -1,23 +1,17 @@
-import React, { useState, useEffect, Fragment } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
-    ArrayInput,
-    FormDataConsumer,
-    SimpleForm,
-    TextInput,
-    required,
+    Labeled,
     minLength,
     maxLength,
-    Labeled,
-    RadioButtonGroupInput,
-    SimpleFormIterator,
+    required,
+    SimpleForm,
+    TextInput,
     useDataProvider,
     useQuery,
     useRefresh,
-    TopToolbar,
 } from 'react-admin';
 import { useHistory } from 'react-router-dom';
 import { FormSpy } from 'react-final-form';
-import moment from 'moment';
 
 import debounce from 'lodash/debounce';
 import get from 'lodash/get';
@@ -30,29 +24,23 @@ import {
     useMutation,
     useLoading,
 } from 'ra-core';
-import Dialog from '@material-ui/core/Dialog';
-import DialogContent from '@material-ui/core/DialogContent';
-import Divider from '@material-ui/core/Divider';
-import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
+import {
+    CircularProgress,
+    Dialog,
+    DialogContent,
+    Grid,
+    makeStyles,
+} from '@material-ui/core';
 import difference from 'lodash/difference';
 import findIndex from 'lodash/findIndex';
 import keys from 'lodash/keys';
 import sortBy from 'lodash/sortBy';
-import { makeStyles } from '@material-ui/core/styles';
-import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
-import { isPortalAdmin, isOrgBoundUser } from '../userContexts';
-import { ConfirmDialog } from '../ui/ConfirmDialog';
-import { LoadingDialog } from '../ui/LoadingDialog';
-import DeleteIcon from '@material-ui/icons/Delete';
-import CircularProgress from '@material-ui/core/CircularProgress';
-
-import Grid from '@material-ui/core/Grid';
+import { isOrgBoundUser } from '../userContexts';
 import CollapsiblePanel from './CollapsiblePanel';
 import { ApplicationToolbar } from './ApplicationToolbar';
 import { ApiSelector } from './ApiSelector';
-import { ApplicationKeyClient } from './ApplicationKeyClient';
-import { ApplicationKeySecret } from './ApplicationKeySecret';
+import { ApplicationCertificatesPanel } from './ApplicationCertificatesPanel';
+import { ApplicationKeysPanel } from './ApplicationKeysPanel';
 import { EditCustomFieldData } from './formFields';
 import { useLayer7Notify } from '../useLayer7Notify';
 import ToggleSwitchInput from '../ui/ToggleSwitchInput';
@@ -73,16 +61,13 @@ import useApplicationUniqueCheck from './useApplicationUniqueCheck';
 const PANEL_ID_NONE = 'PANEL_ID_NONE';
 const PANEL_ID_DETAILS = 'PANEL_ID_DETAILS';
 const PANEL_ID_APIS = 'PANEL_ID_APIS';
+const PANEL_ID_CERTIFICATES = 'PANEL_ID_CERTIFICATES';
 const PANEL_ID_KEY_PREFIX = 'PANEL_ID_KEY_PREFIX_';
 const NEW_KEY = 'NEW_KEY';
 const APPLICATION_STATUS_INCOMPLETE = 'INCOMPLETE';
 const APPLICATION_STATUS_REJECTED = 'REJECTED';
+const NOTIFICATION_TYPE_ERROR = 'error';
 
-const useContentStyles = makeStyles(theme => ({
-    root: {
-        color: theme.palette.primary.main,
-    },
-}));
 export const ApplicationEditView = ({
     userContext,
     toolbarProps,
@@ -114,7 +99,6 @@ export const ApplicationEditView = ({
 
     const [addedKey, setAddedKey] = useState({});
     const [openSecretDialog, setOpenSecretDialog] = useState(false);
-    const contentLabelClasses = useContentStyles();
 
     const [isSectionModified, setIsSectionModified] = useState(false);
     const [isDetailsModified, setIsDetailsModified] = useState(false);
@@ -130,12 +114,12 @@ export const ApplicationEditView = ({
     const [isEditApisLocked, setIsEditApisLocked] = useState(false);
     const [isEditApiPlansLocked, setIsEditApiPlansLocked] = useState(false);
     const [isEditApiGroupsLocked, setIsEditApiGroupsLocked] = useState(false);
+    const [appCertificates, setAppCertificates] = useState([]);
     const refresh = useRefresh();
-    const [keyDeleting, setKeyDeleting] = React.useState(false);
-    const [deleteKeyConfirm, setDeleteKeyConfirm] = React.useState(false);
-    const [proxyCheckFailed, setProxyCheckFailed] = React.useState(false);
     const [updatedKeyDetails, setUpdatedKeyDetails] = useState();
-    const [deletingKeyId, setDeletingKeyId] = useState();
+    const [uploadedCertFile, setUploadedCertFile] = useState();
+    const [certFileName, setCertFileName] = useState('');
+    const [assignedCertName, setAssignedCertName] = useState('');
     const isAppIncomplete = record.status === APPLICATION_STATUS_INCOMPLETE;
     const isAppRejected = record.status === APPLICATION_STATUS_REJECTED;
 
@@ -147,6 +131,27 @@ export const ApplicationEditView = ({
         resource: 'apiPlans',
         payload: {},
     });
+
+    // get application certificates data
+    const [fetchApplicationCerts, { data: applicationCertsData }] = useMutation(
+        {
+            payload: {
+                applicationUuid: record.id,
+            },
+            resource: 'applicationCertificates',
+            type: 'getList',
+        }
+    );
+
+    useEffect(() => {
+        fetchApplicationCerts();
+    }, []);
+
+    useEffect(() => {
+        if (applicationCertsData) {
+            setAppCertificates(applicationCertsData);
+        }
+    }, [applicationCertsData]);
 
     React.useEffect(() => {
         if (apiPlanFeatureFlag) {
@@ -330,12 +335,6 @@ export const ApplicationEditView = ({
         }
     }, [secretHashMetaData, error]);
 
-    const { data: applicationApiKeyExpirySettings } = useQuery({
-        type: 'getKeyExpirySettings',
-        resource: 'applications',
-        payload: {},
-    });
-
     // get api keys data
     const [
         fetchApiKeys,
@@ -349,6 +348,7 @@ export const ApplicationEditView = ({
         resource: 'apiKeys',
         type: 'getList',
     });
+
     useEffect(() => {
         setApiKeys(sortBy(apiKeysData, ({ defaultKey }) => !defaultKey));
     }, [apiKeysData]);
@@ -401,19 +401,34 @@ export const ApplicationEditView = ({
                 : form.apiKeys.find(item => item.apiKey === apiKey);
         // Note about keySecret and keySecretHashed
         // Due to some issue, It is not updating apiKey objects in the form. so, assigning values on form and using the.
-        const keyData = {
-            applicationUuid: apiKeyObject.applicationUuid,
-            defaultKey: apiKeyObject.defaultKey,
-            name: apiKeyObject.name,
-            oauthCallbackUrl: apiKeyObject.oauthCallbackUrl,
-            oauthScope: apiKeyObject.oauthScope,
-            oauthType: apiKeyObject.oauthType,
-            status: apiKeyObject.status,
-        };
+        let keyData = {};
+        const isAuthMethodSecret = apiKeyObject.authMethod === 'SECRET';
+        if (isAuthMethodSecret) {
+            keyData = {
+                applicationUuid: apiKeyObject.applicationUuid,
+                authMethod: apiKeyObject.authMethod,
+                defaultKey: apiKeyObject.defaultKey,
+                name: apiKeyObject.name,
+                oauthCallbackUrl: apiKeyObject.oauthCallbackUrl,
+                oauthScope: apiKeyObject.oauthScope,
+                oauthType: apiKeyObject.oauthType,
+                status: apiKeyObject.status,
+            };
+        } else {
+            keyData = {
+                applicationUuid: apiKeyObject.applicationUuid,
+                authMethod: apiKeyObject.authMethod,
+                defaultKey: apiKeyObject.defaultKey,
+                name: apiKeyObject.name,
+                status: apiKeyObject.status,
+            };
+        }
         if (apiKey === NEW_KEY) {
             addApiKey(record.id, {
                 ...keyData,
-                keySecretHashed: secretHashing === 'HASHED',
+                ...(isAuthMethodSecret && {
+                    keySecretHashed: secretHashing === 'HASHED',
+                }),
                 defaultKey: form.apiKeys.length === 1,
             });
         } else {
@@ -454,7 +469,8 @@ export const ApplicationEditView = ({
                     notify(
                         `${translate(
                             'resources.applications.notifications.edit_error'
-                        )}, ${errorMessage}`
+                        )}, ${errorMessage}`,
+                        NOTIFICATION_TYPE_ERROR
                     );
                     reloadForm();
                 },
@@ -729,28 +745,6 @@ export const ApplicationEditView = ({
     };
     const [addingKeyEntry, setAddingKeyEntry] = React.useState(false);
 
-    const disableAddKeyEntry =
-        addingKeyEntry ||
-        isSectionModified ||
-        (isAppIncomplete && apiKeys && apiKeys.length === 1);
-
-    const addButton = () =>
-        isOrgBoundUser(userContext) && apiKeys && apiKeys.length > 0 ? (
-            <span />
-        ) : (
-            <Button
-                data-apim-test="add-key"
-                disabled={disableAddKeyEntry}
-                onClick={() => {
-                    setAddingKeyEntry(true);
-                    setActivePanelID(`${PANEL_ID_KEY_PREFIX}${NEW_KEY}`);
-                }}
-                classes={contentLabelClasses}
-                startIcon={<AddCircleOutlineIcon />}
-            >
-                {translate('resources.apikeys.actions.addKey')}
-            </Button>
-        );
     const onFormSubmit = form => {
         if (activePanelID === PANEL_ID_DETAILS) {
             onDetailsSubmit(form);
@@ -785,7 +779,8 @@ export const ApplicationEditView = ({
         });
         notify(
             translate('resources.applications.notifications.edit_error') +
-                errorMessages.join(',')
+                errorMessages.join(','),
+            NOTIFICATION_TYPE_ERROR
         );
     };
 
@@ -793,7 +788,8 @@ export const ApplicationEditView = ({
         let errorMessage = getErrorMessageFromError(error);
         notify(
             translate('resources.applications.notifications.edit_error') +
-                errorMessage
+                errorMessage,
+            NOTIFICATION_TYPE_ERROR
         );
     };
 
@@ -880,63 +876,15 @@ export const ApplicationEditView = ({
         values: true,
     };
 
-    const confirmDelete = keyId => {
-        setDeletingKeyId(keyId);
-        setDeleteKeyConfirm(true);
-    };
+    const convertFileToBase64 = file =>
+        new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(file.rawFile);
+        });
 
-    const deleteApiKey = (ignoreProxyCheck, forceDelete) => {
-        dataProvider.delete(
-            'apiKeys',
-            {
-                keyId: deletingKeyId,
-                appUuid: initialValues.id,
-                params: `ignoreProxyCheck=${ignoreProxyCheck}&forceDelete=${forceDelete}`,
-            },
-            {
-                onFailure: error => {
-                    const validationErrors = get(
-                        error,
-                        'body.error.detail.validationErrors',
-                        []
-                    );
-                    setKeyDeleting(false);
-                    if (
-                        isPortalAdmin(userContext) &&
-                        validationErrors &&
-                        validationErrors.length > 0 &&
-                        validationErrors[0].field === 'proxyCheck'
-                    ) {
-                        setProxyCheckFailed(true);
-                        setDeleteKeyConfirm(true);
-                    } else {
-                        notify(
-                            error ||
-                                'resources.applications.notifications.delete_error',
-                            'error'
-                        );
-                    }
-                    reloadForm();
-                },
-                onSuccess: () => {
-                    notify(
-                        translate(
-                            'resources.applications.notifications.delete_key_success'
-                        )
-                    );
-                    setProxyCheckFailed(false);
-                    setDeleteKeyConfirm(false);
-                    setKeyDeleting(false);
-                    navigateToShowView();
-                    /* reloadForm(); */
-                },
-            }
-        );
-    };
-
-    const onGenerateKey = () => reloadForm();
-
-    const onChange = ({ values }) => {
+    const onChange = async ({ values }) => {
         let sectionModified = false;
         if (activePanelID === PANEL_ID_DETAILS) {
             let detailsModified = false;
@@ -1042,12 +990,17 @@ export const ApplicationEditView = ({
                         values.apiKeys[values.apiKeys.length - 1];
                     // show save bar only by setting sectionModified to true only
                     // when it is not empty
-                    sectionModified = !!(
-                        valuesKeyObj &&
-                        (get(valuesKeyObj, 'name') ||
-                            get(valuesKeyObj, 'oauthCallbackUrl') ||
-                            get(valuesKeyObj, 'oauthScope'))
-                    );
+                    if (valuesKeyObj) {
+                        if (get(valuesKeyObj, 'authMethod') === 'SECRET') {
+                            sectionModified = !!(
+                                get(valuesKeyObj, 'name') ||
+                                get(valuesKeyObj, 'oauthCallbackUrl') ||
+                                get(valuesKeyObj, 'oauthScope')
+                            );
+                        } else {
+                            sectionModified = !!get(valuesKeyObj, 'name');
+                        }
+                    }
                 }
             } else {
                 const keyIndex = findIndex(
@@ -1074,6 +1027,24 @@ export const ApplicationEditView = ({
                 }
             }
         }
+        if (values.uploadedCertFile) {
+            const base64EncodedFile = await convertFileToBase64(
+                values.uploadedCertFile
+            );
+            const certContentArray = base64EncodedFile.split(',');
+            const base64 =
+                certContentArray.length > 1 ? certContentArray[1] : '';
+            setUploadedCertFile(base64);
+            const fileName = values.uploadedCertFile.rawFile.name;
+            if (certFileName !== fileName) {
+                setCertFileName(fileName);
+            }
+        } else if (uploadedCertFile) {
+            setUploadedCertFile();
+        }
+        if (values.givenCertName !== assignedCertName) {
+            setAssignedCertName(values.givenCertName);
+        }
         setIsSectionModified(sectionModified);
     };
 
@@ -1095,18 +1066,6 @@ export const ApplicationEditView = ({
             <p className={classes.lockText}>
                 {translate('resources.applications.status.apis_help_text')}
             </p>
-        ) : (
-            <span />
-        );
-
-    const keysSummaryLabelContent =
-        isAppIncomplete &&
-        !activePanelID.startsWith(PANEL_ID_KEY_PREFIX) &&
-        apiKeys &&
-        apiKeys.length === 0 ? (
-            <div className={classes.apiKeysHelpText}>
-                {translate('resources.applications.status.api_keys_help_text')}
-            </div>
         ) : (
             <span />
         );
@@ -1148,288 +1107,13 @@ export const ApplicationEditView = ({
     const disableSaveButton = !isSectionModified;
     const disablePublishButton =
         isSectionModified || !appHasApis() || (apiKeys && apiKeys.length === 0);
-    const canDeleteAPIKey = !isOrgBoundUser(userContext);
     const apisSectionLabel = getAPIsSectionLabel();
 
-    const getKeyLabel = status => {
-        if (isPortalAdmin(userContext) && status === 'DELETE_FAILED') {
-            return translate('resources.apikeys.actions.force_delete');
-        }
-        return translate('resources.apikeys.actions.delete');
-    };
-
-    const isKeyEditDisabled = status =>
-        isEditApiKeysLocked || status === 'DELETE_FAILED';
-
-    const renderKey = ({ getSource, scopedFormData }) => {
-        if (!getSource('apiKey') && !addingKeyEntry) {
-            return <span />;
-        }
-        const currentItemAPIKey = get(scopedFormData, 'apiKey');
-        const keyStatus = updatedKeyDetails
-            ? updatedKeyDetails.status
-            : get(scopedFormData, 'status');
-        const isItemEditDisabled = isKeyEditDisabled(keyStatus);
-        const secretExpiryTs = updatedKeyDetails
-            ? updatedKeyDetails.secretExpiryTs
-            : get(scopedFormData, 'secretExpiryTs');
-        let expiryDateText = translate('resources.applications.fields.none');
-        let expiryDateSubText = '';
-        let expiryDateSubTextClass = '';
-        const isKeyExpiryEnabled = get(
-            applicationApiKeyExpirySettings,
-            'enabled',
-            false
-        );
-        if (isKeyExpiryEnabled && secretExpiryTs) {
-            const keyExpiryDate = moment(secretExpiryTs);
-            expiryDateText = keyExpiryDate.format(
-                'dddd, MMMM Do YYYY, HH:mm:ss'
-            );
-            const currentTime = moment();
-            if (keyStatus === 'EXPIRED') {
-                expiryDateSubText = translate(
-                    'resources.applications.status.expired'
-                );
-                expiryDateSubTextClass = classes.expiredKeyStatus;
-            } else {
-                const days = keyExpiryDate.diff(currentTime, 'days');
-                let suffix = translate('resources.applications.fields.days');
-                if (days === 1) {
-                    suffix = translate('resources.applications.fields.day');
-                }
-                expiryDateSubText = `${days} ${suffix}`;
-            }
-        }
-
-        return (
-            <CollapsiblePanel
-                data-apim-test={`key-panel-${currentItemAPIKey}`}
-                expanded={
-                    activePanelID ===
-                    `${PANEL_ID_KEY_PREFIX}${currentItemAPIKey || NEW_KEY}`
-                }
-                label={
-                    get(scopedFormData, 'name') ||
-                    translate('resources.apikeys.actions.addKey')
-                }
-                key={currentItemAPIKey || NEW_KEY}
-                onChange={(evt, expanded) =>
-                    onPanelClick(
-                        expanded,
-                        `${PANEL_ID_KEY_PREFIX}${currentItemAPIKey || NEW_KEY}`
-                    )
-                }
-            >
-                <TopToolbar>
-                    <div>
-                        <Button
-                            classes={contentLabelClasses}
-                            startIcon={<DeleteIcon />}
-                            onClick={() => confirmDelete(currentItemAPIKey)}
-                            disabled={
-                                get(scopedFormData, 'defaultKey') ||
-                                !canDeleteAPIKey ||
-                                addingKeyEntry ||
-                                (apiKeys && apiKeys.length === 1)
-                            }
-                        >
-                            {getKeyLabel(get(scopedFormData, 'status'))}
-                        </Button>
-                    </div>
-                    <ConfirmDialog
-                        title={translate(
-                            'resources.apikeys.actions.deleteApiKey'
-                        )}
-                        content={translate(
-                            `resources.apikeys.${
-                                proxyCheckFailed
-                                    ? 'proxy_check_alert'
-                                    : 'confirm_delete'
-                            }`
-                        )}
-                        buttonConfirm={translate(
-                            'resources.apikeys.actions.delete'
-                        )}
-                        buttonCancel={translate(
-                            'resources.apikeys.actions.cancel'
-                        )}
-                        open={deleteKeyConfirm}
-                        onConfirm={() => {
-                            setDeleteKeyConfirm(false);
-                            setKeyDeleting(true);
-                            const apiKeyObj = apiKeys.find(
-                                item => item.apiKey === deletingKeyId
-                            );
-                            const isForceDelete =
-                                isPortalAdmin(userContext) &&
-                                apiKeyObj.status === 'DELETE_FAILED';
-                            deleteApiKey(
-                                proxyCheckFailed || isForceDelete,
-                                isForceDelete
-                            );
-                        }}
-                        onCancel={() => setDeleteKeyConfirm(false)}
-                    />
-                    <LoadingDialog
-                        title={translate(
-                            'resources.apikeys.actions.deleting_title'
-                        )}
-                        content={translate(
-                            'resources.apikeys.deleting_content'
-                        )}
-                        open={keyDeleting}
-                    />
-                </TopToolbar>
-
-                <TextInput
-                    disabled={isItemEditDisabled}
-                    source={getSource('name')}
-                    record={scopedFormData}
-                    type="text"
-                    label="resources.applications.fields.name"
-                    variant="filled"
-                    multiline
-                    fullWidth
-                    helperText="resources.applications.validation.apikey_name_caption"
-                    validate={[required(), maxLength(255)]}
-                    required
-                />
-                <TextInput
-                    disabled={isItemEditDisabled}
-                    source={getSource('oauthCallbackUrl')}
-                    record={scopedFormData}
-                    type="text"
-                    label="resources.applications.fields.callbackUrl"
-                    variant="filled"
-                    multiline
-                    fullWidth
-                    helperText="resources.applications.validation.callback_url_caption"
-                    validate={[maxLength(2048)]}
-                />
-                <TextInput
-                    disabled={isItemEditDisabled}
-                    source={getSource('oauthScope')}
-                    record={scopedFormData}
-                    type="text"
-                    label="resources.applications.fields.scope"
-                    variant="filled"
-                    multiline
-                    fullWidth
-                    helperText="resources.applications.validation.scope_caption"
-                    validate={[maxLength(4000)]}
-                />
-                <RadioButtonGroupInput
-                    source={getSource('oauthType')}
-                    defaultValue="PUBLIC"
-                    disabled={isItemEditDisabled}
-                    record={scopedFormData}
-                    label="resources.applications.fields.type"
-                    className={classes.input}
-                    required
-                    choices={[
-                        {
-                            id: 'PUBLIC',
-                            name: translate(
-                                'resources.applications.fields.public'
-                            ),
-                        },
-                        {
-                            id: 'CONFIDENTIAL',
-                            name: translate(
-                                'resources.applications.fields.confidential'
-                            ),
-                        },
-                    ]}
-                />
-                {isKeyExpiryEnabled && currentItemAPIKey && (
-                    <div className={classes.keyExpiryStatus}>
-                        <Labeled
-                            label="resources.applications.fields.expiryDate"
-                            classes={labelClasses}
-                            className={classes.field}
-                        >
-                            <Typography variant="body2">
-                                {expiryDateText}
-                            </Typography>
-                        </Labeled>
-                        <Typography
-                            className={expiryDateSubTextClass}
-                            variant="body2"
-                        >
-                            {expiryDateSubText}
-                        </Typography>
-                    </div>
-                )}
-                {!currentItemAPIKey && allowSelectHashing && (
-                    <RadioButtonGroupInput
-                        source="secretHashing"
-                        onChange={id => setSecretHashing(id)}
-                        defaultValue="HASHED"
-                        label="resources.applications.fields.secretType"
-                        className={classes.input}
-                        required
-                        choices={[
-                            {
-                                id: 'HASHED',
-                                name: translate(
-                                    'resources.applications.fields.hashed'
-                                ),
-                            },
-                            {
-                                id: 'PLAIN',
-                                name: translate(
-                                    'resources.applications.fields.plain'
-                                ),
-                            },
-                        ]}
-                    />
-                )}
-                {currentItemAPIKey && (
-                    <ApplicationKeyClient
-                        id={currentItemAPIKey}
-                        data={scopedFormData}
-                        includeSecret={false}
-                        labelClasses={labelClasses}
-                        isEditMode={true}
-                        apiKeys={initialValues.apiKeys}
-                    />
-                )}
-                {get(scopedFormData, 'keySecret') && (
-                    <div className={classes.input}>
-                        <ApplicationKeySecret
-                            source="keySecret"
-                            id={currentItemAPIKey}
-                            isEditDisabled={isItemEditDisabled}
-                            record={scopedFormData}
-                            labelClasses={labelClasses}
-                            onUpdateKeyDetails={setUpdatedKeyDetails}
-                            onGenerateKey={onGenerateKey}
-                        />
-                    </div>
-                )}
-            </CollapsiblePanel>
-        );
-    };
-
-    const renderKeys = () => (
-        <ArrayInput
-            className={classes.apiKeysInput}
-            fullWidth
-            label=""
-            source="apiKeys"
-        >
-            <SimpleFormIterator
-                addButton={addButton()}
-                fullWidth
-                removeButton={<span />}
-                getItemLabel={() => ''}
-                TransitionProps={{ timeout: 0 }}
-            >
-                <FormDataConsumer>{renderKey}</FormDataConsumer>
-            </SimpleFormIterator>
-        </ArrayInput>
-    );
+    const isEditRequest =
+        isOrgBoundUser(userContext) &&
+        !isAppIncomplete &&
+        workFlowConfigurations.editApplicationRequestWorkflowStatus ===
+            'ENABLED';
 
     return (
         <Grid className={classes.root} container spacing={3}>
@@ -1573,27 +1257,50 @@ export const ApplicationEditView = ({
                             />
                         )}
                     </CollapsiblePanel>
+                    <CollapsiblePanel
+                        data-apim-test="details-panel"
+                        expanded={activePanelID === PANEL_ID_CERTIFICATES}
+                        label={'resources.applications.fields.certificates'}
+                        onChange={(evt, expanded) =>
+                            onPanelClick(expanded, PANEL_ID_CERTIFICATES)
+                        }
+                    >
+                        <ApplicationCertificatesPanel
+                            allowAddCertificate={true}
+                            appCertificates={appCertificates}
+                            application={record}
+                            assignedCertName={assignedCertName}
+                            certFileName={certFileName}
+                            fetchApplicationCerts={fetchApplicationCerts}
+                            getErrorMessageFromError={getErrorMessageFromError}
+                            isSubmitRequest={isEditRequest}
+                            reloadForm={reloadForm}
+                            setUploadedCertFile={setUploadedCertFile}
+                            uploadedCertFile={uploadedCertFile}
+                        />
+                    </CollapsiblePanel>
                     <Grid item container md={12} sm={12}>
-                        <div>
-                            <Typography
-                                variant="h3"
-                                className={classes.subtitle}
-                            >
-                                {translate(
-                                    'resources.applications.fields.authCredentials'
-                                )}
-                            </Typography>
-                        </div>
-                        <Divider />
-                        {isEditApiKeysLocked && (
-                            <p className={classes.apiKeysLockText}>
-                                {translate(
-                                    'resources.applications.status.complete_lock'
-                                )}
-                            </p>
-                        )}
-                        {keysSummaryLabelContent}
-                        {!apiKeysLoading && renderKeys()}
+                        <ApplicationKeysPanel
+                            activePanelID={activePanelID}
+                            addingKeyEntry={addingKeyEntry}
+                            allowSelectHashing={allowSelectHashing}
+                            apiKeys={apiKeys}
+                            apiKeysLoading={apiKeysLoading}
+                            appCertificates={appCertificates}
+                            application={record}
+                            initialValues={initialValues}
+                            isEditApiKeysLocked={isEditApiKeysLocked}
+                            isSectionModified={isSectionModified}
+                            navigateToShowView={navigateToShowView}
+                            onPanelClick={onPanelClick}
+                            reloadForm={reloadForm}
+                            setActivePanelID={setActivePanelID}
+                            setAddingKeyEntry={setAddingKeyEntry}
+                            setSecretHashing={setSecretHashing}
+                            setUpdatedKeyDetails={setUpdatedKeyDetails}
+                            updatedKeyDetails={updatedKeyDetails}
+                            userContext={userContext}
+                        />
                     </Grid>
                     <FormSpy subscription={subscription} onChange={onChange}>
                         {() => <span />}
@@ -1621,9 +1328,6 @@ const useStyles = makeStyles(
         },
         details: {},
         configuration: {},
-        apiKeysInput: {
-            width: '100%',
-        },
         subtitle: {
             color: theme.palette.primary.main || '#333333',
             fontWeight: theme.typography.fontWeightBold,
@@ -1653,9 +1357,6 @@ const useStyles = makeStyles(
             fontWeight: theme.typography.fontWeightBold,
             fontSize: '1.5rem',
         },
-        input: {
-            width: '100%',
-        },
         apiSelector: {
             marginBottom: theme.spacing(1),
         },
@@ -1666,27 +1367,6 @@ const useStyles = makeStyles(
             color: theme.palette.primary.textHub,
             fontFamily: theme.typography.body1.fontFamily,
             fontSize: theme.typography.body1.fontSize,
-        },
-        apiKeysLockText: {
-            color: theme.palette.primary.textHub,
-            fontFamily: theme.typography.body1.fontFamily,
-            fontSize: theme.typography.body1.fontSize,
-            width: '100%',
-        },
-        apiKeysHelpText: {
-            color: theme.palette.primary.textHub,
-            fontFamily: theme.typography.body1.fontFamily,
-            fontSize: theme.typography.body1.fontSize,
-            marginBotton: 16,
-            marginTop: 16,
-            width: '100%',
-        },
-        expiredKeyStatus: {
-            color: '#B30303',
-            fontWeight: theme.typography.fontWeightBold,
-        },
-        keyExpiryStatus: {
-            marginBottom: 20,
         },
     }),
     {

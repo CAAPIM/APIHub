@@ -56,7 +56,7 @@ Use the following commands to set up you local development environment.
 Before setting up your local development environment, ensure that you have completed the following:
 - You have installed [Yarn](https://yarnpkg.com/).
 - You have installed GNU Make 3.81 or later.
-- You have installed Node v12.16.3.
+- You have installed Node v12.20.2.
 
 ### Install the JavaScript Dependencies
 

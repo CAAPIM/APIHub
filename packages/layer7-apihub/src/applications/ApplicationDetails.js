@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Labeled, TextField, useQuery } from 'react-admin';
-import { useDataProvider, useTranslate } from 'ra-core';
+import { useDataProvider, useMutation, useTranslate } from 'ra-core';
 import Divider from '@material-ui/core/Divider';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
@@ -16,6 +16,7 @@ import { ApplicationDetailsKeyClient } from './ApplicationDetailsKeyClient';
 import CollapsiblePanel from './CollapsiblePanel';
 import { isPublisher, isOrgAdmin, isOrgBoundUser } from '../userContexts';
 import { useLayer7Notify } from '../useLayer7Notify';
+import { ApplicationCertificatesPanel } from './ApplicationCertificatesPanel';
 
 export const ApplicationDetails = ({ record }) => {
     const classes = useStyles();
@@ -31,6 +32,7 @@ export const ApplicationDetails = ({ record }) => {
     const isOrgUser = isOrgBoundUser(userContext);
     const [apiIds, setApiIds] = useState([]);
     const [apiGroupIds, setApiGroupIds] = useState([]);
+    const [appCertificates, setAppCertificates] = useState([]);
 
     const [apiKeys, setApiKeys] = React.useState([]);
     const [customFieldsMap, setCustomFieldsMap] = React.useState({});
@@ -48,6 +50,27 @@ export const ApplicationDetails = ({ record }) => {
         );
         setApiKeys(sortBy(data, ({ defaultKey }) => !defaultKey));
     };
+
+    // get application certificates data
+    const [fetchApplicationCerts, { data: applicationCertsData }] = useMutation(
+        {
+            payload: {
+                applicationUuid: record.id,
+            },
+            resource: 'applicationCertificates',
+            type: 'getList',
+        }
+    );
+
+    useEffect(() => {
+        fetchApplicationCerts();
+    }, []);
+
+    useEffect(() => {
+        if (applicationCertsData) {
+            setAppCertificates(applicationCertsData);
+        }
+    }, [applicationCertsData]);
 
     // get apis data
     const { data: apisData, loading: isApisDataLoading } = useQuery({
@@ -254,6 +277,35 @@ export const ApplicationDetails = ({ record }) => {
                     className={classes.configuration}
                     justify="flex-start"
                 >
+                    <CollapsiblePanel
+                        defaultExpanded
+                        label={'resources.applications.fields.certificates'}
+                    >
+                        <ApplicationCertificatesPanel
+                            allowAddCertificate={false}
+                            appCertificates={appCertificates}
+                            assignedCertName={''}
+                            certFileName={''}
+                            fetchApplicationCerts={() => {}}
+                            getErrorMessageFromError={() => {}}
+                            isSubmitRequest={false}
+                            application={record}
+                            reloadForm={() => {}}
+                            setUploadedCertFile={() => {}}
+                            uploadedCertFile={() => {}}
+                        />
+                    </CollapsiblePanel>
+                </Grid>
+                <Grid
+                    container
+                    item
+                    md={12}
+                    sm={12}
+                    direction="column"
+                    classes={gridClasses}
+                    className={classes.configuration}
+                    justify="flex-start"
+                >
                     <Grid item>
                         <Typography variant="h3" className={classes.subtitle}>
                             {translate(
@@ -265,6 +317,7 @@ export const ApplicationDetails = ({ record }) => {
                     <List className={classes.mainField}>
                         {apiKeys.map(apiKey => (
                             <ApplicationDetailsKeyClient
+                                appCertificates={appCertificates}
                                 appUuid={record.id}
                                 id={apiKey.id}
                                 key={apiKey.id}

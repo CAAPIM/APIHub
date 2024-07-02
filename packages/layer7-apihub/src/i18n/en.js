@@ -33,14 +33,16 @@ const apiHubMessages = {
         login: {
             title: 'Sign In To API Hub',
             multiple_sessions_title: 'Multiple sessions detected',
-            multiple_sessions_text: 'An active session already exists for this account. Proceeding will terminate all other sessions for this account.',
+            multiple_sessions_text:
+                'An active session already exists for this account. Proceeding will terminate all other sessions for this account.',
             fields: {
                 username: 'Username',
                 password: 'Password',
             },
             actions: {
                 multi_session_sign_in: 'PROCEED',
-                multi_session_sign_in_additional_text: 'OTHER SESSIONS WILL TERMINATE',
+                multi_session_sign_in_additional_text:
+                    'OTHER SESSIONS WILL TERMINATE',
                 sign_in: 'Sign in',
                 sign_in_with: 'Sign in with',
                 sign_up_title: 'New to API Hub?',
@@ -50,7 +52,8 @@ const apiHubMessages = {
             notifications: {
                 invalid_credentials:
                     'Invalid credentials. Please try again or use the forgot password link below',
-                multi_session_invalid_credentials: 'Invalid credentials. Please try again',
+                multi_session_invalid_credentials:
+                    'Invalid credentials. Please try again',
                 selected_scheme: 'Signing in with',
                 local_logins_disabled:
                     'Direct login is disabled. You can choose an authentication method from the list below. Contact your administrator for more information.',
@@ -362,6 +365,14 @@ const apiHubMessages = {
                 default: 'Default',
                 apisCount: 'APIs: %{count}',
                 apiGroupsCount: 'API Groups: %{count}',
+                certificateName: 'Name',
+                certificate: 'Certificate',
+                shaThumbPrint: 'SHA-256 Thumbprint',
+                subjectDomain: 'Subject Domain',
+                notValidAfter: 'Not valid after (%{zone})',
+                certificates: 'Certificates',
+                authMethodCertificate: 'Client Certificate',
+                authMethodSecret: 'Client ID & Secret',
             },
             actions: {
                 generateSecret: 'Generate New Secret',
@@ -372,6 +383,7 @@ const apiHubMessages = {
                 publish: 'Publish',
                 save: 'Save',
                 addApplication: 'Add Application',
+                addCertificate: 'Add Certificate',
                 createApplication: 'Create Application',
                 deleteApplication: 'Delete Application',
                 deleting_title: 'Deleting Application',
@@ -386,6 +398,10 @@ const apiHubMessages = {
                 force_delete: 'Force Delete',
                 no: 'No',
                 yes: 'Yes',
+                submitForApproval: 'Submit for approval',
+                uploadCertificate: 'Upload Certificate',
+                confirm: 'Confirm',
+                submitDelete: 'Submit Delete',
             },
             validation: {
                 error_application_name_not_unique:
@@ -396,6 +412,9 @@ const apiHubMessages = {
                 apikey_name_caption:
                     'The key name must be unique to this application. Maximum length is 255 characters.',
                 apikey_name_empty_error: 'Name cannot be empty',
+                certificate_name_caption: 'Must be unique per application.',
+                certificate_file_input_caption:
+                    'All application keys certificates will redeploy.',
             },
             status: {
                 enabled: 'Enabled',
@@ -415,12 +434,16 @@ const apiHubMessages = {
                     'Save required before APIs can be added. At least 1 API (or API Group) is required to publish an application.',
                 api_keys_help_text:
                     'At least 1 API Key is required to publish an application.',
+                add_certificates_help_text:
+                    'Save required before certificates can be added.',
                 create_api_keys_help_text:
                     'Save required before keys can be created. At least 1 API Key is required to publish an application.',
                 partial_lock:
                     'Part(s) of this section are locked pending the approval of a previous edit.',
                 complete_lock:
                     'This section is locked pending the approval of a previous edit.',
+                certificate_submission:
+                    'The certificate will be submitted as a request and will be available upon approval.',
             },
             list: {
                 sort: {
@@ -468,13 +491,26 @@ const apiHubMessages = {
                 unsaved_changes: 'Unsaved Changes',
                 unsaved_changes_content:
                     'This section contains unsaved changes. Do you wish to leave this section without saving the changes?',
+                certificate_upload_request_success:
+                    'Upload Certificate Request submitted successfully.',
+                certificate_upload_request_failure:
+                    'Upload Certificate Request failed.',
+                certificate_upload_success:
+                    'Successfully uploaded Certificate.',
+                certificate_upload_failure: 'Failed to upload certificate.',
+                certificate_delete_failure: 'Failed to delete certificate.',
+                certificate_delete_success: 'Successfully Deleted Certificate.',
+                certificate_delete_request_failure:
+                    'Delete Certificate request failed.',
+                certificate_delete_request_success:
+                    'Delete Certificate request submitted successfully.',
             },
             confirm_delete:
                 'You are about to delete this application. Are you sure?',
             deleting_content:
                 'Undeploying keys and deleting application. This may take several minutes.',
             proxy_check_alert:
-                'Unable to connect to all proxies where the application has deployed keys. This will likely result with an incomplete deletion, where some keys will remain on some proxies. They will have to be removed from the gateway directly. There will be an option to force delete the application record from portal.',
+                'Unable to connect to all key stores where the application has deployed keys. This will likely result with an incomplete deletion, where some keys will remain on some key stores. They will have to be removed from the key store directly. There will be an option to force delete the application record from portal.',
             publish_help_text:
                 'A complete appllication with at least 1 API and 1 Key can be published and its key(s) deployed to proxies.',
         },
@@ -484,7 +520,7 @@ const apiHubMessages = {
             deleting_content:
                 'Undeploying keys and deleting API-Key. This may take several minutes.',
             proxy_check_alert:
-                'Unable to connect to all proxies where the API-Key has been deployed. This will likely result with an incomplete deletion, where this key will remain on some proxies. It will have to be removed from the gateway directly. There will be an option to force delete the API-Key record from portal.',
+                'Unable to connect to all key stores where the API-Key has been deployed. This will likely result with an incomplete deletion, where this key will remain on some key stores. It will have to be removed from the key store directly. There will be an option to force delete the API-Key record from portal.',
             actions: {
                 addKey: 'Add Key',
                 deleteApiKey: 'Delete Key',

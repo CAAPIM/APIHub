@@ -208,6 +208,17 @@ export const ApplicationNew = ({ userContext, toolbarProps }) => {
                     />
                     <CollapsiblePanel
                         disabled
+                        label={'resources.applications.fields.certificates'}
+                        labelComponent={
+                            <p>
+                                {translate(
+                                    'resources.applications.status.add_certificates_help_text'
+                                )}
+                            </p>
+                        }
+                    />
+                    <CollapsiblePanel
+                        disabled
                         label={'resources.applications.fields.authCredentials'}
                         labelComponent={
                             <p>
