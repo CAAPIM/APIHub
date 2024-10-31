@@ -41,7 +41,7 @@ const apiHubMessages = {
                 password: 'Contraseña',
             },
             actions: {
-                 multi_session_sign_in: 'PROCEDER',
+                multi_session_sign_in: 'PROCEDER',
                 multi_session_sign_in_additional_text:
                     ' OTRAS SESIONES TERMINARÁN',
                 sign_in: 'Iniciar sesión',
@@ -299,6 +299,7 @@ const apiHubMessages = {
                         'Seleccione la aplicación para usar su clave predeterminada',
                     search_or_select_application:
                         'Buscar o seleccionar aplicación',
+                    select_api_key: 'Seleccionar API Key',
                 },
             },
             documentation: {
@@ -336,6 +337,8 @@ const apiHubMessages = {
                 apis: 'APIs',
                 apisCount: '%{count}',
                 authentication: 'Autenticación',
+                authMethod: 'Método de autenticación',
+                authprovider: 'Proveedor de autenticación',
                 description: 'Descripción',
                 day: 'día',
                 days: 'días',
@@ -386,7 +389,9 @@ const apiHubMessages = {
                 notValidAfter: 'No es válido después de #date (%{zone})',
                 certificates: 'Certificados',
                 authMethodCertificate: 'Certificado de cliente',
+                authMethodNone: 'None',
                 authMethodSecret: 'ID de cliente y password',
+                notAvailableAuthMethod: 'No disponible',
             },
             actions: {
                 generateSecret: 'Generar nuevo secreto',
@@ -427,6 +432,8 @@ const apiHubMessages = {
                 scope_caption: 'Utilizar valores separados por espacios',
                 application_name_caption:
                     'El nombre de la clave debe ser único para esta aplicación. El largo máximo es de 255 caracteres.',
+                apikey_caption:
+                    'La clave debe ser única y su longitud máxima es de 255 caracteres.',
                 apikey_name_empty_error: 'El nombre no puede estar vacío',
                 certificate_name_caption: 'Debe ser único por aplicación.',
                 certificate_file_input_caption:
@@ -490,6 +497,8 @@ const apiHubMessages = {
                 edit_overview: 'Editar descripción general',
                 empty_overview: 'Sin valor',
                 create_success: 'La aplicación se ha creado correctamente.',
+                key_create_request_success:
+                    'Solicitud de creación de API Key enviada.',
                 key_create_success: 'la Clave de API creada con éxito.',
                 create_error:
                     'Se ha producido un error al crear la aplicación.',

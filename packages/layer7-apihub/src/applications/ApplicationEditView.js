@@ -1,3 +1,4 @@
+// Copyright © 2024 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React, { useState, useEffect } from 'react';
 import {
     Labeled,
@@ -122,6 +123,7 @@ export const ApplicationEditView = ({
     const [assignedCertName, setAssignedCertName] = useState('');
     const isAppIncomplete = record.status === APPLICATION_STATUS_INCOMPLETE;
     const isAppRejected = record.status === APPLICATION_STATUS_REJECTED;
+    const [authProviders, setAuthProviders] = useState([]);
 
     const {
         data: apiPlanFeatureFlag,
@@ -131,6 +133,14 @@ export const ApplicationEditView = ({
         resource: 'apiPlans',
         payload: {},
     });
+
+    React.useEffect(() => {
+        (async () => {
+            const { data } =
+                (await dataProvider.getList('authProviders')) || {};
+            setAuthProviders(data);
+        })();
+    }, [dataProvider]);
 
     // get application certificates data
     const [fetchApplicationCerts, { data: applicationCertsData }] = useMutation(
@@ -145,7 +155,7 @@ export const ApplicationEditView = ({
 
     useEffect(() => {
         fetchApplicationCerts();
-    }, []);
+    }, [fetchApplicationCerts]);
 
     useEffect(() => {
         if (applicationCertsData) {
@@ -424,13 +434,22 @@ export const ApplicationEditView = ({
             };
         }
         if (apiKey === NEW_KEY) {
-            addApiKey(record.id, {
-                ...keyData,
-                ...(isAuthMethodSecret && {
-                    keySecretHashed: secretHashing === 'HASHED',
-                }),
-                defaultKey: form.apiKeys.length === 1,
-            });
+            if (keyData.authMethod === 'NONE') {
+                addApiKey(record.id, {
+                    ...keyData,
+                    authProviderUuid: apiKeyObject.authProviderUuid,
+                    apiKey: apiKeyObject.userProvidedApiKey,
+                    defaultKey: form.apiKeys.length === 1,
+                });
+            } else {
+                addApiKey(record.id, {
+                    ...keyData,
+                    ...(isAuthMethodSecret && {
+                        keySecretHashed: secretHashing === 'HASHED',
+                    }),
+                    defaultKey: form.apiKeys.length === 1,
+                });
+            }
         } else {
             if (!isEditApiKeysLocked) {
                 update(
@@ -481,11 +500,25 @@ export const ApplicationEditView = ({
                         setAddedKey(data);
                         setOpenSecretDialog(true);
                     } else {
-                        notify(
-                            translate(
-                                'resources.applications.notifications.key_create_success'
-                            )
-                        );
+                        if (
+                            isOrgBoundUser(userContext) &&
+                            !isAppIncomplete &&
+                            workFlowConfigurations.editApplicationRequestWorkflowStatus ===
+                                'ENABLED'
+                        ) {
+                            notify(
+                                translate(
+                                    'resources.applications.notifications.key_create_request_success'
+                                )
+                            );
+                        } else {
+                            notify(
+                                translate(
+                                    'resources.applications.notifications.key_create_success'
+                                )
+                            );
+                        }
+
                         if (isAppIncomplete) {
                             reloadForm();
                         } else {
@@ -1288,6 +1321,7 @@ export const ApplicationEditView = ({
                             apiKeysLoading={apiKeysLoading}
                             appCertificates={appCertificates}
                             application={record}
+                            authProviders={authProviders}
                             initialValues={initialValues}
                             isEditApiKeysLocked={isEditApiKeysLocked}
                             isSectionModified={isSectionModified}

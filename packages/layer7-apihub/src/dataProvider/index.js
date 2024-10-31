@@ -9,6 +9,7 @@ import { applicationCertificatesDataProvider } from './applicationCertificates';
 import { apiKeysDataProvider } from './apiKeys';
 import { applicationsDataProvider } from './applications';
 import { assetsDataProvider } from './assets';
+import { authProvidersDataProvider } from './authProviders';
 import { customFieldsDataProvider } from './customFields';
 import { documentsDataProvider } from './documents';
 import { organizationsDataProvider } from './organizations';
@@ -42,6 +43,7 @@ export const dataProvider = (
         applicationCertificates: applicationCertificatesDataProvider(context),
         applications: applicationsDataProvider(context),
         assets: assetsDataProvider(context),
+        authProviders: authProvidersDataProvider(context),
         customFields: customFieldsDataProvider(context),
         documents: documentsDataProvider(context),
         organizations: organizationsDataProvider(context),

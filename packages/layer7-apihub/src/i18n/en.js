@@ -1,3 +1,4 @@
+// Copyright © 2024 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import { mergeTranslations } from 'react-admin';
 import raMessages from 'ra-language-english';
 
@@ -288,6 +289,7 @@ const apiHubMessages = {
                         'Select application to use its default key.',
                     search_or_select_application:
                         'Search or Select Application',
+                    select_api_key: 'Select API Key',
                 },
             },
             documentation: {
@@ -319,11 +321,14 @@ const apiHubMessages = {
             fields: {
                 name: 'Name',
                 apiKey: 'API Key:',
+                apiKeyName: 'API Key',
                 keySecret: 'Shared Secret:',
                 apiKeyClientID: 'API Key / Client ID',
                 apisIncluded: 'APIs Included',
                 apis: 'APIs',
                 authentication: 'Authentication',
+                authMethod: 'Auth Method',
+                authprovider: 'Auth Provider',
                 description: 'Description',
                 day: 'day',
                 days: 'days',
@@ -372,7 +377,9 @@ const apiHubMessages = {
                 notValidAfter: 'Not valid after (%{zone})',
                 certificates: 'Certificates',
                 authMethodCertificate: 'Client Certificate',
+                authMethodNone: 'None',
                 authMethodSecret: 'Client ID & Secret',
+                notAvailableAuthMethod: 'Not Available',
             },
             actions: {
                 generateSecret: 'Generate New Secret',
@@ -409,6 +416,8 @@ const apiHubMessages = {
                 callback_url_caption: 'Use comma separated values',
                 scope_caption: 'Use space separated values',
                 application_name_caption: 'Use unique name 50 characters (max)',
+                apikey_caption:
+                    'The key must be unique. Maximum length is 255 characters.',
                 apikey_name_caption:
                     'The key name must be unique to this application. Maximum length is 255 characters.',
                 apikey_name_empty_error: 'Name cannot be empty',
@@ -473,6 +482,7 @@ const apiHubMessages = {
                 edit_overview: 'Edit overview',
                 empty_overview: 'No value',
                 create_success: 'Application successfully created.',
+                key_create_request_success: 'API Key create request submitted.',
                 key_create_success: 'API Key created successfully.',
                 create_error:
                     'An error occurred while creating the application.',

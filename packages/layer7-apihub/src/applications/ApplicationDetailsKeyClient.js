@@ -1,5 +1,5 @@
 import React, { Fragment } from 'react';
-import { Labeled, TextField } from 'react-admin';
+import { Labeled, TextField, useDataProvider } from 'react-admin';
 import { useTranslate } from 'ra-core';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
@@ -22,6 +22,7 @@ import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import classnames from 'classnames';
 import moment from 'moment';
 import momentTimeZone from 'moment-timezone';
+import forEach from 'lodash/forEach';
 
 import { CERTIFICATE_DISPLAY_FORMAT } from './constants';
 import { useCopyToClipboard } from '../ui';
@@ -64,6 +65,26 @@ export const ApplicationDetailsKeyClient = props => {
         successMessage: 'resources.applications.notifications.copy_success',
         errorMessage: 'resources.applications.notifications.copy_error',
     });
+    const [authProviders, setAuthProviders] = React.useState([]);
+    const [authProvidersMap, setAuthProvidersMap] = React.useState({});
+    const dataProvider = useDataProvider();
+
+    React.useEffect(() => {
+        (async () => {
+            const { data } =
+                (await dataProvider.getList('authProviders')) || {};
+            setAuthProviders(data);
+        })();
+    }, [dataProvider]);
+
+    React.useEffect(() => {
+        const providersMap = {};
+        forEach(authProviders, item => {
+            providersMap[item.id] = item.name;
+        });
+        setAuthProvidersMap(providersMap);
+    }, [authProviders]);
+
     if (!data || !data.apiKey) {
         return null;
     }
@@ -216,6 +237,62 @@ export const ApplicationDetailsKeyClient = props => {
                                 </Labeled>
                             </Grid>
                         )}
+                        <Grid item md={6} sm={6} xs={12}>
+                            {data.authMethod === 'NONE' && (
+                                <Labeled
+                                    // On <Labeled />, this will translate in a correct `for` attribute on the label
+                                    id="apiKeyAuthProvider"
+                                    label={
+                                        'resources.applications.fields.authprovider'
+                                    }
+                                    classes={classes}
+                                    className={classes.fieldLabel}
+                                >
+                                    <Typography
+                                        variant="body2"
+                                        className={classes.fieldContent}
+                                    >
+                                        <span
+                                            id="apiKeyAuthProvider"
+                                            className={classes.fieldValue}
+                                        >
+                                            {
+                                                authProvidersMap[
+                                                    data.authProviderUuid
+                                                ]
+                                            }
+                                        </span>
+                                    </Typography>
+                                </Labeled>
+                            )}
+                        </Grid>
+                        <Grid item md={6} sm={6} xs={12}>
+                            {data.authMethod === 'NONE' && (
+                                <Labeled
+                                    // On <Labeled />, this will translate in a correct `for` attribute on the label
+                                    id="apiKeyAuthMethod"
+                                    label={
+                                        'resources.applications.fields.authMethod'
+                                    }
+                                    classes={classes}
+                                    className={classes.fieldLabel}
+                                >
+                                    <Typography
+                                        variant="body2"
+                                        className={classes.fieldContent}
+                                    >
+                                        <span
+                                            id="apiKeyAuthMethod"
+                                            className={classes.fieldValue}
+                                        >
+                                            {translate(
+                                                'resources.applications.fields.notAvailableAuthMethod'
+                                            )}
+                                        </span>
+                                    </Typography>
+                                </Labeled>
+                            )}
+                        </Grid>
                         <Grid item md={6} sm={6} xs={12}>
                             <Labeled
                                 // On <Labeled />, this will translate in a correct `for` attribute on the label

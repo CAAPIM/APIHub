@@ -4,16 +4,18 @@ import { makeStyles } from '@material-ui/core';
 
 export const Footer = () => {
     const classes = useStyles();
-
+    const showCopyright = localStorage.getItem('SHOW_COPYRIGHT');
     return (
         <div className={classes.root}>
-            <Typography
-                color="textSecondary"
-                variant="body2"
-                className={classes.copyright}
-            >
-                Copyright © 2024 Broadcom. All Rights Reserved
-            </Typography>
+            {showCopyright === 'true' && (
+                <Typography
+                    color="textSecondary"
+                    variant="body2"
+                    className={classes.copyright}
+                >
+                    Copyright © 2024 Broadcom. All Rights Reserved
+                </Typography>
+            )}
         </div>
     );
 };

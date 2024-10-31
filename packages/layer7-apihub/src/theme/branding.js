@@ -136,8 +136,8 @@ export const fetchUserContext = async (url, originHubName) => {
 
 export const useBranding = (url, originHubName, defaultTheme = theme) => {
     const [brandingTheme, setBrandingTheme] = useState(defaultTheme);
-    const [brandingLogo, setBrandingLogo] = useState('');
-    const [brandingFavicon, setBrandingFavicon] = useState('');
+    const [brandingLogo, setBrandingLogo] = useState(null);
+    const [brandingFavicon, setBrandingFavicon] = useState(null);
     const [userContext, setUserContext] = useState('');
 
     useEffect(() => {
@@ -149,25 +149,29 @@ export const useBranding = (url, originHubName, defaultTheme = theme) => {
     }, [originHubName, url]);
 
     useEffect(() => {
-        if (global.APIHUB_CONFIG.USE_BRANDING_THEME) {
-            fetchBranding(url, originHubName, userContext)
-                .then(theme => {
-                    return {
-                        logo: theme.logo,
-                        favicon: theme.favicon,
-                        ...createMuiTheme(convertBrandingToMuiTheme(theme)),
-                    };
-                })
-                .then(({ logo, favicon, ...theme }) => {
+        fetchBranding(url, originHubName, userContext)
+            .then(theme => {
+                localStorage.setItem(
+                    'SHOW_COPYRIGHT',
+                    get(theme, 'display.apihubCopyright')
+                );
+                return {
+                    logo: theme.logo,
+                    favicon: theme.favicon,
+                    ...createMuiTheme(convertBrandingToMuiTheme(theme)),
+                };
+            })
+            .then(({ logo, favicon, ...theme }) => {
+                if (global.APIHUB_CONFIG.USE_BRANDING_THEME) {
                     setBrandingLogo(logo);
                     setBrandingFavicon(favicon);
                     setBrandingTheme(merge(defaultTheme, theme));
-                });
-        } else {
-            setBrandingLogo(null);
-            setBrandingFavicon(null);
-            setBrandingTheme(defaultTheme);
-        }
+                } else {
+                    setBrandingLogo(null);
+                    setBrandingFavicon(null);
+                    setBrandingTheme(defaultTheme);
+                }
+            });
     }, [defaultTheme, originHubName, url, userContext]);
 
     return {

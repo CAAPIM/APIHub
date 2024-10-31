@@ -29,6 +29,7 @@ export const apiKeysDataProvider = context => {
                         ...item,
                     })) || [],
                 total: json.totalElements || 0,
+                totalPages: json.totalPages,
             };
         },
         getOne: async ({ appUuid, apiKey }) => {

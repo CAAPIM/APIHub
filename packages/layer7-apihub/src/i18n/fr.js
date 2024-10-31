@@ -295,6 +295,7 @@ const apiHubMessages = {
                         "Sélectionnez l'application pour utiliser sa clé par défaut.",
                     search_or_select_application:
                         'Rechercher ou sélectionner une application',
+                    select_api_key: "Sélectionner la clé d'API",
                 },
             },
             documentation: {
@@ -332,6 +333,8 @@ const apiHubMessages = {
                 apis: 'APIs',
                 apisCount: '%{count}',
                 authentication: 'Authentification',
+                authMethod: "Méthode d'authentification",
+                authprovider: "Fournisseur d'authentification",
                 day: 'jour',
                 days: 'jours',
                 description: 'Description ',
@@ -379,7 +382,9 @@ const apiHubMessages = {
                 notValidAfter: 'Non valable après (%{zone})',
                 certificates: 'Certificats',
                 authMethodCertificate: 'Certificats',
+                authMethodNone: 'Aucun',
                 authMethodSecret: 'Identifiant client et secret',
+                notAvailableAuthMethod: 'Non disponible',
             },
             actions: {
                 generateSecret: 'Générer un nouveau secret',
@@ -412,6 +417,8 @@ const apiHubMessages = {
                 submitDelete: 'Soumettre Supprimer',
             },
             validation: {
+                apikey_caption:
+                    'La clé doit être unique. La longueur maximale de la clé est de 255 caractères.',
                 apikey_name_caption:
                     'Le nom de la clé doit être unique pour l’application. La longueur maximale est de 255 caractères.',
                 error_application_name_not_unique:
@@ -483,6 +490,8 @@ const apiHubMessages = {
                 edit_overview: 'Modifier la présentation',
                 empty_overview: 'Aucune valeur',
                 create_success: "L'application a été créée.",
+                key_create_request_success:
+                    "Demande de création de clé d'API soumise.",
                 key_create_success: 'Clé d’API créée avec succès.',
                 create_error:
                     "Une erreur s'est produite lors de la création de l'application.",

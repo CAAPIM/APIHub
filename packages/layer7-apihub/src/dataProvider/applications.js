@@ -55,6 +55,7 @@ export const applicationsDataProvider = context => {
                         ...item,
                     })) || [],
                 total: json.totalElements || 0,
+                totalPages: json.totalPages,
             };
         },
 

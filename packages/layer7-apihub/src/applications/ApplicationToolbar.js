@@ -79,6 +79,7 @@ export const ApplicationToolbar = props => {
                                 icon={<span />}
                                 label={buttonLabel}
                                 color={color}
+                                type="button"
                                 variant={variant}
                                 size={size}
                             />
