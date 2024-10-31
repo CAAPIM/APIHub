@@ -5,14 +5,20 @@ import FormControl from '@material-ui/core/FormControl';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
+import Select from '@material-ui/core/Select';
+import InputLabel from '@material-ui/core/InputLabel';
+import Input from '@material-ui/core/Input';
+import MenuItem from '@material-ui/core/MenuItem';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import uniqBy from 'lodash/uniqBy';
+import find from 'lodash/find';
 
-import { ApiApplicationCredentials } from './ApiApplicationCredentials';
 import { useLayer7Notify } from '../../useLayer7Notify';
 
-export const ApiApplications = ({ id }) => {
+const emptyFunction = () => {};
+
+export const ApiApplications = ({ handleKeyUpdate = emptyFunction, id }) => {
     const translate = useTranslate();
     const classes = useStyles();
     const dataProvider = useDataProvider();
@@ -20,57 +26,67 @@ export const ApiApplications = ({ id }) => {
     const [selectedApp, setSelectedApp] = useState();
     const [open, setOpen] = React.useState(false);
     const [applications, setApplications] = useState([]);
+    const [apiKeys, setApiKeys] = useState([]);
+    const [selectedAPIKey, setSelectedAPIKey] = useState();
     const [search, setSearch] = React.useState(undefined);
-    const [loading, setLoading] = React.useState(false);
-    const [currentPage, setCurrentPage] = React.useState(1);
+    const [loadingApplications, setLoadingApplications] = React.useState(false);
+    const [loadingAPIKeys, setLoadingAPIKeys] = React.useState(false);
+    const [currentAppPage, setCurrentAppPage] = React.useState(1);
+    const [currentAPIkeyPage, setCurrentAPIkeyPage] = React.useState(0);
 
     const fetchApplications = async searchValue => {
-        const { data, total } = await dataProvider.getList(
+        const { data, totalPages } = await dataProvider.getList(
             'applications',
             {
                 filter: {
                     apiUuid: id,
                     name: search,
                 },
-                pagination: { page: currentPage, perPage: 10 },
+                pagination: { page: currentAppPage, perPage: 10 },
                 sort: { field: 'name', order: 'ASC' },
             },
             {
                 onFailure: error => notify(error),
             }
         );
-
-        return [data, total];
+        return [data, totalPages];
     };
 
-    const onSearch = event => {
-        setCurrentPage(1);
-        setLoading(true);
-        setSearch(event.target.value);
+    const fetchAPIKeys = async () => {
+        const { data, totalPages } = await dataProvider.getList(
+            'apiKeys',
+            {
+                applicationUuid: selectedApp.id,
+                pagination: { page: currentAPIkeyPage, perPage: 10 },
+                sort: { field: 'createTs', order: 'DESC' },
+            },
+            {
+                onFailure: error => notify(error),
+            }
+        );
+
+        return [data, totalPages];
     };
 
-    React.useEffect(() => {
-        if (!open) {
-            setLoading(false);
-            setSearch(undefined);
-        }
-    }, [open]);
+    const handleAPIKeyChange = evt => {
+        setSelectedAPIKey(evt.target.value);
+    };
 
     React.useEffect(() => {
         let active = true;
 
         (async () => {
-            const [data, total] = await fetchApplications(search);
+            if (!selectedApp) {
+                return;
+            }
+            const [data, totalPages] = await fetchAPIKeys();
 
             if (active) {
-                if (data.length == total) {
-                    setApplications(data);
-                    setLoading(false);
-                } else if (applications.length < total) {
-                    setApplications(uniqBy([...applications, ...data], 'uuid'));
-                    setCurrentPage(currentPage + 1);
+                setApiKeys(uniqBy([...apiKeys, ...data], 'apiKey'));
+                if (currentAPIkeyPage < totalPages) {
+                    setCurrentAPIkeyPage(currentAPIkeyPage + 1);
                 } else {
-                    setLoading(false);
+                    setLoadingAPIKeys(false);
                 }
             }
         })();
@@ -78,7 +94,49 @@ export const ApiApplications = ({ id }) => {
         return () => {
             active = false;
         };
-    }, [search, currentPage]);
+        // eslint-disable-next-line
+    }, [selectedApp, currentAPIkeyPage]);
+
+    const onSearch = event => {
+        setCurrentAppPage(1);
+        setLoadingApplications(true);
+        setSearch(event.target.value);
+    };
+
+    React.useEffect(() => {
+        if (!open) {
+            setLoadingApplications(false);
+            setSearch(undefined);
+        }
+    }, [open]);
+
+    React.useEffect(() => {
+        if (handleKeyUpdate) {
+            const apiKey = find(apiKeys, item => item.id === selectedAPIKey);
+            handleKeyUpdate(apiKey);
+        }
+    }, [apiKeys, handleKeyUpdate, selectedAPIKey]);
+
+    React.useEffect(() => {
+        let active = true;
+
+        (async () => {
+            const [data, totalPages] = await fetchApplications(search);
+            if (active) {
+                setApplications(uniqBy([...applications, ...data], 'id'));
+                if (currentAppPage < totalPages) {
+                    setCurrentAppPage(currentAppPage + 1);
+                } else {
+                    setLoadingApplications(false);
+                }
+            }
+        })();
+
+        return () => {
+            active = false;
+        };
+        // eslint-disable-next-line
+    }, [search, currentAppPage]);
 
     return (
         <div className={classes.root}>
@@ -97,17 +155,17 @@ export const ApiApplications = ({ id }) => {
                             onOpen={() => setOpen(true)}
                             onClose={(event, reason) => setOpen(false)}
                             onChange={(event, app, reason) => {
+                                setCurrentAPIkeyPage(1);
+                                setApiKeys([]);
                                 setSelectedApp(app);
-                                if (reason == 'clear') {
-                                    setApplications([]);
-                                }
+                                setSelectedAPIKey();
                             }}
                             getOptionSelected={(option, value) =>
                                 option.name === value.name
                             }
                             getOptionLabel={option => option.name}
                             options={applications}
-                            loading={loading}
+                            loading={loadingApplications}
                             loadingText={translate('ra.action.loading')}
                             renderInput={params => (
                                 <TextField
@@ -121,7 +179,7 @@ export const ApiApplications = ({ id }) => {
                                         ...params.InputProps,
                                         endAdornment: (
                                             <React.Fragment>
-                                                {loading ? (
+                                                {loadingApplications ? (
                                                     <CircularProgress
                                                         color="inherit"
                                                         size={20}
@@ -135,16 +193,36 @@ export const ApiApplications = ({ id }) => {
                             )}
                         />
                     </FormControl>
-                    <Typography color="textSecondary">
-                        {translate(
-                            'resources.apis.specification.actions.select_application'
-                        )}
-                    </Typography>
                 </Grid>
                 <Grid item xs={5}>
-                    {selectedApp && (
-                        <ApiApplicationCredentials id={selectedApp.id} />
-                    )}
+                    <Typography variant="h6" color="textSecondary" gutterBottom>
+                        {translate('resources.applications.fields.apiKeyName')}
+                    </Typography>
+                    <FormControl fullWidth>
+                        <InputLabel id={'api-key-select-label'}>
+                            {translate(
+                                'resources.apis.specification.actions.select_api_key'
+                            )}
+                        </InputLabel>
+                        <Select
+                            disabled={!selectedApp}
+                            id={'api-key-select'}
+                            input={<Input />}
+                            inputProps={{
+                                variant: 'outlined',
+                            }}
+                            labelId={'api-key-select-label'}
+                            loading={loadingAPIKeys}
+                            onChange={handleAPIKeyChange}
+                            value={selectedAPIKey || ''}
+                        >
+                            {apiKeys.map(apiKey => (
+                                <MenuItem key={apiKey.id} value={apiKey.id}>
+                                    {apiKey.name}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
                 </Grid>
             </Grid>
         </div>

@@ -42,7 +42,7 @@ export const getAuthSchemes = async (
         }
     });
 
-    if (json.isOktaProxied) {
+    if (json.isOktaProxied || json.isSamlProxied) {
         schemesList = schemesList.filter(
             scheme => scheme.authMethod !== 'SAML'
         );

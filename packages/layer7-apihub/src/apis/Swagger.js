@@ -7,9 +7,10 @@ import SwaggerUI from 'swagger-ui-react';
 import 'swagger-ui-react/swagger-ui.css';
 import { makeStyles } from '@material-ui/core';
 
-export const Swagger = ({ id }) => {
+export const Swagger = ({ apiKeyDetails, id }) => {
     const translate = useTranslate();
     const classes = useStyles();
+    const { apiKey, keySecret } = apiKeyDetails || {};
 
     const { data, loaded, error } = useGetOne('specs', id);
 
@@ -27,7 +28,16 @@ export const Swagger = ({ id }) => {
 
     return (
         <div className={classes.swagger}>
-            <SwaggerUI spec={data} />
+            <SwaggerUI
+                key={apiKey}
+                onComplete={system => {
+                    system.initOAuth({
+                        clientId: apiKey,
+                        clientSecret: keySecret,
+                    });
+                }}
+                spec={data}
+            />
         </div>
     );
 };

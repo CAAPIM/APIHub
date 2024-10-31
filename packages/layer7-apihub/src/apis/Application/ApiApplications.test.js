@@ -29,6 +29,7 @@ describe('Applications', () => {
                                         },
                                     ],
                                     total: 3,
+                                    totalPages: 1,
                                 },
                             },
                         },
@@ -38,31 +39,53 @@ describe('Applications', () => {
         };
 
         const dataProvider = {
-            getList: jest.fn().mockResolvedValue({
-                data: [
-                    {
-                        id: 1,
-                        name: 'application 1',
-                    },
-                    {
-                        id: 2,
-                        name: 'application 2',
-                    },
-                    {
-                        id: 3,
-                        name: 'application 3',
-                    },
-                    {
-                        id: 4,
-                        name: 'app 4',
-                    },
-                    {
-                        id: 5,
-                        name: 'app 5',
-                    },
-                ],
-                total: 5,
-            }),
+            getList: type => {
+                if (type === 'applications') {
+                    return Promise.resolve({
+                        data: [
+                            {
+                                id: 1,
+                                name: 'application 1',
+                            },
+                            {
+                                id: 2,
+                                name: 'application 2',
+                            },
+                            {
+                                id: 3,
+                                name: 'application 3',
+                            },
+                            {
+                                id: 4,
+                                name: 'app 4',
+                            },
+                            {
+                                id: 5,
+                                name: 'app 5',
+                            },
+                        ],
+                        total: 5,
+                        totalPages: 1,
+                    });
+                } else if (type === 'apiKeys') {
+                    return Promise.resolve({
+                        data: [
+                            {
+                                apiKey: 1,
+                                id: 1,
+                                name: 'key 1',
+                            },
+                            {
+                                apiKey: 2,
+                                id: 2,
+                                name: 'key 2',
+                            },
+                        ],
+                        total: 2,
+                        totalPages: 1,
+                    });
+                }
+            },
         };
 
         const { getByLabelText, queryByText } = renderWithRedux(
@@ -72,12 +95,12 @@ describe('Applications', () => {
             initialState
         );
 
-        const select = getByLabelText(
+        const appSelect = getByLabelText(
             'resources.apis.specification.actions.search_or_select_application'
         );
 
-        // Show all applications when select when no search criteria
-        await wait(() => fireEvent.mouseDown(select));
+        // Show all applications when appSelect when no search criteria
+        await wait(() => fireEvent.mouseDown(appSelect));
         expect(queryByText('application 1')).not.toBeNull();
         expect(queryByText('application 2')).not.toBeNull();
         expect(queryByText('application 3')).not.toBeNull();
@@ -86,7 +109,7 @@ describe('Applications', () => {
 
         // Enter search criteria
         await wait(() =>
-            fireEvent.change(select, { target: { value: 'application' } })
+            fireEvent.change(appSelect, { target: { value: 'application' } })
         );
         expect(queryByText('application 1')).not.toBeNull();
         expect(queryByText('application 2')).not.toBeNull();
@@ -112,19 +135,40 @@ describe('Applications', () => {
                 },
             },
         };
-
         const dataProvider = {
-            getList: jest.fn().mockResolvedValue({
-                data: [
-                    {
-                        id: 1,
-                        name: 'application 1',
-                        apiKey: 'the_api_key',
-                        keySecret: 'the_api_secret',
-                    },
-                ],
-                total: 1,
-            }),
+            getList: type => {
+                if (type === 'applications') {
+                    return Promise.resolve({
+                        data: [
+                            {
+                                id: 1,
+                                name: 'application 1',
+                                apiKey: 'the_api_key',
+                                keySecret: 'the_api_secret',
+                            },
+                        ],
+                        total: 1,
+                        totalPages: 1,
+                    });
+                } else if (type === 'apiKeys') {
+                    return Promise.resolve({
+                        data: [
+                            {
+                                apiKey: 1,
+                                id: 1,
+                                name: 'key 1',
+                            },
+                            {
+                                apiKey: 2,
+                                id: 2,
+                                name: 'key 2',
+                            },
+                        ],
+                        total: 2,
+                        totalPages: 1,
+                    });
+                }
+            },
             getOne: jest.fn().mockResolvedValue({
                 data: {
                     id: 1,
@@ -142,13 +186,17 @@ describe('Applications', () => {
             initialState
         );
 
+        const appSelect = getByLabelText(
+            'resources.apis.specification.actions.search_or_select_application'
+        );
+        const keySelect = getByLabelText(
+            'resources.apis.specification.actions.select_api_key'
+        );
+
         await wait(() => {
-            const select = getByLabelText(
-                'resources.apis.specification.actions.search_or_select_application'
-            );
-            fireEvent.mouseDown(select);
+            fireEvent.mouseDown(appSelect);
             // Enter search criteria
-            fireEvent.change(select, { target: { value: 'application' } });
+            fireEvent.change(appSelect, { target: { value: 'application' } });
         });
 
         await wait(() => {
@@ -157,11 +205,11 @@ describe('Applications', () => {
 
         fireEvent.click(getByText('application 1'));
 
-        await wait(() => {
-            expect(queryByText('the_api_key')).not.toBeNull();
-            expect(queryByText('the_api_secret')).not.toBeNull();
-        });
+        await wait(() => fireEvent.mouseDown(keySelect));
 
-        expect.assertions(3);
+        expect(queryByText('key 1')).not.toBeNull();
+        expect(queryByText('key 2')).not.toBeNull();
+
+        fireEvent.click(getByText('key 1'));
     });
 });

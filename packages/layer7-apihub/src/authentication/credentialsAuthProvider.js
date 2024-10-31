@@ -1,5 +1,5 @@
 export const credentialsAuthProvider = (apiUrl, fetchJson) => ({
-    login: async ({ username, password, publicKey, ...params }) => {
+    login: async ({ username, password, publicKey, ...params } = {}) => {
         try {
             const headers = new Headers({
                 'Content-Type': 'application/json; charset=UTF-8',

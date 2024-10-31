@@ -1,3 +1,4 @@
+// Copyright © 2024 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React, { Fragment, useState } from 'react';
 import {
     ArrayInput,
@@ -6,6 +7,7 @@ import {
     maxLength,
     RadioButtonGroupInput,
     required,
+    SelectInput,
     SimpleFormIterator,
     TextInput,
     TopToolbar,
@@ -22,7 +24,7 @@ import {
     TableRow,
     Typography,
 } from '@material-ui/core';
-import { isPortalAdmin, isOrgBoundUser } from '../userContexts';
+import { isPortalAdmin } from '../userContexts';
 import DeleteIcon from '@material-ui/icons/Delete';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import { ConfirmDialog } from '../ui/ConfirmDialog';
@@ -32,14 +34,33 @@ import { ApplicationKeySecret } from './ApplicationKeySecret';
 import CollapsiblePanel from './CollapsiblePanel';
 import { useTranslate } from 'ra-core';
 import moment from 'moment';
+import filter from 'lodash/filter';
 import get from 'lodash/get';
 import momentTimeZone from 'moment-timezone';
-import { CERTIFICATE_DISPLAY_FORMAT } from './constants';
+import {
+    CERTIFICATE_DISPLAY_FORMAT,
+    DEFAULT_PORTAL_AUTH_PROVIDER_UUID,
+} from './constants';
+import {
+    API_KEYS_APPLICATION,
+    hasCRUDPermissions,
+    PERMISSIONS_CREATE,
+    PERMISSIONS_DELETE,
+    PERMISSIONS_UPDATE,
+} from '../permissionUtils';
+import { useForm } from 'react-final-form';
 
 import { useLayer7Notify } from '../useLayer7Notify';
 const NEW_KEY = 'NEW_KEY';
 const PANEL_ID_KEY_PREFIX = 'PANEL_ID_KEY_PREFIX_';
+
+const APPLICATION_STATUS_DISABLED = 'DISABLED';
 const APPLICATION_STATUS_INCOMPLETE = 'INCOMPLETE';
+const APPLICATION_STATUS_PENDING_APPROVAL = 'APPLICATION_PENDING_APPROVAL';
+const APPLICATION_STATUS_REJECTED = 'REJECTED';
+const APPLICATION_STATUS_DELETE_PENDING_APPROVAL =
+    'DELETE_APPLICATION_PENDING_APPROVAL';
+const APPLICATION_STATUS_DELETE_FAILED = 'DELETE_FAILED';
 
 export const ApplicationKeysPanel = ({
     activePanelID,
@@ -49,6 +70,7 @@ export const ApplicationKeysPanel = ({
     apiKeys,
     appCertificates,
     application,
+    authProviders,
     initialValues,
     isEditApiKeysLocked,
     isSectionModified,
@@ -71,14 +93,29 @@ export const ApplicationKeysPanel = ({
     const [proxyCheckFailed, setProxyCheckFailed] = React.useState(false);
     const [deletingKeyId, setDeletingKeyId] = useState();
     const notify = useLayer7Notify();
+    const form = useForm();
 
-    const canDeleteAPIKey = !isOrgBoundUser(userContext);
+    const canDeleteKey = hasCRUDPermissions(
+        userContext.userDetails,
+        [PERMISSIONS_DELETE],
+        API_KEYS_APPLICATION
+    );
+    const canEditKey = hasCRUDPermissions(
+        userContext.userDetails,
+        [PERMISSIONS_UPDATE],
+        API_KEYS_APPLICATION
+    );
     const contentLabelClasses = useContentStyles();
 
     const confirmDelete = keyId => {
         setDeletingKeyId(keyId);
         setDeleteKeyConfirm(true);
     };
+
+    React.useEffect(() => {
+        form.change('apiKeys', apiKeys);
+        //eslint-disable-next-line
+    }, [apiKeys]);
 
     const deleteApiKey = (ignoreProxyCheck, forceDelete) => {
         dataProvider.delete(
@@ -133,7 +170,7 @@ export const ApplicationKeysPanel = ({
 
     const hasAppCertificates = appCertificates && appCertificates.length > 0;
 
-    const getKeyLabel = status => {
+    const getKeyDeleteLabel = status => {
         if (isPortalAdmin(userContext) && status === 'DELETE_FAILED') {
             return translate('resources.apikeys.actions.force_delete');
         }
@@ -141,7 +178,7 @@ export const ApplicationKeysPanel = ({
     };
 
     const isAppIncomplete =
-        application.status === APPLICATION_STATUS_INCOMPLETE;
+        get(application, 'status') === APPLICATION_STATUS_INCOMPLETE;
 
     const keysSummaryLabelContent =
         isAppIncomplete &&
@@ -162,7 +199,7 @@ export const ApplicationKeysPanel = ({
     });
 
     const isKeyEditDisabled = status =>
-        isEditApiKeysLocked || status === 'DELETE_FAILED';
+        isEditApiKeysLocked || status === 'DELETE_FAILED' || !canEditKey;
 
     const secretTypeChoices = [
         {
@@ -188,21 +225,25 @@ export const ApplicationKeysPanel = ({
 
     const authMethodChoices = [
         {
-            description: 'Created on save',
-            id: 'SECRET',
-            name: translate('resources.applications.fields.authMethodSecret'),
+            id: 'NONE',
+            name: translate('resources.applications.fields.authMethodNone'),
         },
         {
-            description:
-                'At least one valid client certificate added to the application is required.',
             id: 'CERTIFICATE',
             name: translate(
                 'resources.applications.fields.authMethodCertificate'
             ),
         },
+        {
+            id: 'SECRET',
+            name: translate('resources.applications.fields.authMethodSecret'),
+        },
     ];
 
-    const renderKey = ({ getSource, scopedFormData }) => {
+    const renderKey = ({ getSource, scopedFormData, source }) => {
+        const regex = /apiKeys\[(\d+)\]\./;
+        const match = getSource('').match(regex);
+        const index = parseInt(match[1]);
         if (!getSource('apiKey') && !addingKeyEntry) {
             return <span />;
         }
@@ -243,11 +284,17 @@ export const ApplicationKeysPanel = ({
             }
         }
 
+        const deleteKeyDisabledStates = [
+            APPLICATION_STATUS_DELETE_FAILED,
+            APPLICATION_STATUS_DELETE_PENDING_APPROVAL,
+            APPLICATION_STATUS_DISABLED,
+            APPLICATION_STATUS_PENDING_APPROVAL,
+            APPLICATION_STATUS_REJECTED,
+        ];
         const disableDeleteKey =
             get(scopedFormData, 'defaultKey') ||
-            !canDeleteAPIKey ||
-            addingKeyEntry ||
-            (apiKeys && apiKeys.length === 1);
+            deleteKeyDisabledStates.includes(get(application, 'status')) ||
+            addingKeyEntry;
 
         const handleKeyPanelClick = (evt, expanded) =>
             onPanelClick(
@@ -263,7 +310,7 @@ export const ApplicationKeysPanel = ({
             );
             const isForceDelete =
                 isPortalAdmin(userContext) &&
-                apiKeyObj.status === 'DELETE_FAILED';
+                get(apiKeyObj, 'status') === 'DELETE_FAILED';
             deleteApiKey(proxyCheckFailed || isForceDelete, isForceDelete);
         };
 
@@ -331,6 +378,34 @@ export const ApplicationKeysPanel = ({
             );
         };
 
+        const isDefaultAuthProviderSelected =
+            get(scopedFormData, 'authProviderUuid') ===
+            DEFAULT_PORTAL_AUTH_PROVIDER_UUID;
+
+        let defaultAuthProviderOptions = filter(
+            authMethodChoices,
+            item => item.id !== 'NONE'
+        );
+        defaultAuthProviderOptions = hasAppCertificates
+            ? defaultAuthProviderOptions
+            : filter(
+                  defaultAuthProviderOptions,
+                  item => item.id !== 'CERTIFICATE'
+              );
+
+        const handleAuthProviderChange = event => {
+            const value = get(event, 'target.value');
+            if (value !== DEFAULT_PORTAL_AUTH_PROVIDER_UUID) {
+                form.change(`apiKeys[${index}].authMethod`, 'NONE');
+            } else {
+                form.change(`apiKeys[${index}].authMethod`, 'SECRET');
+            }
+        };
+
+        const filteredAuthMethodChoices = isDefaultAuthProviderSelected
+            ? defaultAuthProviderOptions
+            : filter(authMethodChoices, item => item.id === 'NONE');
+
         return (
             <CollapsiblePanel
                 data-apim-test={`key-panel-${currentItemAPIKey}`}
@@ -347,14 +422,19 @@ export const ApplicationKeysPanel = ({
             >
                 <TopToolbar>
                     <div>
-                        <Button
-                            classes={contentLabelClasses}
-                            startIcon={<DeleteIcon />}
-                            onClick={() => confirmDelete(currentItemAPIKey)}
-                            disabled={disableDeleteKey}
-                        >
-                            {getKeyLabel(get(scopedFormData, 'status'))}
-                        </Button>
+                        {canDeleteKey && (
+                            <Button
+                                classes={contentLabelClasses}
+                                data-apim-test="delete-key"
+                                startIcon={<DeleteIcon />}
+                                onClick={() => confirmDelete(currentItemAPIKey)}
+                                disabled={disableDeleteKey}
+                            >
+                                {getKeyDeleteLabel(
+                                    get(scopedFormData, 'status')
+                                )}
+                            </Button>
+                        )}
                     </div>
                     {renderDeleteConfirmDialog()}
                     <LoadingDialog
@@ -381,13 +461,21 @@ export const ApplicationKeysPanel = ({
                     validate={[required(), maxLength(255)]}
                     required
                 />
-                <RadioButtonGroupInput
-                    choices={authMethodChoices}
-                    className={classes.radioGroupInput}
-                    defaultValue="SECRET"
-                    disabled={!hasAppCertificates || currentItemAPIKey}
+                <SelectInput
+                    choices={authProviders}
+                    defaultValue={DEFAULT_PORTAL_AUTH_PROVIDER_UUID}
+                    disabled={currentItemAPIKey}
+                    onChange={handleAuthProviderChange}
+                    label="resources.applications.fields.authprovider"
+                    record={scopedFormData}
+                    required
+                    source={getSource('authProviderUuid')}
+                />
+                <SelectInput
+                    choices={filteredAuthMethodChoices}
+                    defaultValue={'SECRET'}
+                    disabled={currentItemAPIKey}
                     label="resources.applications.fields.authentication"
-                    optionText={<AuthMethodOption />}
                     record={scopedFormData}
                     required
                     source={getSource('authMethod')}
@@ -489,24 +577,51 @@ export const ApplicationKeysPanel = ({
                 )}
                 {get(scopedFormData, 'authMethod') === 'CERTIFICATE' &&
                     renderCertificates()}
+                {get(scopedFormData, 'authMethod') === 'NONE' &&
+                    !currentItemAPIKey && (
+                        <TextInput
+                            disabled={currentItemAPIKey}
+                            source={getSource('userProvidedApiKey')}
+                            record={scopedFormData}
+                            type="text"
+                            label="resources.applications.fields.apiKey"
+                            variant="filled"
+                            fullWidth
+                            helperText="resources.applications.validation.apikey_caption"
+                            validate={[required(), maxLength(255)]}
+                            required
+                        />
+                    )}
             </CollapsiblePanel>
         );
     };
-
-    const disableAddKeyEntry =
-        addingKeyEntry ||
-        isSectionModified ||
-        (isAppIncomplete && apiKeys && apiKeys.length === 1);
 
     const handleAddKeyBtnClick = () => {
         setAddingKeyEntry(true);
         setActivePanelID(`${PANEL_ID_KEY_PREFIX}${NEW_KEY}`);
     };
 
+    const canAddKey = hasCRUDPermissions(
+        userContext.userDetails,
+        [PERMISSIONS_CREATE],
+        API_KEYS_APPLICATION
+    );
+
+    const addKeyDisabledStates = [
+        APPLICATION_STATUS_DELETE_FAILED,
+        APPLICATION_STATUS_DELETE_PENDING_APPROVAL,
+        APPLICATION_STATUS_DISABLED,
+        APPLICATION_STATUS_PENDING_APPROVAL,
+        APPLICATION_STATUS_REJECTED,
+    ];
+
+    const disableAddKeyEntry =
+        addingKeyEntry ||
+        isSectionModified ||
+        addKeyDisabledStates.includes(get(application, 'status'));
+
     const addButton = () =>
-        isOrgBoundUser(userContext) && apiKeys && apiKeys.length > 0 ? (
-            <span />
-        ) : (
+        canAddKey ? (
             <Button
                 data-apim-test="add-key"
                 disabled={disableAddKeyEntry}
@@ -516,6 +631,8 @@ export const ApplicationKeysPanel = ({
             >
                 {translate('resources.apikeys.actions.addKey')}
             </Button>
+        ) : (
+            <span />
         );
 
     const renderKeys = () => (
