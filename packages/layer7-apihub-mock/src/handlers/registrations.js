@@ -7,7 +7,7 @@ export function postRegistration(database) {
 
         const existingRegistration = await promisify(
             database.registrations.findOne.bind(database.registrations),
-            { Email: registration.Email },
+            { email: registration.email },
             {}
         );
 

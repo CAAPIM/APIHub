@@ -28,14 +28,16 @@ export const ConfirmDialog = ({
             <Typography variant="body1">{content}</Typography>
         </DialogContent>
         <DialogActions>
-            <Button
-                autoFocus
-                onClick={onCancel}
-                variant="outlined"
-                color="secondary"
-            >
-                {buttonCancel}
-            </Button>
+            {buttonCancel &&
+              <Button
+                  autoFocus
+                  onClick={onCancel}
+                  variant="outlined"
+                  color="secondary"
+              >
+                  {buttonCancel}
+              </Button>
+            }
             <Button onClick={onConfirm} variant="contained" color="primary">
                 {buttonConfirm}
             </Button>

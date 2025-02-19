@@ -66,7 +66,7 @@ export function resetPassword(database) {
 
 export function checkUserNameIsUnique(database) {
     return async (schema, request) => {
-        const username = request.queryParams.Name;
+        const username = request.queryParams.name;
 
         // Minimongo does not support mongo array search so we fall back
         // to retrieving all users (we don't have many) and filter ourselves

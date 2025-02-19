@@ -1,16 +1,14 @@
-const basePath = '/2.0/Apis';
-
 export const specsDataProvider = context => {
     return {
         getOne: async ({ id }) => {
-            const url = `${context.apiUrl}${basePath}('${id}')/SpecContent`;
-
+            const url = `${context.apiUrl}/api-management/1.0/apis/${id}/assets/swagger`;
             const {
                 json: { ...data },
             } = await context.fetchJson(url, { credentials: 'include' });
-
+            const content =
+                data && data.content ? JSON.parse(data.content) : {};
             return {
-                data: { id, ...data },
+                data: { id, ...content },
             };
         },
     };

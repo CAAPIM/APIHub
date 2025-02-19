@@ -69,11 +69,13 @@ export function getApiApiPlanAssociation(database) {
 
 export function getApiPlansFeatureFlag(database) {
     return {
-        CreateTs: 0,
-        Uuid: faker.random.uuid(),
-        CreatedBy: 'SYSTEM',
-        ModifyTs: 0,
-        Value: true,
-        Name: 'FEATURE_FLAG_API_PLANS',
+        name: "FEATURE_FLAG_API_PLANS",
+        value: "true",
+        links: [
+            {
+                "rel": "self",
+                "href": "/tenant-admin/1.0/settings/FEATURE_FLAG_API_PLANS"
+            }
+        ]
     };
 }

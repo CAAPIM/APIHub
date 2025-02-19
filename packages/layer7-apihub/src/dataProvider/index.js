@@ -7,9 +7,11 @@ import { apiPlansDataProvider } from './apiPlans';
 import { apisDataProvider } from './apis';
 import { applicationCertificatesDataProvider } from './applicationCertificates';
 import { apiKeysDataProvider } from './apiKeys';
+import { oAuthClientsDataProvider } from './oAuthClients';
 import { applicationsDataProvider } from './applications';
 import { assetsDataProvider } from './assets';
 import { authProvidersDataProvider } from './authProviders';
+import { authProviderClientDefinitionsDataProvider } from './authProviderClientDefinitions';
 import { customFieldsDataProvider } from './customFields';
 import { documentsDataProvider } from './documents';
 import { organizationsDataProvider } from './organizations';
@@ -40,10 +42,12 @@ export const dataProvider = (
         apiPlans: apiPlansDataProvider(context),
         apis: apisDataProvider(context),
         apiKeys: apiKeysDataProvider(context),
+        oAuthClients : oAuthClientsDataProvider(context),
         applicationCertificates: applicationCertificatesDataProvider(context),
         applications: applicationsDataProvider(context),
         assets: assetsDataProvider(context),
         authProviders: authProvidersDataProvider(context),
+        authProviderClientDefinitions: authProviderClientDefinitionsDataProvider(context),
         customFields: customFieldsDataProvider(context),
         documents: documentsDataProvider(context),
         organizations: organizationsDataProvider(context),

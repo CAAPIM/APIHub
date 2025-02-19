@@ -72,31 +72,10 @@ export function getApplication(database) {
     };
 }
 
-export function getGenerateSharedSecret(database) {
-    return (schema, request) => {
-        return {
-            d: {
-                result: faker.random.alphaNumeric(32),
-            },
-        };
-        // To test Error Scenario
-        // return new Response(405, undefined, {
-        //     error : {
-        //         code : "MethodNotAllowedException",
-        //         message : {
-        //             lang : "en-US",
-        //             value : "Method Not Allowed"
-        //         }
-        //     }
-        // });
-    };
-}
-
 export function getSecretHashMetadata(database) {
     return {
-        Uuid: faker.random.uuid(),
-        Name: 'APP_SECRET_HASHING_METADATA',
-        Value: '{"algorithm":"SHA-512","plaintextAllowed":true}',
+        name: 'APP_SECRET_HASHING_METADATA',
+        value: '{"algorithm":"SHA-512","plaintextAllowed":true}',
     };
 }
 
@@ -105,11 +84,9 @@ export function postApplication(database) {
         const uuid = faker.random.uuid();
         const application = {
             ...JSON.parse(request.requestBody),
-            Uuid: uuid,
             uuid: uuid,
             id: uuid,
             status: 'Enabled',
-            Status: 'Enabled',
         };
 
         await promisify(

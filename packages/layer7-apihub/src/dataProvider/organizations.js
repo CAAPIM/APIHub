@@ -2,7 +2,7 @@ import { stringify } from 'query-string';
 
 export const organizationsDataProvider = context => {
     const basePath = `${context.apiUrl}/api-management/1.0/organizations`; // GET ONE - GET LIST
-    const legacyPath = `${context.apiUrl}/Organizations`; // CREATE - UPDATE - DELETE
+    const organizationBaseUrl = `${context.apiUrl}/tenant-admin/1.0/organizations`; // CREATE - UPDATE - DELETE
     const orgPath = `${context.apiUrl}/tenant-admin/internal/organizations`; // GET ONE - GET LIST
     return {
         getList: async ({
@@ -46,17 +46,17 @@ export const organizationsDataProvider = context => {
         },
 
         create: async ({ data }) => {
-            const url = `${legacyPath}`;
+            const url = `${organizationBaseUrl}`;
 
             const body = {
-                Name: data.name,
-                Description: data.description,
-                Status: data.status,
-                AccountPlanUuid: data.accountPlanUuid,
+                name: data.name,
+                description: data.description,
+                status: data.status,
+                accountPlanUuid: data.accountPlanUuid,
             };
 
             const {
-                json: { Uuid },
+                json: { uuid },
             } = await context.fetchJson(url, {
                 credentials: 'include',
                 method: 'POST',
@@ -65,20 +65,20 @@ export const organizationsDataProvider = context => {
 
             return {
                 data: {
-                    id: Uuid,
+                    id: uuid,
                     ...data,
                 },
             };
         },
 
         update: async ({ id, data }) => {
-            const url = `${legacyPath}('${id}')`;
+            const url = `${organizationBaseUrl}/${id}`;
 
             const body = {
-                Name: data.name,
-                Description: data.description,
-                Status: data.status,
-                AccountPlanUuid: data.accountPlanUuid,
+                name: data.name,
+                description: data.description,
+                status: data.status,
+                accountPlanUuid: data.accountPlanUuid,
             };
 
             await context.fetchJson(url, {
@@ -93,7 +93,7 @@ export const organizationsDataProvider = context => {
         },
 
         delete: async ({ id, previousData }) => {
-            const url = `${legacyPath}('${id}')`;
+            const url = `${organizationBaseUrl}/${id}`;
 
             await context.fetchJson(url, {
                 credentials: 'include',

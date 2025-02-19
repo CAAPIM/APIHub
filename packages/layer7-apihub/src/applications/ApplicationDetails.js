@@ -118,13 +118,14 @@ export const ApplicationDetails = ({ record }) => {
                 'customFields',
                 {
                     entityName: 'APPLICATION',
+                    status: 'ENABLED',
                 },
                 {
                     onFailure: error => notify(error),
                 }
             );
             const fieldsMap = {};
-            data.map(item => (fieldsMap[item.id] = item.Name));
+            data.map(item => (fieldsMap[item.id] = item.name));
             setCustomFieldsMap(fieldsMap);
         };
         fetchApiKeys();

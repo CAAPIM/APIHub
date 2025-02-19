@@ -1,4 +1,6 @@
-# Healthcare App
+# Healthcare App [Deprecated]
+
+> **_Note:_** The Healthcare app is now deprecated. It will no longer be actively maintained and will not receive new features or updates, including bug fixes. This deprecation is part of our ongoing efforts to improve the repository and streamline functionality.
 
 The Healthcare app demonstrates a customization of [the Layer7 API Hub Library](../layer7-apihub/README.md). This app uses [the Layer7 API Hub mock server](../layer7-apihub-mock) as the backend server.
 
@@ -9,28 +11,29 @@ The Healthcare app is built on top of [Create React App (CRA)](https://create-re
 The following user roles are available in this app:
 
 - Portal Admin
+
   - login: `portalAdmin`
   - password: `Password@1`
-
 - API Owner
+
   - login: `apiOwner`
   - password: `Password@1`
-  
   - Org Publisher
   - login: `orgPublisher`
   - password: `Password@1`
-
 - Org Admin
+
   - login: `Publisher`
   - password: `Password@1`
-
 - Developer
+
   - login: `user`
   - password: `Password@1`
 
 ## Customize the Healthcare App
 
 The Healthcare App leverages the customization mechanisms provided by its underlying libraries:
+
 - [MaterialUI](https://material-ui.com/customization/theming/)
 - [react-admin](https://marmelab.com/react-admin/Theming.html)
 - [Layer7 API Hub](../layer7-apihub/README.md)

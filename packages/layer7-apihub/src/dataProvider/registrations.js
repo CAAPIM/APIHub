@@ -1,4 +1,4 @@
-const basePath = '/Registrations';
+const basePath = '/v2/users/registrations';
 
 const prepareCreateData = ({ ...body }) => JSON.stringify(body);
 

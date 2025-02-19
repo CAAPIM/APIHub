@@ -58,6 +58,7 @@ import {
 } from './isApplicationPending';
 import { useWorkFlowConfigurations } from './useWorkFlowConfigurations';
 import useApplicationUniqueCheck from './useApplicationUniqueCheck';
+import { ConfirmDialog } from '../ui';
 
 const PANEL_ID_NONE = 'PANEL_ID_NONE';
 const PANEL_ID_DETAILS = 'PANEL_ID_DETAILS';
@@ -101,7 +102,10 @@ export const ApplicationEditView = ({
     const [addedKey, setAddedKey] = useState({});
     const [openSecretDialog, setOpenSecretDialog] = useState(false);
 
+    const [showRegPendingPopup, setShowRegPendingPopup] = useState(false);
+
     const [isSectionModified, setIsSectionModified] = useState(false);
+    const [invalidData, setInvalidData] = useState(false);
     const [isDetailsModified, setIsDetailsModified] = useState(false);
     const [isCustomFieldModified, setIsCustomFieldModified] = useState(false);
     const [showSaveDialog, setShowSaveDialog] = useState(false);
@@ -155,7 +159,7 @@ export const ApplicationEditView = ({
 
     useEffect(() => {
         fetchApplicationCerts();
-    }, [fetchApplicationCerts]);
+    }, []);
 
     useEffect(() => {
         if (applicationCertsData) {
@@ -229,6 +233,7 @@ export const ApplicationEditView = ({
         selectedOrganization,
         record.id
     );
+    const [clientMetadataMap, setClientMetadataMap] =useState({});
 
     const updateAppNameWithDebounce = debounce(name => {
         setAppName(name);
@@ -345,6 +350,19 @@ export const ApplicationEditView = ({
         }
     }, [secretHashMetaData, error]);
 
+     // get oAuth clients data
+    const [
+      fetchOAuthClients,
+      { data: oAuthClientsData, loading: oAuthClientsLoading },
+    ] = useMutation({
+        payload: {
+            applicationUuid: record.id,
+            pagination: { page: 1, perPage: 100 },
+            sort: { field: 'createTs', order: 'DESC' },
+        },
+        resource: 'oAuthClients',
+        type: 'getList',
+    });
     // get api keys data
     const [
         fetchApiKeys,
@@ -359,9 +377,26 @@ export const ApplicationEditView = ({
         type: 'getList',
     });
 
-    useEffect(() => {
-        setApiKeys(sortBy(apiKeysData, ({ defaultKey }) => !defaultKey));
-    }, [apiKeysData]);
+  useEffect(() => {
+    if(apiKeysData && oAuthClientsData && apiKeysData.length > 0 && oAuthClientsData.length >0) {
+      oAuthClientsData.forEach(oAuthclient => {
+        const oAuthApiKey = apiKeysData.find(key => key.apiKey === oAuthclient.clientId);
+        oAuthApiKey['clientMetadata'] = JSON.stringify(oAuthclient.clientMetadata, null, 2);
+      })
+    }
+    setApiKeys(sortBy(apiKeysData, ({ defaultKey }) => !defaultKey));
+  }, [apiKeysData, oAuthClientsData]);
+
+  useEffect(() => {
+    if (oAuthClientsData) {
+      oAuthClientsData.forEach(client =>
+        setClientMetadataMap({
+          ...clientMetadataMap,
+          [client.clientId]: client,
+        })
+      )
+    }
+  }, [oAuthClientsData]);
 
     useEffect(() => {
         if (apiPlanFeatureFlagLoaded) {
@@ -369,6 +404,7 @@ export const ApplicationEditView = ({
             fetchApiGroups();
             fetchApiApiPlans();
             fetchApiKeys();
+            fetchOAuthClients();
         }
     }, [
         apiPlanFeatureFlagLoaded,
@@ -376,6 +412,7 @@ export const ApplicationEditView = ({
         fetchApiGroups,
         fetchApiApiPlans,
         fetchApiKeys,
+        fetchOAuthClients,
     ]);
 
     const customFieldsMap = {};
@@ -397,6 +434,9 @@ export const ApplicationEditView = ({
         apiKey: record.apiKey,
         apiKeys: apiKeys,
         status: record.status,
+        clientRegistrationType: 'PORTAL',
+        clientDefDescription: '',
+        clientMetadata: '',
         // using statusBoolValue to hold boolean
         // value of status when the status is either ENABLED or DISABLED
         statusBoolValue: record.status === 'ENABLED' ? true : false,
@@ -431,16 +471,26 @@ export const ApplicationEditView = ({
                 defaultKey: apiKeyObject.defaultKey,
                 name: apiKeyObject.name,
                 status: apiKeyObject.status,
+                authProviderUuid: apiKeyObject.authProviderUuid,
             };
         }
         if (apiKey === NEW_KEY) {
             if (keyData.authMethod === 'NONE') {
-                addApiKey(record.id, {
+                keyData = {
+                  ...keyData,
+                  defaultKey: form.apiKeys.length === 1,
+                }
+                if(apiKeyObject.clientRegistrationType === 'EXTERNAL') {
+                  addApiKey(record.id, {
+                      ...keyData,
+                      apiKey: apiKeyObject.userProvidedApiKey,
+                  });
+                } else {// clientRegistrationType is PORTAL_DCR
+                  addOAuthClient(record.id, {
                     ...keyData,
-                    authProviderUuid: apiKeyObject.authProviderUuid,
-                    apiKey: apiKeyObject.userProvidedApiKey,
-                    defaultKey: form.apiKeys.length === 1,
+                    clientMetadata: JSON.parse(apiKeyObject.clientMetadata),
                 });
+                }
             } else {
                 addApiKey(record.id, {
                     ...keyData,
@@ -452,6 +502,15 @@ export const ApplicationEditView = ({
             }
         } else {
             if (!isEditApiKeysLocked) {
+              let keyType = 'api-keys';
+              if(apiKeyObject.clientRegistrationType === 'PORTAL_DCR') {
+                keyType = 'oauth-clients';
+                keyData = {
+                  ...keyData,
+                  clientMetadata: JSON.parse(apiKeyObject.clientMetadata),
+                  clientId: apiKeyObject.apiKey,
+                };
+              }
                 update(
                     {
                         payload: {
@@ -459,7 +518,7 @@ export const ApplicationEditView = ({
                             keyId: apiKeyObject.apiKey,
                             data: keyData,
                             options: {
-                                type: 'api-keys',
+                                type: keyType,
                             },
                         },
                     },
@@ -529,6 +588,48 @@ export const ApplicationEditView = ({
             }
         );
     };
+
+    const addOAuthClient = async (appUuid, data) => {
+      await dataProvider.create(
+          'oAuthClients',
+          {
+              data,
+              appUuid,
+          },
+          {
+              onFailure: error => {
+                  let errorMessage = getErrorMessageFromError(error);
+                  notify(
+                      `${translate(
+                          'resources.applications.notifications.edit_error'
+                      )} ${errorMessage}`,
+                      NOTIFICATION_TYPE_ERROR
+                  );
+                  reloadForm();
+              },
+              onSuccess: ({ data }) => {
+                  setActivePanelID(PANEL_ID_NONE);
+                  setAddingKeyEntry(false);
+                  const { status } = data;
+                  if (status === 'ENABLED') {
+                      setAddedKey({
+                        ...data,
+                        apiKey: data.clientId,
+                        keySecret: data.clientSecret,
+                      });
+                      setOpenSecretDialog(true);
+                  } else {
+                      setShowRegPendingPopup(true);
+                      if (isAppIncomplete) {
+                          reloadForm();
+                      } else {
+                          navigateToShowView();
+                      }
+                  }
+              },
+          }
+      );
+  };
 
     // save details
     const onDetailsSubmit = form => {
@@ -724,6 +825,7 @@ export const ApplicationEditView = ({
         setApiSelectorDataLoaded(false);
         setApiKeys([]);
         fetchApiKeys();
+        fetchOAuthClients();
         if (apiPlansEnabled) {
             fetchApiApiPlans();
         } else {
@@ -797,7 +899,7 @@ export const ApplicationEditView = ({
         let errorMessage = '';
         if (validationErrors.length > 0) {
             errorMessage = validationErrors
-                .map(item => `${get(item, 'error')}${get(item, 'field')}.`)
+                .map(item => `${get(item, 'error')} [${get(item, 'field')}].`)
                 .join(';');
         } else {
             errorMessage = get(error, 'body.error.detail.userErrorMessage', '');
@@ -811,7 +913,7 @@ export const ApplicationEditView = ({
             errorMessages.push(getErrorMessageFromError(error));
         });
         notify(
-            translate('resources.applications.notifications.edit_error') +
+            translate('resources.applications.notifications.edit_error') + ' ' +
                 errorMessages.join(','),
             NOTIFICATION_TYPE_ERROR
         );
@@ -820,7 +922,7 @@ export const ApplicationEditView = ({
     const handleFormSaveFailure = error => {
         let errorMessage = getErrorMessageFromError(error);
         notify(
-            translate('resources.applications.notifications.edit_error') +
+            translate('resources.applications.notifications.edit_error') + ' ' +
                 errorMessage,
             NOTIFICATION_TYPE_ERROR
         );
@@ -875,6 +977,42 @@ export const ApplicationEditView = ({
             }
         }
     };
+    const [
+    regenerateMutate,
+    {
+        data: dcrCreatedKey,
+        error: completeRegistrationError,
+        loading: completingRegistration,
+    },
+  ] = useMutation();
+
+  React.useEffect(() => {
+    if(dcrCreatedKey && dcrCreatedKey.clientId) {
+      setAddedKey({
+        apiKey: dcrCreatedKey.clientId,
+        keySecret: dcrCreatedKey.clientSecret,
+        clientMetadata: dcrCreatedKey.clientMetadata,
+      });
+      setOpenSecretDialog(true);      
+    }
+  }, [dcrCreatedKey]);
+
+  React.useEffect(() => {
+    if(completeRegistrationError) {
+      handleFormSaveFailure([completeRegistrationError]);
+    }
+  }, [completeRegistrationError]);
+
+  const completeRegistration = (appId, apiKeyId) =>
+    regenerateMutate({
+        type: 'completeRegistration',
+        resource: 'oAuthClients',
+        payload: {
+            clientId: apiKeyId,
+            appUuid: appId,
+        },
+    });
+
 
     const handleCloseAddKey = () => {
         setOpenSecretDialog(false);
@@ -919,6 +1057,7 @@ export const ApplicationEditView = ({
 
     const onChange = async ({ values }) => {
         let sectionModified = false;
+        let invalidData = false;
         if (activePanelID === PANEL_ID_DETAILS) {
             let detailsModified = false;
             const {
@@ -1028,11 +1167,19 @@ export const ApplicationEditView = ({
                             sectionModified = !!(
                                 get(valuesKeyObj, 'name') ||
                                 get(valuesKeyObj, 'oauthCallbackUrl') ||
-                                get(valuesKeyObj, 'oauthScope')
+                                get(valuesKeyObj, 'oauthScope') 
                             );
                         } else {
-                            sectionModified = !!get(valuesKeyObj, 'name');
-                        }
+                            sectionModified = !!(get(valuesKeyObj, 'name') || 
+                                                 get(valuesKeyObj, 'clientMetadata'));
+                            if(get(valuesKeyObj, 'clientMetadata')) {
+                              try {
+                                JSON.parse(get(valuesKeyObj, 'clientMetadata'));
+                              } catch(e) {
+                                invalidData = true;
+                              }
+                            }
+                          }
                     }
                 }
             } else {
@@ -1053,9 +1200,17 @@ export const ApplicationEditView = ({
                             get(valuesKeyObj, 'oauthScope') ||
                         initialKeyObj.oauthType !==
                             get(valuesKeyObj, 'oauthType') ||
-                        initialKeyObj.status !== get(valuesKeyObj, 'status')
+                        initialKeyObj.status !== get(valuesKeyObj, 'status') ||
+                        initialKeyObj.clientMetadata !== get(valuesKeyObj, 'clientMetadata')
                     ) {
                         sectionModified = true;
+                    }
+                    if(get(valuesKeyObj, 'clientMetadata')) {
+                      try {
+                        JSON.parse(get(valuesKeyObj, 'clientMetadata'));
+                      } catch(e) {
+                        invalidData = true;
+                      }
                     }
                 }
             }
@@ -1079,6 +1234,7 @@ export const ApplicationEditView = ({
             setAssignedCertName(values.givenCertName);
         }
         setIsSectionModified(sectionModified);
+        setInvalidData(invalidData);
     };
 
     const showPublishBtn = isAppIncomplete || isAppRejected;
@@ -1137,7 +1293,7 @@ export const ApplicationEditView = ({
         }
     };
 
-    const disableSaveButton = !isSectionModified;
+    const disableSaveButton = !isSectionModified || invalidData;
     const disablePublishButton =
         isSectionModified || !appHasApis() || (apiKeys && apiKeys.length === 0);
     const apisSectionLabel = getAPIsSectionLabel();
@@ -1165,9 +1321,26 @@ export const ApplicationEditView = ({
                     handleClose={handleCloseAddKey}
                     keySecret={addedKey.keySecret}
                     apiKey={addedKey.apiKey}
+                    clientMetadata={addedKey.clientMetadata}
                     isPlainTextKey={addedKey.keySecretHashed}
                 />
             </Dialog>
+            <ConfirmDialog
+                title={translate('resources.apikeys.reg_pending_title')}
+                content={translate(
+                    `resources.apikeys.${
+                      isAppIncomplete
+                            ? 'reg_pending_incomplete_content'
+                            : 'reg_pending_wf_content'
+                    }`
+                )}
+                buttonConfirm={translate('resources.apikeys.actions.close')}
+                open={showRegPendingPopup}
+                onConfirm={() => {
+                        setShowRegPendingPopup(false);
+                        reloadForm();
+                      }}
+            />
             <Grid container item md={12} sm={12}>
                 <SimpleForm
                     className={classes.form}
@@ -1318,7 +1491,7 @@ export const ApplicationEditView = ({
                             addingKeyEntry={addingKeyEntry}
                             allowSelectHashing={allowSelectHashing}
                             apiKeys={apiKeys}
-                            apiKeysLoading={apiKeysLoading}
+                            apiKeysLoading={apiKeysLoading || oAuthClientsLoading}
                             appCertificates={appCertificates}
                             application={record}
                             authProviders={authProviders}
@@ -1334,6 +1507,7 @@ export const ApplicationEditView = ({
                             setUpdatedKeyDetails={setUpdatedKeyDetails}
                             updatedKeyDetails={updatedKeyDetails}
                             userContext={userContext}
+                            completeRegistration={completeRegistration}
                         />
                     </Grid>
                     <FormSpy subscription={subscription} onChange={onChange}>

@@ -1,4 +1,6 @@
-# Layer7 API Hub Mock Server Package
+# Layer7 API Hub Mock Server Package [Deprecated]
+
+> **_Note:_** Layer7 API Hub Mock Server is now deprecated. It will no longer be actively maintained and will not receive new features or updates, including bug fixes. This deprecation is part of our ongoing efforts to improve the repository and streamline functionality.
 
 This package provides an API Hub mock server that intercepts calls to the Portal API (PAPI) and sends back a generated response. This mock server runs in a web browser.
 
@@ -34,7 +36,7 @@ startApiHubMockedServer().then(() =>
 
 The mock server creates a global `Layer7Mock` object. You can access the local database using this object in your browser's Developer Tool console:
 
-``` js
+```js
 Layer7Mock.database // Returns the data base
 Layer7Mock.resetDatabase() // Delete then recreate the local database
 Layer7Mock.clearDatabase() // Delete the local database
@@ -67,30 +69,32 @@ startApiHubMockedServer({ showRunningIndicator: false }).then(() =>
 The following user roles are included with the mock server:
 
 - Portal Admin
-    - login: `portalAdmin`
-    - password: `Password@1`
-    
+
+  - login: `portalAdmin`
+  - password: `Password@1`
 - API Owner
-    - login: `apiOwner`
-    - password: `Password@1`
-    
- - Org Publisher
-    - login: `orgPublisher`
-    - password: `Password@1`
-    
- - Org Admin
-    - login: `Publisher`
-    - password: `Password@1`
-    
- - Developer
-    - login: `user`
-    - password: `Password@1`
+
+  - login: `apiOwner`
+  - password: `Password@1`
+- Org Publisher
+
+  - login: `orgPublisher`
+  - password: `Password@1`
+- Org Admin
+
+  - login: `Publisher`
+  - password: `Password@1`
+- Developer
+
+  - login: `user`
+  - password: `Password@1`
 
 You can change these user roles by [providing your own Data](#provide-your-own-data).
 
 ## Customize the Mock Server
 
 You can customize the mock server by adding API routes and entities. The `startApiHubMockedServer()` function returns an object that includes the following keys:
+
 - `server`. This key is the MirageJS server instance. You can add API routes using this server instance.
 - `database`. This key is a [minimongo](https://github.com/mWater/minimongo) instance. You can add entities using this instance. These entities are persisted in an IndexedDb database.
 
@@ -170,7 +174,7 @@ For more information about these PAPI objects, see [the Layer7 API Developer Por
 
 To generate new data, run the following command which accepts an output file:
 
-``` sh
+```sh
 ./bin/generateData.js myOutputFile.json
 ```
 

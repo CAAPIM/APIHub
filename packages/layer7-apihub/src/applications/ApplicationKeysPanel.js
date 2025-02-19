@@ -32,7 +32,7 @@ import { LoadingDialog } from '../ui/LoadingDialog';
 import { ApplicationKeyClient } from './ApplicationKeyClient';
 import { ApplicationKeySecret } from './ApplicationKeySecret';
 import CollapsiblePanel from './CollapsiblePanel';
-import { useTranslate } from 'ra-core';
+import { useMutation, useTranslate } from 'ra-core';
 import moment from 'moment';
 import filter from 'lodash/filter';
 import get from 'lodash/get';
@@ -83,6 +83,7 @@ export const ApplicationKeysPanel = ({
     setUpdatedKeyDetails,
     updatedKeyDetails,
     userContext,
+    completeRegistration,
 }) => {
     const classes = useStyles();
     const labelClasses = useLabelStyles();
@@ -92,6 +93,7 @@ export const ApplicationKeysPanel = ({
     const [deleteKeyConfirm, setDeleteKeyConfirm] = React.useState(false);
     const [proxyCheckFailed, setProxyCheckFailed] = React.useState(false);
     const [deletingKeyId, setDeletingKeyId] = useState();
+    const [deletingOAuthClient, setDeletingOAuthClient] = useState(false);
     const notify = useLayer7Notify();
     const form = useForm();
 
@@ -107,19 +109,20 @@ export const ApplicationKeysPanel = ({
     );
     const contentLabelClasses = useContentStyles();
 
-    const confirmDelete = keyId => {
+    const confirmDelete = (keyId, clientRegistrationType) => {
         setDeletingKeyId(keyId);
+        setDeletingOAuthClient(clientRegistrationType === 'PORTAL_DCR');
         setDeleteKeyConfirm(true);
     };
 
     React.useEffect(() => {
         form.change('apiKeys', apiKeys);
-        //eslint-disable-next-line
+    //eslint-disable-next-line
     }, [apiKeys]);
 
     const deleteApiKey = (ignoreProxyCheck, forceDelete) => {
         dataProvider.delete(
-            'apiKeys',
+          deletingOAuthClient ? 'oAuthClients' : 'apiKeys',
             {
                 keyId: deletingKeyId,
                 appUuid: initialValues.id,
@@ -166,6 +169,7 @@ export const ApplicationKeysPanel = ({
         );
     };
 
+    
     const onGenerateKey = () => reloadForm();
 
     const hasAppCertificates = appCertificates && appCertificates.length > 0;
@@ -248,6 +252,9 @@ export const ApplicationKeysPanel = ({
             return <span />;
         }
         const currentItemAPIKey = get(scopedFormData, 'apiKey');
+        const [selectedClientDefinition, setSelectedClientDefinition] = useState({});
+        const [replaceMetadataDialog, setReplaceMetadataDialog] = useState(false);
+        const [replacingClientDefId, setReplacingClientDefId] = useState('');
         const keyStatus = updatedKeyDetails
             ? updatedKeyDetails.status
             : get(scopedFormData, 'status');
@@ -283,6 +290,13 @@ export const ApplicationKeysPanel = ({
                 expiryDateSubText = `${days} ${suffix}`;
             }
         }
+        const [
+          fetchClientDefinitions,
+          { data: clientDefinitionsData, loading: clientDefinitionsLoading },
+        ] = useMutation({
+            resource: 'authProviderClientDefinitions',
+            type: 'getList',
+        });
 
         const deleteKeyDisabledStates = [
             APPLICATION_STATUS_DELETE_FAILED,
@@ -296,12 +310,35 @@ export const ApplicationKeysPanel = ({
             deleteKeyDisabledStates.includes(get(application, 'status')) ||
             addingKeyEntry;
 
-        const handleKeyPanelClick = (evt, expanded) =>
-            onPanelClick(
-                expanded,
-                `${PANEL_ID_KEY_PREFIX}${currentItemAPIKey || NEW_KEY}`
-            );
-
+        const handleKeyPanelClick = (evt, expanded) => {
+          onPanelClick(
+            expanded,
+            `${PANEL_ID_KEY_PREFIX}${currentItemAPIKey || NEW_KEY}`
+          );
+          if (expanded && currentItemAPIKey && !clientDefinitionsData) {
+            const currentApiKey = apiKeys.find(key => key.apiKey === currentItemAPIKey);
+            if (currentApiKey.status === 'PENDING_REGISTRATION') {
+              fetchClientDefinitions({
+                payload: {
+                  authProviderUuid: currentApiKey.authProviderUuid
+                }
+              });
+            }
+          }
+        }
+        const replaceClientMetadata = (clientDefId) => {
+          const selectedClientDef = clientDefinitionsData.find(cd => cd.id === clientDefId);
+          setSelectedClientDefinition(selectedClientDef);
+          form.change(`apiKeys[${index}].clientDefDescription`, selectedClientDef.description);
+          form.change(`apiKeys[${index}].clientMetadata`, JSON.stringify(selectedClientDef.clientMetadata, null, 2));
+          setReplacingClientDefId('');
+          setReplaceMetadataDialog(false);
+        }
+        const cancelReplaceMetadata = () => {
+          setReplaceMetadataDialog(false);
+          setReplacingClientDefId('');
+          form.change(`apiKeys[${index}].clientDefinitionId`, get(selectedClientDefinition, 'id'));
+        };
         const handleDeleteConfirm = () => {
             setDeleteKeyConfirm(false);
             setKeyDeleting(true);
@@ -313,15 +350,23 @@ export const ApplicationKeysPanel = ({
                 get(apiKeyObj, 'status') === 'DELETE_FAILED';
             deleteApiKey(proxyCheckFailed || isForceDelete, isForceDelete);
         };
-
-        const renderDeleteConfirmDialog = () => (
+        
+        const handleReloadMetadata = (clientDefId) => {
+          if(JSON.stringify(selectedClientDefinition.clientMetadata, null, 2) !== get(scopedFormData, 'clientMetadata')) {
+            setReplaceMetadataDialog(true);
+            setReplacingClientDefId(clientDefId);
+          } else {
+            replaceClientMetadata(clientDefId);
+          }
+        };
+         const renderDeleteConfirmDialog = () => (
             <ConfirmDialog
-                title={translate('resources.apikeys.actions.deleteApiKey')}
+                title={translate(`resources.apikeys.actions.${deletingOAuthClient ? 'deleteOAuthClient': 'deleteApiKey'}`)}
                 content={translate(
                     `resources.apikeys.${
                         proxyCheckFailed
-                            ? 'proxy_check_alert'
-                            : 'confirm_delete'
+                            ? `proxy_check_alert${deletingOAuthClient ? '_oauth_client': ''}`
+                            : `confirm_delete${deletingOAuthClient ? '_oauth_client': ''}`
                     }`
                 )}
                 buttonConfirm={translate('resources.apikeys.actions.delete')}
@@ -331,7 +376,18 @@ export const ApplicationKeysPanel = ({
                 onCancel={() => setDeleteKeyConfirm(false)}
             />
         );
-
+        const renderReplaceMetadataConfirmDialog = () => (
+          <ConfirmDialog
+              title={translate('resources.apikeys.replace_client_metadata_title')}
+              content={translate('resources.apikeys.replace_client_metadata_content'
+              )}
+              buttonConfirm={translate('resources.apikeys.actions.replace_client_metadata_dialog_submit')}
+              buttonCancel={translate('resources.apikeys.actions.cancel')}
+              open={replaceMetadataDialog}
+              onConfirm={() => replaceClientMetadata(replacingClientDefId)}
+              onCancel={cancelReplaceMetadata}
+          />
+      );
         const AuthMethodOption = ({ record }) => {
             return (
                 <div className={classes.authMethodOption}>
@@ -342,7 +398,14 @@ export const ApplicationKeysPanel = ({
                 </div>
             );
         };
-
+        const invalidJson = () => {
+          try {
+            JSON.parse(get(scopedFormData, 'clientMetadata'));
+            return false;
+          } catch (e) {
+            return true;
+          }
+        };
         const renderCertificate = item => {
             const time = moment(item.expiryTs);
             const dateString = time.format(CERTIFICATE_DISPLAY_FORMAT);
@@ -395,6 +458,16 @@ export const ApplicationKeysPanel = ({
 
         const handleAuthProviderChange = event => {
             const value = get(event, 'target.value');
+            if(authProviders && authProviders.length > 0) {
+              const selectedAuthProvider = authProviders.find(authProvider => authProvider.id === value);
+              const selectedClientRegType = get(selectedAuthProvider, 'clientRegistrationType');
+              form.change(`apiKeys[${index}].clientRegistrationType`, selectedClientRegType);
+              if(selectedClientRegType === 'PORTAL_DCR') {
+                fetchClientDefinitions({payload: {
+                  authProviderUuid: value}});
+              }
+            }
+
             if (value !== DEFAULT_PORTAL_AUTH_PROVIDER_UUID) {
                 form.change(`apiKeys[${index}].authMethod`, 'NONE');
             } else {
@@ -427,7 +500,7 @@ export const ApplicationKeysPanel = ({
                                 classes={contentLabelClasses}
                                 data-apim-test="delete-key"
                                 startIcon={<DeleteIcon />}
-                                onClick={() => confirmDelete(currentItemAPIKey)}
+                                onClick={() => confirmDelete(currentItemAPIKey, get(scopedFormData, 'clientRegistrationType'))}
                                 disabled={disableDeleteKey}
                             >
                                 {getKeyDeleteLabel(
@@ -437,12 +510,13 @@ export const ApplicationKeysPanel = ({
                         )}
                     </div>
                     {renderDeleteConfirmDialog()}
+                    {renderReplaceMetadataConfirmDialog()}
                     <LoadingDialog
                         title={translate(
-                            'resources.apikeys.actions.deleting_title'
+                            `resources.apikeys.actions.deleting_title${deletingOAuthClient ? '_oauth_client': ''}`
                         )}
                         content={translate(
-                            'resources.apikeys.deleting_content'
+                            `resources.apikeys.deleting_content${deletingOAuthClient ? '_oauth_client': ''}`
                         )}
                         open={keyDeleting}
                     />
@@ -472,6 +546,7 @@ export const ApplicationKeysPanel = ({
                     source={getSource('authProviderUuid')}
                 />
                 <SelectInput
+                    className={classes.leftMargin}
                     choices={filteredAuthMethodChoices}
                     defaultValue={'SECRET'}
                     disabled={currentItemAPIKey}
@@ -480,6 +555,62 @@ export const ApplicationKeysPanel = ({
                     required
                     source={getSource('authMethod')}
                 />
+                {get(scopedFormData, 'clientRegistrationType') === 'PORTAL_DCR' &&
+                  <Fragment>
+                    {(!get(scopedFormData, 'status') || get(scopedFormData, 'status') === 'PENDING_REGISTRATION') && (
+                      <div className={classes.fullWidthDiv}>
+                        <SelectInput
+                          loading={clientDefinitionsLoading}
+                          choices={clientDefinitionsData || []}
+                          disabled={!clientDefinitionsData || clientDefinitionsData.total == 0}
+                          onChange={event => handleReloadMetadata(get(event, 'target.value'))}
+                          label="resources.applications.fields.clientDefinitionName"
+                          record={scopedFormData}
+                          required
+                          source={getSource('clientDefinitionId')}
+                        />
+                        <Button
+                          className={classes.reloadButton}
+                          data-apim-test="reload-definition"
+                          disabled={!get(selectedClientDefinition, 'id') ||
+                            JSON.stringify(selectedClientDefinition.clientMetadata, null, 2) === get(scopedFormData, 'clientMetadata')}
+                          onClick={() => handleReloadMetadata(selectedClientDefinition.id)}
+                          classes={contentLabelClasses}
+                          startIcon={<AddCircleOutlineIcon />}
+                        >
+                          {translate('resources.apikeys.actions.reload_client_definition')}
+                        </Button>
+                      </div>)}
+                      <div className={classes.fullWidthDiv}>
+                      <TextInput
+                        className={classes.clientMetadataText}
+                        rows={25}
+                        source={getSource('clientMetadata')}
+                        record={scopedFormData}
+                        type="text"
+                        error={invalidJson()}
+                        label="resources.applications.fields.clientMetadata"
+                        variant="filled"
+                        multiline
+                        validate={[maxLength(5000)]}
+                        helperText="resources.applications.validation.clientDefintion_json"
+                      />
+                    {(!get(scopedFormData, 'status') || get(scopedFormData, 'status') === 'PENDING_REGISTRATION') && (
+                      <TextInput
+                        rows={25}
+                        className={classes.defDescription}
+                        disabled
+                        source={getSource('clientDefDescription')}
+                        record={scopedFormData}
+                        type="text"
+                        label="resources.applications.fields.clientDefinitionDescription"
+                        variant="filled"
+                        multiline
+                      />
+                      )}
+                      </div>
+                  </Fragment>
+                }
                 {get(scopedFormData, 'authMethod') === 'SECRET' && (
                     <Fragment>
                         <TextInput
@@ -552,7 +683,7 @@ export const ApplicationKeysPanel = ({
                             choices={secretTypeChoices}
                         />
                     )}
-                {currentItemAPIKey && (
+                {currentItemAPIKey && (get(scopedFormData, 'status') !== 'PENDING_REGISTRATION' ?
                     <ApplicationKeyClient
                         id={currentItemAPIKey}
                         data={scopedFormData}
@@ -560,7 +691,19 @@ export const ApplicationKeysPanel = ({
                         labelClasses={labelClasses}
                         isEditMode={true}
                         apiKeys={initialValues.apiKeys}
-                    />
+                    /> :
+                    <Labeled
+                        id="apiKeyClientID"
+                        label="resources.applications.fields.apiKeyClientID"
+                        classes={labelClasses}
+                        className={classes.field}
+                        >
+                        <Typography variant="body2">
+                        {translate(
+                                    'resources.applications.fields.deferredClientId'
+                                )}
+                        </Typography>
+                      </Labeled>
                 )}
                 {get(scopedFormData, 'keySecret') && (
                     <div className={classes.input}>
@@ -577,7 +720,7 @@ export const ApplicationKeysPanel = ({
                 )}
                 {get(scopedFormData, 'authMethod') === 'CERTIFICATE' &&
                     renderCertificates()}
-                {get(scopedFormData, 'authMethod') === 'NONE' &&
+                {get(scopedFormData, 'clientRegistrationType') === 'EXTERNAL' &&
                     !currentItemAPIKey && (
                         <TextInput
                             disabled={currentItemAPIKey}
@@ -592,6 +735,20 @@ export const ApplicationKeysPanel = ({
                             required
                         />
                     )}
+                {get(scopedFormData, 'status') === 'PENDING_REGISTRATION' && canAddKey &&
+                  (
+                    <Button
+                      className={classes.completeRegistrationButton}
+                      data-apim-test="complete-registration"
+                      disabled={(get(application, 'status') !== 'EDIT_PENDING_APPROVAL' &&
+                         get(application, 'status') !== 'ENABLED') || isEditApiKeysLocked}
+                      onClick={() => completeRegistration(initialValues.id, currentItemAPIKey)}
+                      color="primary"
+                      variant="outlined"
+                  >
+                      {translate('resources.apikeys.actions.complete_registration')}
+                  </Button>
+                )}
             </CollapsiblePanel>
         );
     };
@@ -746,6 +903,27 @@ const useStyles = makeStyles(
             fontSize: '21px',
             lineHeight: '22px',
             margin: theme.spacing(1, 0, 1, 0),
+        },
+        fullWidthDiv: {
+          width: '100%',
+        },
+        reloadButton: {
+          marginLeft: 24,
+          marginTop: 12,
+        },
+        leftMargin: {
+          marginLeft: 24,
+        },
+        clientMetadataText: {
+          width: '45%',
+        },
+        defDescription: {
+          marginLeft: 24,
+          height: 100,
+          width: '45%',
+        },
+        completeRegistrationButton: {
+          marginTop: 20,
         },
     }),
     {

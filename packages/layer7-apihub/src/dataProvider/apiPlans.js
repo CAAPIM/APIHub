@@ -102,13 +102,13 @@ export const apiPlansDataProvider = context => {
         },
 
         async getApiPlansFeatureFlag() {
-            const url = `${context.apiUrl}/Settings('FEATURE_FLAG_API_PLANS')`;
+            const url = `${context.apiUrl}/tenant-admin/1.0/settings/FEATURE_FLAG_API_PLANS`;
             const {
                 json: { ...data },
             } = await context.fetchJson(url, {
                 credentials: 'include',
             });
-            return { data: { value: data.Value } };
+            return { data: { value: data.value } };
         },
     };
 };

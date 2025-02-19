@@ -88,10 +88,8 @@ export const useSignup = () => {
         create(
             {
                 payload: {
-                    FormField: '',
-                    Uuid: '{{GENERATED_GUID}}',
-                    OrganizationName: '',
-                    OrganizationDescription: '',
+                    organizationName: '',
+                    organizationDescription: '',
                     ...data,
                 },
             },

@@ -182,11 +182,11 @@ function generateUserContext({ organizations, ...data }) {
 function generateApiEulas() {
     return [
         {
-            Uuid: 'c9406345-eb76-11e3-b0cd-000nosaj86a8',
-            Name: 'Standard EULA',
+            uuid: 'c9406345-eb76-11e3-b0cd-000nosaj86a8',
+            name: 'Standard EULA',
             ApiUsage: '2',
             ApplicationUsage: '2',
-            Content:
+            content:
                 '<span>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do\n  eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad\n  minim veniam, quis nostrud exercitation ullamco laboris nisi ut\n  aliquip ex ea commodo consequat. Duis aute irure dolor in\n  reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla\n  pariatur. Excepteur sint occaecat cupidatat non proident, sunt in\n  culpa qui officia deserunt mollit anim id est laborum.</span>',
             PossibleActions: {
                 results: ['DELETE', 'EDIT'],
@@ -226,7 +226,7 @@ function generateApi({ tags, apiGroups, apiEulas, ...data }) {
             tags: faker.random
                 .arrayElements(tags, faker.random.number({ min: 1, max: 3 }))
                 .map(({ name }) => name),
-            apiEulaUuid: faker.random.arrayElement(apiEulas).Uuid,
+            apiEulaUuid: faker.random.arrayElement(apiEulas).uuid,
         },
         data
     );
@@ -321,7 +321,7 @@ function generateApplication({ apis, ...data }) {
 }
 
 function generateApiKeys({ applications }) {
-    return Array.from(Array(25).keys()).map((el) =>
+    return Array.from(Array(25).keys()).map(el =>
         generateApiKey({ applicationUuid: applications[0].uuid, el })
     );
 }
@@ -331,15 +331,17 @@ function generateApiKey({ applicationUuid, el, ...data }) {
 
     const apiKey = faker.random.uuid();
     const keySecret = faker.random.uuid();
-    const defaultKey = (el === 0);
-    const status = defaultKey ? 'ENABLED' : faker.random.arrayElement([
-        'ENABLED',
-        'ENABLED',
-        'ENABLED',
-        'ENABLED',
-        'DISABLED',
-        'DISABLED',
-    ]);
+    const defaultKey = el === 0;
+    const status = defaultKey
+        ? 'ENABLED'
+        : faker.random.arrayElement([
+              'ENABLED',
+              'ENABLED',
+              'ENABLED',
+              'ENABLED',
+              'DISABLED',
+              'DISABLED',
+          ]);
 
     return merge(
         {
@@ -518,56 +520,54 @@ function generateRegistrations() {
 function generateCustomFields() {
     return [
         {
-            Name: 'custom-text-field-disabled',
-            Uuid: '64e9c94f-c724-4749-9470-db096a3788d4',
-            Status: 'DISABLED',
-            Required: true,
-            Description: 'A disabled custom text field',
-            Type: 'TEXT',
-            EntityType: 'APPLICATION',
+            name: 'custom-text-field-disabled',
+            uuid: '64e9c94f-c724-4749-9470-db096a3788d4',
+            status: 'DISABLED',
+            required: true,
+            description: 'A disabled custom text field',
+            type: 'TEXT',
+            entityType: 'APPLICATION',
         },
         {
-            Name: 'custom-text-field-api',
-            Uuid: 'c0b3ff30-6c7a-4d4c-84af-56e8dc3c06bc',
-            Status: 'ENABLED',
-            Required: true,
-            Description: 'A custom text field for APIs',
-            Type: 'TEXT',
-            EntityType: 'API',
+            name: 'custom-text-field-api',
+            uuid: 'c0b3ff30-6c7a-4d4c-84af-56e8dc3c06bc',
+            status: 'ENABLED',
+            required: true,
+            description: 'A custom text field for APIs',
+            type: 'TEXT',
+            entityType: 'API',
         },
         {
-            Name: 'custom-text-field',
-            Uuid: '0e93c523-ca24-46e4-bd0d-20fd361e205c',
-            Status: 'ENABLED',
-            Required: true,
-            Description: 'A custom text field',
-            Type: 'TEXT',
-            EntityType: 'APPLICATION',
+            name: 'custom-text-field',
+            uuid: '0e93c523-ca24-46e4-bd0d-20fd361e205c',
+            status: 'ENABLED',
+            required: true,
+            description: 'A custom text field',
+            type: 'TEXT',
+            entityType: 'APPLICATION',
         },
         {
-            Name: 'custom-select-field',
-            Uuid: 'bb683549-ddf4-4aad-9761-1e5cad981672',
-            Status: 'ENABLED',
-            Required: true,
-            Description: 'A custom select field',
-            Type: 'SINGLE_SELECT',
-            EntityType: 'APPLICATION',
-            OptionsList: {
-                results: [
-                    {
-                        Value: 'Choice 2',
-                        Ordinal: 1,
-                    },
-                    {
-                        Value: 'Choice 1',
-                        Ordinal: 0,
-                    },
-                    {
-                        Value: 'Choice 3',
-                        Ordinal: 2,
-                    },
-                ],
-            },
+            name: 'custom-select-field',
+            uuid: 'bb683549-ddf4-4aad-9761-1e5cad981672',
+            status: 'ENABLED',
+            required: true,
+            description: 'A custom select field',
+            type: 'SINGLE_SELECT',
+            entityType: 'APPLICATION',
+            options: [
+                {
+                    value: 'Choice 2',
+                    ordinal: 1,
+                },
+                {
+                    value: 'Choice 1',
+                    ordinal: 0,
+                },
+                {
+                    value: 'Choice 3',
+                    ordinal: 2,
+                },
+            ],
         },
     ];
 }

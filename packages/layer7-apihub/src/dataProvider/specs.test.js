@@ -17,7 +17,7 @@ describe('dataProvider - specs', () => {
             expect(
                 fetchJson
             ).toHaveBeenCalledWith(
-                "https://marmelab.com/2.0/Apis('covfefe')/SpecContent",
+                'https://marmelab.com/api-management/1.0/apis/covfefe/assets/swagger',
                 { credentials: 'include' }
             );
         });
@@ -25,7 +25,7 @@ describe('dataProvider - specs', () => {
         test('should use the api id as the spec id', async () => {
             const fetchJson = jest.fn().mockResolvedValue({
                 json: {
-                    swagger: 'blablabla',
+                    content: '{\n "swagger": "blablabla" }',
                 },
             });
 
