@@ -1,18 +1,10 @@
-import { stringify } from 'query-string';
-
-const basePath = '/CustomFields';
-
+const basePath = '/api-management/1.0/custom-fields';
 export const customFieldsDataProvider = context => {
     return {
         // The CustomFields API route does not care about pagination or sorting
         // so we ignore those parameters
-        getList: async ({ filter, entityName = 'APPLICATION' }) => {
-            filter = filter || {
-                $inlinecount: 'allpages',
-                $filter: `EntityType eq '${entityName}' and Status eq 'ENABLED'`,
-            };
-            const url = new URL(`${context.apiUrl}${basePath}`);
-            url.search = stringify(filter);
+        getList: async ({ entityName = 'APPLICATION', status = 'ENABLED' }) => {
+            const url = new URL(`${context.apiUrl}${basePath}?entityType=${entityName}&status=${status}&size=2000`);
             const { json } = await context.fetchJson(url.toString(), {
                 credentials: 'include',
             });
@@ -23,11 +15,11 @@ export const customFieldsDataProvider = context => {
 
             return {
                 data:
-                    json.map(({ Uuid, ...item }) => ({
+                    json.results.map(({ uuid, ...item }) => ({
                         ...item,
-                        id: Uuid,
+                        id: uuid,
                     })) || [],
-                total: json.length,
+                total: json.totalElements,
             };
         },
     };

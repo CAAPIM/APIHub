@@ -42,7 +42,7 @@ export function TestPage() {
             <h2>ApiEula</h2>
             <p
                 dangerouslySetInnerHTML={{
-                    __html: apiEula ? apiEula.Content : null,
+                    __html: apiEula ? apiEula.content : null,
                 }}
             />
         </>

@@ -1,7 +1,7 @@
 import { promisify } from '../promisify';
 import { Response } from 'miragejs';
 
-const UuidRegexp = /Eulas\('(.*)'\)/;
+const UUID_REGEX = /eulas\/.*\//;
 const SearchFields = ['name', 'description'];
 
 export function listApiGroups(database) {
@@ -80,13 +80,13 @@ export function getApiGroupApis(database) {
 
 export function getApiGroupEula(database) {
     return async (schema, request) => {
-        const matches = UuidRegexp.exec(request.params.path);
+        const matches = UUID_REGEX.exec(request.params.path);
 
         if (matches && matches.length > 1) {
-            const Uuid = matches[1];
+            const uuid = matches[1];
             const eula = await promisify(
                 database.apiEulas.findOne.bind(database.apiEulas),
-                { Uuid }
+                { uuid }
             );
 
             if (eula) {

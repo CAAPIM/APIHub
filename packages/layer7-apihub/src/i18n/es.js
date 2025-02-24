@@ -41,7 +41,7 @@ const apiHubMessages = {
                 password: 'Contraseña',
             },
             actions: {
-                multi_session_sign_in: 'PROCEDER',
+                 multi_session_sign_in: 'PROCEDER',
                 multi_session_sign_in_additional_text:
                     ' OTRAS SESIONES TERMINARÁN',
                 sign_in: 'Iniciar sesión',
@@ -392,6 +392,10 @@ const apiHubMessages = {
                 authMethodNone: 'None',
                 authMethodSecret: 'ID de cliente y password',
                 notAvailableAuthMethod: 'No disponible',
+                deferredClientId: "La identificación del cliente estará disponible después del registro.",
+                clientMetadata: "Metadatos del cliente",
+                clientDefinitionName: "Nombre de definición del cliente",
+                clientDefinitionDescription: "Descripción",
             },
             actions: {
                 generateSecret: 'Generar nuevo secreto',
@@ -438,12 +442,14 @@ const apiHubMessages = {
                 certificate_name_caption: 'Debe ser único por aplicación.',
                 certificate_file_input_caption:
                     'Todos los certificados de claves de aplicación se volverán a redistribuir',
+                clientDefintion_json: "Se requiere json válido, 5000 como máximo.",
             },
             status: {
                 enabled: 'Activado',
                 disabled: 'Desactivado',
                 deprecated: 'Obsoleto',
                 delete_failed: 'Forzar eliminación',
+                pending_registration: "Registro pendiente",
                 expired: 'Caducado',
                 incomplete: 'Incompleto',
                 unpublished: 'Sin publicar',
@@ -492,6 +498,8 @@ const apiHubMessages = {
                     'Se ha producido un error al generar el secreto.',
                 secret_generated_message:
                     'El texto del secreto solo será visible durante la sesión actual del explorador y se aplicará un algoritmo hash después de que se haya actualizado la página.',
+                oauth_client_secret_generated_message:
+                    "El secreto solo será visible durante la sesión actual del navegador.",
                 copy_secret_now: 'Copiar el secreto compartido ahora',
                 copy_to_clipboard: 'Copiar a portapapeles',
                 edit_overview: 'Editar descripción general',
@@ -539,6 +547,8 @@ const apiHubMessages = {
                 'Está a punto de suprimir este aplicación. ¿Está seguro?',
             deleting_content:
                 'Anulación de la implementación de claves y eliminación de la aplicación. Esto puede tomar varios minutos.',
+            deleting_content_oauth_client:
+                "Anulación de la implementación de claves y eliminación de la client OAuth. Esto puede tomar varios minutos.",
             proxy_check_alert:
                 'No se puede conectar a todos los almacenes de claves donde está implementada la clave API. Es probable que esto resulte en una eliminación incompleta, donde esta clave permanecerá en algunos almacenes de claves. Será necesario eliminarlo directamente del almacén de claves. Habrá una opción para forzar la eliminación del registro de la clave API del portal.',
             publish_help_text:
@@ -547,17 +557,33 @@ const apiHubMessages = {
         apikeys: {
             confirm_delete:
                 'Está a punto de eliminar esta clave de API. ¿Está seguro?',
+            confirm_delete_oauth_client:
+                "Está a punto de eliminar este OAuth Client. ¿Está seguro?'",
             deleting_content:
                 'Desinstalación de claves y eliminación de API-Key. Esto puede tomar varios minutos.',
             proxy_check_alert:
                 'No se puede conectar a todos los almacenes de claves donde está implementada la clave API. Es probable que esto resulte en una eliminación incompleta, donde esta clave permanecerá en algunos almacenes de claves. Será necesario eliminarlo directamente del almacén de claves. Habrá una opción para forzar la eliminación del registro de la clave API del portal.',
+            proxy_check_alert_oauth_client:
+                "No se puede conectar a todos los Key Stores donde se implementó el OAuth Client. Es probable que esto provoque una eliminación incompleta, donde este cliente de autenticación permanecerá en algunos Key Stores. Tendrá que eliminarse directamente del Key Stores. Habrá una opción para forzar la eliminación del registro del OAuth Client del portal.",
+            replace_client_metadata_title: "Metadatos del cliente modificados",
+            replace_client_metadata_content: "Los cambios en los metadatos del cliente se perderán con esta acción. ¿Estás seguro de que quieres continuar?",
+            client_metadata_accordion_title: "Metadatos del cliente",
+            reg_pending_title: "Inscripción pendiente",
+            reg_pending_wf_content: "El OAuth Client se encuentra en estado de registro pendiente. Se puede enviar al proveedor de autenticación para su creación una vez que se apruebe la solicitud del OAuth Client.",
+            reg_pending_incomplete_content: "El OAuth Client se encuentra en estado de registro pendiente. Se puede enviar al proveedor de autenticación para su creación una vez que se publique la aplicación.",
             actions: {
                 addKey: 'Agregar Clave',
+                complete_registration: "Clave de registro",
                 deleteApiKey: 'Eliminar Clave',
+                deleteOAuthClient: "Eliminar OAuth Client",
                 deleting_title: 'Eliminando Clave de API',
+                deleting_title_oauth_client: "Eliminación del OAuth Client",
                 force_delete: 'Forzar Eliminación',
+                reload_client_definition: "Recargar metadatos",
+                replace_client_metadata_dialog_submit: "Reemplazar metadatos del cliente",
                 cancel: 'Cancelar',
                 delete: 'Eliminar',
+                close: "Cerrar",
             },
         },
         documents: {

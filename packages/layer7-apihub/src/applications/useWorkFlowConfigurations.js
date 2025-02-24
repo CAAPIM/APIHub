@@ -6,9 +6,9 @@ import { forEach, get } from 'lodash';
 const getWorkFlowConfiguration = async (url, originHubName, setting) => {
     const fetchJson = getFetchJson(originHubName);
     const {
-        json: { Uuid, ...data },
-    } = await fetchJson(`${url}/Settings('${setting}')`);
-    return get(data, 'Value', '');
+        json: { uuid, ...data },
+    } = await fetchJson(`${url}/tenant-admin/1.0/settings/${setting}`);
+    return get(data, 'value', '');
 };
 
 export const useWorkFlowConfigurations = () => {

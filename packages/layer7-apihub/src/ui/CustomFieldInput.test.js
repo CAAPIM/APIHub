@@ -8,13 +8,13 @@ import { fireEvent, wait } from '@testing-library/react';
 describe('CustomFieldInput', () => {
     test('should return a TextInput if the CustomField type is TEXT', () => {
         const customField = {
-            Name: 'custom-text-field',
-            Uuid: '0e93c523-ca24-46e4-bd0d-20fd361e205c',
-            Status: 'ENABLED',
-            Required: false,
-            Description: 'A custom text field',
-            Type: 'TEXT',
-            EntityType: 'APPLICATION',
+            name: 'custom-text-field',
+            uuid: '0e93c523-ca24-46e4-bd0d-20fd361e205c',
+            status: 'ENABLED',
+            required: false,
+            description: 'A custom text field',
+            type: 'TEXT',
+            entityType: 'APPLICATION',
         };
 
         const { getByLabelText } = renderWithRedux(
@@ -35,13 +35,13 @@ describe('CustomFieldInput', () => {
 
     test.skip('should correctly apply validation on text field', () => {
         const customField = {
-            Name: 'custom-text-field',
-            Uuid: '0e93c523-ca24-46e4-bd0d-20fd361e205c',
-            Status: 'ENABLED',
-            Required: true,
-            Description: 'A custom text field',
-            Type: 'TEXT',
-            EntityType: 'APPLICATION',
+            name: 'custom-text-field',
+            uuid: '0e93c523-ca24-46e4-bd0d-20fd361e205c',
+            status: 'ENABLED',
+            required: true,
+            description: 'A custom text field',
+            type: 'TEXT',
+            entityType: 'APPLICATION',
         };
 
         const { getByLabelText } = renderWithRedux(
@@ -61,29 +61,27 @@ describe('CustomFieldInput', () => {
 
     test('should return a SelectInput if the CustomField type is SINGLE_SELECT', () => {
         const customField = {
-            Name: 'custom-select-field',
-            Uuid: 'bb683549-ddf4-4aad-9761-1e5cad981672',
-            Status: 'ENABLED',
-            Required: false,
-            Description: 'A custom select field',
-            Type: 'SINGLE_SELECT',
-            EntityType: 'APPLICATION',
-            OptionsList: {
-                results: [
-                    {
-                        Value: 'Choice 2',
-                        Ordinal: 1,
-                    },
-                    {
-                        Value: 'Choice 1',
-                        Ordinal: 0,
-                    },
-                    {
-                        Value: 'Choice 3',
-                        Ordinal: 2,
-                    },
-                ],
-            },
+            name: 'custom-select-field',
+            uuid: 'bb683549-ddf4-4aad-9761-1e5cad981672',
+            status: 'ENABLED',
+            required: false,
+            description: 'A custom select field',
+            type: 'SINGLE_SELECT',
+            entityType: 'APPLICATION',
+            options:[
+                {
+                    value: 'Choice 2',
+                    ordinal: 1,
+                },
+                {
+                    value: 'Choice 1',
+                    ordinal: 0,
+                },
+                {
+                    value: 'Choice 3',
+                    ordinal: 2,
+                },
+            ],
         };
 
         const { getByLabelText, getAllByRole } = renderWithRedux(
@@ -91,7 +89,7 @@ describe('CustomFieldInput', () => {
                 <SimpleForm>
                     <CustomFieldInput
                         resource="application"
-                        source={customField.Name}
+                        source={customField.name}
                         customField={customField}
                     />
                 </SimpleForm>
@@ -112,29 +110,27 @@ describe('CustomFieldInput', () => {
 
     test.skip('should correctly apply validation on select field', () => {
         const customField = {
-            Name: 'custom-select-field',
-            Uuid: 'bb683549-ddf4-4aad-9761-1e5cad981672',
-            Status: 'ENABLED',
-            Required: true,
-            Description: 'A custom select field',
-            Type: 'SINGLE_SELECT',
-            EntityType: 'APPLICATION',
-            OptionsList: {
-                results: [
-                    {
-                        Value: 'Choice 2',
-                        Ordinal: 1,
-                    },
-                    {
-                        Value: 'Choice 1',
-                        Ordinal: 0,
-                    },
-                    {
-                        Value: 'Choice 3',
-                        Ordinal: 2,
-                    },
-                ],
-            },
+            name: 'custom-select-field',
+            uuid: 'bb683549-ddf4-4aad-9761-1e5cad981672',
+            status: 'ENABLED',
+            required: true,
+            description: 'A custom select field',
+            type: 'SINGLE_SELECT',
+            entityType: 'APPLICATION',
+            options: [
+                {
+                    value: 'Choice 2',
+                    ordinal: 1,
+                },
+                {
+                    value: 'Choice 1',
+                    ordinal: 0,
+                },
+                {
+                    value: 'Choice 3',
+                    ordinal: 2,
+                },
+            ],
         };
 
         const { getByLabelText } = renderWithRedux(
@@ -142,7 +138,7 @@ describe('CustomFieldInput', () => {
                 <SimpleForm>
                     <CustomFieldInput
                         resource="application"
-                        source={customField.Name}
+                        source={customField.name}
                         customField={customField}
                     />
                 </SimpleForm>

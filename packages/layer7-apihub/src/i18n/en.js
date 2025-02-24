@@ -380,6 +380,10 @@ const apiHubMessages = {
                 authMethodNone: 'None',
                 authMethodSecret: 'Client ID & Secret',
                 notAvailableAuthMethod: 'Not Available',
+                deferredClientId: 'Client ID will be available after registration.',
+                clientMetadata: 'Client Metadata',
+                clientDefinitionName: 'Client Definition Name',
+                clientDefinitionDescription: 'Description',
             },
             actions: {
                 generateSecret: 'Generate New Secret',
@@ -424,6 +428,7 @@ const apiHubMessages = {
                 certificate_name_caption: 'Must be unique per application.',
                 certificate_file_input_caption:
                     'All application keys certificates will redeploy.',
+                clientDefintion_json: 'Valid json required, 5000 maximum.',
             },
             status: {
                 enabled: 'Enabled',
@@ -431,6 +436,7 @@ const apiHubMessages = {
                 deprecated: 'Deprecated',
                 expired: 'Expired',
                 delete_failed: 'Delete Failed',
+                pending_registration: 'Pending Registration',
                 incomplete: 'Incomplete',
                 unpublished: 'Unpublished',
                 rejected: 'Rejected',
@@ -477,13 +483,17 @@ const apiHubMessages = {
                     'An error occurred while generating the secret',
                 secret_generated_message:
                     'Text secret will only be visible during the current browser session and will be hashed after the page has been refreshed.',
+                oauth_client_secret_generated_message:
+                    'Secret will only be visible during the current browser session.',
                 copy_secret_now: 'Copy the shared secret now',
                 copy_to_clipboard: 'Copy to Clipboard',
                 edit_overview: 'Edit overview',
                 empty_overview: 'No value',
                 create_success: 'Application successfully created.',
                 key_create_request_success: 'API Key create request submitted.',
+                oauth_client_create_request_success: 'OAuth Client create request submitted.',
                 key_create_success: 'API Key created successfully.',
+                oauth_client_create_success: 'OAuth Client created successfully.',
                 create_error:
                     'An error occurred while creating the application.',
                 edit_request_success: 'Application update request submitted.',
@@ -527,17 +537,35 @@ const apiHubMessages = {
         apikeys: {
             confirm_delete:
                 'You are about to delete this API-Key. Are you sure?',
+            confirm_delete_oauth_client:
+                'You are about to delete this OAuth-Client. Are you sure?',
             deleting_content:
                 'Undeploying keys and deleting API-Key. This may take several minutes.',
+            deleting_content_oauth_client:
+                'Undeploying and deleting OAuth client. This may take several minutes.',
             proxy_check_alert:
                 'Unable to connect to all key stores where the API-Key has been deployed. This will likely result with an incomplete deletion, where this key will remain on some key stores. It will have to be removed from the key store directly. There will be an option to force delete the API-Key record from portal.',
+            proxy_check_alert_oauth_client:
+                'Unable to connect to all key stores where the OAuth-Client has been deployed. This will likely result with an incomplete deletion, where this oauth-client will remain on some key stores. It will have to be removed from the key store directly. There will be an option to force delete the OAuth-Client record from portal.',
+            replace_client_metadata_title: 'Modified Client Metadata',
+            replace_client_metadata_content: 'Your changes to the client metadata will be lost with this action. Are you sure you want to continue?',
+            client_metadata_accordion_title: 'Client Metadata',
+            reg_pending_title: 'Registration Pending',
+            reg_pending_wf_content: 'OAuth client will be in Pending Registration state, once OAuth Client Request is approved. It can be submitted to auth provider for creation.',
+            reg_pending_incomplete_content: 'OAuth client is in Pending Registration state. It can be submitted to auth provider for creation, once the Application is published.',
             actions: {
                 addKey: 'Add Key',
+                complete_registration: 'Register Key',
                 deleteApiKey: 'Delete Key',
+                deleteOAuthClient: 'Delete OAuth Client',
                 deleting_title: 'Deleting API-Key',
+                deleting_title_oauth_client: 'Deleting OAuth-Client',
                 force_delete: 'Force Delete',
+                reload_client_definition: "Reload Metadata",
+                replace_client_metadata_dialog_submit: 'Replace Client Metadata',
                 cancel: 'Cancel',
                 delete: 'Delete',
+                close: 'Close',
             },
         },
         documents: {

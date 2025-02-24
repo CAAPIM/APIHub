@@ -13,7 +13,7 @@
     ],
     "apiEulas": [
         {
-            "Uuid": "c9406345-eb76-11e3-b0cd-000nosaj86a8",
+            "uuid": "c9406345-eb76-11e3-b0cd-000nosaj86a8",
             "Name": "Standard EULA",
             "ApiUsage": "2",
             "ApplicationUsage": "2",
@@ -2267,56 +2267,54 @@
     ],
     "customFields": [
         {
-            "Name": "custom-text-field-disabled",
-            "Uuid": "64e9c94f-c724-4749-9470-db096a3788d4",
-            "Status": "DISABLED",
-            "Required": true,
-            "Description": "A disabled custom text field",
-            "Type": "TEXT",
-            "EntityType": "APPLICATION"
+            "name": "custom-text-field-disabled",
+            "uuid": "64e9c94f-c724-4749-9470-db096a3788d4",
+            "status": "DISABLED",
+            "required": true,
+            "description": "A disabled custom text field",
+            "type": "TEXT",
+            "entityType": "APPLICATION"
         },
         {
-            "Name": "custom-text-field-api",
-            "Uuid": "c0b3ff30-6c7a-4d4c-84af-56e8dc3c06bc",
-            "Status": "ENABLED",
-            "Required": true,
-            "Description": "A custom text field for APIs",
-            "Type": "TEXT",
-            "EntityType": "API"
+            "name": "custom-text-field-api",
+            "uuid": "c0b3ff30-6c7a-4d4c-84af-56e8dc3c06bc",
+            "status": "ENABLED",
+            "required": true,
+            "description": "A custom text field for APIs",
+            "type": "TEXT",
+            "entityType": "API"
         },
         {
-            "Name": "custom-text-field",
-            "Uuid": "0e93c523-ca24-46e4-bd0d-20fd361e205c",
-            "Status": "ENABLED",
-            "Required": true,
-            "Description": "A custom text field",
-            "Type": "TEXT",
-            "EntityType": "APPLICATION"
+            "name": "custom-text-field",
+            "uuid": "0e93c523-ca24-46e4-bd0d-20fd361e205c",
+            "status": "ENABLED",
+            "required": true,
+            "description": "A custom text field",
+            "type": "TEXT",
+            "entityType": "APPLICATION"
         },
         {
-            "Name": "custom-select-field",
-            "Uuid": "bb683549-ddf4-4aad-9761-1e5cad981672",
-            "Status": "ENABLED",
-            "Required": true,
-            "Description": "A custom select field",
-            "Type": "SINGLE_SELECT",
-            "EntityType": "APPLICATION",
-            "OptionsList": {
-                "results": [
-                    {
-                        "Value": "Choice 2",
-                        "Ordinal": 1
-                    },
-                    {
-                        "Value": "Choice 1",
-                        "Ordinal": 0
-                    },
-                    {
-                        "Value": "Choice 3",
-                        "Ordinal": 2
-                    }
-                ]
-            }
+            "name": "custom-select-field",
+            "uuid": "bb683549-ddf4-4aad-9761-1e5cad981672",
+            "status": "ENABLED",
+            "required": true,
+            "description": "A custom select field",
+            "type": "SINGLE_SELECT",
+            "entityType": "APPLICATION",
+            "options": [
+                {
+                    "value": "Choice 2",
+                    "ordinal": 1
+                },
+                {
+                    "value": "Choice 1",
+                    "ordinal": 0
+                },
+                {
+                    "value": "Choice 3",
+                    "ordinal": 2
+                }
+            ]
         }
     ],
     "documents": [

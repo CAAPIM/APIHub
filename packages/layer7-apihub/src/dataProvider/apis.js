@@ -2,7 +2,6 @@ import { stringify } from 'query-string';
 
 const basePath = '/api-management/1.0/apis';
 const internalBasePath = '/api-management/internal';
-const apisPath = '/2.0/Apis';
 
 const SearchFields = ['name', 'description'];
 export const apisDataProvider = context => {
@@ -69,7 +68,7 @@ export const apisDataProvider = context => {
         },
 
         async getApis() {
-            const url = `${context.apiUrl}${apisPath}`;
+            const url = `${context.apiUrl}${basePath}?${stringify({ size: 2000 })}`
             const { json } = await context.fetchJson(url, {
                 credentials: 'include',
             });
@@ -79,12 +78,12 @@ export const apisDataProvider = context => {
             // we transform the capitalized key.
             return {
                 data:
-                    json.map(item => ({
-                        id: item.Uuid,
-                        name: item.Name,
-                        description: item.Description,
-                        version: item.Version,
-                        portalStatus: item.PortalStatus,
+                    json.results.map(item => ({
+                        id: item.uuid,
+                        name: item.name,
+                        description: item.description,
+                        version: item.version,
+                        portalStatus: item.portalStatus,
                         ...item,
                     })) || [],
                 total: json.length || 0,

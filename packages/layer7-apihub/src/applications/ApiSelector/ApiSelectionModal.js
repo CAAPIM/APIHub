@@ -142,7 +142,7 @@ export function ApiSelectionModal(props) {
                     )}
                     {apiPlans.length === 0 || selectedApiPlan ? (
                         <DialogContent>
-                            <ApiSelectionModalTaC content={apiEula?.Content} />
+                            <ApiSelectionModalTaC content={apiEula?.content} />
                         </DialogContent>
                     ) : null}
                     {apiPlans && apiPlans.length > 0 && !selectedApiPlan ? (

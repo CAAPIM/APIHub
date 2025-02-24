@@ -5,7 +5,6 @@ import { HttpError } from 'react-admin';
 export const applicationsDataProvider = context => {
     const basePath = `${context.apiUrl}/api-management/1.0/applications`;
     const apiPlansBasePath = `${context.apiUrl}/api-management/0.1/applications`;
-    const legacyPath = `${context.apiUrl}/Applications`;
 
     return {
         getManyReference: async ({
@@ -87,7 +86,6 @@ export const applicationsDataProvider = context => {
         },
 
         create: async ({ data }) => {
-            // const url = `${context.baseUrl}/admin/Portal.svc/Applications`;
             const url = `${basePath}`;
             const {
                 json: { uuid, ...responseData },
@@ -120,7 +118,9 @@ export const applicationsDataProvider = context => {
             } else if (type === 'api-plans') {
                 appURL = `${apiPlansBasePath}/${id}/api-plans`;
             } else if (type === 'api-keys') {
-                appURL = `${basePath}/${id}/api-keys/${keyId}`;
+              appURL = `${basePath}/${id}/api-keys/${keyId}`;
+            } else if (type === 'oauth-clients') {
+                appURL = `${apiPlansBasePath}/${id}/oauth/clients/${keyId}`;
             } else if (type === 'publish') {
                 appURL = `${basePath}/${id}/publish`;
             } else {
@@ -202,52 +202,30 @@ export const applicationsDataProvider = context => {
         },
 
         getSecretHashMetadata: async () => {
-            // const url = `${portal.hostname}/api/${portal.tenantPrefix}/Settings('APP_SECRET_HASHING_METADATA')`;
-            const url = `${context.apiUrl}/Settings('APP_SECRET_HASHING_METADATA')`;
+            const url = `${context.apiUrl}/tenant-admin/1.0/settings/APP_SECRET_HASHING_METADATA`;
             const {
-                json: { Uuid, ...data },
+                json: { uuid, ...data },
             } = await context.fetchJson(url, {
                 credentials: 'include',
             });
             return {
                 data: {
-                    id: Uuid,
-                    name: data.Name,
-                    value: data.Value,
+                    id: uuid,
+                    name: data.name,
+                    value: data.value,
                 },
             };
         },
 
         getKeyExpirySettings: async () => {
-            const url = `${context.apiUrl}/Settings('APPLICATION_API_KEY_EXPIRY')`;
+            const url = `${context.apiUrl}/tenant-admin/1.0/settings/APPLICATION_API_KEY_EXPIRY`;
             const { json } = await context.fetchJson(url, {
                 credentials: 'include',
             });
-            const settingsValue = JSON.parse(get(json, 'Value', '{}'));
+            const settingsValue = JSON.parse(get(json, 'value', '{}'));
             return {
                 data: {
                     ...settingsValue,
-                },
-            };
-        },
-
-        getGenerateNewSharedSecret: async ({
-            isPlainTextSelected,
-            isHashedSecretSetting,
-            id,
-            record,
-        }) => {
-            const url =
-                isHashedSecretSetting && isPlainTextSelected
-                    ? `${context.apiUrl}/GenerateNewSharedSecret?ApplicationUuid='${id}'&ShouldHash='false'`
-                    : `${context.apiUrl}/GenerateNewSharedSecret?ApplicationUuid='${id}'`;
-            const { json } = await context.fetchJson(url, {
-                credentials: 'include',
-            });
-            return {
-                data: {
-                    id,
-                    keySecret: json.result,
                 },
             };
         },

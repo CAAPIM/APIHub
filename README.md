@@ -24,7 +24,9 @@ The Example app has the same source code as the standard API Hub. [The Example a
 - [Auto-detect the API Hub URL](./packages/example/README.md##auto-detect-the-api-hub-url)
 - [Customization Tutorials](./packages/example/README.md##customization-tutorials)
 
-### Healthcare App
+### Healthcare App [Deprecated]
+
+> **_Note:_** The Healthcare app is now deprecated. It will no longer be actively maintained and will not receive new features or updates, including bug fixes. This deprecation is part of our ongoing efforts to improve the repository and streamline functionality.
 
 [The Healthcare app](./packages/healthcare/README.md) demonstrates a possible customized variation of API Hub with a Healthcare theme. It includes the same developer features as the Example app. It further extends the API Hub to include custom pages and additional calls (PAPI and Portal Metrics API). You use this app with the mock server.
 
@@ -33,7 +35,9 @@ The Healthcare app README includes the following information:
 - [Available users](./packages/healthcare/README.md##available-users)
 - [Customize the Healthcare app](./packages/layer7-apihub-mock/README.md##customize-the-healthcare-app)
 
-### Layer7 API Hub Mock Server
+### Layer7 API Hub Mock Server [Deprecated]
+
+> **_Note:_** Layer7 API Hub Mock Server is now deprecated. It will no longer be actively maintained and will not receive new features or updates, including bug fixes. This deprecation is part of our ongoing efforts to improve the repository and streamline functionality.
 
 [The Layer7 API Hub mock server README](./packages/layer7-apihub-mock/README.md) includes the following information:
 
@@ -54,6 +58,7 @@ Use the following commands to set up you local development environment.
 **Prerequisites:**
 
 Before setting up your local development environment, ensure that you have completed the following:
+
 - You have installed [Yarn](https://yarnpkg.com/).
 - You have installed GNU Make 3.81 or later.
 - You have installed Node v12.20.2.
@@ -65,6 +70,7 @@ Install the JavaScript dependencies by issuing the following command:
 ```sh
 make install
 ```
+
 ### Start an App
 
 Start the Example app or the Healthcare app in watch mode.
@@ -85,7 +91,7 @@ make start-healthcare
 
 Run the unit tests and the E2E tests by issuing the following command:
 
-``` 
+```
 make test
 ```
 
@@ -93,7 +99,7 @@ make test
 
 Run only the unit tests by issuing the following command:
 
-``` sh
+```sh
 make test-unit
 ```
 
@@ -101,13 +107,13 @@ make test-unit
 
 Run only the E2E tests:
 
-``` sh
+```sh
 make test-e2e
 ```
 
 Open the E2E tests GUI (useful for writing and debugging E2E tests):
 
-``` sh
+```sh
 make test-e2e-local
 ```
 
@@ -136,6 +142,7 @@ Follow these steps:
 ```sh
 $ cd packages && yarn create react-app my-own-apihub --scripts-version=3.2.0 
 ```
+
 2. Add the `layer7-aphub`, `layer7-apihub-mock`, and `react-admin` packages as dependencies in the new package.json:
 
 ```
@@ -147,15 +154,17 @@ $ cd packages && yarn create react-app my-own-apihub --scripts-version=3.2.0
         "react-admin": "~3.6.2",
         "react-scripts": "~3.2.0"
     },
-``` 
+```
 
 3. Copy the config files to the `example` package by issuing the following commands:
+
 ```sh
 $ cp -r packages/example/config packages/my-own-apihub/config/
 $ cp packages/my-own-apihub/config/config-dev.js packages/my-own-apihub/public/config.js
 ```
 
 4. Update the public `index.html` file to include the `config.js` file:
+
 ```html
 <!-- in packages/my-own-apihub/public/index.html -->
 <head>
@@ -166,6 +175,7 @@ $ cp packages/my-own-apihub/config/config-dev.js packages/my-own-apihub/public/c
 ```
 
 5. Include the base API Hub component in the `App.js` file:
+
 ```js
 // in packages/my-own-apihub/src/App.js
 import { ApiHubAdmin } from 'layer7-apihub';
@@ -182,6 +192,7 @@ const App = () => {
 ```
 
 6. Add the mock server to the `index.js` file
+
 ```js
 // in packages/my-own-apihub/src/index.js
 import { startApiHubMockedServer } from 'layer7-apihub-mock';
@@ -200,6 +211,7 @@ if (!shouldEnableMock(ENABLE_MOCK)) {
 ```
 
 7. Start the bare-bones my-own-apihub app by issuing the following commands:
+
 ```
 $ cd packages/my-own-apihub
 $ yarn install

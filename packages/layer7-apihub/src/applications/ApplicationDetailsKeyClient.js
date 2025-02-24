@@ -49,6 +49,11 @@ const getStatusColor = (classes, status) => {
                 statusLabel: 'Expired',
                 statusColorClass: classes.expired,
             };
+        case 'PENDING_REGISTRATION':
+          return {
+              statusLabel: 'Pending_registration',
+              statusColorClass: classes.disabled,
+          };
         default:
             return {
                 statusLabel: 'Disabled',
@@ -311,21 +316,23 @@ export const ApplicationDetailsKeyClient = props => {
                                         id="apiKeyClientID"
                                         className={classes.fieldValue}
                                     >
-                                        {data.apiKey}
+                                        {data.status === 'PENDING_REGISTRATION' ? 
+                                        translate('resources.applications.fields.deferredClientId'): data.apiKey}
                                     </span>
-                                    <IconButton
-                                        className={classes.buttonCopy}
-                                        color="primary"
-                                        title={translate(
-                                            'resources.applications.notifications.copy_to_clipboard'
-                                        )}
-                                        value={data.apiKey}
-                                        onClick={copyToClipboard}
-                                    >
-                                        <IconFileCopy
-                                            className={classes.iconCopy}
-                                        />
-                                    </IconButton>
+                                    {data.status !== 'PENDING_REGISTRATION' &&
+                                      (<IconButton
+                                          className={classes.buttonCopy}
+                                          color="primary"
+                                          title={translate(
+                                              'resources.applications.notifications.copy_to_clipboard'
+                                          )}
+                                          value={data.apiKey}
+                                          onClick={copyToClipboard}
+                                      >
+                                          <IconFileCopy
+                                              className={classes.iconCopy}
+                                          />
+                                      </IconButton>)}
                                 </Typography>
                             </Labeled>
                         </Grid>

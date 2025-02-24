@@ -71,7 +71,7 @@ export const SignUpForm = props => {
                 validate={validate}
             >
                 <TextInput
-                    source="Email"
+                    source="email"
                     type="email"
                     label="resources.registrations.fields.email"
                     variant="outlined"
@@ -79,7 +79,7 @@ export const SignUpForm = props => {
                     validate={ValidateEmail}
                 />
                 <TextInput
-                    source="EmailConfirmation"
+                    source="emailConfirmation"
                     type="email"
                     label="resources.registrations.fields.email_confirmation"
                     variant="outlined"
@@ -87,14 +87,14 @@ export const SignUpForm = props => {
                     validate={ValidateEmailConfirmation}
                 />
                 <TextInput
-                    source="OrganizationName"
+                    source="organizationName"
                     type="text"
                     label="resources.registrations.fields.organization"
                     variant="outlined"
                     fullWidth
                 />
                 <TextInput
-                    source="OrganizationDescription"
+                    source="organizationDescription"
                     type="text"
                     label="resources.registrations.fields.organization_description"
                     variant="outlined"
@@ -129,7 +129,7 @@ const ValidateEmail = [required(), email()];
 const ValidateEmailConfirmation = [
     required(),
     email(),
-    validateAreEqual('Email', 'EmailConfirmation'),
+    validateAreEqual('email', 'emailConfirmation'),
 ];
 
 export function validateAreEqual(

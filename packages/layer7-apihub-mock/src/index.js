@@ -5,8 +5,6 @@ import defaultData from './defaultData.json';
 import {
     login,
     getPublicKey,
-    resetPassword,
-    checkUserNameIsUnique,
     passwordResetTokenValidate,
     updateMyPassword,
     logout,
@@ -43,7 +41,6 @@ import {
     listApplications,
     getApplication,
     postApplication,
-    getGenerateSharedSecret,
     getSecretHashMetadata,
     deleteApplication,
 } from './handlers/applications';
@@ -115,11 +112,6 @@ export const startApiHubMockedServer = async (
             documents: Model.extend(),
         },
         routes() {
-            this.get(
-                `${urlPrefix}api/apim/GenerateNewSharedSecret`,
-                getGenerateSharedSecret(database),
-                options
-            );
 
             this.get(
                 `${urlPrefix}api/apim/passwordResetTokenValidate`,
@@ -133,23 +125,11 @@ export const startApiHubMockedServer = async (
                 options
             );
 
-            this.get(
-                `${urlPrefix}api/apim/ResetMyPassword()`,
-                resetPassword(database),
-                options
-            );
-
             this.get(`${urlPrefix}api/apim/logout`, logout(database), options);
 
             this.post(
                 `${urlPrefix}api/apim/authenticate/login`,
                 login(database),
-                options
-            );
-
-            this.get(
-                `${urlPrefix}api/apim/UserNameUnique()`,
-                checkUserNameIsUnique(database),
                 options
             );
 
@@ -220,7 +200,7 @@ export const startApiHubMockedServer = async (
             );
 
             this.post(
-                `${urlPrefix}api/apim/Applications`,
+                `${urlPrefix}api/apim/api-management/1.0/applications`,
                 postApplication(database),
                 options
             );
@@ -318,18 +298,6 @@ export const startApiHubMockedServer = async (
             );
 
             this.get(
-                `${urlPrefix}api/apim/2.0/Apis`,
-                async (schema, request) => {
-                    const { results } = await listApis(database)(
-                        schema,
-                        request
-                    );
-                    return results;
-                },
-                options
-            );
-
-            this.get(
                 `${urlPrefix}api/apim/api-management/internal/OrganizationApiGroups`,
                 listApiGroups(database),
                 options
@@ -372,13 +340,13 @@ export const startApiHubMockedServer = async (
             );
 
             this.get(
-                `${urlPrefix}api/apim/Settings('FEATURE_FLAG_API_PLANS')`,
+                `${urlPrefix}api/apim/tenant-admin/1.0/settings/FEATURE_FLAG_API_PLANS`,
                 getApiPlansFeatureFlag(database),
                 options
             );
 
             this.get(
-                `${urlPrefix}api/apim/Settings('APP_SECRET_HASHING_METADATA')`,
+                `${urlPrefix}api/apim/tenant-admin/1.0/settings/APP_SECRET_HASHING_METADATA`,
                 getSecretHashMetadata(database),
                 options
             );
@@ -389,39 +357,8 @@ export const startApiHubMockedServer = async (
                 options
             );
 
-            // This is the only way I found to make the SpecContent route work.
-            // Its url looks like api/apim/2.0/Apis(':id')/SpecContent.
-            // It seems either the parenthesises or the quotes make the route parameter
-            // parsing fail.
-            this.get(
-                `${urlPrefix}api/apim/2.0/*path`,
-                async (schema, request) => {
-                    const path = request.params.path;
-
-                    if (path.match(/Apis\('.*'\)\/SpecContent/)) {
-                        return await getApiSpecContent(database)(
-                            schema,
-                            request
-                        );
-                    }
-
-                    if (path.match(/Apis\('.*'\)/)) {
-                        const uuid = path.substring(6, path.length - 13);
-
-                        return await getApi(database)(schema, {
-                            params: {
-                                uuid,
-                            },
-                        });
-                    }
-
-                    return {};
-                },
-                options
-            );
-
             this.post(
-                `${urlPrefix}api/apim/Registrations`,
+                `${urlPrefix}api/apim/v2/users/registrations`,
                 postRegistration(database),
                 options
             );
@@ -452,97 +389,44 @@ export const startApiHubMockedServer = async (
             );
 
             this.get(
-                `${urlPrefix}api/apim/CustomFields`,
+                `${urlPrefix}api/apim/api-management/1.0/custom-fields`,
                 listCustomFields(database),
                 options
             );
 
-            // This is the only way I found to make the legacy routes work.
-            // Its url looks api/apim/api-management/1.0/Applications(':uuid').
-            // It seems either the parenthesises or the quotes make the route parameter
-            // parsing fail.
-
             this.get(
-                `${urlPrefix}api/apim/*path`,
-                async (schema, request) => {
-                    console.log('GET - Catch all', request.url);
-                    const path = request.params.path;
-
-                    if (path.match(/ApiEulas\('.*'\)/)) {
-                        return await getApiEula(database)(schema, request);
-                    }
-
-                    if (path.match(/Applications\('.*'\)/)) {
-                        const uuid = path.substring(14, path.length - 2);
-                        return await getApplication(database)(schema, {
-                            params: {
-                                uuid,
-                            },
-                        });
-                    }
-
-                    return {};
-                },
+                `${urlPrefix}api/apim/api-management/1.0/eulas/:uuid`,
+                getApiEula(database),
                 options
             );
 
-            this.put(
-                `${urlPrefix}api/apim/*path`,
-                async (schema, request) => {
-                    console.log('PUT - Catch all', request.params.path);
-                    const path = request.params.path;
+            this.get(
+                `${urlPrefix}api/apim/tenant-admin/1.0/organizations/:uuid`,
+                getApiEula(database),
+                options
+            );
 
-                    if (path.match(/Organizations\('.*'\)/)) {
-                        const uuid = path.substring(15, path.length - 2);
-                        return await putOrganization(database)(schema, {
-                            params: {
-                                uuid,
-                            },
-                        });
-                    }
-
-                    return {};
-                },
+            this.get(
+                `${urlPrefix}api/apim/tenant-admin/1.0/organizations/:uuid`,
+                getOrganization(database),
                 options
             );
 
             this.post(
-                `${urlPrefix}api/apim/*path`,
-                async (schema, request) => {
-                    console.log('POST - Catch all', request.params.path);
-                    const path = request.params.path;
-
-                    if (path.match(/Organizations\('.*'\)/)) {
-                        const uuid = path.substring(15, path.length - 2);
-                        return await postOrganization(database)(schema, {
-                            params: {
-                                uuid,
-                            },
-                        });
-                    }
-
-                    return {};
-                },
+                `${urlPrefix}api/apim/tenant-admin/1.0/organizations`,
+                postOrganization(database),
                 options
             );
 
             this.delete(
-                `${urlPrefix}api/apim/*path`,
-                async (schema, request) => {
-                    console.log('DELETE - Catch all', request.params.path);
-                    const path = request.params.path;
+                `${urlPrefix}api/apim/tenant-admin/1.0/organizations/:uuid`,
+                deleteOrganization(database),
+                options
+            );
 
-                    if (path.match(/Organizations\('.*'\)/)) {
-                        const uuid = path.substring(15, path.length - 2);
-                        return await deleteOrganization(database)(schema, {
-                            params: {
-                                uuid,
-                            },
-                        });
-                    }
-
-                    return {};
-                },
+            this.put(
+                `${urlPrefix}api/apim/tenant-admin/1.0/organizations/:uuid`,
+                putOrganization(database),
                 options
             );
 

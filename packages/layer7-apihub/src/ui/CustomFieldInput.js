@@ -27,7 +27,7 @@ import { TextInput, SelectInput, required } from 'react-admin';
  *                     <CustomFieldInput
  *                         key={id}
  *                         // source is required to properly link the label to the input
- *                         source={data[id].Name}
+ *                         source={data[id].name}
  *                         customField={data[id]}
  *                     />
  *                 ))}
@@ -39,36 +39,36 @@ import { TextInput, SelectInput, required } from 'react-admin';
  */
 export function CustomFieldInput(props) {
     const { customField, ...rest } = props;
-    if (customField.Type === CustomFieldTypeText) {
+    if (customField.type === CustomFieldTypeText) {
         return (
             <TextInput
                 {...rest}
                 // Required because react-admin forms clone their children and
                 // may inject an undefined id if a child has no source prop
-                id={customField.Name}
+                id={customField.name}
                 source={customField.id}
-                label={customField.Name}
-                validate={customField.Required ? required() : undefined}
+                label={customField.name}
+                validate={customField.required ? required() : undefined}
             />
         );
     }
 
-    if (customField.Type === CustomFieldTypeSingleSelect) {
+    if (customField.type === CustomFieldTypeSingleSelect) {
         return (
             <SelectInput
                 {...rest}
                 // Required because react-admin forms clone their children and
                 // may inject an undefined id if a child has no source prop
-                id={customField.Name}
+                id={customField.name}
                 source={customField.id}
-                label={customField.Name}
-                choices={customField.OptionsList.results
+                label={customField.name}
+                choices={customField.options
                     .sort(sortByOrdinal)
                     .map(choice => ({
-                        id: choice.Value,
-                        name: choice.Value,
+                        id: choice.value,
+                        name: choice.value,
                     }))}
-                validate={customField.Required ? required() : undefined}
+                validate={customField.required ? required() : undefined}
             />
         );
     }
@@ -78,4 +78,4 @@ export function CustomFieldInput(props) {
 
 const CustomFieldTypeText = 'TEXT';
 const CustomFieldTypeSingleSelect = 'SINGLE_SELECT';
-const sortByOrdinal = (a, b) => a.Ordinal - b.Ordinal;
+const sortByOrdinal = (a, b) => a.ordinal - b.ordinal;

@@ -11,6 +11,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useCopyToClipboard } from '../../ui';
 import Link from '@material-ui/core/Link';
 import { Link as RouterLink, useHistory } from 'react-router-dom';
+import CollapsiblePanel from '../CollapsiblePanel';
 
 const useOneTimePasswordDialogStyles = makeStyles(
     theme => ({
@@ -45,13 +46,22 @@ const useOneTimePasswordDialogStyles = makeStyles(
             padding: theme.spacing(1),
             textAlign: 'center',
         },
+        metadataCollapse: {
+            width: 436,
+            '& label': {
+              fontFamily: theme.typography.subtitle1.fontFamily,
+              fontSize: theme.typography.subtitle1.fontSize,
+              color: theme.palette.primary.textHub || '#333333',
+              fontWeight: theme.typography.fontWeightBold,
+            },
+        },
     }),
     {
         name: 'Layer7ApplicationOneTimePasswordDialog',
     }
 );
 
-export const OneTimePasswordDialog = ({ id, keySecret, apiKey, isPlainTextKey, handleClose, ...props }) => {
+export const OneTimePasswordDialog = ({ id, keySecret, apiKey, isPlainTextKey, clientMetadata, handleClose, ...props }) => {
     const [open, setOpen] = useState(true);
     const history = useHistory();
     const classes = useOneTimePasswordDialogStyles();
@@ -95,7 +105,13 @@ export const OneTimePasswordDialog = ({ id, keySecret, apiKey, isPlainTextKey, h
                                 'resources.applications.notifications.copy_secret_now'
                             )}
                         </Typography>
-                        {!isPlainTextKey &&
+                        {clientMetadata ? (
+                          <Typography variant="body1" gutterBottom>
+                          {translate(
+                              'resources.applications.notifications.oauth_client_secret_generated_message'
+                          )}
+                          </Typography>
+                          ) : !isPlainTextKey &&
                             <Typography variant="body1" gutterBottom>
                                 {translate(
                                     'resources.applications.notifications.secret_generated_message'
@@ -146,6 +162,14 @@ export const OneTimePasswordDialog = ({ id, keySecret, apiKey, isPlainTextKey, h
                                 )}
                             </Button>
                         </div>
+                    {clientMetadata &&
+                      <CollapsiblePanel label={'resources.apikeys.client_metadata_accordion_title'} className={classes.metadataCollapse}>
+                         <Typography
+                          component="pre">
+                              {JSON.stringify(clientMetadata, null, 2)}
+                        </Typography>
+                      </CollapsiblePanel>
+                    }
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={handleDialogClose} color="secondary">
