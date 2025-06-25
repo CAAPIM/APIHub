@@ -1,9 +1,10 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React from 'react';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
+import Typography from '@mui/material/Typography';
+import { makeStyles } from 'tss-react/mui';
 
 export const ViewTitle = props => {
-    const classes = useStyles();
+    const { classes } = useStyles();
 
     return (
         <div className={classes.root}>
@@ -19,7 +20,7 @@ export const ViewTitle = props => {
     );
 };
 
-const useStyles = makeStyles(
+const useStyles = makeStyles()(
     theme => ({
         root: {
             marginTop: theme.spacing(3),

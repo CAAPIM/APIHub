@@ -1,5 +1,6 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React from 'react';
-import { useTranslate } from 'ra-core';
+import { useTranslate } from 'react-admin';
 
 export const DocumentTitle = () => {
     const translate = useTranslate();

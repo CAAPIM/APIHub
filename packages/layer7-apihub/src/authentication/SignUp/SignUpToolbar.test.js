@@ -1,23 +1,31 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React from 'react';
 import expect from 'expect';
-import { renderWithRedux } from 'react-admin';
+import { render } from '@testing-library/react';
 
 import { SignUpToolbar } from './SignUpToolbar';
+import { AdminContext } from 'react-admin';
 
 describe('SignUpToolbar', () => {
     test('should display a loading spinner when loading', () => {
-        const { getByRole } = renderWithRedux(<SignUpToolbar loading />);
+        const { findByText } = render(
+            <AdminContext>
+                <SignUpToolbar loading />
+            </AdminContext>
+        );
 
-        expect(getByRole('progressbar')).not.toBeNull();
+        expect(findByText('progressbar')).not.toBeNull();
     });
 
     test('should display an error if error is passed', async () => {
-        const { getByText } = renderWithRedux(
-            <SignUpToolbar error="apihub.sign_up.notifications.confirmation_required" />
+        const { findByText } = render(
+            <AdminContext>
+                <SignUpToolbar error="apihub.sign_up.notifications.confirmation_required" />
+            </AdminContext>
         );
 
         expect(
-            getByText('apihub.sign_up.notifications.confirmation_required')
+            findByText('apihub.sign_up.notifications.confirmation_required')
         ).not.toBeNull();
     });
 });

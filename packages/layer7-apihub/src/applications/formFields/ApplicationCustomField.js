@@ -1,17 +1,17 @@
-import React from 'react';
-import { useGetList, useTranslate } from 'ra-core';
-import { makeStyles } from '@material-ui/core/styles';
-import { Typography } from '@material-ui/core';
-import { Labeled } from 'react-admin';
-import { useForm } from 'react-final-form';
-import { CustomFieldInput } from '../../ui/CustomFieldInput';
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
+import React, { useEffect, useMemo } from 'react';
+import { useGetList, useTranslate } from 'react-admin';
+import { makeStyles } from 'tss-react/mui';
+import { Typography } from '@mui/material';
+import { useFormContext } from 'react-hook-form';
+import { CustomFieldInput } from '../../ui';
 
-const useSelectInputStyles = makeStyles(theme => ({
+const useSelectInputStyles = makeStyles()({
     SelectInput: {
         width: '100%',
     },
-}));
-const useLabelStyles = makeStyles(theme => ({
+});
+const useLabelStyles = makeStyles()(theme => ({
     label: {
         fontWeight: theme.typography.fontWeightBold,
         fontSize: '1.5rem',
@@ -19,7 +19,7 @@ const useLabelStyles = makeStyles(theme => ({
 }));
 
 export const ApplicationCustomField = props => {
-    const { fields, type, ...rest } = props;
+    const { fields, type } = props;
     const isEdit = type === 'EDIT';
     return (
         <>
@@ -29,31 +29,49 @@ export const ApplicationCustomField = props => {
     );
 };
 
-export const EditCustomFieldData = ({ fields, type, disabled, ...rest }) => {
-    const { ids = [], data, loaded, error } = useGetList('customFields');
-    const selectInputClasses = useSelectInputStyles();
-    const labelClasses = useLabelStyles();
+export const EditCustomFieldData = ({ fields, disabled }) => {
+    const { data, isLoading, isSuccess } = useGetList('customFields', {
+        meta: {
+            entityName: 'APPLICATION',
+            status: 'ENABLED',
+        },
+    });
+
+    const { classes: selectInputClasses } = useSelectInputStyles();
+    const { classes: labelClasses } = useLabelStyles();
     const translate = useTranslate();
-    const form = useForm();
-    if (ids.length === 0) {
-        return null;
-    }
+    const { setValue } = useFormContext();
+
+    useEffect(() => {
+        if (isSuccess) {
+            setValue(
+                'customFieldsArr',
+                data.map(customFields => customFields.id)
+            );
+        }
+    }, [isSuccess, data]);
 
     // Merging all CustomFields and application > customfields values.
-    const mergedData = Object.values(data).map((item, i) => ({
-        ...item,
-        ...fields.find(itmInner => itmInner.customFieldUuid === item.Uuid),
-    }));
+    const mergedData = useMemo(() => {
+        if (data) {
+            return data.map(item => ({
+                ...item,
+                ...fields.find(
+                    itmInner => itmInner.customFieldUuid === item.Uuid
+                ),
+            }));
+        }
+        return [];
+    }, [data, fields]);
 
-    form.change('CustomFieldsArr', Array.from(ids));
-
+    if (isLoading || data?.length === 0) {
+        return null;
+    }
     return (
         <div>
-            <Labeled
-                id="customField"
-                label="resources.applications.fields.customField"
-                classes={labelClasses}
-            ></Labeled>
+            <span id="customField" classes={labelClasses}>
+                {translate('resources.applications.fields.customField')}
+            </span>
             {mergedData.length === 0 ? (
                 <Typography>
                     {translate('resources.applications.fields.noCustomFields')}
@@ -67,7 +85,7 @@ export const EditCustomFieldData = ({ fields, type, disabled, ...rest }) => {
                         source={item.customFieldUuid}
                         customField={item}
                         className={selectInputClasses.SelectInput}
-                        initialValue={item.value}
+                        defaultValue={item.value}
                     />
                 ))
             )}
@@ -76,33 +94,30 @@ export const EditCustomFieldData = ({ fields, type, disabled, ...rest }) => {
 };
 
 export const CreateCustomField = () => {
-    const { ids = [], data, loaded, error } = useGetList('customFields');
-    const selectInputClasses = useSelectInputStyles();
-    const labelClasses = useLabelStyles();
+    const { data, isLoading, error } = useGetList('customFields');
+    const { classes: selectInputClasses } = useSelectInputStyles();
+    const { classes: labelClasses } = useLabelStyles();
     const translate = useTranslate();
-    if (error || !loaded || ids.length === 0) {
+    if (error || isLoading || data.length === 0) {
         return null;
     }
 
     return (
         <div>
-            <Labeled
-                id="customField"
-                label="resources.applications.fields.customField"
-                classes={labelClasses}
-                //className={classes.field}
-            ></Labeled>
-            {ids.length === 0 ? (
+            <span id="customField" classes={labelClasses}>
+                {translate('resources.applications.fields.customField')}
+            </span>
+            {data.length === 0 ? (
                 <Typography>
                     {translate('resources.applications.fields.noCustomFields')}
                 </Typography>
             ) : (
-                ids.map(id => (
+                data.map(customField => (
                     <CustomFieldInput
-                        key={id}
+                        key={customField.uuid}
                         // source is required to properly link the label to the input
-                        source={data[id].id}
-                        customField={data[id]}
+                        source={customField.uuid}
+                        customField={customField}
                         className={selectInputClasses.SelectInput}
                     />
                 ))

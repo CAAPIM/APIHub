@@ -1,13 +1,21 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React, { useEffect, useState } from 'react';
-import { Labeled, TextField, useQuery } from 'react-admin';
-import { useDataProvider, useMutation, useTranslate } from 'ra-core';
-import Divider from '@material-ui/core/Divider';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import List from '@material-ui/core/List';
-import { makeStyles } from '@material-ui/core/styles';
+import {
+    Labeled,
+    TextField,
+    useGetList,
+    useGetRecordId,
+    useRecordContext,
+} from 'react-admin';
+import { useDataProvider, useTranslate } from 'react-admin';
+import Divider from '@mui/material/Divider';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
+import List from '@mui/material/List';
+import { makeStyles } from 'tss-react/mui';
 import sortBy from 'lodash/sortBy';
 import get from 'lodash/get';
+import { useQuery } from '@tanstack/react-query';
 
 import { useUserContext } from '../userContexts';
 import { ApplicationApisList } from './ApplicationApisList';
@@ -18,15 +26,15 @@ import { isPublisher, isOrgAdmin, isOrgBoundUser } from '../userContexts';
 import { useLayer7Notify } from '../useLayer7Notify';
 import { ApplicationCertificatesPanel } from './ApplicationCertificatesPanel';
 
-export const ApplicationDetails = ({ record }) => {
-    const classes = useStyles();
-    const gridClasses = useGridStyles();
-    const contentLabelClasses = useContentStyles();
-    const applicationDetailsOverviewClasses = useApplicationDetailsOverviewStyles();
+export const ApplicationDetails = () => {
+    const { classes } = useStyles();
+    const { classes: gridClasses } = useGridStyles();
+    const { classes: contentLabelClasses } = useContentStyles();
+    const { classes: applicationDetailsOverviewClasses } =
+        useApplicationDetailsOverviewStyles();
     const dataProvider = useDataProvider();
     const translate = useTranslate();
     const notify = useLayer7Notify();
-
     const [userContext] = useUserContext();
     const canEdit = isPublisher(userContext) || isOrgAdmin(userContext);
     const isOrgUser = isOrgBoundUser(userContext);
@@ -34,103 +42,150 @@ export const ApplicationDetails = ({ record }) => {
     const [apiGroupIds, setApiGroupIds] = useState([]);
     const [appCertificates, setAppCertificates] = useState([]);
 
-    const [apiKeys, setApiKeys] = React.useState([]);
-    const [customFieldsMap, setCustomFieldsMap] = React.useState({});
-    const fetchApiKeys = async () => {
-        const { data } = await dataProvider.getList(
-            'apiKeys',
-            {
-                applicationUuid: record.id,
-                pagination: { page: 1, perPage: 100 },
-                sort: { field: 'createTs', order: 'DESC' },
-            },
-            {
-                onFailure: error => notify(error),
-            }
-        );
-        setApiKeys(sortBy(data, ({ defaultKey }) => !defaultKey));
-    };
+    const [apiKeys, setApiKeys] = useState([]);
+    const [customFieldsMap, setCustomFieldsMap] = useState({});
+    const record = useRecordContext();
+    const id = useGetRecordId();
 
-    // get application certificates data
-    const [fetchApplicationCerts, { data: applicationCertsData }] = useMutation(
-        {
-            payload: {
-                applicationUuid: record.id,
-            },
-            resource: 'applicationCertificates',
-            type: 'getList',
-        }
-    );
-
-    useEffect(() => {
-        fetchApplicationCerts();
-    }, []);
-
-    useEffect(() => {
-        if (applicationCertsData) {
-            setAppCertificates(applicationCertsData);
-        }
-    }, [applicationCertsData]);
-
-    // get apis data
-    const { data: apisData, loading: isApisDataLoading } = useQuery({
-        type: 'getApis',
-        resource: 'applications',
-        payload: { id: record.id },
+    const {
+        data: apiKeysData,
+        isSuccess: fetchApiKeysIsSuccess,
+        isError: fetchApiKeysIsError,
+        error: fetchApiKeysError,
+    } = useGetList('apiKeys', {
+        pagination: { page: 1, perPage: 100 },
+        sort: { field: 'createTs', order: 'DESC' },
+        meta: {
+            applicationUuid: id,
+        },
     });
 
+    useEffect(() => {
+        if (fetchApiKeysIsSuccess) {
+            setApiKeys(sortBy(apiKeysData, ({ defaultKey }) => !defaultKey));
+        }
+        if (fetchApiKeysIsError) {
+            notify(fetchApiKeysError);
+        }
+    }, [
+        fetchApiKeysIsSuccess,
+        fetchApiKeysIsError,
+        fetchApiKeysError,
+        notify,
+        apiKeysData,
+    ]);
+
+    const {
+        data: customFieldsData,
+        isSuccess: fetchCustomFieldsIsSuccess,
+        isError: fetchCustomFieldsIsError,
+        error: fetchCustomFieldsError,
+    } = useGetList('customFields', {
+        meta: {
+            entityName: 'APPLICATION',
+            status: 'ENABLED',
+        },
+    });
+
+    useEffect(() => {
+        if (fetchCustomFieldsIsSuccess) {
+            const fieldsMap = {};
+            customFieldsData.map(item => (fieldsMap[item.id] = item.name));
+            setCustomFieldsMap(fieldsMap);
+        }
+        if (fetchCustomFieldsIsError) {
+            notify(fetchCustomFieldsError);
+        }
+    }, [
+        fetchCustomFieldsIsSuccess,
+        customFieldsData,
+        fetchCustomFieldsError,
+        fetchCustomFieldsIsError,
+        notify,
+    ]);
+
+    const {
+        data: applicationCertsData,
+        isSuccess: fetchApplicationCertsIsSuccess,
+        isError: fetchApplicationCertsIsError,
+        error: fetchApplicationCertsError,
+    } = useGetList('applicationCertificates', {
+        meta: { applicationUuid: id },
+    });
+
+    useEffect(() => {
+        if (fetchApplicationCertsIsSuccess) {
+            setAppCertificates(applicationCertsData);
+        }
+        if (fetchApplicationCertsIsError) {
+            notify(fetchApplicationCertsError);
+        }
+    }, [
+        fetchApplicationCertsIsSuccess,
+        applicationCertsData,
+        fetchApplicationCertsIsError,
+        notify,
+        fetchApplicationCertsError,
+    ]);
+
+    const {
+        data: apisData,
+        isLoading: isApisDataLoading,
+        isSuccess: fetchApisIsSuccess,
+        isError: fetchApisIsError,
+        error: fetchApisError,
+    } = useQuery({
+        queryKey: ['applications', 'getApis', { id }],
+        queryFn: () => dataProvider.getApis('applications', { id }),
+    });
+
+    useEffect(() => {
+        if (fetchApisIsSuccess && apisData.data.length > 0) {
+            setApiIds(apisData.data.map(item => item.uuid));
+        }
+        if (fetchApisIsError) {
+            notify(fetchApisError);
+        }
+    }, [
+        fetchApisIsSuccess,
+        fetchApisIsError,
+        fetchApisError,
+        apisData,
+        notify,
+    ]);
+
     const { data: applicationApiKeyExpirySettings } = useQuery({
-        type: 'getKeyExpirySettings',
-        resource: 'applications',
-        payload: {},
+        queryKey: ['applications', 'getKeyExpirySettings'],
+        queryFn: () => dataProvider.getKeyExpirySettings('applications'),
     });
 
     const isKeyExpiryEnabled = get(
         applicationApiKeyExpirySettings,
-        'enabled',
+        'data.enabled',
         false
     );
-
-    React.useEffect(() => {
-        if (apisData && apisData.length > 0) {
-            setApiIds(apisData.map(item => item.uuid));
-        }
-    }, [apisData]);
-
     // get api groups data
-    const {
-        data: apiGroupsIdsData,
-        loading: isApiGroupsIdsDataLoading,
-    } = useQuery({
-        type: 'getApiGroups',
-        resource: 'applications',
-        payload: { id: record.id },
-    });
-    React.useEffect(() => {
-        if (apiGroupsIdsData && apiGroupsIdsData.length > 0) {
-            setApiGroupIds(apiGroupsIdsData.map(item => item.uuid));
+    // const {
+    //     data: apiGroupsIdsData,
+    //     loading: isApiGroupsIdsDataLoading,
+    // } = useQuery({
+    //     type: 'getApiGroups',
+    //     resource: 'applications',
+    //     payload: { id: record.id },
+    // });
+    const { data: apiGroupsIdsData, isLoading: isApiGroupsIdsDataLoading } =
+        useQuery({
+            queryKey: ['applications', 'getApiGroups', { id }],
+            queryFn: () => dataProvider.getApiGroups('applications', { id }),
+            retry: false, // TODO: may need to change, auto refetching since it fails
+        });
+
+    useEffect(() => {
+        const groupsData = get(apiGroupsIdsData, 'data') || [];
+        if (groupsData && groupsData.length > 0) {
+            setApiGroupIds(groupsData.map(item => item.uuid));
         }
     }, [apiGroupsIdsData]);
-
-    React.useEffect(() => {
-        const fetchCustomFields = async () => {
-            const { data } = await dataProvider.getList(
-                'customFields',
-                {
-                    entityName: 'APPLICATION',
-                    status: 'ENABLED',
-                },
-                {
-                    onFailure: error => notify(error),
-                }
-            );
-            const fieldsMap = {};
-            data.map(item => (fieldsMap[item.id] = item.name));
-            setCustomFieldsMap(fieldsMap);
-        };
-        fetchApiKeys();
-        fetchCustomFields();
-    }, []);
 
     return (
         <>
@@ -153,7 +208,6 @@ export const ApplicationDetails = ({ record }) => {
                                 <ApplicationDetailsOverviewField
                                     id="overview"
                                     classes={applicationDetailsOverviewClasses}
-                                    record={record}
                                     canEdit={canEdit}
                                 />
                             </Grid>
@@ -176,12 +230,11 @@ export const ApplicationDetails = ({ record }) => {
                                         >
                                             <TextField
                                                 id="organizationName"
-                                                record={record}
                                                 source="organizationName"
                                             />
                                         </Labeled>
                                     )}
-                                    {record.description && (
+                                    {record && record.description && (
                                         <Labeled
                                             // On <Labeled />, this will translate in a correct `for` attribute on the label
                                             label="resources.applications.fields.description"
@@ -208,7 +261,8 @@ export const ApplicationDetails = ({ record }) => {
                                             'resources.applications.fields.customField'
                                         )}
                                     </Typography>
-                                    {record.customFieldValues &&
+                                    {record &&
+                                        record.customFieldValues &&
                                         record.customFieldValues.map(item => (
                                             <Labeled
                                                 // On <Labeled />, this will translate in a correct `for` attribute on the label
@@ -221,16 +275,10 @@ export const ApplicationDetails = ({ record }) => {
                                                 classes={classes}
                                                 className={classes.field}
                                             >
-                                                <div
-                                                    className={
-                                                        classes.fieldValue
-                                                    }
-                                                >
-                                                    <TextField
-                                                        record={item}
-                                                        source="value"
-                                                    />
-                                                </div>
+                                                <TextField
+                                                    record={item}
+                                                    source="value"
+                                                />
                                             </Labeled>
                                         ))}
                                 </Grid>
@@ -255,7 +303,7 @@ export const ApplicationDetails = ({ record }) => {
                                     item
                                     container
                                     direction="row"
-                                    justify="center"
+                                    justifyContent="center"
                                     md={12}
                                     sm={12}
                                 >
@@ -276,7 +324,7 @@ export const ApplicationDetails = ({ record }) => {
                     direction="column"
                     classes={gridClasses}
                     className={classes.configuration}
-                    justify="flex-start"
+                    justifyContent="flex-start"
                 >
                     <CollapsiblePanel
                         defaultExpanded
@@ -305,7 +353,7 @@ export const ApplicationDetails = ({ record }) => {
                     direction="column"
                     classes={gridClasses}
                     className={classes.configuration}
-                    justify="flex-start"
+                    justifyContent="flex-start"
                 >
                     <Grid item>
                         <Typography variant="h3" className={classes.subtitle}>
@@ -319,15 +367,12 @@ export const ApplicationDetails = ({ record }) => {
                         {apiKeys.map(apiKey => (
                             <ApplicationDetailsKeyClient
                                 appCertificates={appCertificates}
-                                appUuid={record.id}
                                 id={apiKey.id}
                                 key={apiKey.id}
                                 data={apiKey}
                                 includeSecret={true}
                                 isKeyExpiryEnabled={isKeyExpiryEnabled}
                                 labelClasses={contentLabelClasses}
-                                dataProvider={dataProvider}
-                                refreshApiKeys={fetchApiKeys}
                             />
                         ))}
                     </List>
@@ -337,78 +382,73 @@ export const ApplicationDetails = ({ record }) => {
     );
 };
 
-const useStyles = makeStyles(
-    theme => ({
-        root: {
-            display: 'flex',
-            fontFamily: theme.typography.body2.fontFamily,
-            fontSize: theme.typography.caption.fontSize,
-            margin: theme.spacing(0),
-            width: '100%',
-        },
-        details: {
-            padding: `${theme.spacing(1)}px ${theme.spacing(3)}px !important`,
-        },
-        configuration: {
-            padding: `${theme.spacing(1)}px ${theme.spacing(3)}px !important`,
-        },
-        subsection: {
-            color: '#333333',
-            fontWeight: 600,
-            fontSize: '18px',
-        },
-        subtitle: {
-            color: theme.palette.primary.main || '#333333',
-            fontWeight: theme.typography.fontWeightBold,
-            fontSize: '21px',
-            lineHeight: '22px',
-            margin: theme.spacing(1, 0, 1, 0),
-        },
-        field: {
-            marginLeft: theme.spacing(2),
-            marginRight: theme.spacing(1),
-            minWidth: '100px',
-            width: '100%',
-        },
-        label: {
-            color: theme.palette.primary.textHub || '#333333',
-            fontFamily: theme.typography.textHub,
-            fontSize: '14px',
-            fontStyle: 'normal',
-            fontWeight: 'bold',
-            lineHeight: '22px',
-            transform: 'unset',
-        },
-        mainField: {
-            minWidth: '100px',
-            padding: 0,
-            width: '100%',
-        },
-        fieldValue: {
-            color: theme.palette.primary.textHub || '#333333',
-            fontFamily: theme.typography.textHub,
-            fontSize: '14px',
-            fontStyle: 'normal',
-            fontWeight: 'normal',
-            lineHeight: '20px',
-        },
-        type: {
-            textTransform: 'uppercase',
-        },
-        icon: {
-            fontSize: '1rem',
-        },
-        chip: {
-            marginLeft: theme.spacing(1),
-            height: theme.spacing(3),
-        },
-    }),
-    {
-        name: 'Layer7ApplicationDetails',
-    }
-);
+const useStyles = makeStyles({ name: 'Layer7ApplicationDetails' })(theme => ({
+    root: {
+        display: 'flex',
+        fontFamily: theme.typography.body2.fontFamily,
+        fontSize: theme.typography.caption.fontSize,
+        margin: theme.spacing(0),
+        width: '100%',
+    },
+    details: {
+        padding: `${theme.spacing(1)} ${theme.spacing(3)} !important`,
+    },
+    configuration: {
+        padding: `${theme.spacing(1)} ${theme.spacing(3)} !important`,
+    },
+    subsection: {
+        color: '#333333',
+        fontWeight: 600,
+        fontSize: '18px',
+    },
+    subtitle: {
+        color: theme.palette.primary.main || '#333333',
+        fontWeight: theme.typography.fontWeightBold,
+        fontSize: '21px',
+        lineHeight: '22px',
+        margin: theme.spacing(1, 0, 1, 0),
+    },
+    field: {
+        marginLeft: theme.spacing(2),
+        marginRight: theme.spacing(1),
+        minWidth: '100px',
+        width: '100%',
+    },
+    label: {
+        color: theme.palette.primary.textHub || '#333333',
+        fontFamily: theme.typography.textHub,
+        fontSize: '14px',
+        fontStyle: 'normal',
+        fontWeight: 'bold',
+        lineHeight: '22px',
+        transform: 'unset',
+    },
+    mainField: {
+        minWidth: '100px',
+        padding: 0,
+        width: '100%',
+    },
+    fieldValue: {
+        color: theme.palette.primary.textHub || '#333333',
+        fontFamily: theme.typography.textHub,
+        fontSize: '14px',
+        fontStyle: 'normal',
+        fontWeight: 'normal',
+        lineHeight: '20px',
+    },
+    type: {
+        textTransform: 'uppercase',
+    },
+    icon: {
+        fontSize: '1rem',
+    },
+    chip: {
+        marginLeft: theme.spacing(1),
+        height: theme.spacing(3),
+    },
+}));
 
-const useApplicationDetailsOverviewStyles = makeStyles(theme => ({
+const useApplicationDetailsOverviewStyles = makeStyles()(theme => ({
     markdown: {
         overflowY: 'scroll',
         height: '200px',
@@ -417,7 +457,7 @@ const useApplicationDetailsOverviewStyles = makeStyles(theme => ({
     },
 }));
 
-const useContentStyles = makeStyles(theme => ({
+const useContentStyles = makeStyles()(theme => ({
     label: {
         color: theme.palette.primary.textHub || '#333333',
         fontFamily: theme.typography.textHub,
@@ -429,7 +469,7 @@ const useContentStyles = makeStyles(theme => ({
     },
 }));
 
-const useGridStyles = makeStyles(theme => ({
+const useGridStyles = makeStyles()(() => ({
     root: {
         borderBottom: 'none',
     },

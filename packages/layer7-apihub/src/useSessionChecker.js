@@ -1,3 +1,4 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import * as React from 'react';
 import { useLocation } from 'react-router-dom';
 import { getFetchJson } from './fetchUtils';

@@ -1,11 +1,13 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React, { useState } from 'react';
 import { required, SimpleForm, TextInput, useTranslate } from 'react-admin';
-import { makeStyles, Typography } from '@material-ui/core';
+import { Typography } from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
 import { ResetPasswordToolbar } from './ResetPasswordToolbar';
 
 export const ResetPasswordForm = props => {
     const { handleSubmit, localLoginsDisabled, toolbarProps, ...rest } = props;
-    const classes = useStyles(rest);
+    const { classes } = useStyles(rest);
     const translate = useTranslate();
     const [error, setError] = useState(null);
 
@@ -37,9 +39,10 @@ export const ResetPasswordForm = props => {
                 {translate('apihub.reset_password.form_details.description')}
             </Typography>
             <SimpleForm
+                sanitizeEmptyValues={true}
                 className={classes.form}
                 error={error}
-                save={onSubmit}
+                onSubmit={onSubmit}
                 toolbar={
                     <ResetPasswordToolbar error={error} {...toolbarProps} />
                 }
@@ -59,7 +62,7 @@ export const ResetPasswordForm = props => {
     );
 };
 
-const useStyles = makeStyles(
+const useStyles = makeStyles({ name: 'Layer7ResetPasswordForm' })(
     theme => ({
         root: {},
         instructions: {
@@ -75,8 +78,5 @@ const useStyles = makeStyles(
                 padding: 0,
             },
         },
-    }),
-    {
-        name: 'Layer7ResetPasswordForm',
-    }
+    })
 );

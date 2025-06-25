@@ -1,8 +1,8 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React from 'react';
 import { Layout } from 'react-admin';
 import { ApiHubAppBar } from './ApiHubAppBar';
 import { ApiHubMenu } from './ApiHubMenu';
-import { useSelector } from 'react-redux';
 
 /**
  * The ApiHub Layout used in the ApiHub Admin.
@@ -17,18 +17,5 @@ export const ApiHubLayout = ({
     menu = ApiHubMenu,
     ...rest
 }) => {
-
-  // In order to let the components use Redux-based dataProvider
-    // hooks like useGetOne, we must wait for the resource registration before
-    // displaying the dashboard.
-    // This fix should be reverted after the release of React Admin v3.6.3.
-    const resourcesAreRegistered = useSelector(
-        state => Object.keys(state.admin.resources).length > 0
-    );
-
-    if (!resourcesAreRegistered) {
-        return null;
-    }
-
     return <Layout appBar={appBar} menu={menu} {...rest} />;
 };

@@ -1,3 +1,4 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React, {
     forwardRef,
     useState,
@@ -8,16 +9,15 @@ import React, {
     createContext,
     useMemo,
 } from 'react';
-import TreeView from '@material-ui/lab/TreeView';
-import TreeItem from '@material-ui/lab/TreeItem';
-import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
-import ArrowRightIcon from '@material-ui/icons/ArrowRight';
-import { makeStyles } from '@material-ui/core';
-import { useForkRef } from '@material-ui/core/utils';
-import { useTranslate } from 'ra-core';
-import Backend from 'react-dnd-html5-backend';
+import { TreeItem, TreeView } from '@mui/x-tree-view';
+import { TreeViewContext } from '@mui/x-tree-view/internals/TreeViewProvider/TreeViewContext';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import ArrowRightIcon from '@mui/icons-material/ArrowRight';
+import { makeStyles } from 'tss-react/mui';
+import { useForkRef } from '@mui/material/utils';
+import { useTranslate } from 'react-admin';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 import { DndProvider, useDrag, useDrop } from 'react-dnd';
-import classnames from 'classnames';
 import FocusTrap from 'focus-trap-react';
 
 import {
@@ -30,7 +30,7 @@ import {
 
 // We have to import this way otherwise it seems we end up with a different context
 // that the one used by MUI TreeView
-import TreeViewContext from '@material-ui/lab/esm/TreeView/TreeViewContext';
+//import TreeViewContext from '@mui/lab/TreeView/TreeViewContext';
 
 const TreeViewDragDropContext = createContext();
 
@@ -45,9 +45,8 @@ export const DocumentationTree = ({
     ...props
 }) => {
     const [draggedNodeId, setDraggedNodeId] = useState(false);
-    const [isDraggingUsingKeyboard, setIsDraggingUsingKeyboard] = useState(
-        false
-    );
+    const [isDraggingUsingKeyboard, setIsDraggingUsingKeyboard] =
+        useState(false);
 
     const [uncontrolledExpanded, setExpanded] = useState([]);
 
@@ -187,7 +186,7 @@ export const DocumentationTree = ({
     );
 
     return (
-        <DndProvider backend={Backend} context={window}>
+        <DndProvider backend={HTML5Backend} context={window}>
             <TreeViewDragDropContext.Provider value={dragDropContextValue}>
                 <FocusTrap active={!!draggedNodeId}>
                     <TreeView
@@ -218,33 +217,25 @@ export const DocumentationTree = ({
 };
 
 const RecursiveTreeItem = forwardRef((props, ref) => {
+    const { node, onExpand, onCollapse, onDropped, items, canDrag, ...rest } =
+        props;
     const {
-        node,
-        onExpand,
-        onCollapse,
-        onDropped,
-        items,
-        canDrag,
-        ...rest
-    } = props;
-    const {
-        isDragging: isDraggingClassName,
-        isOver: isOverClassName,
-        isOverAfter: isOverAfterClassName,
-        isOverBefore: isOverBeforeClassName,
-        dropTarget: dropTargetClassName,
-        dropTargetFocused: dropTargetFocusedClassName,
-        ...classes
+        classes: {
+            isDragging: isDraggingClassName,
+            isOver: isOverClassName,
+            isOverAfter: isOverAfterClassName,
+            isOverBefore: isOverBeforeClassName,
+            dropTarget: dropTargetClassName,
+            dropTargetFocused: dropTargetFocusedClassName,
+        },
+        cx,
+        classes,
     } = useRecursiveTreeItemStyles(props);
 
     const translate = useTranslate();
     const { isFocused, isExpanded } = useContext(TreeViewContext);
-    const {
-        isDragged,
-        isDragging,
-        isDraggingUsingKeyboard,
-        setDraggedNodeId,
-    } = useContext(TreeViewDragDropContext);
+    const { isDragged, isDragging, isDraggingUsingKeyboard, setDraggedNodeId } =
+        useContext(TreeViewDragDropContext);
 
     const isBeingDragged = isDragged(node.id);
     const nodeRef = useRef();
@@ -253,15 +244,16 @@ const RecursiveTreeItem = forwardRef((props, ref) => {
     const expanded = isExpanded ? isExpanded(node.id) : false;
 
     const [, drag] = useDrag({
-        item: { type: DRAG_DROP_TYPE, id: node.id, uuid: node.uuid },
-        begin: () => {
-            // This timeout is necessary to avoid an issue in chrome
-            // preventing drag operations after a while
-            // See https://github.com/react-dnd/react-dnd/issues/2177#issuecomment-607171231
-            setTimeout(() => {
-                setDraggedNodeId(node.id);
-            }, 0);
-        },
+        type: DRAG_DROP_TYPE,
+        item: { id: node.id, uuid: node.uuid },
+        // begin: () => {
+        // This timeout is necessary to avoid an issue in chrome
+        // preventing drag operations after a while
+        // See https://github.com/react-dnd/react-dnd/issues/2177#issuecomment-607171231
+        //     setTimeout(() => {
+        //         setDraggedNodeId(node.id);
+        //     }, 0);
+        // },
         end: () => {
             setDraggedNodeId(undefined);
         },
@@ -366,7 +358,7 @@ const RecursiveTreeItem = forwardRef((props, ref) => {
         <TreeItem
             ref={attachRef}
             classes={classes}
-            className={classnames({
+            className={cx({
                 [dropTargetClassName]: !!node.dropTarget,
                 [dropTargetFocusedClassName]:
                     !!node.dropTarget && isDraggingOver,
@@ -425,7 +417,7 @@ const RecursiveTreeItem = forwardRef((props, ref) => {
     );
 });
 
-const useRecursiveTreeItemStyles = makeStyles(theme => ({
+const useRecursiveTreeItemStyles = makeStyles()(theme => ({
     root: {
         borderStyle: 'solid',
         borderWidth: 2,

@@ -15,7 +15,7 @@ To add pages in the API Hub library, add them to the react-admin ``<Admin />`` c
 
 ### In an Application using the Layer7 API Hub Library
 
-To add pages in an application using the API Hub library, add them to the ``<ApiHubAdmin />`` component using the `customRoutes` prop. For more information about how to make this customization, see [the "Add a Page" customization tutorial in the Example app README](../../packages/example/README.md###how-to-add-a-new-page).
+To add pages in an application using the API Hub library, add them to the ``<ApiHubAdmin />`` component using the `customRoutes` and `customRoutesNoLayout` prop. For more information about how to make this customization, see [the "Add a Page" customization tutorial in the Example app README](../../packages/example/README.md#add-a-page).
 
 ## Add Additional Language Support in the Layer7 API Hub Library
 

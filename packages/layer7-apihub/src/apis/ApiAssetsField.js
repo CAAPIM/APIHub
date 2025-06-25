@@ -1,37 +1,37 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React, { forwardRef } from 'react';
-import { useTranslate, useGetManyReference } from 'ra-core';
-import LinearProgress from '@material-ui/core/LinearProgress';
-import Typography from '@material-ui/core/Typography';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import Link from '@material-ui/core/Link';
-import Button from '@material-ui/core/Button';
-import { makeStyles } from '@material-ui/core/styles';
+import { useTranslate, useGetManyReference } from 'react-admin';
+import LinearProgress from '@mui/material/LinearProgress';
+import Typography from '@mui/material/Typography';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import Link from '@mui/material/Link';
+import Button from '@mui/material/Button';
+import { makeStyles } from 'tss-react/mui';
 import get from 'lodash/get';
 import { useApiHub } from '../ApiHubContext';
+import { useRecordContext } from 'react-admin';
 
 export const ApiAssetsField = props => {
     const translate = useTranslate();
-    const classes = useStyles(props);
-    const { record, ...rest } = props;
+    const { classes } = useStyles();
+    let record = useRecordContext();
+    if (props.record != null) {
+        record = props.record;
+    }
 
-    const { data, loaded, error } = useGetManyReference(
-        'assets',
-        'id',
-        record.id,
-        undefined,
-        undefined,
-        undefined,
-        'apis'
-    );
+    const { data, isLoading, error } = useGetManyReference('assets', {
+        target: 'id',
+        id: record.id,
+    });
 
-    if (!loaded) {
+    if (isLoading) {
         return <LinearProgress />;
     }
 
     if (error) {
         return (
-            <Typography variant="body1" className={classes.error} {...rest}>
+            <Typography variant="body1" className={classes.error} {...props}>
                 {translate('ra.page.error')}
             </Typography>
         );
@@ -39,7 +39,7 @@ export const ApiAssetsField = props => {
 
     if (!data) {
         return (
-            <Typography variant="body1" {...rest}>
+            <Typography variant="body1" {...props}>
                 {translate('resources.apis.overview.notifications.no_assets')}
             </Typography>
         );
@@ -56,7 +56,7 @@ export const ApiAssetsField = props => {
         };
     });
 
-    return <AssetsList record={record} links={links} {...rest} />;
+    return <AssetsList record={record} links={links} {...props} />;
 };
 
 export const AssetsList = ({ record, links, ...rest }) => {
@@ -109,17 +109,12 @@ const DownloadFilesButton = ({ id }) => {
 };
 
 const DownloadButton = forwardRef((props, ref) => (
-    <Button variant="outlined" color="primary" ref={ref} {...props} />
+    <Button variant="outlined" ref={ref} {...props} />
 ));
 
-const useStyles = makeStyles(
-    theme => ({
-        error: {
-            color: theme.palette.error.main,
-            marginBottom: theme.spacing(),
-        },
-    }),
-    {
-        name: 'Layer7ApiAssetsField',
-    }
-);
+const useStyles = makeStyles({ name: 'Layer7ApiAssetsField' })(theme => ({
+    error: {
+        color: theme.palette.error.main,
+        marginBottom: theme.spacing(),
+    },
+}));

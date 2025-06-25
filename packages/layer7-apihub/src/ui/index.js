@@ -1,3 +1,4 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 export * from './AccessField';
 export * from './CardGrid';
 export * from './ConfirmDialog';
@@ -14,6 +15,7 @@ export * from './ListArrayInput';
 export * from './ListDisplay';
 export * from './Markdown';
 export * from './PasswordInput';
+export * from './Prompt';
 export * from './ReferenceArrayInput';
 export * from './Show';
 export * from './SortButton';

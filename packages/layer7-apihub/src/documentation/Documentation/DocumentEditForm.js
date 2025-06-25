@@ -1,3 +1,4 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React, { useEffect } from 'react';
 import {
     SimpleForm,
@@ -6,9 +7,9 @@ import {
     TextInput,
     useUpdate,
     required,
-    CRUD_UPDATE,
+    Labeled,
 } from 'react-admin';
-import { makeStyles } from '@material-ui/core';
+import { makeStyles } from 'tss-react/mui';
 
 import { useLayer7Notify } from '../../useLayer7Notify';
 import { MarkdownInput } from '../../ui';
@@ -21,22 +22,23 @@ export const DocumentEditForm = ({
 }) => {
     const notify = useLayer7Notify();
 
-    const [update, { data, loading, error }] = useUpdate('documents');
+    const [update, { data, isLoading, error }] = useUpdate();
 
     const handleSave = newDocument => {
         update(
+            'documents',
             {
-                payload: {
+                id: document.id,
+                data: {
+                    ...newDocument,
                     id: document.id,
-                    data: { ...newDocument, id: document.id },
                 },
             },
             {
-                action: CRUD_UPDATE,
                 onSuccess: () => {
                     notify('resources.documents.notifications.edit_success');
                 },
-                onFailure: error => {
+                onError: error => {
                     notify(
                         error || 'resources.documents.notifications.edit_error',
                         'error'
@@ -55,7 +57,7 @@ export const DocumentEditForm = ({
     return (
         <DocumentForm
             record={document}
-            loading={loading}
+            isLoading={isLoading}
             error={error}
             onSave={handleSave}
             onCancel={onCancel}
@@ -65,33 +67,38 @@ export const DocumentEditForm = ({
 
 const DocumentForm = ({
     record = {},
-    loading = false,
+    isLoading = false,
     error = null,
     onSave = () => {},
     onCancel = () => {},
 }) => {
-    const classes = useStyles();
+    const { classes } = useStyles();
 
     return (
         <SimpleForm
+            sanitizeEmptyValues={true}
             resource="documents"
             record={record}
             toolbar={
                 <DocumentFormToolbar
-                    loading={loading}
+                    isLoading={isLoading}
                     error={error}
                     onCancel={onCancel}
                 />
             }
-            save={onSave}
+            onSubmit={onSave}
         >
             <TextInput
                 source="title"
                 formClassName={classes.title}
                 validate={required()}
             />
-            <TextField source="navtitle" formClassName={classes.navtitle} />
-            <DateField source="modifyTs" formClassName={classes.modifyTs} />
+            <Labeled>
+                <TextField source="navtitle" formClassName={classes.navtitle} />
+            </Labeled>
+            <Labeled>
+                <DateField source="modifyTs" formClassName={classes.modifyTs} />
+            </Labeled>
             <MarkdownInput
                 source="markdown"
                 formClassName={classes.markdown}
@@ -103,27 +110,22 @@ const DocumentForm = ({
     );
 };
 
-const useStyles = makeStyles(
-    theme => ({
-        title: {
-            display: 'inline-block',
-            width: '30%',
-        },
-        navtitle: {
-            display: 'inline-block',
-            marginLeft: theme.spacing(4),
-            width: '30%',
-        },
-        modifyTs: {
-            display: 'inline-block',
-            marginLeft: theme.spacing(4),
-            width: '30%',
-        },
-        markdown: {
-            width: '100%',
-        },
-    }),
-    {
-        name: 'Layer7DocumentEditForm',
-    }
-);
+const useStyles = makeStyles({ name: 'Layer7DocumentEditForm' })(theme => ({
+    title: {
+        display: 'inline-block',
+        width: '30%',
+    },
+    navtitle: {
+        display: 'inline-block',
+        marginLeft: theme.spacing(4),
+        width: '30%',
+    },
+    modifyTs: {
+        display: 'inline-block',
+        marginLeft: theme.spacing(4),
+        width: '30%',
+    },
+    markdown: {
+        width: '100%',
+    },
+}));

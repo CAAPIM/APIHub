@@ -1,13 +1,11 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import {
-    CRUD_CREATE,
-    CRUD_GET_ONE,
-    CRUD_UPDATE,
     useCreate,
     useGetOne,
     useLocale,
     useRefresh,
     useUpdate,
-} from 'ra-core';
+} from 'react-admin';
 
 import { useLayer7Notify } from '../useLayer7Notify';
 import { documentationLocales } from '../i18n';
@@ -41,57 +39,50 @@ export const useMarkdownContent = ({ entityType, entityUuid, navtitle }) => {
         navtitle,
         documentationLocales[locale]
     );
+    const { data, isLoading } = useGetOne('documents', { id });
 
-    const { data, loaded, loading } = useGetOne('documents', id, {
-        action: CRUD_GET_ONE,
-    });
-
-    const [create] = useCreate('documents');
-    const [update] = useUpdate('documents');
+    const [create] = useCreate();
+    const [update] = useUpdate();
 
     const handleSave = markdown => {
         const options = {
-            action: !!data ? CRUD_UPDATE : CRUD_CREATE,
             onSuccess: () => {
                 notify(
                     'resources.documents.notifications.edit_success',
                     'info',
                     undefined,
-                    !!data ? true : false
+                    !!data
                 );
 
                 if (!data) {
                     refresh();
                 }
             },
-            onFailure: error => {
+            onError: error => {
                 notify(
                     error || 'resources.documents.notifications.edit_error',
                     'error'
                 );
             },
-            undoable: !!data ? true : false,
+            mutationsMode: !!data ? 'undoable' : 'pessimistic',
         };
 
         if (!!data) {
             update(
+                'documents',
                 {
-                    payload: {
-                        id,
-                        data: {
-                            ...data,
-                            markdown,
-                        },
+                    id,
+                    data: {
+                        ...data,
+                        markdown,
                     },
                 },
                 options
             );
-            return;
-        }
-
-        create(
-            {
-                payload: {
+        } else {
+            create(
+                'documents',
+                {
                     data: {
                         id,
                         locale: documentationLocales[locale],
@@ -104,10 +95,10 @@ export const useMarkdownContent = ({ entityType, entityUuid, navtitle }) => {
                         typeUuid: entityUuid,
                     },
                 },
-            },
-            options
-        );
+                options
+            );
+        }
     };
 
-    return [{ data, loaded, loading }, handleSave];
+    return [{ data, isLoading }, handleSave];
 };

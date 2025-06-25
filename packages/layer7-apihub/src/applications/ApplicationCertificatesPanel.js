@@ -1,5 +1,13 @@
-import React, { Fragment, useState } from 'react';
-import { FileField, FileInput, TextInput, useDataProvider } from 'react-admin';
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
+import React, { useState } from 'react';
+import {
+    FileField,
+    FileInput,
+    TextInput,
+    useCreate,
+    useDelete,
+    useTranslate,
+} from 'react-admin';
 import {
     Button,
     Dialog,
@@ -7,19 +15,17 @@ import {
     DialogContent,
     DialogTitle,
     InputAdornment,
-    makeStyles,
     Table,
     TableBody,
     TableCell,
     TableHead,
     TableRow,
     TextField,
-} from '@material-ui/core';
-import SearchIcon from '@material-ui/icons/Search';
-import { useTranslate } from 'ra-core';
+} from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
+import SearchIcon from '@mui/icons-material/Search';
 import moment from 'moment';
 import momentTimeZone from 'moment-timezone';
-
 import { useLayer7Notify } from '../useLayer7Notify';
 import { CERTIFICATE_DISPLAY_FORMAT } from './constants';
 
@@ -36,17 +42,17 @@ export const ApplicationCertificatesPanel = ({
     setUploadedCertFile,
     uploadedCertFile,
 }) => {
-    const classes = useStyles();
+    const { classes } = useStyles();
     const translate = useTranslate();
-    const dataProvider = useDataProvider();
     const [certificateDeleteStateMap, setCertificateDeleteStateMap] = useState(
         {}
     );
     const [certificateSearchText, setCertificateSearchText] = useState('');
-    const [showAddCertificateDialog, setShowAddCertificateDialog] = useState(
-        false
-    );
+    const [showAddCertificateDialog, setShowAddCertificateDialog] =
+        useState(false);
     const notify = useLayer7Notify();
+    const [deleteOne] = useDelete();
+    const [create] = useCreate();
 
     // add certificate
     const addCertificate = async () => {
@@ -68,7 +74,7 @@ export const ApplicationCertificatesPanel = ({
             : translate(
                   'resources.applications.notifications.certificate_upload_success'
               );
-        await dataProvider.create(
+        await create(
             'applicationCertificates',
             {
                 data: {
@@ -76,15 +82,18 @@ export const ApplicationCertificatesPanel = ({
                     certificateFileName: certFileName,
                     name: assignedCertName,
                 },
-                appUuid: application.id,
+                meta: {
+                    appUuid: application.id,
+                },
             },
             {
-                onFailure: error => {
+                returnPromise: true,
+                onError: error => {
                     let errorMessage = getErrorMessageFromError(error);
                     notify(`${failureMessage}, ${errorMessage}`, 'error');
                     reloadForm();
                 },
-                onSuccess: ({ data }) => {
+                onSuccess: () => {
                     fetchApplicationCerts();
                     reloadForm();
                     notify(successMessage);
@@ -147,7 +156,6 @@ export const ApplicationCertificatesPanel = ({
                         {translate('resources.applications.actions.cancel')}
                     </Button>
                     <Button
-                        color="primary"
                         disabled={!uploadedCertFile || !assignedCertName}
                         onClick={handleUploadCertificate}
                         variant="contained"
@@ -196,14 +204,16 @@ export const ApplicationCertificatesPanel = ({
             : translate(
                   'resources.applications.notifications.certificate_delete_failure'
               );
-        dataProvider.delete(
+        deleteOne(
             'applicationCertificates',
             {
-                applicationUuid: application.id,
-                certificateUuid: uuid,
+                id: application.id,
+                meta: {
+                    certificateUuid: uuid,
+                },
             },
             {
-                onFailure: error => {
+                onError: error => {
                     notify(error || failureMessage, 'error');
                     fetchApplicationCerts();
                     reloadForm();
@@ -226,13 +236,12 @@ export const ApplicationCertificatesPanel = ({
         const renderActionCell = () => {
             if (certificateDeleteStateMap[item.id]) {
                 return (
-                    <Fragment>
+                    <>
                         <Button
                             aria-label={translate(
                                 'resources.applications.actions.confirm'
                             )}
                             className={classes.certificateActionDeleteBtn}
-                            color="primary"
                             onClick={() => confirmDeleteCertificate(item.id)}
                             variant="text"
                         >
@@ -244,13 +253,12 @@ export const ApplicationCertificatesPanel = ({
                             aria-label={translate(
                                 'resources.applications.actions.cancel'
                             )}
-                            color="primary"
                             onClick={() => cancelDeleteCertificate(item.id)}
                             variant="text"
                         >
                             {translate('resources.applications.actions.cancel')}
                         </Button>
-                    </Fragment>
+                    </>
                 );
             }
             return (
@@ -259,7 +267,6 @@ export const ApplicationCertificatesPanel = ({
                         'resources.applications.actions.delete'
                     )}
                     className={classes.certificateActionDeleteBtn}
-                    color="primary"
                     onClick={() => deleteCertificate(item.id)}
                     variant="text"
                 >
@@ -358,7 +365,6 @@ export const ApplicationCertificatesPanel = ({
                         <div className={classes.addCertificateContainer}>
                             <Button
                                 className={classes.buttonGenerate}
-                                color="primary"
                                 variant="contained"
                                 onClick={() =>
                                     setShowAddCertificateDialog(true)
@@ -384,7 +390,7 @@ export const ApplicationCertificatesPanel = ({
     );
 };
 
-const useStyles = makeStyles(
+const useStyles = makeStyles({ name: 'ApplicationCertificatesPanel' })(
     theme => ({
         certificateActionBtnContainer: {
             width: 220,
@@ -417,8 +423,5 @@ const useStyles = makeStyles(
             display: 'flex',
             justifyContent: 'space-between',
         },
-    }),
-    {
-        name: 'ApplicationCertificatesPanel',
-    }
+    })
 );

@@ -1,3 +1,4 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import { credentialsAuthProvider } from './credentialsAuthProvider';
 import { getFetchJson } from '../fetchUtils';
 import { deleteApiHubPreference } from '../preferences';
@@ -103,26 +104,26 @@ export const authProvider = (
             return Promise.resolve();
         },
         checkAuth: async () => {
-            // We use the local storage
-            // to store if a user using this portal is logged in or not.
-            const isLoggedIn = getIsLoggedIn();
-            if (isLoggedIn === true) {
-                return Promise.resolve();
+            //Added this logic to handle newpassword/accountsetup/resetpassword url contains %23
+            const pathName = window.location.href ? window.location.href : '';
+            if (pathName.includes('%23')) {
+                const newPath = pathName.replace('%23', '#');
+                window.location.href = newPath;
+            } else {
+                try {
+                    // Perform your authentication check here (e.g., token validation)
+                    const isAuthenticated = await fetchJson(
+                        `${apiUrl}/sessionCheck`
+                    );
+                    if (isAuthenticated) {
+                        return Promise.resolve();
+                    } else {
+                        return Promise.reject();
+                    }
+                } catch (error) {
+                    return Promise.reject();
+                }
             }
-
-            try {
-                // But he may use another portal to log in.
-                // So fetching the api it's the only way to know
-                // if he is already authenticated or not.
-                const response = await fetchJson(`${apiUrl}/userContexts`);
-                await checkError(response);
-                setIsLoggedIn(true);
-            } catch (error) {
-                setIsLoggedIn(false);
-                return Promise.reject();
-            }
-
-            return Promise.resolve();
         },
         checkError,
         getPermissions: async () => {

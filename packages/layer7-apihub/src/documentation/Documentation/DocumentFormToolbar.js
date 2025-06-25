@@ -1,24 +1,46 @@
-import React from 'react';
-import { Toolbar, SaveButton, useTranslate } from 'react-admin';
-import { ValidationError } from 'ra-core';
-import { makeStyles } from '@material-ui/core';
-import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
+import React, { useEffect, useState } from 'react';
+import {
+    Toolbar,
+    SaveButton,
+    useTranslate,
+    ValidationError,
+} from 'react-admin';
+import { makeStyles } from 'tss-react/mui';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import { useFormState } from 'react-hook-form';
 
-import { DocumentFormConfirmBeforeQuit } from './DocumentFormConfirmBeforeQuit';
+export const DocumentFormToolbar = ({ error = null, onCancel = () => {} }) => {
+    const { classes } = useStyles();
+    const translate = useTranslate();
+    const { isDirty } = useFormState();
+    const [isPrompt, setIsPrompt] = useState(false);
 
-export const DocumentFormToolbar = ({
-    loading = false,
-    error = null,
-    onCancel = () => {},
-    pristine,
-    ...rest
-}) => {
-    const classes = useStyles(rest);
+    useEffect(() => {
+        if (isPrompt) {
+            const confirmation = window.confirm(
+                translate('resources.documents.notifications.unsaved_changes')
+            );
+            if (confirmation) {
+                setIsPrompt(false);
+                window.history.go(-1);
+            } else {
+                setIsPrompt(false);
+            }
+        }
+    }, [isPrompt]);
+
+    const onCancelClick = () => {
+        if (isDirty) {
+            setIsPrompt(true);
+        } else {
+            onCancel();
+        }
+    };
 
     return (
         <>
-            <DocumentFormConfirmBeforeQuit when={!pristine} />
             {error ? (
                 <div className={classes.error}>
                     <Typography variant="body1" color="error">
@@ -26,65 +48,49 @@ export const DocumentFormToolbar = ({
                     </Typography>
                 </div>
             ) : null}
-            <Toolbar className={classes.toolbar} pristine={pristine} {...rest}>
-                <CancelButton onClick={onCancel} />
+            <Toolbar className={classes.toolbar}>
+                <CancelButton onClick={onCancelClick} />
                 <SaveButton
                     label="resources.documents.actions.save"
                     className={classes.saveButton}
-                    saving={loading}
                 />
             </Toolbar>
         </>
     );
 };
 
-const CancelButton = ({
-    basePath,
-    handleSubmit,
-    handleSubmitWithRedirect,
-    onSave,
-    invalid,
-    pristine,
-    submitOnEnter,
-    onClick,
-    ...rest
-}) => {
+const CancelButton = ({ onClick, ...rest }) => {
     const translate = useTranslate();
 
     return (
-        <Button color="primary" variant="outlined" onClick={onClick} {...rest}>
+        <Button variant="outlined" onClick={onClick} {...rest}>
             {translate('resources.documents.actions.cancel')}
         </Button>
     );
 };
 
-const useStyles = makeStyles(
-    theme => ({
-        toolbar: {
-            display: 'flex',
-            justifyContent: 'flex-end',
-            backgroundColor: 'transparent',
-            padding: 0,
-            marginTop: theme.spacing(2),
-            marginLeft: theme.spacing(),
-            minWidth: `calc(512px + ${theme.spacing(4)}px)`,
-            [theme.breakpoints.up('sm')]: {
-                width: `calc(100% - ${theme.spacing(3)}px)`,
-                minWidth: `calc(768px + ${theme.spacing(4)}px)`,
-            },
+const useStyles = makeStyles({ name: 'Layer7DocumentFormToolbar' })(theme => ({
+    toolbar: {
+        display: 'flex',
+        justifyContent: 'flex-end',
+        backgroundColor: 'transparent',
+        padding: 0,
+        marginTop: theme.spacing(2),
+        marginLeft: theme.spacing(),
+        minWidth: `calc(512px + ${theme.spacing(4)})`,
+        [theme.breakpoints.up('sm')]: {
+            width: `calc(100% - ${theme.spacing(3)})`,
+            minWidth: `calc(768px + ${theme.spacing(4)})`,
         },
-        saveButton: {
-            marginLeft: theme.spacing(2),
-        },
-        error: {
-            margin: theme.spacing(2),
-        },
-        success: {
-            color: theme.palette.success.main,
-            marginTop: theme.spacing(2),
-        },
-    }),
-    {
-        name: 'Layer7DocumentFormToolbar',
-    }
-);
+    },
+    saveButton: {
+        marginLeft: theme.spacing(2),
+    },
+    error: {
+        margin: theme.spacing(2),
+    },
+    success: {
+        color: theme.palette.success.main,
+        marginTop: theme.spacing(2),
+    },
+}));

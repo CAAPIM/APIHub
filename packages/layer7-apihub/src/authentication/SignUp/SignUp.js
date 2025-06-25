@@ -1,16 +1,17 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React, { useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import Link from '@material-ui/core/Link';
+import { makeStyles } from 'tss-react/mui';
+import Typography from '@mui/material/Typography';
+import Link from '@mui/material/Link';
 import { Link as RouterLink } from 'react-router-dom';
-import { CRUD_CREATE, useCreate, useTranslate } from 'ra-core';
+import { useCreate, useTranslate } from 'react-admin';
 import { SignUpForm } from './SignUpForm';
 import { AuthenticationLayout } from '../AuthenticationLayout';
 import { useLayer7Notify } from '../../useLayer7Notify';
 
 export const SignUp = props => {
     const translate = useTranslate();
-    const classes = useStyles(props);
+    const { classes } = useStyles(props);
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [serverError, setServerError] = useState(null);
     const [signup] = useSignup();
@@ -18,7 +19,7 @@ export const SignUp = props => {
     const handleSubmit = data => {
         signup(data, {
             onSuccess: () => setShowConfirmation(true),
-            onFailure: error => {
+            onError: error => {
                 setServerError({ error });
             },
         });
@@ -81,32 +82,32 @@ export const SignUpPage = props => (
 );
 
 export const useSignup = () => {
-    const [create, state] = useCreate('registrations');
+    const [create, state] = useCreate();
     const notify = useLayer7Notify();
 
-    const signup = (data, { onSuccess, onFailure }) => {
+    const signup = (data, { onSuccess, onError }) => {
         create(
+            'registrations',
             {
-                payload: {
+                data: {
                     organizationName: '',
                     organizationDescription: '',
                     ...data,
                 },
             },
             {
-                action: CRUD_CREATE,
-                onSuccess: ({ data }) => {
+                onSuccess: () => {
                     if (onSuccess) {
                         onSuccess();
                     }
                 },
-                onFailure: error => {
+                onError: error => {
                     notify(
                         error || 'resources.registrations.notifications.error',
                         'error'
                     );
-                    if (onFailure) {
-                        onFailure(error);
+                    if (onError) {
+                        onError(error);
                     }
                 },
             }
@@ -141,7 +142,7 @@ export const SignUpConfirmation = () => {
     );
 };
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles()(theme => ({
     title: {
         fontSize: theme.typography.fontSize * 2,
         marginBottom: theme.spacing(6),

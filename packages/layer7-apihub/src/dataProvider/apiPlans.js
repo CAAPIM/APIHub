@@ -1,3 +1,4 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import { stringify } from 'query-string';
 
 const basePath = '/api-management/1.0/api-plans';
@@ -92,7 +93,7 @@ export const apiPlansDataProvider = context => {
             )}`;
 
             const { json } = await context.fetchJson(url, {
-                credentials: 'include'
+                credentials: 'include',
             });
 
             return {

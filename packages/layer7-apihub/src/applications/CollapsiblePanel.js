@@ -1,12 +1,14 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import * as React from 'react';
-import { makeStyles, withStyles } from '@material-ui/core/styles';
-import { Labeled } from 'react-admin';
-import MuiExpansionPanel from '@material-ui/core/ExpansionPanel';
-import MuiExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
-import MuiExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import { makeStyles } from 'tss-react/mui';
+import { withStyles } from 'tss-react/mui';
+import { useTranslate } from 'react-admin';
+import MuiExpansionPanel from '@mui/material/Accordion';
+import MuiExpansionPanelSummary from '@mui/material/AccordionSummary';
+import MuiExpansionPanelDetails from '@mui/material/AccordionDetails';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
-const ExpansionPanel = withStyles(theme => ({
+const Accordion = withStyles(MuiExpansionPanel, theme => ({
     root: {
         width: '100%',
         border: 'none',
@@ -23,9 +25,9 @@ const ExpansionPanel = withStyles(theme => ({
         },
     },
     expanded: {},
-}))(MuiExpansionPanel);
+}));
 
-const ExpansionPanelSummary = withStyles(theme => ({
+const AccordionSummary = withStyles(MuiExpansionPanelSummary, theme => ({
     root: {
         borderBottom: `1px solid ${theme.palette.grey[200]}`,
         marginBottom: -1,
@@ -42,69 +44,61 @@ const ExpansionPanelSummary = withStyles(theme => ({
         },
     },
     expanded: {},
-}))(MuiExpansionPanelSummary);
+}));
 
-const ExpansionPanelDetails = withStyles(theme => ({
+const AccordionDetails = withStyles(MuiExpansionPanelDetails, theme => ({
     root: {
         padding: theme.spacing(0, 0, 0),
         border: 'none',
     },
-}))(MuiExpansionPanelDetails);
+}));
 
 export default function CollapsiblePanel(props) {
-    const classes = useStyles();
-    const contentLabelClasses = useContentStyles();
+    const { classes } = useStyles();
     const { children, label, labelComponent, ...rest } = props;
+    const translate = useTranslate();
     return (
-        <ExpansionPanel {...rest}>
-            <ExpansionPanelSummary
+        <Accordion {...rest}>
+            <AccordionSummary
                 className={classes.expansionPanelSummary}
                 expandIcon={
                     <ExpandMoreIcon className={classes.expandMoreIconSummary} />
                 }
                 aria-controls="appoverviewpanel-content"
             >
-                <Labeled
-                    // On <Labeled />, this will translate in a correct `for` attribute on the label
-                    id="overview"
-                    label={label}
-                    classes={contentLabelClasses}
-                    className={classes.mainField}
-                />
+                <span className={classes.label}>
+                    {
+                        translate(label, {
+                            _: label,
+                        }) /* set default to label variable if translation fails */
+                    }
+                </span>
                 {labelComponent}
-            </ExpansionPanelSummary>
-            <ExpansionPanelDetails className={classes.expansionPanelDetails}>
+            </AccordionSummary>
+            <AccordionDetails className={classes.expansionPanelDetails}>
                 {children}
-            </ExpansionPanelDetails>
-        </ExpansionPanel>
+            </AccordionDetails>
+        </Accordion>
     );
 }
 
-const useStyles = makeStyles(
-    theme => ({
-        root: {},
-        expandMoreIconSummary: {
-            color: theme.palette.primary.main || '#333333',
+const useStyles = makeStyles({ name: 'Layer7ApiSelector' })(theme => ({
+    root: {},
+    expandMoreIconSummary: {
+        color: theme.palette.primary.main || '#333333',
+    },
+    expansionPanelSummary: {
+        padding: 0,
+        '& > div': {
+            margin: `${theme.spacing(1)} 0 !important`,
         },
-        expansionPanelSummary: {
-            padding: 0,
-            '& > div': {
-                margin: `${theme.spacing(1)}px 0 !important`,
-            },
-        },
-        expansionPanelDetails: {
-            display: 'block',
-            marginBottom: theme.spacing(1),
-            marginLeft: theme.spacing(3),
-            fontSize: '1rem',
-        },
-    }),
-    {
-        name: 'Layer7ApiSelector',
-    }
-);
-
-const useContentStyles = makeStyles(theme => ({
+    },
+    expansionPanelDetails: {
+        display: 'block',
+        marginBottom: theme.spacing(1),
+        marginLeft: theme.spacing(3),
+        fontSize: '1rem',
+    },
     label: {
         color: theme.palette.primary.main || '#333333',
         fontFamily: theme.typography.textHub,

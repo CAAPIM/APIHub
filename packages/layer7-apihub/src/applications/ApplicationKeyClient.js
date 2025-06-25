@@ -1,19 +1,19 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React from 'react';
-import { Labeled } from 'react-admin';
-import { useTranslate } from 'ra-core';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
-import IconButton from '@material-ui/core/IconButton';
-import IconFileCopy from '@material-ui/icons/FileCopy';
-import Chip from '@material-ui/core/Chip';
+import { Labeled, useTranslate } from 'react-admin';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
+import { makeStyles } from 'tss-react/mui';
+import IconButton from '@mui/material/IconButton';
+import IconFileCopy from '@mui/icons-material/FileCopy';
+import Chip from '@mui/material/Chip';
 import get from 'lodash/get';
 
 import { useCopyToClipboard } from '../ui';
 
 export const ApplicationKeyClient = props => {
-    const { labelClasses, record, data, includeSecret, isEditMode } = props;
-    const classes = useStyles(props);
+    const { labelClasses, data, includeSecret, isEditMode } = props;
+    const { classes } = useStyles(props);
     const translate = useTranslate();
     const copyToClipboard = useCopyToClipboard({
         successMessage: 'resources.applications.notifications.copy_success',
@@ -55,12 +55,12 @@ export const ApplicationKeyClient = props => {
                         <span id="apiKeyClientID">{data.apiKey}</span>
                         <IconButton
                             className={classes.buttonCopy}
-                            color="primary"
                             title={translate(
                                 'resources.applications.notifications.copy_to_clipboard'
                             )}
                             value={data.apiKey}
                             onClick={copyToClipboard}
+                            size="large"
                         >
                             <IconFileCopy className={classes.iconCopy} />
                         </IconButton>
@@ -88,12 +88,12 @@ export const ApplicationKeyClient = props => {
                             {data.keySecret && !data.keySecretHashed && (
                                 <IconButton
                                     className={classes.buttonCopy}
-                                    color="primary"
                                     title={translate(
                                         'resources.applications.notifications.copy_to_clipboard'
                                     )}
                                     value={data.keySecret}
                                     onClick={copyToClipboard}
+                                    size="large"
                                 >
                                     <IconFileCopy
                                         className={classes.iconCopy}
@@ -108,25 +108,20 @@ export const ApplicationKeyClient = props => {
     );
 };
 
-const useStyles = makeStyles(
-    theme => ({
-        field: {
-            marginLeft: theme.spacing(1),
-            marginRight: theme.spacing(1),
-            marginBottom: theme.spacing(1),
-            minWidth: '100px',
-        },
-        chip: {
-            marginLeft: theme.spacing(1),
-        },
-        fieldContent: {},
-        buttonCopy: {},
-        iconCopy: {
-            fontSize: '1rem',
-            color: theme.palette.secondary.main,
-        },
-    }),
-    {
-        name: 'Layer7ApplicationKeyClient',
-    }
-);
+const useStyles = makeStyles({ name: 'Layer7ApplicationKeyClient' })(theme => ({
+    field: {
+        marginLeft: 0,
+        marginRight: theme.spacing(1),
+        marginBottom: theme.spacing(1),
+        minWidth: '100px',
+    },
+    chip: {
+        marginLeft: theme.spacing(1),
+    },
+    fieldContent: {},
+    buttonCopy: {},
+    iconCopy: {
+        fontSize: '1rem',
+        color: theme.palette.secondary.main,
+    },
+}));

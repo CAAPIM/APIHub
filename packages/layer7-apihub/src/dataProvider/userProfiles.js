@@ -1,3 +1,4 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import { getErrorMessage } from '../useLayer7Notify';
 
 // Fake id used because we can only access the current user context

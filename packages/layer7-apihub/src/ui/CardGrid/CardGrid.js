@@ -1,11 +1,17 @@
-import React, { cloneElement, useCallback } from 'react';
-import { useHistory } from 'react-router-dom';
-import { linkToRecord } from 'ra-core';
-import MuiGrid from '@material-ui/core/Grid';
-import { makeStyles } from '@material-ui/core/styles';
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
+import React, { useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
+import {
+    useListContext,
+    useCreatePath,
+    RecordContextProvider,
+    useRecordContext,
+} from 'react-admin';
+import MuiGrid from '@mui/material/Grid';
+import { makeStyles } from 'tss-react/mui';
 
 export const LoadingCardGrid = ({ nbItems = 10, spacing = 2, ...rest }) => {
-    const classes = useStyles(rest);
+    const { classes } = useStyles(rest);
     return (
         <div className={classes.root}>
             <MuiGrid container className={classes.gridList} spacing={spacing}>
@@ -20,46 +26,40 @@ export const LoadingCardGrid = ({ nbItems = 10, spacing = 2, ...rest }) => {
 };
 
 export const LoadedCardGrid = ({
-    basePath,
     children,
-    data,
-    ids,
-    resource,
     rowClick,
     spacing = 2,
     ...rest
 }) => {
-    const classes = useStyles(rest);
+    const { classes } = useStyles(rest);
+    const { data } = useListContext();
 
     return (
         <div className={classes.root}>
             <MuiGrid className={classes.gridList} container spacing={spacing}>
-                {ids.map(id => (
-                    <CardGridItem
-                        key={id}
-                        id={id}
-                        basePath={basePath}
-                        record={data[id]}
-                        resource={resource}
-                        rowClick={rowClick}
-                    >
-                        {children}
-                    </CardGridItem>
+                {data.map(record => (
+                    <RecordContextProvider key={record.id} value={record}>
+                        <CardGridItem key={record.id} rowClick={rowClick}>
+                            {children}
+                        </CardGridItem>
+                    </RecordContextProvider>
                 ))}
             </MuiGrid>
         </div>
     );
 };
 
-export const CardGrid = ({ loaded, ...props }) =>
-    loaded ? <LoadedCardGrid {...props} /> : <LoadingCardGrid {...props} />;
+export const CardGrid = props => {
+    const { isLoading } = useListContext();
+    return isLoading ? (
+        <LoadingCardGrid {...props} />
+    ) : (
+        <LoadedCardGrid {...props} />
+    );
+};
 
 export const CardGridItem = ({
-    basePath,
     children,
-    id,
-    record,
-    resource,
     rowClick,
     xsSize = 12,
     smSize = 6,
@@ -68,7 +68,11 @@ export const CardGridItem = ({
     xlSize = 3,
     ...props
 }) => {
-    const history = useHistory();
+    const navigate = useNavigate();
+    const createPath = useCreatePath();
+    const { resource } = useListContext();
+    const record = useRecordContext();
+    const { id } = record;
 
     const handleClick = useCallback(
         async event => {
@@ -77,21 +81,33 @@ export const CardGridItem = ({
 
             const effect =
                 typeof rowClick === 'function'
-                    ? await rowClick(id, basePath, record)
+                    ? await rowClick(id, resource, record)
                     : rowClick;
             switch (effect) {
                 case 'edit':
-                    history.push(linkToRecord(basePath, id));
+                    navigate(
+                        createPath({
+                            resource,
+                            id,
+                            type: 'edit',
+                        })
+                    );
                     return;
                 case 'show':
-                    history.push(linkToRecord(basePath, id, 'show'));
+                    navigate(
+                        createPath({
+                            resource,
+                            id,
+                            type: 'show',
+                        })
+                    );
                     return;
                 default:
-                    if (effect) history.push(effect);
+                    if (effect) navigate(effect);
                     return;
             }
         },
-        [basePath, history, id, record, rowClick]
+        [rowClick, id, resource, record, navigate, createPath]
     );
 
     return (
@@ -105,37 +121,27 @@ export const CardGridItem = ({
             xl={xlSize}
             {...props}
         >
-            {cloneElement(children, {
-                basePath,
-                id,
-                record,
-                resource,
-            })}
+            {children}
         </MuiGrid>
     );
 };
 
-const useStyles = makeStyles(
-    theme => ({
-        root: {
-            margin: '-2px',
-        },
-        gridList: {
-            width: '100%',
-            marginTop: 0,
-            marginBottom: 0,
-            marginLeft: -theme.spacing(),
-            marginRight: -theme.spacing(),
-        },
-        placeholder: {
-            backgroundColor: theme.palette.grey[300],
-            height: '100%',
-        },
-    }),
-    {
-        name: 'Layer7CardGrid',
-    }
-);
+const useStyles = makeStyles({ name: 'Layer7CardGrid' })(theme => ({
+    root: {
+        margin: '-2px',
+    },
+    gridList: {
+        width: '100%',
+        marginTop: 0,
+        marginBottom: 0,
+        marginLeft: -theme.spacing(),
+        marginRight: -theme.spacing(),
+    },
+    placeholder: {
+        backgroundColor: theme.palette.grey[300],
+        height: '100%',
+    },
+}));
 
 const times = (nbChildren, fn) =>
     Array.from({ length: nbChildren }, (_, key) => fn(key));

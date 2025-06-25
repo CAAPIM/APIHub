@@ -1,6 +1,6 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import { stringify } from 'query-string';
 import { get, isEmpty } from 'lodash';
-import { HttpError } from 'react-admin';
 
 export const applicationsDataProvider = context => {
     const basePath = `${context.apiUrl}/api-management/1.0/applications`;
@@ -40,7 +40,7 @@ export const applicationsDataProvider = context => {
                 ...filter,
                 page: pagination.page - 1,
                 size: pagination.perPage,
-                ...(sort && { sort: `${sort.field},${sort.order}` }),
+                sort: `${sort.field},${sort.order}`,
             })}`;
 
             const { json } = await context.fetchJson(url, {
@@ -57,7 +57,6 @@ export const applicationsDataProvider = context => {
                 totalPages: json.totalPages,
             };
         },
-
         getOne: async ({ id }) => {
             const appURL = `${basePath}/${id}`;
             const customFieldsURL = `${appURL}/custom-fields`;
@@ -106,9 +105,12 @@ export const applicationsDataProvider = context => {
             };
         },
 
-        update: async ({ id, data, keyId, options }) => {
-            const { type = 'details' } = options;
-            let appURL = `${basePath}/${id}`;
+        update: async ({ id, data, meta }) => {
+            const {
+                keyId,
+                options: { type = 'details' },
+            } = meta;
+            let appURL;
             if (type === 'custom-fields') {
                 appURL = `${basePath}/${id}/custom-fields`;
             } else if (type === 'api-groups') {
@@ -118,7 +120,7 @@ export const applicationsDataProvider = context => {
             } else if (type === 'api-plans') {
                 appURL = `${apiPlansBasePath}/${id}/api-plans`;
             } else if (type === 'api-keys') {
-              appURL = `${basePath}/${id}/api-keys/${keyId}`;
+                appURL = `${basePath}/${id}/api-keys/${keyId}`;
             } else if (type === 'oauth-clients') {
                 appURL = `${apiPlansBasePath}/${id}/oauth/clients/${keyId}`;
             } else if (type === 'publish') {
@@ -131,7 +133,6 @@ export const applicationsDataProvider = context => {
                 method: 'PUT',
                 body: JSON.stringify(data),
             });
-            console.log('json', json);
             return {
                 data: {
                     ...json,
@@ -253,8 +254,8 @@ export const applicationsDataProvider = context => {
             };
         },
 
-        delete: async ({ id, params }) => {
-            const queryStr = isEmpty(params) ? '' : `?${stringify(params)}`;
+        delete: async ({ id, meta }) => {
+            const queryStr = isEmpty(meta) ? '' : `?${stringify(meta)}`;
             const url = `${basePath}/${id}${queryStr}`;
 
             const {

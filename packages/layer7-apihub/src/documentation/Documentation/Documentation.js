@@ -1,16 +1,16 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React, { useMemo, useCallback, useEffect } from 'react';
-import { CRUD_GET_LIST, useTranslate, useGetList, useVersion } from 'ra-core';
+import { useTranslate, useGetList } from 'react-admin';
 import { Labeled, NotFound } from 'react-admin';
-import { useDispatch, useSelector } from 'react-redux';
 import { parse, stringify } from 'query-string';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import get from 'lodash/get';
-import Divider from '@material-ui/core/Divider';
-import IconButton from '@material-ui/core/IconButton';
-import LinearProgress from '@material-ui/core/LinearProgress';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
-import IconAdd from '@material-ui/icons/Add';
+import Divider from '@mui/material/Divider';
+import IconButton from '@mui/material/IconButton';
+import LinearProgress from '@mui/material/LinearProgress';
+import Typography from '@mui/material/Typography';
+import { makeStyles } from 'tss-react/mui';
+import IconAdd from '@mui/icons-material/Add';
 
 import { useApiHubPreference, readApiHubPreference } from '../../preferences';
 import {
@@ -32,27 +32,35 @@ import {
     LocaleSwitcherMenu,
     supportedLocales,
 } from '../../i18n';
-import {
-    addNewDocument,
-    removeNewDocument,
-    getNewDocument,
-    addExpandedNodes,
-} from './documentationReducer';
 import { useExpandedNodes } from './documentationTreeHooks';
 import { useUpdateDocumentTree } from './useUpdateDocumentTree';
+import {
+    DocumentationProvider,
+    addNewDocument,
+    removeNewDocument,
+    useDocumentationContext,
+    useDocumentationDispatcherContext,
+} from './DocumentationProvider';
+import {
+    DocumentationTreeProvider,
+    addExpandedNodes,
+    useDocumentationTreeDispatcherContext,
+} from './DocumentationTreeProvider';
 
-export const Documentation = ({ entityUuid, entityType, ...rest }) => {
+export const Documentation = ({
+    entityUuid,
+    entityType,
+    userCanEdit,
+    userCanDelete,
+}) => {
     const translate = useTranslate();
-    const version = useVersion();
 
-    const [
-        documentationLocalePreference,
-        writeDocumentationLocalePreference,
-    ] = useApiHubPreference('documentationLocale');
+    const [documentationLocalePreference, writeDocumentationLocalePreference] =
+        useApiHubPreference('documentationLocale');
 
     useEffect(() => {
         const locale = readApiHubPreference('locale', defaultLocale);
-        if (documentationLocalePreference === undefined) {
+        if (documentationLocalePreference == null) {
             writeDocumentationLocalePreference(locale);
         }
     }, [documentationLocalePreference, writeDocumentationLocalePreference]);
@@ -65,50 +73,37 @@ export const Documentation = ({ entityUuid, entityType, ...rest }) => {
      * We want the list of ids to be always available for optimistic rendering,
      * and therefore we need a custom action (CRUD_GET_LIST) that will be used.
      */
-    const { ids, loaded, error, total } = useGetList(
-        'documents',
-        undefined,
-        undefined,
-        {
+    const { data, isLoading, error, isSuccess } = useGetList('documents', {
+        filter: {
             entityType,
             entityUuid,
             locale: documentationLocales[documentationLocalePreference],
         },
-        {
-            action: CRUD_GET_LIST,
-            version,
-        }
-    );
+    });
 
     // When the user changes the page/sort/filter or delete an item, this
     // controller runs the useGetList hook again. While the result of this new
     // call is loading, the ids and total are empty. To avoid rendering an
     // empty list at that moment, we override the ids and total with the latest
     // loaded ones.
-    const defaultIds = useSelector(state =>
-        get(state.admin.resources, ['documents', 'list', 'ids'], [])
-    );
+    // const defaultIds = data.map(document => document.uuid);
 
-    const idsToDisplay = typeof total === 'undefined' ? defaultIds : ids;
+    // const idsToDisplay = typeof total === 'undefined' ? defaultIds : ids;
+    // const idsToDisplay = defaultIds;
 
-    const data = useSelector(state =>
-        get(state.admin.resources, ['documents', 'data'], {})
-    );
+    // const items = useMemo(
+    //     () =>
+    //         Object.values(data).filter(
+    //             item =>
+    //                 item.locale ===
+    //                 documentationLocales[documentationLocalePreference]
+    //         )[
+    //             // .filter(item => idsToDisplay.includes(item.id)),
+    //             data, documentationLocalePreference
+    //         ]
+    // );
 
-    const items = useMemo(
-        () =>
-            Object.values(data)
-                .filter(item => {
-                    return (
-                        item.locale ===
-                        documentationLocales[documentationLocalePreference]
-                    );
-                })
-                .filter(item => idsToDisplay.includes(item.id)),
-        [data, documentationLocalePreference, idsToDisplay]
-    );
-
-    if (!loaded) {
+    if (isLoading) {
         return <LinearProgress />;
     }
 
@@ -121,14 +116,21 @@ export const Documentation = ({ entityUuid, entityType, ...rest }) => {
     }
 
     return (
-        <DocumentationContent
-            entityUuid={entityUuid}
-            entityType={entityType}
-            items={items}
-            locale={documentationLocalePreference}
-            onLocaleChange={handleDocumentationLocaleChange}
-            {...rest}
-        />
+        <DocumentationTreeProvider>
+            <DocumentationProvider>
+                {isSuccess && (
+                    <DocumentationContent
+                        entityUuid={entityUuid}
+                        entityType={entityType}
+                        items={data}
+                        locale={documentationLocalePreference}
+                        onLocaleChange={handleDocumentationLocaleChange}
+                        userCanEdit={userCanEdit}
+                        userCanDelete={userCanDelete}
+                    />
+                )}
+            </DocumentationProvider>
+        </DocumentationTreeProvider>
     );
 };
 
@@ -142,9 +144,12 @@ const DocumentationContent = ({
     userCanDelete = false,
 }) => {
     const translate = useTranslate();
-    const classes = useStyles();
-    const dispatch = useDispatch();
-    const history = useHistory();
+    const { classes } = useStyles();
+    const documentationDispatch = useDocumentationDispatcherContext();
+    const documentationTreeDispatch = useDocumentationTreeDispatcherContext();
+    const newDocument = useDocumentationContext();
+    const navigate = useNavigate();
+    const location = useLocation();
 
     const [expanded, setExpanded] = useExpandedNodes(entityUuid, locale);
     const {
@@ -185,19 +190,17 @@ const DocumentationContent = ({
         openDocumentPage(selectedDocument, 'view');
     };
 
-    const newDocument = useSelector(getNewDocument);
-
     useEffect(() => {
         if (mode === 'add') {
-            if (!history.location.state) {
-                history.goBack();
+            if (!location.state) {
+                navigate(-1);
                 return;
             }
-            dispatch(addNewDocument(history.location.state));
+            documentationDispatch(addNewDocument(location.state));
         } else if (newDocument) {
-            dispatch(removeNewDocument());
+            documentationDispatch(removeNewDocument());
         }
-    }, [dispatch, history, mode, newDocument]);
+    }, [documentationDispatch, location.state, mode, navigate, newDocument]);
 
     const handleAddNewDocument = parentDocument => {
         if (newDocument != null) {
@@ -205,7 +208,9 @@ const DocumentationContent = ({
         }
 
         if (parentDocument) {
-            dispatch(addExpandedNodes(entityUuid, locale, [parentDocument.id]));
+            documentationTreeDispatch(
+                addExpandedNodes(entityUuid, locale, [parentDocument.id])
+            );
         }
 
         const title = translate('resources.documents.fields.new_document');
@@ -261,7 +266,6 @@ const DocumentationContent = ({
                     {userCanEdit && (
                         <IconButton
                             className={classes.addRootDocumentationButton}
-                            color="primary"
                             onClick={() => handleAddNewDocument()}
                             disabled={newDocument != null}
                             aria-label={translate(
@@ -270,6 +274,7 @@ const DocumentationContent = ({
                             title={translate(
                                 'resources.documents.actions.new_document_button'
                             )}
+                            size="large"
                         >
                             <IconAdd />
                         </IconButton>
@@ -348,9 +353,10 @@ function useQuery() {
 }
 
 function useDocumentationHistory(items, entityUuid, locale) {
-    const history = useHistory();
+    const navigate = useNavigate();
+    const location = useLocation();
     const query = useQuery();
-    const dispatch = useDispatch();
+    const documentationTreeDispatch = useDocumentationTreeDispatcherContext();
 
     const selectedDocumentNavtitle = get(query, 'uri', null);
 
@@ -369,22 +375,32 @@ function useDocumentationHistory(items, entityUuid, locale) {
         );
 
         if (parents.length > 0) {
-            dispatch(addExpandedNodes(entityUuid, locale, parents));
+            documentationTreeDispatch(
+                addExpandedNodes(entityUuid, locale, parents)
+            );
         }
-    }, [dispatch, items, locale, selectedDocument, entityUuid]);
+    }, [
+        documentationTreeDispatch,
+        items,
+        locale,
+        selectedDocument,
+        entityUuid,
+    ]);
 
     const openDocumentPage = useCallback(
         (document = null, mode = 'view', state = null) => {
-            return history.push({
-                pathname: history.location.pathname,
-                search: stringify({
-                    ...(document && { uri: document.navtitle }),
-                    mode,
-                }),
-                ...(state != null && { state }),
-            });
+            return navigate(
+                {
+                    pathname: location.pathname,
+                    search: `?${stringify({
+                        ...(document && { uri: document.navtitle }),
+                        mode,
+                    })}`,
+                },
+                { state: state != null ? state : undefined }
+            );
         },
-        [history]
+        [navigate, location]
     );
 
     const openNewDocumentPage = state => {
@@ -392,9 +408,7 @@ function useDocumentationHistory(items, entityUuid, locale) {
     };
 
     const closeDocumentPage = () => {
-        return history.push({
-            pathname: history.location.pathname,
-        });
+        return navigate(location.pathname);
     };
 
     useEffect(() => {
@@ -429,51 +443,46 @@ function useDocumentationHistory(items, entityUuid, locale) {
     };
 }
 
-const useStyles = makeStyles(
-    theme => ({
-        root: {
-            display: 'flex',
-            height: '100%',
-            minHeight: '550px',
-        },
-        treeContainer: {
-            display: 'flex',
-            flexDirection: 'column',
-            marginTop: theme.spacing(1),
-            marginRight: theme.spacing(1),
-            marginBottom: theme.spacing(1),
-            padding: theme.spacing(1),
-            paddingRight: theme.spacing(2),
-            flexGrow: 0,
-            flexShrink: 0,
-            borderStyle: 'solid',
-            borderColor: theme.palette.divider,
-            borderWidth: '0px 1px 0px 0px',
-        },
-        tree: {},
-        treeToolbar: {
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-        },
-        documentation: {
-            marginTop: theme.spacing(1),
-            marginBottom: theme.spacing(1),
-            marginLeft: theme.spacing(1),
-            padding: theme.spacing(1),
-            flexGrow: 1,
-        },
-        localeButton: {
-            width: '100%',
-            justifyContent: 'space-between',
-        },
-        addRootDocumentationButton: {},
-        leftIcon: {
-            marginRight: theme.spacing(1),
-        },
-    }),
-    {
-        name: 'Layer7Documentation',
-    }
-);
+const useStyles = makeStyles({ name: 'Layer7Documentation' })(theme => ({
+    root: {
+        display: 'flex',
+        height: '100%',
+        minHeight: '550px',
+    },
+    treeContainer: {
+        display: 'flex',
+        flexDirection: 'column',
+        marginTop: theme.spacing(1),
+        marginRight: theme.spacing(1),
+        marginBottom: theme.spacing(1),
+        padding: theme.spacing(1),
+        paddingRight: theme.spacing(2),
+        flexGrow: 0,
+        flexShrink: 0,
+        borderStyle: 'solid',
+        borderColor: theme.palette.divider,
+        borderWidth: '0px 1px 0px 0px',
+    },
+    tree: {},
+    treeToolbar: {
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+    documentation: {
+        marginTop: theme.spacing(1),
+        marginBottom: theme.spacing(1),
+        marginLeft: theme.spacing(1),
+        padding: theme.spacing(1),
+        flexGrow: 1,
+    },
+    localeButton: {
+        width: '100%',
+        justifyContent: 'space-between',
+    },
+    addRootDocumentationButton: {},
+    leftIcon: {
+        marginRight: theme.spacing(1),
+    },
+}));

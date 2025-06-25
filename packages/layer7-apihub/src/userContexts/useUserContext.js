@@ -1,13 +1,13 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import {
     useRefresh,
     useRedirect,
     useGetOne,
     useUpdate,
-    useMutation,
-    CRUD_GET_ONE,
-    CRUD_UPDATE,
-} from 'ra-core';
+    useDataProvider,
+} from 'react-admin';
 import merge from 'lodash/merge';
+import { useMutation } from '@tanstack/react-query';
 
 import { useLayer7Notify } from '../useLayer7Notify';
 import { CurrentUserId } from '../dataProvider/userContexts';
@@ -16,29 +16,28 @@ export const useUserContext = redirectTo => {
     const notify = useLayer7Notify();
     const refresh = useRefresh();
     const redirect = useRedirect();
+    const dataProvider = useDataProvider();
 
     // Pass a fake id because we can only access the current user context
-    const { data: userContext } = useGetOne('userContexts', CurrentUserId, {
-        action: CRUD_GET_ONE,
+    const { data: userContext } = useGetOne('userContexts', {
+        id: CurrentUserId,
     });
 
-    const [updateProfile] = useUpdate('userContexts', CurrentUserId);
+    const [updateProfile] = useUpdate();
 
-    const [updateActiveOrganization] = useMutation({
-        type: 'updateActiveOrganization',
-        resource: 'userContexts',
+    const { mutate: updateActiveOrganization } = useMutation({
+        mutationFn: ({ id, data }) =>
+            dataProvider.updateActiveOrganization('userContexts', { id, data }),
     });
 
     const handleChangeUserProfile = newUserContext => {
         updateProfile(
+            'userContexts',
             {
-                payload: {
-                    id: CurrentUserId,
-                    data: merge(userContext, newUserContext),
-                },
+                id: CurrentUserId,
+                data: merge(userContext, newUserContext),
             },
             {
-                action: CRUD_UPDATE,
                 onSuccess: () => {
                     notify(
                         'resources.userContexts.userDetails.notifications.update_success',
@@ -49,7 +48,7 @@ export const useUserContext = redirectTo => {
                     }
                     refresh();
                 },
-                onFailure: () => {
+                onError: () => {
                     notify(
                         'resources.userContexts.userDetails.notifications.update_error',
                         'error'
@@ -62,13 +61,10 @@ export const useUserContext = redirectTo => {
     const handleChangeUserActiveOrganization = newUserContext => {
         updateActiveOrganization(
             {
-                payload: {
-                    id: CurrentUserId,
-                    data: merge(userContext, newUserContext),
-                },
+                id: CurrentUserId,
+                data: merge(userContext, newUserContext),
             },
             {
-                action: CRUD_UPDATE,
                 onSuccess: () => {
                     notify(
                         'resources.userContexts.activeOrgUuid.notifications.update_success',
@@ -81,7 +77,7 @@ export const useUserContext = redirectTo => {
                     }
                     refresh();
                 },
-                onFailure: error => {
+                onError: error => {
                     notify(
                         error ||
                             'resources.userContexts.activeOrgUuid.notifications.update_error',

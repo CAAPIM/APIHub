@@ -1,6 +1,7 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React from 'react';
-import { Typography } from '@material-ui/core';
-import { useTranslate } from 'ra-core';
+import { Typography } from '@mui/material';
+import { useTranslate } from 'react-admin';
 
 import { ResetPasswordForm } from './ResetPasswordForm';
 import { ResetPasswordConfirm } from './ResetPasswordConfirm';

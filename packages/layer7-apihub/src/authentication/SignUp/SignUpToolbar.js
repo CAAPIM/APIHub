@@ -1,9 +1,9 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React from 'react';
-import { SaveButton, Toolbar } from 'react-admin';
-import { ValidationError } from 'ra-core';
-import { makeStyles } from '@material-ui/core';
-import Typography from '@material-ui/core/Typography';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import { SaveButton, Toolbar, ValidationError } from 'react-admin';
+import { makeStyles } from 'tss-react/mui';
+import Typography from '@mui/material/Typography';
+import CircularProgress from '@mui/material/CircularProgress';
 import get from 'lodash/get';
 
 /**
@@ -16,7 +16,7 @@ import get from 'lodash/get';
  */
 export const SignUpToolbar = props => {
     const { loading = false, error = null, ...rest } = props;
-    const classes = useStyles(rest);
+    const { classes } = useStyles(rest);
 
     const { button } = props;
     const color = get(button, 'color', 'primary');
@@ -56,7 +56,7 @@ export const SignUpToolbar = props => {
     );
 };
 
-const useStyles = makeStyles(
+const useStyles = makeStyles({ name: 'Layer7SignUpToolbar' })(
     theme => ({
         toolbar: {
             display: 'flex',
@@ -69,8 +69,5 @@ const useStyles = makeStyles(
         circularProgress: {
             color: theme.palette.grey[500],
         },
-    }),
-    {
-        name: 'Layer7SignUpToolbar',
-    }
+    })
 );

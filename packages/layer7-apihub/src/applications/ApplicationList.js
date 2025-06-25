@@ -1,16 +1,15 @@
-import React, { cloneElement } from 'react';
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
+import React, { useEffect, useState } from 'react';
 import {
-    Filter,
-    sanitizeListRestProps,
     SelectInput,
     TopToolbar,
     CreateButton,
+    useTranslate,
+    FilterButton,
 } from 'react-admin';
-import { useTranslate } from 'ra-core';
-import classnames from 'classnames';
-import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import Card from '@material-ui/core/Card';
+import { makeStyles } from 'tss-react/mui';
+import Typography from '@mui/material/Typography';
+import Card from '@mui/material/Card';
 
 import { readApiHubPreference } from '../preferences';
 import {
@@ -29,36 +28,33 @@ import {
 import { useUserContext } from '../userContexts';
 import { isAdminUser } from '../userContexts';
 import { ApplicationCard } from './ApplicationCard';
-import Inbox from '@material-ui/icons/Inbox';
+import Inbox from '@mui/icons-material/Inbox';
 
 const defaultSort = { field: 'name', order: 'ASC' };
 
 const listDisplayPreferenceName = 'listDisplay/applications';
 
-const useEmptyStyles = makeStyles(
-    theme => ({
-        message: {
-            textAlign: 'center',
-            opacity: theme.palette.type === 'light' ? 0.5 : 0.8,
-            margin: '0 1em',
-            color:
-                theme.palette.type === 'light'
-                    ? 'inherit'
-                    : theme.palette.text.primary,
-        },
-        icon: {
-            width: '9em',
-            height: '9em',
-        },
-        toolbar: {
-            textAlign: 'center',
-            marginTop: '2em',
-        },
-    }),
-    { name: 'Empty' }
-);
-const Empty = ({ canCRUD, basePath, ...props }) => {
-    const classes = useEmptyStyles(props);
+const useEmptyStyles = makeStyles({ name: 'Empty' })(theme => ({
+    message: {
+        textAlign: 'center',
+        opacity: theme.palette.mode === 'light' ? 0.5 : 0.8,
+        margin: '0 1em',
+        color:
+            theme.palette.mode === 'light'
+                ? 'inherit'
+                : theme.palette.text.primary,
+    },
+    icon: {
+        width: '9em',
+        height: '9em',
+    },
+    toolbar: {
+        textAlign: 'center',
+        marginTop: '2em',
+    },
+}));
+const Empty = ({ canCRUD }) => {
+    const { classes } = useEmptyStyles();
     const translate = useTranslate();
     return (
         <>
@@ -71,7 +67,6 @@ const Empty = ({ canCRUD, basePath, ...props }) => {
             {canCRUD && (
                 <div className={classes.toolbar}>
                     <CreateButton
-                        basePath={basePath}
                         variant="contained"
                         color="primary"
                         label="resources.applications.actions.addApplication"
@@ -88,9 +83,9 @@ export const ApplicationList = props => {
         LIST_DISPLAY_CARDS
     );
     const [userContext] = useUserContext();
-    const [canCRUD, setCanCRUD] = React.useState(false);
+    const [canCRUD, setCanCRUD] = useState(false);
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (userContext && isAdminUser(userContext)) {
             setCanCRUD(true);
         }
@@ -104,14 +99,12 @@ export const ApplicationList = props => {
             <List
                 empty={<Empty canCRUD={canCRUD} />}
                 actions={<ApplicationListActions canCRUD={canCRUD} />}
-                filter={{ $select: 'Name,Uuid,ApiKey,Status,Description' }}
-                filters={<ApplicationFilter />}
+                filters={filters}
                 sort={defaultSort}
-                bulkActionButtons={false}
                 component={ApplicationListComponent}
                 {...props}
             >
-                <ApplicationListDisplay canCRUD={canCRUD} />
+                <ApplicationListDisplay />
             </List>
         </ListDisplayProvider>
     );
@@ -119,56 +112,53 @@ export const ApplicationList = props => {
 
 const ApplicationListComponent = props => <div {...props} />;
 
-const ApplicationFilter = props => {
-    return (
-        <Filter {...props}>
-            <SelectInput
-                source="status"
-                choices={[
-                    {
-                        id: 'ENABLED',
-                        name: 'resources.applications.status.enabled',
-                    },
-                    {
-                        id: 'DISABLED',
-                        name: 'resources.applications.status.disabled',
-                    },
-                    {
-                        id:
-                            'APPLICATION_PENDING_APPROVAL,EDIT_APPLICATION_PENDING_APPROVAL,DELETE_APPLICATION_PENDING_APPROVAL',
-                        name:
-                            'resources.applications.status.application_pending_approval',
-                    },
-                    {
-                        id: 'INCOMPLETE',
-                        name: 'resources.applications.status.incomplete',
-                    },
-                    {
-                        id: 'DELETE_FAILED',
-                        name: 'resources.applications.status.delete_failed',
-                    },
-                ]}
-            />
-        </Filter>
-    );
-};
+const filters = [
+    <SelectInput
+        source="status"
+        choices={[
+            {
+                id: 'ENABLED',
+                name: 'resources.applications.status.enabled',
+            },
+            {
+                id: 'DISABLED',
+                name: 'resources.applications.status.disabled',
+            },
+            {
+                id: 'APPLICATION_PENDING_APPROVAL,EDIT_APPLICATION_PENDING_APPROVAL,DELETE_APPLICATION_PENDING_APPROVAL',
+                name: 'resources.applications.status.application_pending_approval',
+            },
+            {
+                id: 'INCOMPLETE',
+                name: 'resources.applications.status.incomplete',
+            },
+            {
+                id: 'DELETE_FAILED',
+                name: 'resources.applications.status.delete_failed',
+            },
+        ]}
+    />,
+];
 
-const ApplicationListDisplay = props => {
-    const { canCRUD } = props;
+const ApplicationListDisplay = () => {
     const [display] = useListDisplay();
-    const classes = useApplicationListStyles();
+    const { classes } = useApplicationListStyles();
 
     if (display === LIST_DISPLAY_CARDS) {
         return (
-            <CardGrid {...props}>
-                <ApplicationCard canCRUD={canCRUD} />
+            <CardGrid>
+                <ApplicationCard />
             </CardGrid>
         );
     }
 
     return (
         <Card className={classes.root}>
-            <Datagrid className={classes.datagrid} rowClick="show" {...props}>
+            <Datagrid
+                className={classes.datagrid}
+                rowClick="show"
+                bulkActionButtons={false}
+            >
                 <TruncatedTextField
                     source="name"
                     cellClassName={classes.name}
@@ -187,7 +177,7 @@ const ApplicationListDisplay = props => {
     );
 };
 
-const useApplicationListStyles = makeStyles(
+const useApplicationListStyles = makeStyles({ name: 'Layer7ApplicationList' })(
     theme => ({
         root: {},
         datagrid: {},
@@ -201,13 +191,10 @@ const useApplicationListStyles = makeStyles(
                 },
             },
         },
-    }),
-    {
-        name: 'Layer7ApplicationList',
-    }
+    })
 );
 
-const useApplicationListActionsStyles = makeStyles(theme => ({
+const useApplicationListActionsStyles = makeStyles()(theme => ({
     root: {
         alignItems: 'center',
     },
@@ -220,59 +207,29 @@ const useApplicationListActionsStyles = makeStyles(theme => ({
     },
 }));
 
-const ApplicationListActions = ({
-    className,
-    currentSort,
-    displayedFilters,
-    exporter,
-    filters,
-    filterValues,
-    permanentFilter,
-    resource,
-    showFilter,
-    hasCreate,
-    basePath,
-    canCRUD,
-    ...props
-}) => {
-    const classes = useApplicationListActionsStyles();
+const ApplicationListActions = ({ className, canCRUD }) => {
+    const { classes, cx } = useApplicationListActionsStyles();
     const [display] = useListDisplay();
 
     return (
-        <TopToolbar
-            className={classnames(classes.root, className)}
-            {...sanitizeListRestProps(props)}
-        >
+        <TopToolbar className={cx(classes.root, className)}>
             {canCRUD && (
                 <CreateButton
-                    basePath={basePath}
                     variant="contained"
                     color="primary"
                     className={classes.createButton}
                     label="resources.applications.actions.addApplication"
                 />
             )}
-            {filters &&
-                cloneElement(filters, {
-                    resource,
-                    showFilter,
-                    displayedFilters,
-                    filterValues,
-                    context: 'button',
-                })}
-            {display === LIST_DISPLAY_CARDS ? (
-                <ApplicationListSortButton
-                    resource={resource}
-                    currentSort={currentSort}
-                />
-            ) : null}
+            <FilterButton />
+            {display === LIST_DISPLAY_CARDS && <ApplicationListSortButton />}
             <ListDisplayButton className={classes.button} />
         </TopToolbar>
     );
 };
 
-export const ApplicationListSortButton = props => (
-    <SortButton {...props}>
+export const ApplicationListSortButton = () => (
+    <SortButton>
         <SortMenuItem
             label="resources.applications.list.sort.name.asc"
             sort={SortByNameASC}

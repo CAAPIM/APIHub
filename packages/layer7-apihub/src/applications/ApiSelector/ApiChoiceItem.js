@@ -1,29 +1,30 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import * as React from 'react';
 import {
-    ExpansionPanel,
-    ExpansionPanelSummary,
-    ExpansionPanelDetails,
+    Accordion,
+    AccordionSummary,
+    AccordionDetails,
     Chip,
     IconButton,
     Tooltip,
     Typography,
-} from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-import AddIcon from '@material-ui/icons/Add';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import { useTranslate } from 'ra-core';
+} from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
+import AddIcon from '@mui/icons-material/Add';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { useTranslate } from 'react-admin';
 
 import { ApiStatus } from '../../apis/ApiStatus';
-import { AccessField, useListArrayInputItem } from '../../ui';
+import { useListArrayInputItem } from '../../ui';
 
 export function ApiChoiceItem(props) {
     const { record, selected, onAdd } = useListArrayInputItem();
-    const classes = useStyles(props);
+    const { classes } = useStyles(props);
     const translate = useTranslate();
 
     return (
-        <ExpansionPanel>
-            <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+        (<Accordion>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                 <Tooltip title={translate('ra.action.add')}>
                     <span>
                         <IconButton
@@ -31,7 +32,7 @@ export function ApiChoiceItem(props) {
                             className={classes.add}
                             disabled={selected || props.disabled}
                             onClick={onAdd}
-                            color="primary"
+                            size="large"
                         >
                             <AddIcon />
                         </IconButton>
@@ -43,8 +44,8 @@ export function ApiChoiceItem(props) {
                         v{record.version}
                     </Typography>
                 </div>
-            </ExpansionPanelSummary>
-            <ExpansionPanelDetails>
+            </AccordionSummary>
+            <AccordionDetails>
                 <div className={classes.details}>
                     {record.tags &&
                         record.tags.map((tag, i) => (
@@ -57,49 +58,44 @@ export function ApiChoiceItem(props) {
                         <ApiStatus record={record} variant="caption" />
                     </div>
                 </div>
-            </ExpansionPanelDetails>
-        </ExpansionPanel>
+            </AccordionDetails>
+        </Accordion>)
     );
 }
 
-const useStyles = makeStyles(
-    theme => ({
-        root: {
-            display: 'flex',
-            flexWrap: 'wrap',
-            alignItems: 'center',
-        },
-        add: {
-            marginTop: theme.spacing(-1),
-        },
-        version: {
-            color: theme.palette.text.secondary,
-            marginLeft: theme.spacing(1),
-        },
-        details: {
-            marginTop: theme.spacing(-2),
-            marginLeft: theme.spacing(6),
-            width: '100%',
-        },
-        additionalDetails: {
-            display: 'flex',
-            justifyContent: 'space-between',
-            marginTop: theme.spacing(2),
-        },
-        description: {
-            marginTop: theme.spacing(0),
-            fontSize: theme.typography.pxToRem(14),
-        },
-        tag: {
-            marginRight: theme.spacing(1),
-            height: theme.spacing(3),
-        },
-        status: {
-            marginTop: theme.spacing(0),
-            fontSize: theme.typography.pxToRem(14),
-        },
-    }),
-    {
-        name: 'Layer7ApiChoiceItem',
-    }
-);
+const useStyles = makeStyles({ name: 'Layer7ApiChoiceItem' })(theme => ({
+    root: {
+        display: 'flex',
+        flexWrap: 'wrap',
+        alignItems: 'center',
+    },
+    add: {
+        marginTop: theme.spacing(-1),
+    },
+    version: {
+        color: theme.palette.text.secondary,
+        marginLeft: theme.spacing(1),
+    },
+    details: {
+        marginTop: theme.spacing(-2),
+        marginLeft: theme.spacing(6),
+        width: '100%',
+    },
+    additionalDetails: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        marginTop: theme.spacing(2),
+    },
+    description: {
+        marginTop: theme.spacing(0),
+        fontSize: theme.typography.pxToRem(14),
+    },
+    tag: {
+        marginRight: theme.spacing(1),
+        height: theme.spacing(3),
+    },
+    status: {
+        marginTop: theme.spacing(0),
+        fontSize: theme.typography.pxToRem(14),
+    },
+}));

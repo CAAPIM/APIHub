@@ -1,18 +1,18 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React, { cloneElement } from 'react';
-import classNames from 'classnames';
-import { makeStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
-import Tooltip from '@material-ui/core/Tooltip';
-import Typography from '@material-ui/core/Typography';
+import { makeStyles } from 'tss-react/mui';
+import Grid from '@mui/material/Grid';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
 
 export const Stats = ({ children, icon, title, ...rest }) => {
-    const classes = useStyles(rest);
+    const { classes, cx } = useStyles();
 
     return (
         <Tooltip title={title}>
             <Grid container alignItems="center" className={classes.root}>
                 {cloneElement(icon, {
-                    className: classNames(classes.icon, icon.className),
+                    className: cx(classes.icon, icon.className),
                 })}
                 {children}
             </Grid>
@@ -33,7 +33,7 @@ export const StatsText = ({ children, ...rest }) => {
     );
 };
 
-const useStyles = makeStyles(
+const useStyles = makeStyles({ name: 'Layer7Stats' })(
     theme => ({
         root: {
             marginRight: theme.spacing(2),
@@ -43,8 +43,5 @@ const useStyles = makeStyles(
             marginRight: theme.spacing(),
         },
         text: {},
-    }),
-    {
-        name: 'Layer7Stats',
-    }
+    })
 );

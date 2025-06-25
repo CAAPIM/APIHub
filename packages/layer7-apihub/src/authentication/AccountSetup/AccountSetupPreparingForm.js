@@ -1,10 +1,13 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React from 'react';
-import { useTranslate } from 'ra-core';
-import { Typography, LinearProgress, makeStyles } from '@material-ui/core';
+import { useTranslate } from 'react-admin';
+import { Typography, LinearProgress } from '@mui/material';
+
+import { makeStyles } from 'tss-react/mui';
 
 export const AccountSetupPreparingForm = props => {
     const translate = useTranslate();
-    const classes = useStyles(props);
+    const { classes } = useStyles(props);
 
     return (
         <div className={classes.root}>
@@ -16,14 +19,11 @@ export const AccountSetupPreparingForm = props => {
     );
 };
 
-const useStyles = makeStyles(
+const useStyles = makeStyles({ name: 'Layer7AccountSetupPreparingForm' })(
     theme => ({
         root: {},
         title: {
             color: theme.palette.text.primary,
         },
-    }),
-    {
-        name: 'Layer7AccountSetupPreparingForm',
-    }
+    })
 );

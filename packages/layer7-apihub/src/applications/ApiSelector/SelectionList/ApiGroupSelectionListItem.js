@@ -1,28 +1,25 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import * as React from 'react';
 import {
     Chip,
-    ExpansionPanel,
-    ExpansionPanelSummary,
-    ExpansionPanelDetails,
-    ListItem,
-    ListItemSecondaryAction,
+    Accordion,
+    AccordionSummary,
+    AccordionDetails,
     IconButton,
     Tooltip,
     Typography,
-} from '@material-ui/core';
-import { makeStyles } from '@material-ui/core';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import DeleteIcon from '@material-ui/icons/Delete';
-import { useTranslate } from 'ra-core';
+} from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { useTranslate } from 'react-admin';
 
-import { ApiSelectedItem } from './ApiSelectedItem';
-import { ApiGroupSelectedItem } from './ApiGroupSelectedItem';
 import { ApiStatus } from '../../../apis/ApiStatus';
 
 export function ApiGroupSelectionListItem(props) {
     const { className, onRemoved, item, disabled } = props;
     const translate = useTranslate();
-    const classes = useStyles(props);
+    const { classes } = useStyles(props);
 
     const handleItemRemoved = event => {
         if (onRemoved) {
@@ -31,8 +28,8 @@ export function ApiGroupSelectionListItem(props) {
     };
 
     return (
-        <ExpansionPanel className={className}>
-            <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+        (<Accordion className={className}>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                 <Tooltip
                     title={translate('ra.action.delete')}
                     className={classes.delete}
@@ -42,7 +39,7 @@ export function ApiGroupSelectionListItem(props) {
                         onClick={handleItemRemoved}
                         edge="end"
                         aria-label={translate('ra.action.delete')}
-                    >
+                        size="large">
                         <DeleteIcon />
                     </IconButton>
                 </Tooltip>
@@ -58,8 +55,8 @@ export function ApiGroupSelectionListItem(props) {
                         ({item.record.apis.length})
                     </Typography>
                 </div>
-            </ExpansionPanelSummary>
-            <ExpansionPanelDetails>
+            </AccordionSummary>
+            <AccordionDetails>
                 <div className={classes.details}>
                     <div className={classes.list}>
                         {item.record.apis.map(api => (
@@ -70,12 +67,12 @@ export function ApiGroupSelectionListItem(props) {
                         ))}
                     </div>
                 </div>
-            </ExpansionPanelDetails>
-        </ExpansionPanel>
+            </AccordionDetails>
+        </Accordion>)
     );
 }
 
-const useStyles = makeStyles(
+const useStyles = makeStyles({ name: 'Layer7SelectedItem' })(
     theme => ({
         root: {
             display: 'flex',
@@ -113,8 +110,5 @@ const useStyles = makeStyles(
             textAlign: 'left',
             marginTop: theme.spacing(1),
         },
-    }),
-    {
-        name: 'Layer7SelectedItem',
-    }
+    })
 );

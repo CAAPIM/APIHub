@@ -1,4 +1,4 @@
-// Copyright © 2024 Broadcom Inc. and its subsidiaries. All Rights Reserved.
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import { get } from 'lodash';
 
 export const hasCRUDPermissions = (user, types, param) => {

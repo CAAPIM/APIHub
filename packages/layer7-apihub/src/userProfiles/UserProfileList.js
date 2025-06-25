@@ -1,6 +1,7 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React, { useEffect } from 'react';
 import { useRedirect } from 'react-admin';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import CircularProgress from '@mui/material/CircularProgress';
 
 import { CurrentUserId } from '../dataProvider/userProfiles';
 

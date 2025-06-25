@@ -1,3 +1,4 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import { login } from '../support/login';
 import defaultData from '../../packages/layer7-apihub-mock/src/defaultData.json';
 

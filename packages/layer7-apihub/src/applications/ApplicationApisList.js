@@ -1,63 +1,53 @@
-import React, { useState } from 'react';
-import { useQuery } from 'react-admin';
-import { useTranslate, linkToRecord, useDataProvider } from 'ra-core';
-import { makeStyles, withStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import Link from '@material-ui/core/Link';
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
+import React, { useState, useEffect } from 'react';
+import { useQuery, useMutation } from '@tanstack/react-query';
+import { useTranslate, useDataProvider, useCreatePath } from 'react-admin';
+import { makeStyles } from 'tss-react/mui';
+import { withStyles } from 'tss-react/mui';
+import Typography from '@mui/material/Typography';
+import Link from '@mui/material/Link';
 import { Link as RouterLink } from 'react-router-dom';
 import uniq from 'lodash/uniq';
 import flatMap from 'lodash/flatMap';
 import union from 'lodash/union';
 import map from 'lodash/map';
 
-import MuiExpansionPanel from '@material-ui/core/ExpansionPanel';
-import MuiExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
-import MuiExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import MuiExpansionPanel from '@mui/material/Accordion';
+import MuiExpansionPanelSummary from '@mui/material/AccordionSummary';
+import MuiExpansionPanelDetails from '@mui/material/AccordionDetails';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { ApiStatus } from '../apis/ApiStatus';
 import { useLayer7Notify } from '../useLayer7Notify';
 
 export const ApplicationApisList = ({ apiIds, apiGroupIds, application }) => {
-    const apis = apiIds;
-
-    const classes = useStyles();
+    const { classes } = useStyles();
     const translate = useTranslate();
     const dataProvider = useDataProvider();
     const notify = useLayer7Notify();
-    const [apiPlansEnabled, setApiPlansEnabled] = useState(false);
     const [selectedApiGroups, setSelectedApiGroups] = useState([]);
     const [appApis, setAppApis] = useState([]);
-
-    const { data: allApis = [] } = useQuery({
-        type: 'getApis',
-        resource: 'apis',
+    const { mutateAsync } = useMutation({
+        mutationFn: ({ pagination, filter }) =>
+            dataProvider.getList('apiGroups', {
+                pagination,
+                filter,
+            }),
+    });
+    const createPath = useCreatePath();
+    const { data: allApis, isSuccess: fetchApisIsSuccess } = useQuery({
+        queryKey: ['apis', 'getApis'],
+        queryFn: () => dataProvider.getApis('apis'),
+        retry: false,
     });
 
-    const {
-        data: apiPlanFeatureFlag,
-        error,
-        loading: isLoadingApiPlansFeatureFlag,
-    } = useQuery({
-        type: 'getApiPlansFeatureFlag',
-        resource: 'apiPlans',
-        payload: {},
-    });
-
-    React.useEffect(() => {
-        if (apiPlanFeatureFlag) {
-            setApiPlansEnabled(apiPlanFeatureFlag.value === 'true');
-        }
-    }, [apiPlanFeatureFlag]);
-
-    React.useEffect(() => {
+    useEffect(() => {
         async function fetchInitialSelectedItems() {
             if (
                 apiGroupIds &&
                 apiGroupIds.length &&
                 !selectedApiGroups.length
             ) {
-                const { data: apiGroups } = await dataProvider.getList(
-                    'apiGroups',
+                const { data } = await mutateAsync(
                     {
                         filter: {
                             orgUuid: application.organizationUuid,
@@ -66,30 +56,33 @@ export const ApplicationApisList = ({ apiIds, apiGroupIds, application }) => {
                         pagination: { page: 1, perPage: 100 },
                     },
                     {
-                        onFailure: error => notify(error),
+                        onError: error => notify(error),
                     }
                 );
-                const appApiGroups = apiGroups.filter(apiGroup =>
+
+                const appApiGroups = data.filter(apiGroup =>
                     apiGroupIds.find(id => apiGroup.id === id)
                 );
                 setSelectedApiGroups(appApiGroups);
             }
         }
-        if (apis && allApis && allApis.length) {
+        if (apiIds && fetchApisIsSuccess && allApis.data.length) {
             fetchInitialSelectedItems();
             const apiGroupsList = getAppApiGroupsApisList(selectedApiGroups);
-            const allSelectedApis = union(apis, apiGroupsList);
+            const allSelectedApis = union(apiIds, apiGroupsList);
 
-            const listedApis = apis ? getAppApis(allApis, allSelectedApis) : [];
+            const listedApis = apiIds
+                ? getAppApis(allApis.data, allSelectedApis)
+                : [];
             if (listedApis && listedApis.length > 0) {
                 setAppApis(listedApis);
             }
         }
-    }, [apis, allApis, selectedApiGroups]);
+    }, [allApis, selectedApiGroups]);
 
     return (
-        <ExpansionPanel square defaultExpanded>
-            <ExpansionPanelSummary
+        <Accordion square defaultExpanded>
+            <AccordionSummary
                 className={classes.expansionPanelSummary}
                 expandIcon={
                     <ExpandMoreIcon className={classes.expandMoreIconSummary} />
@@ -101,8 +94,8 @@ export const ApplicationApisList = ({ apiIds, apiGroupIds, application }) => {
                     {translate('resources.applications.fields.apis')} (
                     {appApis.length})
                 </Typography>
-            </ExpansionPanelSummary>
-            <ExpansionPanelDetails>
+            </AccordionSummary>
+            <AccordionDetails>
                 <div className={classes.details}>
                     {appApis &&
                         appApis.map(row => (
@@ -113,11 +106,11 @@ export const ApplicationApisList = ({ apiIds, apiGroupIds, application }) => {
                                 <div className={classes.title}>
                                     <Link
                                         component={RouterLink}
-                                        to={linkToRecord(
-                                            '/apis',
-                                            row && row.id,
-                                            'show'
-                                        )}
+                                        to={createPath({
+                                            resource: 'apis',
+                                            id: row.id,
+                                            type: 'show',
+                                        })}
                                     >
                                         {row.name} v{row.version}
                                     </Link>
@@ -129,8 +122,8 @@ export const ApplicationApisList = ({ apiIds, apiGroupIds, application }) => {
                             </div>
                         ))}
                 </div>
-            </ExpansionPanelDetails>
-        </ExpansionPanel>
+            </AccordionDetails>
+        </Accordion>
     );
 };
 
@@ -140,7 +133,7 @@ const getAppApis = (allApis, selectedApis) =>
 const getAppApiGroupsApisList = list =>
     uniq(flatMap(list, ({ apis }) => map(apis, api => api.uuid)));
 
-const ExpansionPanel = withStyles(theme => ({
+const Accordion = withStyles(MuiExpansionPanel, theme => ({
     root: {
         width: '100%',
         border: 'none',
@@ -157,9 +150,9 @@ const ExpansionPanel = withStyles(theme => ({
         },
     },
     expanded: {},
-}))(MuiExpansionPanel);
+}));
 
-const ExpansionPanelSummary = withStyles(theme => ({
+const AccordionSummary = withStyles(MuiExpansionPanelSummary, theme => ({
     root: {
         borderBottom: `1px solid ${theme.palette.grey[200]}`,
         marginBottom: -1,
@@ -175,68 +168,64 @@ const ExpansionPanelSummary = withStyles(theme => ({
         },
     },
     expanded: {},
-}))(MuiExpansionPanelSummary);
+}));
 
-const ExpansionPanelDetails = withStyles(theme => ({
+const AccordionDetails = withStyles(MuiExpansionPanelDetails, theme => ({
     root: {
         padding: theme.spacing(0, 0, 0),
         border: 'none',
     },
-}))(MuiExpansionPanelDetails);
+}));
 
-const useStyles = makeStyles(
-    theme => ({
-        root: {
-            width: '100%',
+const useStyles = makeStyles({ name: 'Layer7ApplicationApisList' })(theme => ({
+    root: {
+        width: '100%',
+    },
+    table: {
+        minWidth: '100%',
+    },
+    container: {
+        maxHeight: '100%',
+    },
+    expandMoreIconSummary: {
+        color: theme.palette.primary.main || '#333333',
+    },
+    expansionPanelSummary: {
+        '& > div': {
+            margin: `${theme.spacing(1)} 0 !important`,
         },
-        table: {
-            minWidth: '100%',
-        },
-        container: {
-            maxHeight: '100%',
-        },
-        expandMoreIconSummary: {
-            color: theme.palette.primary.main || '#333333',
-        },
-        expansionPanelSummary: {
-            '& > div': {
-                margin: `${theme.spacing(1)}px 0 !important`,
-            },
-        },
-        heading: {
-            color: theme.palette.primary.main || '#333333',
-            fontFamily: theme.typography.textHub,
-            fontWeight: theme.typography.fontWeightBold,
-            fontSize: '21px',
-            lineHeight: '22px',
-            margin: theme.spacing(1, 0, 1, 0),
-            transform: 'unset',
-            textTransform: 'titlecase',
-        },
-        title: {
-            width: '100%',
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-        },
-        details: {
-            marginBottom: theme.spacing(1),
-            marginLeft: theme.spacing(3),
-            width: '100%',
-            fontSize: '1rem',
-        },
-        additionalDetails: {
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'space-between',
-            marginTop: theme.spacing(2),
-        },
-        description: {
-            marginTop: theme.spacing(0),
-            fontSize: theme.typography.pxToRem(14),
-        },
-    }),
-    {
-        name: 'Layer7ApplicationApisList',
-    }
-);
+    },
+    heading: {
+        color: theme.palette.primary.main || '#333333',
+        fontFamily: theme.typography.textHub,
+        fontWeight: theme.typography.fontWeightBold,
+        fontSize: '21px',
+        lineHeight: '22px',
+        margin: theme.spacing(1, 0, 1, 0),
+        transform: 'unset',
+        textTransform: 'titlecase',
+    },
+    title: {
+        width: '100%',
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+    },
+    details: {
+        marginBottom: theme.spacing(1),
+        marginLeft: theme.spacing(3),
+        width: '100%',
+        fontSize: '1rem',
+    },
+    additionalDetails: {
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        marginTop: theme.spacing(2),
+        marginRight: theme.spacing(10),
+    },
+    description: {
+        marginTop: theme.spacing(0),
+        fontSize: theme.typography.pxToRem(14),
+    },
+}));

@@ -1,3 +1,4 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React from 'react';
 
 export const WarningIcon = props => {
@@ -9,7 +10,9 @@ export const WarningIcon = props => {
             height="21"
             {...props}
         >
-            <path fill-rule="evenodd" clip-rule="evenodd"
+            <path
+                fill-rule="evenodd"
+                clip-rule="evenodd"
                 d="M20.435 12.6168L12.6168 20.435C11.7353 21.3165 10.3061 21.3165 9.4246 20.435L1.60645 12.6168C0.724932 11.7353 0.724932 10.3061 1.60645 9.42457L9.4246 1.60645C10.3061 0.724935 11.7353 0.724935 12.6168 1.60645L20.435 9.42457C21.3165 10.3061 21.3165 11.7353 20.435 12.6168ZM12.25 15.7431C12.25 15.0527 11.6904 14.4931 11 14.4931C10.3096 14.4931 9.75 15.0527 9.75 15.7431C9.75 16.4334 10.3096 16.9931 11 16.9931C11.6904 16.9931 12.25 16.4334 12.25 15.7431ZM12.12 12.1672V5.49988H9.87V12.1672H12.12Z"
                 fill="#E47226"
             />

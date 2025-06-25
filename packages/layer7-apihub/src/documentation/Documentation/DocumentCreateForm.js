@@ -1,3 +1,4 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React, { useMemo } from 'react';
 import {
     SimpleForm,
@@ -6,10 +7,9 @@ import {
     useCreate,
     useRefresh,
     required,
-    CRUD_CREATE,
 } from 'react-admin';
-import { makeStyles } from '@material-ui/core';
-import { useForm } from 'react-final-form';
+import { makeStyles } from 'tss-react/mui';
+import { useFormContext } from 'react-hook-form';
 import slugify from 'slugify';
 
 import { useLayer7Notify } from '../../useLayer7Notify';
@@ -28,7 +28,7 @@ export const DocumentCreateForm = ({
     const notify = useLayer7Notify();
     const refresh = useRefresh();
 
-    const [create, { loading, error }] = useCreate('documents');
+    const [create, { isLoading, error }] = useCreate();
 
     const handleSave = newDocument => {
         const documentId = buildDocumentId(
@@ -39,17 +39,20 @@ export const DocumentCreateForm = ({
         );
 
         create(
+            'documents',
             {
-                payload: { data: { ...newDocument, id: documentId } },
+                data: {
+                    ...newDocument,
+                    id: documentId,
+                },
             },
             {
-                action: CRUD_CREATE,
                 onSuccess: ({ data }) => {
                     notify('resources.documents.notifications.create_success');
                     refresh();
                     onSaved(data);
                 },
-                onFailure: error => {
+                onError: error => {
                     notify(
                         error ||
                             'resources.documents.notifications.create_error',
@@ -63,7 +66,7 @@ export const DocumentCreateForm = ({
     return (
         <DocumentForm
             document={document}
-            loading={loading}
+            isLoading={isLoading}
             error={error}
             allDocuments={allDocuments}
             onSave={handleSave}
@@ -74,14 +77,14 @@ export const DocumentCreateForm = ({
 
 export const DocumentForm = ({
     document = {},
-    loading = false,
+    isLoading = false,
     error = null,
     allDocuments = [],
     onSave = () => {},
     onCancel = () => {},
     ...rest
 }) => {
-    const classes = useStyles(rest);
+    const { classes } = useStyles(rest);
 
     const navtitles = useMemo(
         () => Object.values(allDocuments).map(item => item.navtitle),
@@ -90,35 +93,34 @@ export const DocumentForm = ({
 
     return (
         <SimpleForm
+            sanitizeEmptyValues={true}
             resource="documents"
             record={document}
             toolbar={
                 <DocumentFormToolbar
-                    loading={loading}
+                    isLoading={isLoading}
                     error={error}
                     onCancel={onCancel}
                 />
             }
-            save={onSave}
+            onSubmit={onSave}
         >
             <FormDataConsumer>
                 {() => {
                     // eslint-disable-next-line
-                    const form = useForm();
+                    const { getFieldState, setValue} = useFormContext();
                     return (
-                        <>
+                        <div className={classes.titleContainer}>
                             <TextInput
                                 resource="documents"
                                 source="title"
                                 className={classes.title}
                                 onChange={event => {
-                                    const navtitleFieldState = form.getFieldState(
-                                        'navtitle'
-                                    );
-
+                                    const navtitleFieldState =
+                                        getFieldState('navtitle');
                                     if (
-                                        navtitleFieldState.modified &&
-                                        navtitleFieldState.touched
+                                        navtitleFieldState.isDirty &&
+                                        navtitleFieldState.isTouched
                                     ) {
                                         return;
                                     }
@@ -127,7 +129,7 @@ export const DocumentForm = ({
                                         event.target.value
                                     );
 
-                                    form.change('navtitle', newNavtitle);
+                                    setValue('navtitle', newNavtitle);
                                 }}
                                 validate={required()}
                             />
@@ -141,7 +143,7 @@ export const DocumentForm = ({
                                     checkSpecialCharacters(),
                                 ]}
                             />
-                        </>
+                        </div>
                     );
                 }}
             </FormDataConsumer>
@@ -156,25 +158,22 @@ export const DocumentForm = ({
     );
 };
 
-const useStyles = makeStyles(
-    theme => ({
-        title: {
-            display: 'inline-block',
-            width: '256px',
-        },
-        navtitle: {
-            display: 'inline-block',
-            marginLeft: theme.spacing(4),
-            width: '256px',
-        },
-        markdown: {
-            width: '100%',
-        },
-    }),
-    {
-        name: 'Layer7DocumentCreateForm',
-    }
-);
+const useStyles = makeStyles({ name: 'Layer7DocumentCreateForm' })(theme => ({
+    titleContainer: {
+        flexDirection: 'row',
+        display: 'flex',
+    },
+    title: {
+        width: '256px',
+        marginRight: '10px',
+    },
+    navtitle: {
+        width: '256px',
+    },
+    markdown: {
+        width: '100%',
+    },
+}));
 
 const URI_ALLOWED_STRING = /^[a-zA-Z0-9_-]*$/;
 const URI_NOT_ALLOWED_CHARACTERS = /[^a-zA-Z0-9_-\s]/g;

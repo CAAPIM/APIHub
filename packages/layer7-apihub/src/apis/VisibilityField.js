@@ -1,9 +1,15 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React from 'react';
-import { useTranslate } from 'ra-core';
+import { useTranslate } from 'react-admin';
 import get from 'lodash/get';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
+import { useRecordContext } from 'react-admin';
 
-export const VisibilityField = ({ basePath, record, source, ...props }) => {
+export const VisibilityField = ({ basePath, source, ...props }) => {
+    let record = useRecordContext();
+    if (props.record != null) {
+        record = props.record;
+    }
     const value = get(record, source);
     const translate = useTranslate();
 

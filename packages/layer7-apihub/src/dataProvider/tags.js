@@ -1,3 +1,4 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 export const tagsDataProvider = context => {
     const basePath = `${context.apiUrl}/tags`;
     const basePathApi = `${context.apiUrl}/api-management/1.0/apis`;

@@ -1,4 +1,4 @@
-// Copyright © 2024 Broadcom Inc. and its subsidiaries. All Rights Reserved.
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import { mergeTranslations } from 'react-admin';
 import raMessages from 'ra-language-english';
 
@@ -24,7 +24,7 @@ const apiHubMessages = {
             ...raMessages.navigation,
             page_rows_per_page: 'Items per page:',
             next: 'Next',
-            prev: 'Prev',
+            previous: 'Prev',
         },
         auth: {
             logout: 'Logout',
@@ -380,7 +380,8 @@ const apiHubMessages = {
                 authMethodNone: 'None',
                 authMethodSecret: 'Client ID & Secret',
                 notAvailableAuthMethod: 'Not Available',
-                deferredClientId: 'Client ID will be available after registration.',
+                deferredClientId:
+                    'Client ID will be available after registration.',
                 clientMetadata: 'Client Metadata',
                 clientDefinitionName: 'Client Definition Name',
                 clientDefinitionDescription: 'Description',
@@ -491,9 +492,11 @@ const apiHubMessages = {
                 empty_overview: 'No value',
                 create_success: 'Application successfully created.',
                 key_create_request_success: 'API Key create request submitted.',
-                oauth_client_create_request_success: 'OAuth Client create request submitted.',
+                oauth_client_create_request_success:
+                    'OAuth Client create request submitted.',
                 key_create_success: 'API Key created successfully.',
-                oauth_client_create_success: 'OAuth Client created successfully.',
+                oauth_client_create_success:
+                    'OAuth Client created successfully.',
                 create_error:
                     'An error occurred while creating the application.',
                 edit_request_success: 'Application update request submitted.',
@@ -548,11 +551,14 @@ const apiHubMessages = {
             proxy_check_alert_oauth_client:
                 'Unable to connect to all key stores where the OAuth-Client has been deployed. This will likely result with an incomplete deletion, where this oauth-client will remain on some key stores. It will have to be removed from the key store directly. There will be an option to force delete the OAuth-Client record from portal.',
             replace_client_metadata_title: 'Modified Client Metadata',
-            replace_client_metadata_content: 'Your changes to the client metadata will be lost with this action. Are you sure you want to continue?',
+            replace_client_metadata_content:
+                'Your changes to the client metadata will be lost with this action. Are you sure you want to continue?',
             client_metadata_accordion_title: 'Client Metadata',
             reg_pending_title: 'Registration Pending',
-            reg_pending_wf_content: 'OAuth client will be in Pending Registration state, once OAuth Client Request is approved. It can be submitted to auth provider for creation.',
-            reg_pending_incomplete_content: 'OAuth client is in Pending Registration state. It can be submitted to auth provider for creation, once the Application is published.',
+            reg_pending_wf_content:
+                'OAuth client will be in Pending Registration state, once OAuth Client Request is approved. It can be submitted to auth provider for creation.',
+            reg_pending_incomplete_content:
+                'OAuth client is in Pending Registration state. It can be submitted to auth provider for creation, once the Application is published.',
             actions: {
                 addKey: 'Add Key',
                 complete_registration: 'Register Key',
@@ -561,8 +567,9 @@ const apiHubMessages = {
                 deleting_title: 'Deleting API-Key',
                 deleting_title_oauth_client: 'Deleting OAuth-Client',
                 force_delete: 'Force Delete',
-                reload_client_definition: "Reload Metadata",
-                replace_client_metadata_dialog_submit: 'Replace Client Metadata',
+                reload_client_definition: 'Reload Metadata',
+                replace_client_metadata_dialog_submit:
+                    'Replace Client Metadata',
                 cancel: 'Cancel',
                 delete: 'Delete',
                 close: 'Close',

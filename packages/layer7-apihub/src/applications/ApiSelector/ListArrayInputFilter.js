@@ -1,16 +1,19 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import * as React from 'react';
-import { SearchInput } from 'react-admin';
-import { useTranslate } from 'ra-core';
+import { SearchInput, useChoicesContext, useTranslate } from 'react-admin';
+import { makeStyles } from 'tss-react/mui';
 
-export function ListArrayInputFilter(props) {
-    const { filter, setFilter } = props;
+export function ListArrayInputFilter() {
     const translate = useTranslate();
+    const { setFilters } = useChoicesContext();
+    const { classes } = useStyles();
 
     return (
         <>
             <SearchInput
+                className={classes.inputFilter}
                 source="q"
-                onChange={event => setFilter(event?.target?.value || '')}
+                onChange={event => setFilters({ q: event?.target?.value })}
                 placeholder={translate(
                     'resources.applications.actions.searchByApiTitle'
                 )}
@@ -18,3 +21,9 @@ export function ListArrayInputFilter(props) {
         </>
     );
 }
+
+const useStyles = makeStyles({ name: 'Layer7ApiInput' })(theme => ({
+    inputFilter: {
+        marginTop: theme.spacing(1),
+    },
+}));

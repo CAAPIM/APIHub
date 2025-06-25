@@ -1,3 +1,4 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import { getErrorMessage, useLayer7Notify } from './useLayer7Notify';
 
 describe('useLayer7Notify', () => {

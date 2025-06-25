@@ -1,4 +1,5 @@
-import { fetchUtils } from 'ra-core';
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
+import { fetchUtils } from 'react-admin';
 
 export function getFetchJson(originHubName) {
     return (url, options = {}) => {

@@ -1,9 +1,10 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React from 'react';
-import { Typography } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core';
+import { Typography } from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
 
 export const Footer = () => {
-    const classes = useStyles();
+    const { classes } = useStyles();
     const showCopyright = localStorage.getItem('SHOW_COPYRIGHT');
     return (
         <div className={classes.root}>
@@ -20,7 +21,7 @@ export const Footer = () => {
     );
 };
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles()(theme => ({
     root: {
         padding: theme.spacing(4),
     },

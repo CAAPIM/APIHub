@@ -1,5 +1,6 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from 'tss-react/mui';
 import { Notification } from 'react-admin';
 import { Header, Footer } from '../ui';
 import { SideContent } from './SideContent';
@@ -7,7 +8,7 @@ import { SideContent } from './SideContent';
 // This component exists for theming only. Indeed, we must call the useStyles hook AFTER
 // the ThemeProvider has been initialized with the specified theme
 export const ThemedAuthenticationLayout = ({ children }) => {
-    const classes = useStyles();
+    const { classes } = useStyles();
 
     return (
         <div className={classes.root}>
@@ -24,7 +25,7 @@ export const ThemedAuthenticationLayout = ({ children }) => {
     );
 };
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles()(theme => ({
     root: {
         backgroundColor: theme.palette.background.default,
         position: 'fixed',
@@ -46,13 +47,13 @@ const useStyles = makeStyles(theme => ({
         display: 'flex',
         flexDirection: 'column',
         padding: theme.spacing(4),
-        [theme.breakpoints.down('sm')]: {
+        [theme.breakpoints.down('md')]: {
             padding: theme.spacing(3),
         },
         '&:first-child': {
             minWidth: '250px',
             maxWidth: '30%',
-            [theme.breakpoints.down('sm')]: {
+            [theme.breakpoints.down('md')]: {
                 maxWidth: '100%',
                 width: '100%',
             },
@@ -62,8 +63,8 @@ const useStyles = makeStyles(theme => ({
             borderColor: theme.palette.divider,
             borderWidth: '0px 0px 0px 1px',
             marginLeft: theme.spacing(4),
-            maxWidth: `calc(50% - ${theme.spacing(4)}px)`,
-            [theme.breakpoints.down('sm')]: {
+            maxWidth: `calc(50% - ${theme.spacing(4)})`,
+            [theme.breakpoints.down('md')]: {
                 borderWidth: '1px 0px 0px 0px',
                 marginLeft: '0px',
                 maxWidth: '100%',

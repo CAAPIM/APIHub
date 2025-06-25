@@ -1,5 +1,7 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React, { useEffect, useState } from 'react';
-import { makeStyles, Typography } from '@material-ui/core';
+import { Typography } from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
 import { useTranslate, useCheckAuth, useRedirect } from 'react-admin';
 
 import { useClearNotifications } from '../../ui';
@@ -14,7 +16,7 @@ import { WarningIcon } from './Icons';
  * Redirects to the main application page if the user is already logged in.
  */
 export const Login = props => {
-    const classes = useStyles(props);
+    const { classes } = useStyles(props);
     const translate = useTranslate();
 
     const clearNotifications = useClearNotifications();
@@ -23,7 +25,10 @@ export const Login = props => {
         clearNotifications();
     }, [clearNotifications]);
 
-    const { signUpEnabled, localLoginsDisabled } = useAuthenticationConfiguration();
+    const {
+        signUpEnabled,
+        localLoginsDisabled,
+    } = useAuthenticationConfiguration();
 
     const checkAuth = useCheckAuth();
     const redirect = useRedirect();
@@ -38,20 +43,27 @@ export const Login = props => {
                 // Not authenticated, stay on the login page
             });
     }, [checkAuth, redirect]);
-    const [ isShowingMultiSessionPrompt, setIsShowingMultiSessionPrompt ] = useState(false);
+    const [
+        isShowingMultiSessionPrompt,
+        setIsShowingMultiSessionPrompt,
+    ] = useState(false);
 
     return (
         <>
-            {!isShowingMultiSessionPrompt && <Typography
-                variant="h2"
-                color="textPrimary"
-                className={classes.title}
-            >
-                {translate('apihub.login.title')}
-            </Typography>}
-            {isShowingMultiSessionPrompt && 
+            {!isShowingMultiSessionPrompt && (
+                <Typography
+                    variant="h2"
+                    color="textPrimary"
+                    className={classes.title}
+                >
+                    {translate('apihub.login.title')}
+                </Typography>
+            )}
+            {isShowingMultiSessionPrompt && (
                 <div>
-                    <div className={classes.warning_icon}><WarningIcon /></div>
+                    <div className={classes.warning_icon}>
+                        <WarningIcon />
+                    </div>
                     <Typography
                         variant="h3"
                         color="textPrimary"
@@ -62,14 +74,19 @@ export const Login = props => {
                     <div className={classes.multi_sessions_text}>
                         {translate('apihub.login.multiple_sessions_text')}
                     </div>
-                </div>}
+                </div>
+            )}
             <LoginForm
                 isShowingMultiSessionPrompt={isShowingMultiSessionPrompt}
                 localLoginsDisabled={localLoginsDisabled}
                 setIsShowingMultiSessionPrompt={setIsShowingMultiSessionPrompt}
                 {...props}
             />
-            {signUpEnabled && !isShowingMultiSessionPrompt && !localLoginsDisabled ? <SignUpLink /> : null}
+            {signUpEnabled &&
+            !isShowingMultiSessionPrompt &&
+            !localLoginsDisabled ? (
+                <SignUpLink />
+            ) : null}
         </>
     );
 };
@@ -79,7 +96,7 @@ export const LoginPage = props => (
     </AuthenticationLayout>
 );
 
-const useStyles = makeStyles(
+const useStyles = makeStyles({ name: 'Layer7Login' })(
     theme => ({
         title: {
             fontSize: theme.typography.fontSize * 2,
@@ -90,7 +107,7 @@ const useStyles = makeStyles(
             fontWeight: 700,
             marginBottom: 10,
             marginTop: 2,
-            textAlign: 'center'
+            textAlign: 'center',
         },
         multi_sessions_text: {
             fontFamily: theme.typography.body1.fontFamily,
@@ -102,8 +119,5 @@ const useStyles = makeStyles(
         warning_icon: {
             textAlign: 'center',
         },
-    }),
-    {
-        name: 'Layer7Login',
-    }
+    })
 );

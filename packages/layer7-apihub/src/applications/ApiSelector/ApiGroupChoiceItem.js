@@ -1,33 +1,29 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import * as React from 'react';
 import {
     Divider,
     IconButton,
-    List,
-    ListItem,
-    ListItemIcon,
-    ListItemText,
-    ExpansionPanel,
-    ExpansionPanelSummary,
-    ExpansionPanelDetails,
+    Accordion,
+    AccordionSummary,
+    AccordionDetails,
     Tooltip,
     Typography,
-} from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-import AddIcon from '@material-ui/icons/Add';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import { useTranslate } from 'ra-core';
+} from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
+import AddIcon from '@mui/icons-material/Add';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { useTranslate } from 'react-admin';
 import { ApiStatus } from '../../apis/ApiStatus';
 
-import { TruncatedTextField, useListArrayInputItem } from '../../ui';
+import { useListArrayInputItem } from '../../ui';
 
 export function ApiGroupChoiceItem(props) {
     const { record, selected, onAdd } = useListArrayInputItem();
-    const classes = useStyles(props);
+    const { classes } = useStyles(props);
     const translate = useTranslate();
-
     return (
-        <ExpansionPanel>
-            <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+        <Accordion>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                 <Tooltip title={translate('ra.action.add')}>
                     <span>
                         <IconButton
@@ -35,7 +31,7 @@ export function ApiGroupChoiceItem(props) {
                             className={classes.add}
                             disabled={selected || props.disabled}
                             onClick={onAdd}
-                            color="primary"
+                            size="large"
                         >
                             <AddIcon />
                         </IconButton>
@@ -52,8 +48,8 @@ export function ApiGroupChoiceItem(props) {
                         )}
                     </Typography>
                 </div>
-            </ExpansionPanelSummary>
-            <ExpansionPanelDetails>
+            </AccordionSummary>
+            <AccordionDetails>
                 <div className={classes.details}>
                     <Typography className={classes.description}>
                         {record.description}
@@ -68,52 +64,47 @@ export function ApiGroupChoiceItem(props) {
                         ))}
                     </div>
                 </div>
-            </ExpansionPanelDetails>
-        </ExpansionPanel>
+            </AccordionDetails>
+        </Accordion>
     );
 }
 
-const useStyles = makeStyles(
-    theme => ({
-        root: {
-            display: 'flex',
-            flexWrap: 'wrap',
-            alignItems: 'center',
-        },
-        add: {
-            marginTop: theme.spacing(-1),
-        },
-        apiCount: {
-            color: theme.palette.text.secondary,
-            marginLeft: theme.spacing(1),
-        },
-        details: {
-            marginTop: theme.spacing(-2),
-            marginLeft: theme.spacing(6),
-            width: '100%',
-        },
-        status: {
-            color: theme.palette.text.secondary,
-            marginLeft: theme.spacing(2),
-            fontSize: '0.8rem',
-            textTransform: 'lowercase',
-        },
-        description: {
-            marginTop: theme.spacing(0),
-            fontSize: theme.typography.pxToRem(14),
-        },
-        list: {
-            marginTop: theme.spacing(1),
-            width: '100%',
-        },
-        api: {
-            display: 'flex',
-            justifyContent: 'space-between',
-            textAlign: 'left',
-            marginTop: theme.spacing(1),
-        },
-    }),
-    {
-        name: 'Layer7ApiGroupChoiceItem',
-    }
-);
+const useStyles = makeStyles({ name: 'Layer7ApiGroupChoiceItem' })(theme => ({
+    root: {
+        display: 'flex',
+        flexWrap: 'wrap',
+        alignItems: 'center',
+    },
+    add: {
+        marginTop: theme.spacing(-1),
+    },
+    apiCount: {
+        color: theme.palette.text.secondary,
+        marginLeft: theme.spacing(1),
+    },
+    details: {
+        marginTop: theme.spacing(-2),
+        marginLeft: theme.spacing(6),
+        width: '100%',
+    },
+    status: {
+        color: theme.palette.text.secondary,
+        marginLeft: theme.spacing(2),
+        fontSize: '0.8rem',
+        textTransform: 'lowercase',
+    },
+    description: {
+        marginTop: theme.spacing(0),
+        fontSize: theme.typography.pxToRem(14),
+    },
+    list: {
+        marginTop: theme.spacing(1),
+        width: '100%',
+    },
+    api: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        textAlign: 'left',
+        marginTop: theme.spacing(1),
+    },
+}));

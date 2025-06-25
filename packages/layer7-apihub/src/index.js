@@ -1,3 +1,4 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 export * from './ApiHubAdmin';
 export * from './ApiHubAppBar';
 export * from './ApiHubContext';

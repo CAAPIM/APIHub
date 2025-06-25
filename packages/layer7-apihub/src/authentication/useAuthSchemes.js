@@ -1,3 +1,4 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import { useEffect, useState } from 'react';
 import get from 'lodash/get';
 import { useApiHub } from '../ApiHubContext';

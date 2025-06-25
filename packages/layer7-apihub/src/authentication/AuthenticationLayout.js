@@ -1,6 +1,11 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React from 'react';
-import { makeStyles } from '@material-ui/core';
-import { ThemeProvider, createMuiTheme } from '@material-ui/core/styles';
+import { makeStyles } from 'tss-react/mui';
+import {
+    ThemeProvider,
+    StyledEngineProvider,
+    createTheme,
+} from '@mui/material/styles';
 import { Notification } from 'react-admin';
 
 import { theme as defaultTheme } from '../theme';
@@ -35,9 +40,11 @@ import { theme as defaultTheme } from '../theme';
  */
 export const AuthenticationLayout = ({ theme = defaultTheme, ...props }) => {
     return (
-        <ThemeProvider theme={createMuiTheme(theme)}>
-            <ThemedAuthenticationLayout {...props} />
-        </ThemeProvider>
+        <StyledEngineProvider injectFirst>
+            <ThemeProvider theme={createTheme(theme)}>
+                <ThemedAuthenticationLayout {...props} />
+            </ThemeProvider>
+        </StyledEngineProvider>
     );
 };
 
@@ -50,7 +57,7 @@ const ThemedAuthenticationLayout = ({
     Footer,
     ...rest
 }) => {
-    const classes = useStyles();
+    const { classes } = useStyles();
     return (
         <div className={classes.root}>
             {Header ? <Header /> : null}
@@ -68,7 +75,7 @@ const ThemedAuthenticationLayout = ({
     );
 };
 
-const useStyles = makeStyles(
+const useStyles = makeStyles({ name: 'Layer7ThemedAuthenticationLayout' })(
     theme => ({
         root: {
             backgroundColor: theme.palette.background.default,
@@ -91,13 +98,13 @@ const useStyles = makeStyles(
             display: 'flex',
             flexDirection: 'column',
             padding: theme.spacing(4),
-            [theme.breakpoints.down('sm')]: {
+            [theme.breakpoints.down('md')]: {
                 padding: theme.spacing(3),
             },
             '&:first-child': {
                 minWidth: '250px',
                 maxWidth: '30%',
-                [theme.breakpoints.down('sm')]: {
+                [theme.breakpoints.down('md')]: {
                     maxWidth: '100%',
                     width: '100%',
                 },
@@ -107,8 +114,8 @@ const useStyles = makeStyles(
                 borderColor: theme.palette.divider,
                 borderWidth: '0px 0px 0px 1px',
                 marginLeft: theme.spacing(4),
-                maxWidth: `calc(50% - ${theme.spacing(4)}px)`,
-                [theme.breakpoints.down('sm')]: {
+                maxWidth: `calc(50% - ${theme.spacing(4)})`,
+                [theme.breakpoints.down('md')]: {
                     borderWidth: '1px 0px 0px 0px',
                     marginLeft: '0px',
                     maxWidth: '100%',
@@ -119,8 +126,5 @@ const useStyles = makeStyles(
                 flexGrow: 1,
             },
         },
-    }),
-    {
-        name: 'Layer7ThemedAuthenticationLayout',
-    }
+    })
 );

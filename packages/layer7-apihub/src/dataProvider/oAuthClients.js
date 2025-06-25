@@ -1,14 +1,16 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import { stringify } from 'query-string';
 
 export const oAuthClientsDataProvider = context => {
     const basePath = `${context.apiUrl}/api-management/0.1/applications`;
     return {
         getList: async ({
-            applicationUuid,
             filter = {},
             pagination = { page: 1, perPage: 24 },
             sort = null,
+            meta,
         }) => {
+            const { applicationUuid } = meta;
             const path = `${basePath}/${applicationUuid}/oauth/clients`;
             const url = `${path}?${stringify({
                 ...filter,
@@ -45,14 +47,16 @@ export const oAuthClientsDataProvider = context => {
                 },
             };
         },
-        create: async ({ appUuid, data }) => {
+        create: async ({ data, meta }) => {
+            const { appUuid } = meta;
             const path = `${basePath}/${appUuid}/oauth/clients`;
-            const { json } = await context.fetchJson(path, {
-                credentials: 'include',
-                method: 'POST',
-                body: JSON.stringify({ ...data, applicationUuid: appUuid }),
-            }).catch();
-            console.log('json', json);
+            const { json } = await context
+                .fetchJson(path, {
+                    credentials: 'include',
+                    method: 'POST',
+                    body: JSON.stringify({ ...data, applicationUuid: appUuid }),
+                })
+                .catch();
             return {
                 data: {
                     ...json,
@@ -60,8 +64,9 @@ export const oAuthClientsDataProvider = context => {
                 },
             };
         },
-        delete: async ({ appUuid, keyId, params }) => {
-            const path = `${basePath}/${appUuid}/oauth/clients/${keyId}?${params}`;
+        delete: async ({ id, meta }) => {
+            const { appUuid, params } = meta;
+            const path = `${basePath}/${appUuid}/oauth/clients/${id}?${params}`;
 
             const {
                 json: { ...data },
@@ -77,15 +82,15 @@ export const oAuthClientsDataProvider = context => {
             };
         },
         completeRegistration: async ({ clientId, appUuid }) => {
-          let secretGenerateURL = `${basePath}/${appUuid}/oauth/clients/${clientId}/complete-registration`;
-          const responseData = await context.fetchJson(secretGenerateURL, {
-              credentials: 'include',
-              method: 'PATCH',
-          });
-          const { json: data } = responseData;
-          return {
-              data,
-          };
-      },
+            let secretGenerateURL = `${basePath}/${appUuid}/oauth/clients/${clientId}/complete-registration`;
+            const responseData = await context.fetchJson(secretGenerateURL, {
+                credentials: 'include',
+                method: 'PATCH',
+            });
+            const { json: data } = responseData;
+            return {
+                data,
+            };
+        },
     };
 };

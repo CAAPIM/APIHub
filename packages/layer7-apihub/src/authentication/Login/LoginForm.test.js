@@ -1,19 +1,19 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React from 'react';
-import { renderWithRedux } from 'ra-core';
 
 import { ApiHubProvider } from '../../ApiHubContext';
 import { LoginForm } from './LoginForm';
-import { wait } from '@testing-library/react';
+import { waitFor, render } from '@testing-library/react';
+import { AdminContext } from 'react-admin';
 
 describe('LoginForm', () => {
-  it('renders the login form', async () => {
+    it('renders the login form', async () => {
         global.fetch = jest.fn().mockResolvedValue({
             text: () =>
                 Promise.resolve(
                     JSON.stringify({
                         respCode: 200,
-                        respMsg:
-                            'Successfully fetched Authentication Schemes',
+                        respMsg: 'Successfully fetched Authentication Schemes',
                         isOktaProxied: false,
                         authSchemes: [
                             {
@@ -42,15 +42,17 @@ describe('LoginForm', () => {
                 ),
         });
 
-        const { getByText, getByLabelText } = renderWithRedux(
+        const { findByText } = render(
             <ApiHubProvider url="/api" tenantName="api">
-                <LoginForm />
+                <AdminContext>
+                    <LoginForm />
+                </AdminContext>
             </ApiHubProvider>
         );
 
-        await wait(() => {
-            expect(getByLabelText('apihub.login.fields.username *')).not.toBeNull();
-            expect(getByLabelText('apihub.login.fields.password *')).not.toBeNull();
+        await waitFor(() => {
+            expect(findByText('apihub.login.fields.username *')).not.toBeNull();
+            expect(findByText('apihub.login.fields.password *')).not.toBeNull();
         });
-  });
+    });
 });

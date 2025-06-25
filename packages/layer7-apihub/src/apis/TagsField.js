@@ -1,36 +1,44 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React from 'react';
 import get from 'lodash/get';
-import { useTranslate, useGetManyReference } from 'ra-core';
-import { makeStyles } from '@material-ui/core/styles';
-import Chip from '@material-ui/core/Chip';
-import LinearProgress from '@material-ui/core/LinearProgress';
-import Typography from '@material-ui/core/Typography';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
-import TabScrollButton from '@material-ui/core/TabScrollButton';
-import classnames from 'classnames';
+import {
+    useTranslate,
+    useGetManyReference,
+    useRecordContext,
+} from 'react-admin';
+import { makeStyles } from 'tss-react/mui';
+import Chip from '@mui/material/Chip';
+import LinearProgress from '@mui/material/LinearProgress';
+import Typography from '@mui/material/Typography';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import TabScrollButton from '@mui/material/TabScrollButton';
 
 export const TagsField = props => {
     const {
         className,
-        record,
         source,
         color = 'primary',
         variant = 'outlined',
         size = 'small',
     } = props;
 
-    const classes = useStyles(props);
+    const { classes, cx } = useStyles(props);
+    let record = useRecordContext();
+    if (props.record != null) {
+        record = props.record;
+    }
     const tags = get(record, source, []);
 
     return (
         <Tabs
             variant="scrollable"
             className={classes.root}
-            scrollButtons="on"
+            scrollButtons
             ScrollButtonComponent={TagsFieldScrollButton}
             component="ul"
             value={false}
+            allowScrollButtonsMobile
         >
             {tags.map(tag => (
                 <Tab
@@ -43,8 +51,7 @@ export const TagsField = props => {
                     label={
                         <Chip
                             label={tag}
-                            className={classnames(classes.tag, className)}
-                            color={color}
+                            className={cx(classes.tag, className)}
                             variant={variant}
                             size={size}
                         />
@@ -56,21 +63,19 @@ export const TagsField = props => {
 };
 
 export const AsyncTagsField = props => {
-    const { record, variant = 'outlined', color = 'primary', ...rest } = props;
+    const { variant = 'outlined', color = 'primary', ...rest } = props;
+    let record = useRecordContext();
+    if (props.record != null) {
+        record = props.record;
+    }
     const translate = useTranslate();
-    const classes = useStyles(props);
+    const { classes } = useStyles(props);
+    const { data, isLoading, error } = useGetManyReference('tags', {
+        target: 'id',
+        id: record.id,
+    });
 
-    const { data, loaded, error } = useGetManyReference(
-        'tags',
-        'id',
-        record.id,
-        undefined,
-        undefined,
-        undefined,
-        'apis'
-    );
-
-    if (!loaded) {
+    if (isLoading) {
         return <LinearProgress />;
     }
 
@@ -93,7 +98,6 @@ export const AsyncTagsField = props => {
                     label={tag.name}
                     className={classes.tag}
                     variant={variant}
-                    color={color}
                 />
             ))}
         </ul>
@@ -117,38 +121,34 @@ export const TagsFieldScrollButton = props => {
     );
 };
 
-const useStyles = makeStyles(
-    theme => ({
-        root: {
-            margin: 0,
-            padding: 0,
-            maxWidth: 300,
-            minHeight: 'unset',
-            position: 'relative',
+const useStyles = makeStyles({ name: 'Layer7ApiTags' })(theme => ({
+    root: {
+        margin: 0,
+        padding: 0,
+        maxWidth: 300,
+        minHeight: 'unset',
+        position: 'relative',
+    },
+    tab: {
+        minHeight: 'unset',
+        minWidth: 'unset',
+        maxWidth: 'unset',
+        paddingBottom: 0,
+        paddingTop: 0,
+        paddingLeft: theme.spacing(0.5),
+        paddingRight: theme.spacing(0.5),
+    },
+    tag: {
+        borderRadius: theme.spacing(0.5),
+        backgroundColor: 'transparent',
+        border: '1px solid',
+        '& + &': {
+            marginLeft: theme.spacing(),
         },
-        tab: {
-            minHeight: 'unset',
-            minWidth: 'unset',
-            maxWidth: 'unset',
-            paddingBottom: 0,
-            paddingTop: 0,
-            paddingLeft: theme.spacing(0.5),
-            paddingRight: theme.spacing(0.5),
-        },
-        tag: {
-            borderRadius: theme.spacing(0.5),
-            backgroundColor: 'transparent',
-            border: '1px solid',
-            '& + &': {
-                marginLeft: theme.spacing(),
-            },
-        },
-        error: {
-            color: theme.palette.error.main,
-            marginBottom: theme.spacing(),
-        },
-    }),
-    {
-        name: 'Layer7ApiTags',
-    }
-);
+        color: theme.palette.primary.light,
+    },
+    error: {
+        color: theme.palette.error.main,
+        marginBottom: theme.spacing(),
+    },
+}));

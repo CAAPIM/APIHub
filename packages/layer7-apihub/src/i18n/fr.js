@@ -1,3 +1,4 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import { mergeTranslations } from 'react-admin';
 import raMessages from 'ra-language-english';
 
@@ -24,7 +25,7 @@ const apiHubMessages = {
             ...raMessages.navigation,
             page_rows_per_page: 'Eléments par page :',
             next: 'Proc',
-            prev: 'Préc',
+            previous: 'Préc',
         },
         auth: {
             logout: 'Se déconnecter',
@@ -385,9 +386,10 @@ const apiHubMessages = {
                 authMethodNone: 'Aucun',
                 authMethodSecret: 'Identifiant client et secret',
                 notAvailableAuthMethod: 'Non disponible',
-                deferredClientId: "L'identifiant du uclient sera disponible après l'inscription.",
-                clientMetadata: "Métadonnées du client",
-                clientDefinitionName: "Nom de définition du client",
+                deferredClientId:
+                    "L'identifiant du uclient sera disponible après l'inscription.",
+                clientMetadata: 'Métadonnées du client',
+                clientDefinitionName: 'Nom de définition du client',
                 clientDefinitionDescription: 'Description',
             },
             actions: {
@@ -436,7 +438,8 @@ const apiHubMessages = {
                 certificate_name_caption: 'Doit être unique par application.',
                 certificate_file_input_caption:
                     'Tous les certificats de clés d’application seront redéployés.',
-                clientDefintion_json: "JSON valide requis, 5000 caractères maximum.",
+                clientDefintion_json:
+                    'JSON valide requis, 5000 caractères maximum.',
             },
             status: {
                 enabled: 'Activé',
@@ -541,7 +544,7 @@ const apiHubMessages = {
             deleting_content:
                 "Annulation du déploiement des clés et suppression de l'application. Cela peut prendre plusieurs minutes.",
             deleting_content_oauth_client:
-                "Annulation du déploiement et suppression du client OAuth. Cela peut prendre plusieurs minutes.",
+                'Annulation du déploiement et suppression du client OAuth. Cela peut prendre plusieurs minutes.',
             proxy_check_alert:
                 'Impossible de se connecter à tous les magasins de clés dans lesquels la clé API est déployée. Cela entraînera probablement une suppression incomplète, où cette clé restera dans certains magasins de clés. Il devra être supprimé directement du magasin de clés. Il y aura une option pour forcer la suppression de l’enregistrement de la clé API du portail.',
             publish_help_text:
@@ -551,32 +554,36 @@ const apiHubMessages = {
             confirm_delete:
                 'Vous êtes sur le point de supprimer cette clé d’API. En êtes vous sûr ?',
             confirm_delete_oauth_client:
-                "Vous êtes sur le point de supprimer ce client OAuth. Etes-vous sûr?",
+                'Vous êtes sur le point de supprimer ce client OAuth. Etes-vous sûr?',
             deleting_content:
                 'Suppression du déploiement et de la clé d’API. Ceci peut prendre quelques minutes.',
             proxy_check_alert:
                 'Impossible de se connecter à tous les magasins de clés dans lesquels la clé API est déployée. Cela entraînera probablement une suppression incomplète, où cette clé restera dans certains magasins de clés. Il devra être supprimé directement du magasin de clés. Il y aura une option pour forcer la suppression de l’enregistrement de la clé API du portail.',
             proxy_check_alert_oauth_client:
                 "Impossible de se connecter à tous les magasins de clés dans lesquels le client OAuth a été déployé. Cela entraînera probablement une suppression incomplète, où ce client OAuth restera sur certains magasins de clés. Il devra être supprimé directement du magasin de clés. Il y aura une option pour forcer la suppression de l'enregistrement OAuth-Client du portail.",
-            replace_client_metadata_title: "Métadonnées du client modifiées",
-            replace_client_metadata_content: "Vos modifications apportées aux métadonnées du client seront perdues avec cette action. Êtes-vous sûr de vouloir continuer ?",
-            client_metadata_accordion_title: "Métadonnées du client",
+            replace_client_metadata_title: 'Métadonnées du client modifiées',
+            replace_client_metadata_content:
+                'Vos modifications apportées aux métadonnées du client seront perdues avec cette action. Êtes-vous sûr de vouloir continuer ?',
+            client_metadata_accordion_title: 'Métadonnées du client',
             reg_pending_title: "En attente d'inscription",
-            reg_pending_wf_content: "Le client OAuth est en état d'enregistrement en attente. Il peut être soumis au fournisseur d'authentification pour création, une fois la demande du client OAuth approuvée.",
-            reg_pending_incomplete_content: "Le client OAuth est en état d'enregistrement en attente. Il peut être soumis au fournisseur d'authentification pour création, une fois l'application publiée.",
+            reg_pending_wf_content:
+                "Le client OAuth est en état d'enregistrement en attente. Il peut être soumis au fournisseur d'authentification pour création, une fois la demande du client OAuth approuvée.",
+            reg_pending_incomplete_content:
+                "Le client OAuth est en état d'enregistrement en attente. Il peut être soumis au fournisseur d'authentification pour création, une fois l'application publiée.",
             actions: {
                 addKey: 'Ajouter une clé',
                 complete_registration: "Clé d'enregistrement",
                 deleteApiKey: 'Supprimer une clé',
-                deleteOAuthClient: "Supprimer le client OAuth",
+                deleteOAuthClient: 'Supprimer le client OAuth',
                 deleting_title: "Supprimer une clé d'API",
-                deleting_title_oauth_client: "Suppression du client OAuth",
+                deleting_title_oauth_client: 'Suppression du client OAuth',
                 force_delete: 'Forcer la suppression',
-                reload_client_definition: "Recharger les métadonnées",
-                replace_client_metadata_dialog_submit: "Remplacer les métadonnées du client",
+                reload_client_definition: 'Recharger les métadonnées',
+                replace_client_metadata_dialog_submit:
+                    'Remplacer les métadonnées du client',
                 cancel: 'Annuler',
                 delete: 'Supprimer',
-                close: "Fermer",
+                close: 'Fermer',
             },
         },
         documents: {

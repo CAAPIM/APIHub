@@ -1,3 +1,4 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import { useEffect, useState } from 'react';
 import { useApiHub } from '../ApiHubContext';
 import { getFetchJson } from '../fetchUtils';
@@ -15,8 +16,6 @@ export const fetchAuthenticationConfiguration = async (
     const fetchJson = getFetchJson(originHubName);
     const { json } = await fetchJson(`${urlWithTenant}/cmsSettings`);
 
-    
-
     return {
         signUpEnabled: json.REGISTRATION_STATUS === 'ENABLED',
         simpleCredentialsEnabled:
@@ -32,7 +31,7 @@ export const useAuthenticationConfiguration = (
     simpleCredentialsEnabled = DEFAULT_SIMPLE_CREDENTIALS_ENABLED,
     ssoEnabled = DEFAULT_SSO_ENABLED,
     termsOfUse = null,
-    localLoginsDisabled = DEFAULT_LOCAL_LOGINS_DISABLED,
+    localLoginsDisabled = DEFAULT_LOCAL_LOGINS_DISABLED
 ) => {
     const { urlWithTenant, originHubName } = useApiHub();
 

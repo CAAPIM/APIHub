@@ -1,4 +1,5 @@
-import * as React from 'react';
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
+import React, { useEffect, useState } from 'react';
 import {
     Button,
     Dialog,
@@ -12,53 +13,54 @@ import {
     TableHead,
     TableRow,
     Typography,
-} from '@material-ui/core';
-import { makeStyles, withStyles } from '@material-ui/core/styles';
-import { useDataProvider, useTranslate } from 'ra-core';
-import { LoadingIndicator } from 'react-admin';
+} from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
+import { withStyles } from 'tss-react/mui';
+import { useDataProvider, useTranslate, LoadingIndicator } from 'react-admin';
 import { ApiSelectionModalTaC } from './ApiSelectionModalTaC';
 import { TruncatedTextField } from '../../ui';
 import { useLayer7Notify } from '../../useLayer7Notify';
+import { useMutation } from '@tanstack/react-query';
 
 export function ApiSelectionModal(props) {
     const { api, onConfirm, onCancel, apiPlansEnabled, orgUuid } = props;
-    const [apiPlans, setApiPlans] = React.useState([]);
-    const [selectedApiPlan, setSelectedApiPlan] = React.useState();
-    const [isLoaded, setIsLoaded] = React.useState(false);
-    const [apiEula, setApiEula] = React.useState();
-    const classes = useStyles(props);
+    const [apiPlans, setApiPlans] = useState([]);
+    const [selectedApiPlan, setSelectedApiPlan] = useState();
+    const [isLoaded, setIsLoaded] = useState(false);
+    const [apiEula, setApiEula] = useState();
+    const { classes } = useStyles(props);
     const dataProvider = useDataProvider();
     const translate = useTranslate();
     const notify = useLayer7Notify();
+    const { mutateAsync: fetchApiPlansAsync } = useMutation({
+        mutationFn: ({ apiId, orgUuid }) =>
+            dataProvider.getApiPlansByApi('apiPlans', {
+                apiId,
+                orgUuid,
+            }),
+        onError: error => notify(error),
+    });
 
-    React.useEffect(() => {
+    const { mutateAsync: fetchApiEulasAsync } = useMutation({
+        mutationFn: ({ id }) =>
+            dataProvider.getOne('apiEulas', {
+                id,
+            }),
+        onError: error => notify(error),
+    });
+
+    useEffect(() => {
         async function fetchApiPlans() {
-            const { data } = await dataProvider.getApiPlansByApi(
-                'apiPlans',
-                {
-                    apiId: api.id,
-                    orgUuid: orgUuid,
-                },
-                {
-                    onFailure: error => notify(error),
-                }
-            );
-
+            const { data } = await fetchApiPlansAsync({
+                apiId: api.id,
+                orgUuid,
+            });
             setApiPlans(data);
             setIsLoaded(true);
         }
 
         async function fetchApiEula() {
-            const { data } = await dataProvider.getOne(
-                'apiEulas',
-                {
-                    id: api.apiEulaUuid,
-                },
-                {
-                    onFailure: error => notify(error),
-                }
-            );
-
+            const { data } = await fetchApiEulasAsync({ id: api.apiEulaUuid });
             setApiEula(data);
         }
 
@@ -71,7 +73,7 @@ export function ApiSelectionModal(props) {
 
             fetchApiEula();
         }
-    }, [JSON.stringify(api)]); // eslint-disable-line
+    }, [api]); // eslint-disable-line
 
     const onClose = () => {
         setApiPlans([]);
@@ -224,12 +226,11 @@ export function ApiSelectionModal(props) {
                         </DialogContent>
                     ) : null}
                     <DialogActions>
-                        <Button onClick={onClose} color="primary">
+                        <Button onClick={onClose}>
                             {translate('ra.action.cancel')}
                         </Button>
                         <Button
                             onClick={onAPIConfirm}
-                            color="primary"
                             autoFocus
                             disabled={
                                 !isLoaded ||
@@ -249,7 +250,7 @@ export function ApiSelectionModal(props) {
     );
 }
 
-const StyledTableCell = withStyles(theme => ({
+const StyledTableCell = withStyles(TableCell, theme => ({
     head: {
         fontSize: theme.typography.body1,
         fontWeight: '600',
@@ -259,9 +260,9 @@ const StyledTableCell = withStyles(theme => ({
         fontSize: theme.typography.body1,
         fontWeight: '500',
     },
-}))(TableCell);
+}));
 
-const useStyles = makeStyles(
+const useStyles = makeStyles({ name: 'Layer7ApplicationApiPlansList' })(
     theme => ({
         heading: {
             fontSize: theme.typography.pxToRem(14),
@@ -279,8 +280,5 @@ const useStyles = makeStyles(
         container: {
             maxHeight: '100%',
         },
-    }),
-    {
-        name: 'Layer7ApplicationApiPlansList',
-    }
+    })
 );

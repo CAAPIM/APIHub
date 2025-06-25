@@ -1,10 +1,11 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React from 'react';
-import { makeStyles } from '@material-ui/core';
+import { makeStyles } from 'tss-react/mui';
 
 import { ContentLogo } from '../ui';
 
 export const SideContent = () => {
-    const classes = useStyles();
+    const { classes } = useStyles();
 
     return (
         <div className={classes.root}>
@@ -13,7 +14,7 @@ export const SideContent = () => {
     );
 };
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles()(theme => ({
     root: {
         display: 'flex',
         alignItems: 'center',

@@ -1,32 +1,29 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import { useState, useEffect } from 'react';
-import { useMutation } from 'react-admin';
+import { useMutation } from '@tanstack/react-query';
+import { useDataProvider } from 'react-admin';
 
 const useApplicationUniqueCheck = (appName, orgUuid, uuid) => {
     const [isNameUnique, setIsNameUnqiue] = useState();
-    const [
-        checkIsUnique,
-        { data: uniqueTestResult, loading: checkingUniqueNess },
-    ] = useMutation({
-        type: 'checkApplicationUniqueness',
-        resource: 'applications',
-        payload: {
-            applicationName: appName,
-            organizationUuid: orgUuid,
-            uuid,
+    const dataProvider = useDataProvider();
+    const { mutate: checkIsUnique } = useMutation({
+        mutationFn: vars =>
+            dataProvider.checkApplicationUniqueness('applications', vars),
+        onSuccess: ({ data }) => {
+            setIsNameUnqiue(data.isNameUnique);
         },
     });
 
     useEffect(() => {
         if (appName && orgUuid) {
-            checkIsUnique();
+            checkIsUnique({
+                applicationName: appName,
+                organizationUuid: orgUuid,
+                uuid,
+            });
         }
     }, [orgUuid, appName]);
 
-    useEffect(() => {
-        if (!checkingUniqueNess && uniqueTestResult) {
-            setIsNameUnqiue(uniqueTestResult.isNameUnique);
-        }
-    }, [uniqueTestResult, checkingUniqueNess]);
     return isNameUnique;
 };
 

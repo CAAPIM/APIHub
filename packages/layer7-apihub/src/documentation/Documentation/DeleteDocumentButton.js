@@ -1,6 +1,7 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React from 'react';
-import Button from '@material-ui/core/Button';
-import { CRUD_DELETE, useDelete, useTranslate, useRefresh } from 'ra-core';
+import Button from '@mui/material/Button';
+import { useDelete, useTranslate, useRefresh } from 'react-admin';
 
 import { useLayer7Notify } from '../../useLayer7Notify';
 
@@ -16,25 +17,10 @@ export const DeleteDocumentButton = ({
     const notify = useLayer7Notify();
     const refresh = useRefresh();
 
-    const [deleteDocument] = useDelete('documents', document.id, document, {
-        action: CRUD_DELETE,
-        onSuccess: () => {
-            notify('resources.documents.notifications.delete_success', 'info', {
-                smart_count: 1,
-            });
-            refresh();
-            onClick();
-        },
-        onFailure: error => {
-            notify(
-                error || 'resources.documents.notifications.delete_error',
-                'error'
-            );
-        },
-    });
+    const [deleteOne] = useDelete();
 
     const handleDeleteDocument = () => {
-        const shouldDelete = global.window.confirm(
+        const shouldDelete = window.confirm(
             hasChildren
                 ? translate(
                       'resources.documents.confirm_delete_document_with_children'
@@ -44,7 +30,30 @@ export const DeleteDocumentButton = ({
                   )
         );
         if (shouldDelete) {
-            deleteDocument();
+            deleteOne(
+                'documents',
+                { id: document.id },
+                {
+                    onSuccess: () => {
+                        notify(
+                            'resources.documents.notifications.delete_success',
+                            'info',
+                            {
+                                smart_count: 1,
+                            }
+                        );
+                        refresh();
+                        onClick();
+                    },
+                    onError: error => {
+                        notify(
+                            error ||
+                                'resources.documents.notifications.delete_error',
+                            'error'
+                        );
+                    },
+                }
+            );
         }
     };
 

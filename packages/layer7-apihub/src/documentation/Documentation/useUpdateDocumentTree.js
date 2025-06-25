@@ -1,13 +1,9 @@
-import {
-    useMutation,
-    CRUD_GET_LIST_SUCCESS,
-    GET_LIST,
-    FETCH_END,
-} from 'ra-core';
-import { useDispatch } from 'react-redux';
-import { useCallback } from 'react';
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
+import { useCallback, useEffect } from 'react';
 
 import { useLayer7Notify } from '../../useLayer7Notify';
+import { useMutation } from '@tanstack/react-query';
+import { useDataProvider } from 'react-admin';
 
 export const moveDocument = ({
     documentUuid,
@@ -97,12 +93,31 @@ export const useUpdateDocumentTree = ({
     items,
     locale,
 }) => {
-    const dispatch = useDispatch();
+    const dataProvider = useDataProvider();
     const notify = useLayer7Notify();
-    const [mutate, mutationState] = useMutation({
-        type: 'updateTree',
-        resource: 'documents',
+    const { mutate, data, isLoading, isError, error, isSuccess } = useMutation({
+        mutationFn: vars => dataProvider.updateTree('documents', vars),
     });
+
+    useEffect(() => {
+        if (isSuccess) {
+            notify(
+                'resources.documents.notifications.tree_updated_success',
+                'info',
+                undefined,
+                true
+            );
+        }
+    }, [isSuccess, notify]);
+
+    useEffect(() => {
+        if (isError) {
+            notify(
+                error || 'resources.documents.notifications.tree_updated_error',
+                'error'
+            );
+        }
+    }, [error, isError, notify]);
 
     const handleSave = useCallback(
         ({ documentUuid, newParentUuid, ordinal }) => {
@@ -113,66 +128,51 @@ export const useUpdateDocumentTree = ({
                 allDocuments: items,
             });
 
-            mutate(
-                {
-                    payload: {
-                        entityType,
-                        entityUuid,
-                        locale,
-                        data: prepareDataForUpdate(newDocuments),
-                    },
-                },
-                {
-                    undoable: true,
-                    onSuccess: () => {
-                        // Fake a getList fetch success to optimistically update
-                        // the treeview, avoiding a full view refresh
-                        dispatch({
-                            type: CRUD_GET_LIST_SUCCESS,
-                            payload: {
-                                data: newDocuments,
-                                total: newDocuments.length,
-                            },
-                            meta: {
-                                resource: 'documents',
-                                fetchResponse: GET_LIST,
-                                fetchStatus: FETCH_END,
-                            },
-                        });
-                        notify(
-                            'resources.documents.notifications.tree_updated_success',
-                            'info',
-                            undefined,
-                            true
-                        );
-                    },
-                    onFailure: error => {
-                        notify(
-                            error ||
-                                'resources.documents.notifications.tree_updated_error',
-                            'error'
-                        );
-                        // Fake a getList fetch success to optimistically update
-                        // the treeview, avoiding a full view refresh
-                        // Here we pass the original documents
-                        dispatch({
-                            type: CRUD_GET_LIST_SUCCESS,
-                            payload: {
-                                data: items,
-                                total: items.length,
-                            },
-                            meta: {
-                                resource: 'documents',
-                                fetchResponse: GET_LIST,
-                                fetchStatus: FETCH_END,
-                            },
-                        });
-                    },
-                }
-            );
+            mutate({
+                entityType,
+                entityUuid,
+                locale,
+                data: prepareDataForUpdate(newDocuments),
+            });
+            // {
+            //     undoable: true,
+            //     onSuccess: () => {
+            // Fake a getList fetch success to optimistically update
+            // the treeview, avoiding a full view refresh
+            // dispatch({
+            //     type: CRUD_GET_LIST_SUCCESS,
+            //     payload: {
+            //         data: newDocuments,
+            //         total: newDocuments.length,
+            //     },
+            //     meta: {
+            //         resource: 'documents',
+            //         fetchResponse: GET_LIST,
+            //         fetchStatus: FETCH_END,
+            //     },
+            // });
+            // },
+            // Fake a getList fetch success to optimistically update
+            // the treeview, avoiding a full view refresh
+            // Here we pass the original documents
+            // dispatch({
+            //     type: CRUD_GET_LIST_SUCCESS,
+            //     payload: {
+            //         data: items,
+            //         total: items.length,
+            //     },
+            //     meta: {
+            //         resource: 'documents',
+            //         fetchResponse: GET_LIST,
+            //         fetchStatus: FETCH_END,
+            //     },
+            // });
+            // },
+            // }
+            // );
         },
-        [dispatch, entityType, entityUuid, items, locale, mutate, notify]
+        [entityType, entityUuid, items, locale, mutate, notify]
     );
 
-    return [handleSave, mutationState];
+    return [handleSave, isLoading, isError, data];
 };

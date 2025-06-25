@@ -1,3 +1,5 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
+
 // This optional code is used to register a service worker.
 // register() is not called by default.
 

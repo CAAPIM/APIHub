@@ -1,3 +1,4 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React, { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import {
@@ -7,14 +8,15 @@ import {
     TextInput,
     useTranslate,
 } from 'react-admin';
-import { makeStyles, Link, Typography } from '@material-ui/core';
+import { Link, Typography } from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
 import isEmpty from 'lodash/isEmpty';
 import { SignUpToolbar } from './SignUpToolbar';
 import { ConfirmSlider } from '../../ui';
 import { getErrorMessage } from '../../useLayer7Notify';
 
 export const SignUpForm = props => {
-    const classes = useStyles(props);
+    const { classes } = useStyles(props);
     const { onSubmit = () => {}, toolbarProps, serverError } = props;
     let showError = false;
     const {
@@ -64,10 +66,10 @@ export const SignUpForm = props => {
     return (
         <>
             <SimpleForm
+                sanitizeEmptyValues={true}
                 className={classes.form}
-                save={submit}
+                onSubmit={submit}
                 toolbar={<SignUpToolbar {...toolbarProps} />}
-                redirect={false}
                 validate={validate}
             >
                 <TextInput
@@ -111,7 +113,9 @@ export const SignUpForm = props => {
                         confirmed={formConfirmed}
                         classes={sliderClasses}
                         onChange={sliderChange}
-                        ThumbComponent={ConfirmSliderThumb}
+                        slotProps={{
+                            Thumb: ConfirmSliderThumb,
+                        }}
                     />
                 </>
             </SimpleForm>
@@ -157,7 +161,7 @@ const ConfirmSliderHeader = ({
     classes,
     showAlert,
     sliderLabelColor,
-    ...rest
+    ...props
 }) => {
     const translate = useTranslate();
     return (
@@ -176,7 +180,7 @@ const ConfirmSliderHeader = ({
                     variant="caption"
                     gutterBottom
                     color="textPrimary"
-                    classes={{ colorTextPrimary: classes.colorAlert }}
+                    classes={{ root: classes.colorAlert }}
                 >
                     {translate(
                         'resources.registrations.notifications.confirmation_required'
@@ -187,71 +191,64 @@ const ConfirmSliderHeader = ({
     );
 };
 
-const useStyles = makeStyles(
-    theme => ({
-        form: {
-            '& >:first-child': {
-                padding: 0,
-            },
+const useStyles = makeStyles({ name: 'Layer7SignUpForm' })(theme => ({
+    form: {
+        '& >:first-child': {
+            padding: 0,
         },
-        title: {
-            fontSize: theme.typography.fontSize * 2,
-            marginBottom: theme.spacing(6),
-            color: theme.palette.getContrastText(
-                theme.palette.background.default
-            ),
+    },
+    title: {
+        fontSize: theme.typography.fontSize * 2,
+        marginBottom: theme.spacing(6),
+        color: theme.palette.getContrastText(theme.palette.background.default),
+    },
+    root: {
+        margin: '5px 0 20px 0',
+        width: '50%',
+    },
+    thumb: {
+        height: 38,
+        width: '100%',
+        backgroundColor: theme.palette.grey[500],
+        color: theme.palette.grey[800],
+        borderRadius: 2,
+        marginTop: -2,
+        marginLeft: 60,
+        '&:focus, &:hover, &$active': {
+            boxShadow: 'inherit',
         },
-        root: {
-            margin: '-15px 0 20px 0',
-            width: '50%',
+        '&:hover': {
+            backgroundColor: theme.palette.grey[300],
         },
-        thumb: {
+        '&.Mui-disabled': {
             height: 38,
             width: '100%',
-            backgroundColor: theme.palette.grey[500],
-            color: theme.palette.grey[800],
+            backgroundColor: theme.palette.success.dark,
+            color: theme.palette.common.white,
             borderRadius: 2,
             marginTop: -2,
-            marginLeft: 0,
-            '&:focus, &:hover, &$active': {
-                boxShadow: 'inherit',
-            },
-            '&:hover': {
-                backgroundColor: theme.palette.grey[300],
-            },
-            '&$disabled': {
-                height: 38,
-                width: '100%',
-                backgroundColor: theme.palette.success.dark,
-                color: theme.palette.common.white,
-                borderRadius: 2,
-                marginTop: -2,
-                marginLeft: 0,
-            },
         },
-        rail: {
-            height: 34,
-            borderRadius: 2,
-            width: '200%',
-        },
-        track: {
-            height: 34,
-            borderRadius: 2,
-        },
-        disabled: {},
-        colorTextSecondary: {
-            color: theme.palette.success.dark,
-        },
-        colorAlert: {
-            color: theme.palette.error.main,
-        },
-        confirmSliderHeader: {
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'baseline',
-        },
-    }),
-    {
-        name: 'Layer7SignUpForm',
-    }
-);
+    },
+    rail: {
+        height: 34,
+        borderRadius: 2,
+        width: '200%',
+    },
+    track: {
+        height: 34,
+        borderRadius: 2,
+    },
+    disabled: {},
+    colorTextSecondary: {
+        color: theme.palette.success.dark,
+    },
+    colorAlert: {
+        paddingLeft: 5,
+        color: theme.palette.error.main,
+    },
+    confirmSliderHeader: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'baseline',
+    },
+}));

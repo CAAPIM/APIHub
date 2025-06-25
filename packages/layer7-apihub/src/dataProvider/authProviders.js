@@ -1,5 +1,4 @@
-import map from 'lodash/map';
-
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 export const authProvidersDataProvider = context => {
     const basePath = `${context.apiUrl}/api-management/0.1/auth-providers`;
 

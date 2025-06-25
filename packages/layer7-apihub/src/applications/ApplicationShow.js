@@ -1,9 +1,17 @@
-import React from 'react';
-import { useHistory } from 'react-router-dom';
-import { makeStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
-import { useDataProvider, useTranslate } from 'ra-core';
-import { EditButton, TopToolbar } from 'react-admin';
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { makeStyles } from 'tss-react/mui';
+import Button from '@mui/material/Button';
+import {
+    EditButton,
+    TopToolbar,
+    useDataProvider,
+    useDelete,
+    useGetRecordId,
+    useRecordContext,
+    useTranslate,
+} from 'react-admin';
 import get from 'lodash/get';
 import { Show } from '../ui';
 import { ApplicationDetails } from './ApplicationDetails';
@@ -11,12 +19,12 @@ import { ApplicationTitle } from './ApplicationTitle';
 import { isEditApplicationDisabled } from './isApplicationPending';
 import { useUserContext } from '../userContexts';
 import { useLayer7Notify } from '../useLayer7Notify';
-import { ConfirmDialog } from '../ui/ConfirmDialog';
+import { ConfirmDialog } from '../ui';
 import { LoadingDialog } from '../ui/LoadingDialog';
 import { useWorkFlowConfigurations } from './useWorkFlowConfigurations';
 import { isPortalAdmin, isOrgBoundUser } from '../userContexts';
 
-const useContentStyles = makeStyles(theme => ({
+const useContentStyles = makeStyles()(theme => ({
     contained: {
         height: 30,
         marginRight: 20,
@@ -26,39 +34,36 @@ const useContentStyles = makeStyles(theme => ({
     },
 }));
 
-const AppShowActions = ({
-    basePath,
-    data,
-    resource,
-    userContext,
-    className,
-}) => {
-    const [canEdit, setCanEdit] = React.useState(false);
-    const [canDelete, setCanDelete] = React.useState(false);
-    const [deleteConfirm, setDeleteConfirm] = React.useState(false);
+const AppShowActions = ({ userContext }) => {
+    const [canEdit, setCanEdit] = useState(false);
+    const [canDelete, setCanDelete] = useState(false);
+    const [deleteConfirm, setDeleteConfirm] = useState(false);
     const translate = useTranslate();
     const notify = useLayer7Notify();
-    const contentLabelClasses = useContentStyles();
-    const history = useHistory();
+    const { classes: contentLabelClasses } = useContentStyles();
+    const navigate = useNavigate();
     const dataProvider = useDataProvider();
-    const [deleting, setDeleting] = React.useState(false);
-    const [proxyCheckFailed, setProxyCheckFailed] = React.useState(false);
+    const [deleting, setDeleting] = useState(false);
+    const [proxyCheckFailed, setProxyCheckFailed] = useState(false);
     const workFlowConfigurations = useWorkFlowConfigurations();
+    const record = useRecordContext();
+    const id = useGetRecordId();
+    const [deleteOne] = useDelete();
 
-    React.useEffect(() => {
-        if (data && !isEditApplicationDisabled(userContext, data)) {
+    useEffect(() => {
+        if (record && !isEditApplicationDisabled(userContext, record)) {
             setCanEdit(true);
         } else {
             if (canEdit) setCanEdit(false);
         }
-    }, [canEdit, data, userContext]);
+    }, [canEdit, record, userContext]);
 
-    React.useEffect(() => {
-        if (data && userContext) {
+    useEffect(() => {
+        if (record && userContext) {
             if (
-                data.status !== 'APPLICATION_PENDING_APPROVAL' &&
-                data.status !== 'EDIT_APPLICATION_PENDING_APPROVAL' &&
-                data.status !== 'DELETE_APPLICATION_PENDING_APPROVAL' &&
+                record.status !== 'APPLICATION_PENDING_APPROVAL' &&
+                record.status !== 'EDIT_APPLICATION_PENDING_APPROVAL' &&
+                record.status !== 'DELETE_APPLICATION_PENDING_APPROVAL' &&
                 !userContext.userDetails.developer
             ) {
                 setCanDelete(true);
@@ -66,7 +71,7 @@ const AppShowActions = ({
                 if (canDelete) setCanDelete(false);
             }
         }
-    }, [canDelete, data, userContext]);
+    }, [canDelete, record, userContext]);
     const notifyAndNavigate = () => {
         setDeleting(false);
         if (
@@ -84,56 +89,55 @@ const AppShowActions = ({
                 'info'
             );
         }
-        history.push('/applications');
+        navigate('/applications');
     };
-    const deleteApplication = (ignoreProxyCheck, forceDelete) => {
-        try {
-            dataProvider.delete(
-                'applications',
-                {
-                    id: data.id,
-                    params: {
-                        ...(ignoreProxyCheck && { ignoreKeyStoreCheck: true }),
-                        ...(forceDelete && { forceDelete: true }),
-                    },
+    const deleteApplication = async (ignoreProxyCheck, forceDelete) => {
+        await deleteOne(
+            'applications',
+            {
+                id,
+                meta: {
+                    ...(ignoreProxyCheck && { ignoreKeyStoreCheck: true }),
+                    ...(forceDelete && { forceDelete: true }),
                 },
-                {
-                    onFailure: error => {
-                        const validationErrors = get(
-                            error,
-                            'body.error.detail.validationErrors',
-                            []
+            },
+            {
+                returnPromise: true,
+                onError: error => {
+                    const validationErrors = get(
+                        error,
+                        'body.error.detail.validationErrors',
+                        []
+                    );
+                    setDeleting(false);
+                    if (
+                        isPortalAdmin(userContext) &&
+                        validationErrors &&
+                        validationErrors.length > 0 &&
+                        validationErrors[0].field === 'keyStoreCheck'
+                    ) {
+                        setProxyCheckFailed(true);
+                        notify(validationErrors[0].error, 'error');
+                        setDeleteConfirm(true);
+                    } else {
+                        notify(
+                            error ||
+                                'resources.applications.notifications.delete_error',
+                            'error'
                         );
-                        setDeleting(false);
-                        if (
-                            isPortalAdmin(userContext) &&
-                            validationErrors &&
-                            validationErrors.length > 0 &&
-                            validationErrors[0].field === 'keyStoreCheck'
-                        ) {
-                            setProxyCheckFailed(true);
-                            notify(validationErrors[0].error, 'error');
-                            setDeleteConfirm(true);
-                        } else {
-                            notify(
-                                error ||
-                                    'resources.applications.notifications.delete_error',
-                                'error'
-                            );
-                            dataProvider.getOne('applications', {
-                                id: data.id,
-                            });
-                        }
-                    },
-                    onSuccess: () => {
-                        notifyAndNavigate();
-                    },
-                }
-            );
-        } catch (err) {}
+                        dataProvider.getOne('applications', {
+                            id: record.id,
+                        });
+                    }
+                },
+                onSuccess: () => {
+                    notifyAndNavigate();
+                },
+            }
+        );
     };
 
-    const confirmDelete = event => {
+    const confirmDelete = () => {
         setDeleteConfirm(true);
     };
 
@@ -141,7 +145,7 @@ const AppShowActions = ({
         return null;
     }
 
-    let deleteConfirmContent = '';
+    let deleteConfirmContent;
     if (proxyCheckFailed) {
         deleteConfirmContent = translate(
             'resources.applications.proxy_check_alert'
@@ -156,7 +160,7 @@ const AppShowActions = ({
         setDeleteConfirm(false);
         setDeleting(true);
         const checkFlag =
-            isPortalAdmin(userContext) && data.status === 'DELETE_FAILED';
+            isPortalAdmin(userContext) && record.status === 'DELETE_FAILED';
         deleteApplication(checkFlag, checkFlag);
     };
 
@@ -172,12 +176,12 @@ const AppShowActions = ({
         : handleConfirmDelete;
 
     const deleteLabel =
-        isPortalAdmin(userContext) && data.status === 'DELETE_FAILED'
+        isPortalAdmin(userContext) && record.status === 'DELETE_FAILED'
             ? translate('resources.applications.actions.force_delete')
             : translate('resources.applications.actions.delete');
 
     return (
-        <TopToolbar className={className}>
+        <TopToolbar>
             <div>
                 {canDelete && (
                     <Button
@@ -188,14 +192,7 @@ const AppShowActions = ({
                         {deleteLabel}
                     </Button>
                 )}
-                {canEdit && (
-                    <EditButton
-                        basePath={basePath}
-                        icon={<span />}
-                        record={data}
-                        variant="contained"
-                    />
-                )}
+                {canEdit && <EditButton icon={<span />} variant="contained" />}
             </div>
             <ConfirmDialog
                 title={translate(
@@ -223,9 +220,9 @@ const AppShowActions = ({
     );
 };
 
-export const ApplicationShow = props => {
-    const { root: rootClassName, ...classes } = useStyles(props);
-    const { permissions, id, ...rest } = props;
+export const ApplicationShow = () => {
+    const { classes } = useStyles();
+    const { root: rootClassName } = classes;
     const [userContext] = useUserContext();
 
     return (
@@ -233,20 +230,13 @@ export const ApplicationShow = props => {
             className={rootClassName}
             classes={classes}
             title={<ApplicationTitle />}
-            id={id}
             actions={<AppShowActions userContext={userContext} />}
-            {...rest}
         >
             <ApplicationDetails />
         </Show>
     );
 };
 
-const useStyles = makeStyles(
-    theme => ({
-        root: {},
-    }),
-    {
-        name: 'Layer7ApplicationShow',
-    }
-);
+const useStyles = makeStyles({ name: 'Layer7ApplicationShow' })(() => ({
+    root: {},
+}));

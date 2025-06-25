@@ -1,21 +1,21 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React from 'react';
-import classnames from 'classnames';
-import { useTranslate } from 'ra-core';
-import Fab from '@material-ui/core/Fab';
-import Tooltip from '@material-ui/core/Tooltip';
-import { makeStyles } from '@material-ui/core/styles';
-import AddIcon from '@material-ui/icons/Add';
-import EditIcon from '@material-ui/icons/Edit';
+import { useTranslate } from 'react-admin';
+import Fab from '@mui/material/Fab';
+import Tooltip from '@mui/material/Tooltip';
+import { makeStyles } from 'tss-react/mui';
+import AddIcon from '@mui/icons-material/Add';
+import EditIcon from '@mui/icons-material/Edit';
 
 export const HomePageCreateButton = ({ onClick, className, ...rest }) => {
     const translate = useTranslate();
-    const classes = useStyles(rest);
+    const { classes, cx } = useStyles(rest);
 
     return (
         <Tooltip title={translate('ra.action.create')}>
             <Fab
                 aria-label={translate('ra.action.create')}
-                className={classnames(classes.root, className)}
+                className={cx(classes.root, className)}
                 onClick={onClick}
             >
                 <AddIcon />
@@ -24,15 +24,15 @@ export const HomePageCreateButton = ({ onClick, className, ...rest }) => {
     );
 };
 
-export const HomePageEditButton = ({ onClick, className, ...rest }) => {
+export const HomePageEditButton = ({ onClick, className, ...props }) => {
     const translate = useTranslate();
-    const classes = useStyles(rest);
+    const { classes, cx } = useStyles(props);
 
     return (
         <Tooltip title={translate('ra.action.edit')}>
             <Fab
                 aria-label={translate('ra.action.edit')}
-                className={classnames(classes.root, className)}
+                className={cx(classes.root, className)}
                 onClick={onClick}
             >
                 <EditIcon />
@@ -41,20 +41,14 @@ export const HomePageEditButton = ({ onClick, className, ...rest }) => {
     );
 };
 
-const useStyles = makeStyles(
-    theme => {
-        const appBarHeight = theme.spacing(9); // AppBar (size + margin)
-        const homePagePadding = theme.spacing(3); // HomePage (padding)
+const useStyles = makeStyles({ name: 'Layer7HomePageButton' })(theme => {
+    const homePagePadding = theme.spacing(3); // HomePage (padding)
 
-        return {
-            root: {
-                position: 'fixed',
-                right: homePagePadding,
-                top: `calc(${appBarHeight}px + ${homePagePadding}px)`,
-            },
-        };
-    },
-    {
-        name: 'Layer7HomePageButton',
-    }
-);
+    return {
+        root: {
+            position: 'fixed',
+            right: homePagePadding,
+            top: '90px',
+        },
+    };
+});

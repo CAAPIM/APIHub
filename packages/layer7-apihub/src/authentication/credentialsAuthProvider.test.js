@@ -1,3 +1,4 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React from 'react';
 import { waitFor } from '@testing-library/react';
 import { getFetchJson } from '../fetchUtils';
@@ -18,35 +19,38 @@ describe('credentialsAuthProvider', () => {
                     ),
             });
 
-            expect(credentialsAuthProvider('/api', fetchJson).login()).resolves
+            expect(credentialsAuthProvider('/api', fetchJson).login()).resolves;
         });
     });
 
     describe('logout', () => {
         it('sends a logout request', () => {
             global.fetch = jest.fn().mockResolvedValue({
-                text: () =>
-                    Promise.resolve()
+                text: () => Promise.resolve(),
             });
-            expect(credentialsAuthProvider('/api', fetchJson).logout()).resolves
+            expect(credentialsAuthProvider('/api', fetchJson).logout())
+                .resolves;
         });
     });
 
     describe('checkAuth', () => {
         it('returns a promise', () => {
-            expect(credentialsAuthProvider('/api', fetchJson).checkAuth()).resolves
+            expect(credentialsAuthProvider('/api', fetchJson).checkAuth())
+                .resolves;
         });
     });
 
     describe('checkError', () => {
         it('returns a promise', () => {
-            expect(credentialsAuthProvider('/api', fetchJson).checkError()).resolves
+            expect(credentialsAuthProvider('/api', fetchJson).checkError())
+                .resolves;
         });
     });
 
     describe('getPermissions', () => {
         it('returns a promise', () => {
-            expect(credentialsAuthProvider('/api', fetchJson).getPermissions()).resolves
+            expect(credentialsAuthProvider('/api', fetchJson).getPermissions())
+                .resolves;
         });
     });
 });

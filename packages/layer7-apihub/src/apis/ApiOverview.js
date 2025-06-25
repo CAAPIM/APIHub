@@ -1,24 +1,31 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React from 'react';
-import classNames from 'classnames';
-import { Labeled, TextField, DateField } from 'react-admin';
-import { useTranslate } from 'ra-core';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
+import {
+    Labeled,
+    TextField,
+    DateField,
+    useRecordContext,
+    useTranslate,
+} from 'react-admin';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
+import { makeStyles } from 'tss-react/mui';
 
 import { MarkdownField, LinkField } from '../ui';
 import { VisibilityField } from './VisibilityField';
 import { ApiAssetsField } from './ApiAssetsField';
 import { ApiApplicationUsageField } from './Application';
 import { AsyncTagsField } from './TagsField';
+import { ApiStatus } from './ApiStatus';
 
-export const ApiOverview = ({ record, userIsPublisher }) => {
-    const classes = useOverviewStyles();
-    const gridClasses = useGridStyles();
-    const rightGridClasses = useRightGridStyles();
-    const headerLabelClasses = useHeaderStyles();
-    const contentLabelClasses = useContentStyles();
+export const ApiOverview = ({ userIsPublisher }) => {
+    const { classes, cx } = useOverviewStyles();
+    const { classes: gridClasses } = useGridStyles();
+    const { classes: rightGridClasses } = useRightGridStyles();
+    const { classes: headerLabelClasses } = useHeaderStyles();
+    const { classes: contentLabelClasses } = useContentStyles();
     const translate = useTranslate();
+    const record = useRecordContext();
 
     return (
         <Grid className={classes.root} container spacing={3}>
@@ -39,28 +46,7 @@ export const ApiOverview = ({ record, userIsPublisher }) => {
                         classes={headerLabelClasses}
                         className={classes.field}
                     >
-                        <Grid
-                            item
-                            container
-                            alignItems="center"
-                            className={classNames(classes.enabledContainer, {
-                                [classes.enabled]:
-                                    record.portalStatus === 'ENABLED',
-                                [classes.disabled]:
-                                    record.portalStatus !== 'ENABLED',
-                            })}
-                        >
-                            <div className={classes.enabledIcon} />
-                            <Typography
-                                variant="body2"
-                                className={headerLabelClasses.value}
-                                id="portalStatus"
-                            >
-                                {translate(
-                                    `resources.apis.portalStatus.${record.portalStatus.toLowerCase()}`
-                                )}
-                            </Typography>
-                        </Grid>
+                        <ApiStatus />
                     </Labeled>
                 </Grid>
                 <Grid item>
@@ -73,9 +59,8 @@ export const ApiOverview = ({ record, userIsPublisher }) => {
                     >
                         <TextField
                             id="apiServiceType"
-                            record={record}
                             source="apiServiceType"
-                            className={classNames(
+                            className={cx(
                                 headerLabelClasses.value,
                                 classes.type
                             )}
@@ -114,7 +99,6 @@ export const ApiOverview = ({ record, userIsPublisher }) => {
                     >
                         <VisibilityField
                             id="accessStatus"
-                            record={record}
                             source="accessStatus"
                             className={headerLabelClasses.value}
                         />
@@ -130,7 +114,6 @@ export const ApiOverview = ({ record, userIsPublisher }) => {
                     >
                         <DateField
                             id="modifyTs"
-                            record={record}
                             source="modifyTs"
                             className={headerLabelClasses.value}
                         />
@@ -155,7 +138,6 @@ export const ApiOverview = ({ record, userIsPublisher }) => {
                     >
                         <ApiApplicationUsageField
                             id="applicationUsage"
-                            record={record}
                             className={headerLabelClasses.value}
                         />
                     </Labeled>
@@ -170,7 +152,7 @@ export const ApiOverview = ({ record, userIsPublisher }) => {
                 className={classes.description}
                 classes={gridClasses}
             >
-                {userIsPublisher ? (
+                {userIsPublisher && (
                     <Grid item>
                         <Labeled
                             // On <Labeled />, this will translate in a correct `for` attribute on the label
@@ -181,14 +163,13 @@ export const ApiOverview = ({ record, userIsPublisher }) => {
                         >
                             <LinkField
                                 id="locationUrl"
-                                record={record}
                                 source="locationUrl"
                                 target="_blank"
                                 rel="noopener"
                             />
                         </Labeled>
                     </Grid>
-                ) : null}
+                )}
 
                 <Grid item>
                     <Labeled
@@ -198,11 +179,7 @@ export const ApiOverview = ({ record, userIsPublisher }) => {
                         classes={contentLabelClasses}
                         className={classes.field}
                     >
-                        <MarkdownField
-                            id="description"
-                            record={record}
-                            source="description"
-                        />
+                        <MarkdownField id="description" source="description" />
                     </Labeled>
                 </Grid>
                 {userIsPublisher ? (
@@ -216,7 +193,6 @@ export const ApiOverview = ({ record, userIsPublisher }) => {
                         >
                             <MarkdownField
                                 id="privateDescription"
-                                record={record}
                                 source="privateDescription"
                             />
                         </Labeled>
@@ -231,7 +207,7 @@ export const ApiOverview = ({ record, userIsPublisher }) => {
                         className={classes.field}
                     >
                         <Grid item container alignItems="center">
-                            <AsyncTagsField id="tags" record={record} />
+                            <AsyncTagsField id="tags" />
                         </Grid>
                     </Labeled>
                 </Grid>
@@ -251,60 +227,55 @@ export const ApiOverview = ({ record, userIsPublisher }) => {
                     classes={contentLabelClasses}
                     className={classes.field}
                 >
-                    <ApiAssetsField id="assets" record={record} />
+                    <ApiAssetsField id="assets" />
                 </Labeled>
             </Grid>
         </Grid>
     );
 };
 
-const useOverviewStyles = makeStyles(
-    theme => ({
-        root: {
-            display: 'flex',
-            fontFamily: theme.typography.body2.fontFamily,
-            fontSize: theme.typography.caption.fontSize,
-            margin: -theme.spacing(1),
+const useOverviewStyles = makeStyles({ name: 'Layer7ApiOverview' })(theme => ({
+    root: {
+        display: 'flex',
+        fontFamily: theme.typography.body2.fontFamily,
+        fontSize: theme.typography.caption.fontSize,
+        margin: -theme.spacing(1),
+    },
+    enabledContainer: {
+        width: 'auto',
+    },
+    enabled: {
+        color: theme.palette.success.main,
+        '& $enabledIcon': {
+            backgroundColor: theme.palette.success.main,
         },
-        enabledContainer: {
-            width: 'auto',
+    },
+    disabled: {
+        '& $enabledIcon': {
+            backgroundColor: theme.palette.text.disabled,
         },
-        enabled: {
-            color: theme.palette.success.main,
-            '& $enabledIcon': {
-                backgroundColor: theme.palette.success.main,
-            },
-        },
-        disabled: {
-            '& $enabledIcon': {
-                backgroundColor: theme.palette.text.disabled,
-            },
-        },
-        enabledIcon: {
-            width: theme.spacing(1.5),
-            height: theme.spacing(1.5),
-            borderRadius: 99999,
-            marginRight: theme.spacing(),
-        },
-        field: {
-            marginLeft: theme.spacing(1),
-            marginRight: theme.spacing(1),
-            minWidth: '100px',
-        },
-        type: {
-            textTransform: 'uppercase',
-        },
-        informations: {},
-        applications: {},
-        description: {},
-        assets: {},
-    }),
-    {
-        name: 'Layer7ApiOverview',
-    }
-);
+    },
+    enabledIcon: {
+        width: theme.spacing(1.5),
+        height: theme.spacing(1.5),
+        borderRadius: 99999,
+        marginRight: theme.spacing(),
+    },
+    field: {
+        marginLeft: theme.spacing(1),
+        marginRight: theme.spacing(1),
+        minWidth: '100px',
+    },
+    type: {
+        textTransform: 'uppercase',
+    },
+    informations: {},
+    applications: {},
+    description: {},
+    assets: {},
+}));
 
-const useHeaderStyles = makeStyles(theme => ({
+const useHeaderStyles = makeStyles()(theme => ({
     label: {
         textTransform: 'uppercase',
     },
@@ -313,20 +284,20 @@ const useHeaderStyles = makeStyles(theme => ({
     },
 }));
 
-const useContentStyles = makeStyles(theme => ({
+const useContentStyles = makeStyles()(theme => ({
     label: {
         fontWeight: theme.typography.fontWeightBold,
         fontSize: '1.5rem',
     },
 }));
 
-const useGridStyles = makeStyles(theme => ({
+const useGridStyles = makeStyles()(theme => ({
     root: {
         borderBottom: `1px solid ${theme.palette.divider}`,
     },
 }));
 
-const useRightGridStyles = makeStyles(theme => ({
+const useRightGridStyles = makeStyles()(theme => ({
     root: {
         borderBottom: `1px solid ${theme.palette.divider}`,
         borderLeft: `1px solid ${theme.palette.divider}`,

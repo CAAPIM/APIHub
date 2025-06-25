@@ -1,6 +1,6 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import get from 'lodash/get';
 import set from 'lodash/set';
-import { combineReducers } from 'redux';
 
 export const SAVE_EXPANDED_NODES = '@layer7/SAVE_EXPANDED_NODES';
 export const ADD_EXPANDED_NODES = '@layer7/ADD_EXPANDED_NODES';
@@ -57,12 +57,12 @@ export const newDocument = (previousState = null, { type, payload }) => {
     }
 };
 
-export const documentationReducer = {
-    documentation: combineReducers({
-        documentationTree: documentationTreeReducer,
-        newDocument,
-    }),
-};
+// export const documentationReducer = {
+//     documentation: combineReducers({
+//         documentationTree: documentationTreeReducer,
+//         newDocument,
+//     }),
+// };
 
 // Tree
 
@@ -75,20 +75,3 @@ export const addExpandedNodes = (entityUuid, locale, nodeIds) => ({
     type: ADD_EXPANDED_NODES,
     payload: { entityUuid, locale, nodeIds },
 });
-
-export const selectExpandedNodes = (entityUuid, locale) => state =>
-    get(state, `documentation.documentationTree.${entityUuid}.${locale}`, []);
-
-// New Document
-
-export const addNewDocument = document => ({
-    type: DOCUMENT_ADDED,
-    payload: document,
-});
-
-export const removeNewDocument = () => ({
-    type: DOCUMENT_ADDED,
-    payload: null,
-});
-
-export const getNewDocument = state => state.documentation.newDocument;

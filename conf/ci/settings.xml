@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved. -->
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+  <mirrors>
+    <mirror>
+      <id>artifactory</id>
+      <mirrorOf>*</mirrorOf>
+      <url>https://usw1.packages.broadcom.com:443/artifactory/apim-maven-virtual</url>
+    </mirror>
+  </mirrors>
+  <servers>
+    <server>
+      <id>artifactory</id>
+      <username>${artifactory.username}</username>
+      <password>${artifactory.password}</password>
+    </server>
+    <server>
+      <id>layer7-snapshot-repo</id>
+      <username>${artifactory.username}</username>
+      <password>${artifactory.password}</password>
+    </server>
+    <server>
+      <id>layer7-release-repo</id>
+      <username>${artifactory.username}</username>
+      <password>${artifactory.password}</password>
+    </server>
+  </servers>
+</settings>
+

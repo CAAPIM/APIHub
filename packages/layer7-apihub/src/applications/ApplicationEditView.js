@@ -1,37 +1,28 @@
-// Copyright © 2024 Broadcom Inc. and its subsidiaries. All Rights Reserved.
-import React, { useState, useEffect } from 'react';
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
+import React, { useState, useEffect, useMemo } from 'react';
 import {
-    Labeled,
     minLength,
     maxLength,
     required,
     SimpleForm,
     TextInput,
     useDataProvider,
-    useQuery,
+    useRecordContext,
+    useGetList,
+    useGetRecordId,
+    useCreate,
+    useCreatePath,
     useRefresh,
 } from 'react-admin';
-import { useHistory } from 'react-router-dom';
-import { FormSpy } from 'react-final-form';
-
+import { useNavigate } from 'react-router-dom';
 import debounce from 'lodash/debounce';
 import get from 'lodash/get';
 import every from 'lodash/every';
 import isUndefined from 'lodash/isUndefined';
-import {
-    useTranslate,
-    CRUD_UPDATE,
-    useUpdate,
-    useMutation,
-    useLoading,
-} from 'ra-core';
-import {
-    CircularProgress,
-    Dialog,
-    DialogContent,
-    Grid,
-    makeStyles,
-} from '@material-ui/core';
+import isEmpty from 'lodash/isEmpty';
+import { useTranslate, useUpdate, useLoading } from 'react-admin';
+import { CircularProgress, Dialog, DialogContent, Grid } from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
 import difference from 'lodash/difference';
 import findIndex from 'lodash/findIndex';
 import keys from 'lodash/keys';
@@ -59,6 +50,8 @@ import {
 import { useWorkFlowConfigurations } from './useWorkFlowConfigurations';
 import useApplicationUniqueCheck from './useApplicationUniqueCheck';
 import { ConfirmDialog } from '../ui';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { useFormContext, useWatch } from 'react-hook-form';
 
 const PANEL_ID_NONE = 'PANEL_ID_NONE';
 const PANEL_ID_DETAILS = 'PANEL_ID_DETAILS';
@@ -70,30 +63,29 @@ const APPLICATION_STATUS_INCOMPLETE = 'INCOMPLETE';
 const APPLICATION_STATUS_REJECTED = 'REJECTED';
 const NOTIFICATION_TYPE_ERROR = 'error';
 
-export const ApplicationEditView = ({
-    userContext,
-    toolbarProps,
-    record,
-    ...props
-}) => {
-    const classes = useStyles();
-    const labelClasses = useLabelStyles();
+export const ApplicationEditView = ({ userContext }) => {
+    const { classes } = useStyles();
+    const { classes: labelClasses } = useLabelStyles();
+    const record = useRecordContext();
+    const id = useGetRecordId();
+    const refresh = useRefresh();
     const [apiKeys, setApiKeys] = useState(record.apiKey);
     const selectedOrganization = record.organizationUuid;
-    const [update] = useUpdate('applications');
+    const [update] = useUpdate();
+    const [create] = useCreate();
     const notify = useLayer7Notify();
     const translate = useTranslate();
     const dataProvider = useDataProvider();
-    const [apiPlansEnabled, setApiPlansEnabled] = React.useState(false);
-    const [allowSelectHashing, setAllowSelectHashing] = React.useState(false);
-    const [secretHashing, setSecretHashing] = React.useState('PLAIN');
-    const [activePanelID, setActivePanelID] = useState(PANEL_ID_DETAILS);
-    const [selectedPanelID, setSelectedPanelID] = useState(PANEL_ID_DETAILS);
+    const [apiPlansEnabled, setApiPlansEnabled] = useState(false);
+    const [allowSelectHashing, setAllowSelectHashing] = useState(false);
+    const [secretHashing, setSecretHashing] = useState('PLAIN');
+    const [activePanelID, setActivePanelID] = useState(PANEL_ID_NONE);
+    const [selectedPanelID, setSelectedPanelID] = useState(PANEL_ID_NONE);
     const [apiIds, setApiIds] = useState([]);
     const [apiApiPlanIds, setApiApiPlanIds] = useState([]);
     const [apiGroupIds, setApiGroupIds] = useState([]);
     const loading = useLoading();
-    const history = useHistory();
+    const navigate = useNavigate();
     // using apiSelectorDataLoaded to render ApiSelector once all the required data is pulled,
     // else, duplicates were added to selectedItems
     const [apiSelectorDataLoaded, setApiSelectorDataLoaded] = useState(false);
@@ -112,15 +104,13 @@ export const ApplicationEditView = ({
 
     const workFlowConfigurations = useWorkFlowConfigurations();
     const [isEditAppDetailsLocked, setIsEditAppDetailsLocked] = useState(false);
-    const [isEditCustomFieldsLocked, setIsEditCustomFieldsLocked] = useState(
-        false
-    );
+    const [isEditCustomFieldsLocked, setIsEditCustomFieldsLocked] =
+        useState(false);
     const [isEditApiKeysLocked, setIsEditApiKeysLocked] = useState(false);
     const [isEditApisLocked, setIsEditApisLocked] = useState(false);
     const [isEditApiPlansLocked, setIsEditApiPlansLocked] = useState(false);
     const [isEditApiGroupsLocked, setIsEditApiGroupsLocked] = useState(false);
     const [appCertificates, setAppCertificates] = useState([]);
-    const refresh = useRefresh();
     const [updatedKeyDetails, setUpdatedKeyDetails] = useState();
     const [uploadedCertFile, setUploadedCertFile] = useState();
     const [certFileName, setCertFileName] = useState('');
@@ -128,38 +118,54 @@ export const ApplicationEditView = ({
     const isAppIncomplete = record.status === APPLICATION_STATUS_INCOMPLETE;
     const isAppRejected = record.status === APPLICATION_STATUS_REJECTED;
     const [authProviders, setAuthProviders] = useState([]);
+    const createPath = useCreatePath();
 
-    const {
-        data: apiPlanFeatureFlag,
-        loaded: apiPlanFeatureFlagLoaded,
-    } = useQuery({
-        type: 'getApiPlansFeatureFlag',
-        resource: 'apiPlans',
-        payload: {},
+    const { mutateAsync: fetchApiPlanFeatureFlagAsync } = useMutation({
+        mutationFn: () => dataProvider.getApiPlansFeatureFlag('apiPlans'),
     });
 
-    React.useEffect(() => {
-        (async () => {
-            const { data } =
-                (await dataProvider.getList('authProviders')) || {};
-            setAuthProviders(data);
-        })();
-    }, [dataProvider]);
-
-    // get application certificates data
-    const [fetchApplicationCerts, { data: applicationCertsData }] = useMutation(
-        {
-            payload: {
-                applicationUuid: record.id,
-            },
-            resource: 'applicationCertificates',
-            type: 'getList',
+    const fetchData = async () => {
+        const { data } = await fetchApiPlanFeatureFlagAsync();
+        setApiPlansEnabled(data.value === 'true');
+        if (data.value === 'true') {
+            fetchApiApiPlans({ id });
+        } else {
+            fetchApis({ id });
+            fetchApiGroups({ id });
         }
-    );
+        fetchApiKeys({
+            pagination: { page: 1, perPage: 100 },
+            sort: { field: 'createTs', order: 'DESC' },
+            meta: {
+                applicationUuid: id,
+            },
+        });
+        fetchOAuthClients({
+            pagination: { page: 1, perPage: 100 },
+            sort: { field: 'createTs', order: 'DESC' },
+            meta: {
+                applicationUuid: id,
+            },
+        });
+    };
 
     useEffect(() => {
-        fetchApplicationCerts();
+        fetchData();
     }, []);
+
+    const { data: authProvidersData, isSuccess: fetchAuthProvidersIsSuccess } =
+        useGetList('authProviders');
+
+    useEffect(() => {
+        if (fetchAuthProvidersIsSuccess) {
+            setAuthProviders(authProvidersData);
+        }
+    }, [fetchAuthProvidersIsSuccess, authProvidersData]);
+
+    const { data: applicationCertsData, refetch: fetchApplicationCerts } =
+        useGetList('applicationCertificates', {
+            meta: { applicationUuid: id },
+        });
 
     useEffect(() => {
         if (applicationCertsData) {
@@ -167,56 +173,43 @@ export const ApplicationEditView = ({
         }
     }, [applicationCertsData]);
 
-    React.useEffect(() => {
-        if (apiPlanFeatureFlag) {
-            setApiPlansEnabled(apiPlanFeatureFlag.value === 'true');
-        }
-    }, [apiPlanFeatureFlag]);
-
-    // get app requests status
     const { data: appRequestStatus = {} } = useQuery({
-        type: 'getRequestStatus',
-        resource: 'applications',
-        payload: { id: record.id },
+        queryKey: ['applications', 'getRequestStatus', { id }],
+        queryFn: () => dataProvider.getRequestStatus('applications', { id }),
     });
 
-    React.useEffect(() => {
+    useEffect(() => {
+        if (record.status !== 'INCOMPLETE') {
+            setActivePanelID(PANEL_ID_DETAILS);
+            setSelectedPanelID(PANEL_ID_DETAILS);
+        }
+        const appStatus = !isEmpty(appRequestStatus)
+            ? get(appRequestStatus, 'data')
+            : {};
         setIsEditAppDetailsLocked(
-            isEditDetailsPending(userContext, appRequestStatus, record.status)
+            isEditDetailsPending(userContext, appStatus, record.status)
         );
         setIsEditCustomFieldsLocked(
-            isEditCustomFieldsPending(
-                userContext,
-                appRequestStatus,
-                record.status
-            )
+            isEditCustomFieldsPending(userContext, appStatus, record.status)
         );
         setIsEditApiKeysLocked(
-            isEditAPIKeysPending(userContext, appRequestStatus, record.status)
+            isEditAPIKeysPending(userContext, appStatus, record.status)
         );
         if (apiPlansEnabled) {
             setIsEditApisLocked(
-                isEditAPIPlansPending(
-                    userContext,
-                    appRequestStatus,
-                    record.status
-                )
+                isEditAPIPlansPending(userContext, appStatus, record.status)
             );
         } else {
             setIsEditApisLocked(
-                isEditAPIsPending(userContext, appRequestStatus, record.status)
+                isEditAPIsPending(userContext, appStatus, record.status)
             );
         }
         setIsEditApiPlansLocked(
-            isEditAPIPlansPending(userContext, appRequestStatus, record.status)
+            isEditAPIPlansPending(userContext, appStatus, record.status)
         );
         if (!apiPlansEnabled) {
             setIsEditApiGroupsLocked(
-                isEditAPIGroupsPending(
-                    userContext,
-                    appRequestStatus,
-                    record.status
-                )
+                isEditAPIGroupsPending(userContext, appStatus, record.status)
             );
         }
     }, [
@@ -231,9 +224,9 @@ export const ApplicationEditView = ({
     const isNameUnique = useApplicationUniqueCheck(
         appName,
         selectedOrganization,
-        record.id
+        id
     );
-    const [clientMetadataMap, setClientMetadataMap] =useState({});
+    const [clientMetadataMap, setClientMetadataMap] = useState({});
 
     const updateAppNameWithDebounce = debounce(name => {
         setAppName(name);
@@ -255,62 +248,52 @@ export const ApplicationEditView = ({
         return {};
     };
 
-    // get apis data
-    const [
-        fetchApis,
-        { data: apisData, loading: isApisDataLoading },
-    ] = useMutation({
-        type: 'getApis',
-        resource: 'applications',
-        payload: { id: record.id },
+    const {
+        mutate: fetchApis,
+        data: apisData,
+        isLoading: isApisDataLoading,
+    } = useMutation({
+        mutationFn: ({ id }) => dataProvider.getApis('applications', { id }),
+        onSuccess: response => {
+            const { data } = response;
+            setApiIds(data.map(item => item.uuid));
+        },
     });
-    React.useEffect(() => {
-        if (!apiPlansEnabled) {
-            if (apisData) {
-                setApiIds(apisData.map(item => item.uuid));
-            }
-        }
-    }, [apiPlansEnabled, apisData]);
 
-    // get api plans data
-    const [
-        fetchApiApiPlans,
-        { data: apiApiPlanIdsData, loading: isApiPlansDataLoading },
-    ] = useMutation({
-        type: 'getApiApiPlanIds',
-        resource: 'applications',
-        payload: { id: record.id },
-    });
-    React.useEffect(() => {
-        if (apiApiPlanIdsData) {
+    const {
+        mutate: fetchApiApiPlans,
+        data: apiApiPlanIdsData,
+        isLoading: isApiPlansDataLoading,
+    } = useMutation({
+        mutationFn: ({ id }) =>
+            dataProvider.getApiApiPlanIds('applications', { id }),
+        onSuccess: response => {
+            const { data } = response;
             setApiApiPlanIds(
-                apiApiPlanIdsData.map(item => ({
+                data.map(item => ({
                     ApiUuid: item.uuid,
                     ApiPlanUuid: item.apiPlanUuid,
                 }))
             );
-            setApiIds(apiApiPlanIdsData.map(item => item.uuid));
-        }
-    }, [apiApiPlanIdsData]);
-
-    // get api groups data
-    const [
-        fetchApiGroups,
-        { data: apiGroupsIdsData, loading: isApiGroupsIdsDataLoading },
-    ] = useMutation({
-        type: 'getApiGroups',
-        resource: 'applications',
-        payload: { id: record.id },
+            setApiIds(data.map(item => item.uuid));
+        },
     });
-    React.useEffect(() => {
-        if (!isApiGroupsIdsDataLoading && apiGroupsIdsData) {
-            setApiGroupIds(apiGroupsIdsData.map(item => item.uuid));
-        }
-    }, [apiGroupsIdsData, isApiGroupsIdsDataLoading]);
+
+    const {
+        mutate: fetchApiGroups,
+        data: apiGroupsIdsData,
+        isLoading: isApiGroupsIdsDataLoading,
+    } = useMutation({
+        mutationFn: ({ id }) =>
+            dataProvider.getApiGroups('applications', { id }),
+        onSuccess: ({ data }) => {
+            setApiGroupIds(data.map(item => item.uuid));
+        },
+    });
 
     useEffect(() => {
         if (apiPlansEnabled) {
-            if (!isApiPlansDataLoading && apiApiPlanIdsData) {
+            if (!isApiPlansDataLoading && apiApiPlanIds && apiIds) {
                 setApiSelectorDataLoaded(true);
             }
         } else {
@@ -332,15 +315,23 @@ export const ApplicationEditView = ({
         apiApiPlanIdsData,
         apiGroupsIdsData,
     ]);
-    const { data: secretHashMetaData, error } = useQuery({
-        type: 'getSecretHashMetadata',
-        resource: 'applications',
-        payload: {},
+
+    const {
+        data: secretHashMetaResponse,
+        isSuccess: fetchSecretHashMetaDataIsSuccess,
+    } = useQuery({
+        queryKey: ['applications', 'getSecretHashMetadata'],
+        queryFn: () => dataProvider.getSecretHashMetadata('applications'),
     });
+
     useEffect(() => {
-        if (secretHashMetaData && secretHashMetaData.value) {
+        if (
+            secretHashMetaResponse &&
+            secretHashMetaResponse.data &&
+            secretHashMetaResponse.data.value
+        ) {
             const isPlainTextAllowed = get(
-                JSON.parse(secretHashMetaData.value),
+                JSON.parse(secretHashMetaResponse.data.value),
                 'plaintextAllowed'
             );
             setSecretHashing('HASHED');
@@ -348,72 +339,69 @@ export const ApplicationEditView = ({
         } else {
             setAllowSelectHashing(false);
         }
-    }, [secretHashMetaData, error]);
+    }, [secretHashMetaResponse, fetchSecretHashMetaDataIsSuccess]);
 
-     // get oAuth clients data
-    const [
-      fetchOAuthClients,
-      { data: oAuthClientsData, loading: oAuthClientsLoading },
-    ] = useMutation({
-        payload: {
-            applicationUuid: record.id,
-            pagination: { page: 1, perPage: 100 },
-            sort: { field: 'createTs', order: 'DESC' },
-        },
-        resource: 'oAuthClients',
-        type: 'getList',
-    });
-    // get api keys data
-    const [
-        fetchApiKeys,
-        { data: apiKeysData, loading: apiKeysLoading },
-    ] = useMutation({
-        payload: {
-            applicationUuid: record.id,
-            pagination: { page: 1, perPage: 100 },
-            sort: { field: 'createTs', order: 'DESC' },
-        },
-        resource: 'apiKeys',
-        type: 'getList',
+    const {
+        mutate: fetchOAuthClients,
+        data: oAuthClientsData,
+        isLoading: oAuthClientsIsLoading,
+    } = useMutation({
+        mutationFn: ({ filter, pagination, sort, meta }) =>
+            dataProvider.getList('oAuthClients', {
+                filter,
+                pagination,
+                sort,
+                meta,
+            }),
     });
 
-  useEffect(() => {
-    if(apiKeysData && oAuthClientsData && apiKeysData.length > 0 && oAuthClientsData.length >0) {
-      oAuthClientsData.forEach(oAuthclient => {
-        const oAuthApiKey = apiKeysData.find(key => key.apiKey === oAuthclient.clientId);
-        oAuthApiKey['clientMetadata'] = JSON.stringify(oAuthclient.clientMetadata, null, 2);
-      })
-    }
-    setApiKeys(sortBy(apiKeysData, ({ defaultKey }) => !defaultKey));
-  }, [apiKeysData, oAuthClientsData]);
-
-  useEffect(() => {
-    if (oAuthClientsData) {
-      oAuthClientsData.forEach(client =>
-        setClientMetadataMap({
-          ...clientMetadataMap,
-          [client.clientId]: client,
-        })
-      )
-    }
-  }, [oAuthClientsData]);
+    const {
+        mutate: fetchApiKeys,
+        data: apiKeysData,
+        isLoading: apiKeysIsLoading,
+        isSuccess: fetchApisKeyIsSuccess,
+    } = useMutation({
+        mutationFn: ({ filter, pagination, sort, meta }) =>
+            dataProvider.getList('apiKeys', {
+                filter,
+                pagination,
+                sort,
+                meta,
+            }),
+        onSuccess: ({ data }) => {
+            data.forEach(client =>
+                setClientMetadataMap(prev => ({
+                    ...prev,
+                    [client.clientId]: client,
+                }))
+            );
+        },
+    });
 
     useEffect(() => {
-        if (apiPlanFeatureFlagLoaded) {
-            fetchApis();
-            fetchApiGroups();
-            fetchApiApiPlans();
-            fetchApiKeys();
-            fetchOAuthClients();
+        if (
+            apiKeysData &&
+            oAuthClientsData &&
+            apiKeysData.data.length > 0 &&
+            oAuthClientsData.data.length > 0
+        ) {
+            oAuthClientsData.data.forEach(oAuthclient => {
+                const oAuthApiKey = apiKeysData.data.find(
+                    key => key.apiKey === oAuthclient.clientId
+                );
+                oAuthApiKey['clientMetadata'] = JSON.stringify(
+                    oAuthclient.clientMetadata,
+                    null,
+                    2
+                );
+            });
         }
-    }, [
-        apiPlanFeatureFlagLoaded,
-        fetchApis,
-        fetchApiGroups,
-        fetchApiApiPlans,
-        fetchApiKeys,
-        fetchOAuthClients,
-    ]);
+        if (fetchApisKeyIsSuccess) {
+            setApiKeys(
+                sortBy(apiKeysData.data, ({ defaultKey }) => !defaultKey)
+            );
+        }
+    }, [apiKeysData, fetchApisKeyIsSuccess, oAuthClientsData]);
 
     const customFieldsMap = {};
     const appCustomFields = record.customFieldValues || [];
@@ -421,27 +409,38 @@ export const ApplicationEditView = ({
         customFieldsMap[item.customFieldUuid] = item.value;
     });
 
-    const initialValues = {
-        id: record.id,
-        applicationName: record.name,
-        description: record.description,
-        organizationName: record.organizationName,
-        oAuthCallbackUrl: record.OauthCallbackUrl || '',
-        oAuthType: record.OauthType?.toLowerCase() || 'PUBLIC',
-        sharedSecret: null,
-        selected: record.ApiIds?.results,
-        customFields: record.customFieldValues || [],
-        apiKey: record.apiKey,
-        apiKeys: apiKeys,
-        status: record.status,
-        clientRegistrationType: 'PORTAL',
-        clientDefDescription: '',
-        clientMetadata: '',
-        // using statusBoolValue to hold boolean
-        // value of status when the status is either ENABLED or DISABLED
-        statusBoolValue: record.status === 'ENABLED' ? true : false,
-        ...customFieldsMap,
-    };
+    const initialValues = useMemo(() => {
+        const customFieldsMap = {};
+        const appCustomFields = record.customFieldValues || [];
+        const customFieldsArr = [];
+        appCustomFields.forEach(item => {
+            customFieldsMap[item.customFieldUuid] = item.value;
+            customFieldsArr.push(item.customFieldUuid);
+        });
+
+        return {
+            id: record.id,
+            applicationName: record.name,
+            description: record.description,
+            organizationName: record.organizationName,
+            oAuthCallbackUrl: record.OauthCallbackUrl || '',
+            oAuthType: record.OauthType?.toLowerCase() || 'PUBLIC',
+            sharedSecret: null,
+            selected: record.ApiIds?.results,
+            customFields: record.customFieldValues || [],
+            customFieldsArr: customFieldsArr,
+            apiKey: record.apiKey,
+            apiKeys: [],
+            status: record.status,
+            clientRegistrationType: 'PORTAL',
+            clientDefDescription: '',
+            clientMetadata: '',
+            // using statusBoolValue to hold boolean
+            // value of status when the status is either ENABLED or DISABLED
+            statusBoolValue: record.status === 'ENABLED',
+            ...customFieldsMap,
+        };
+    }, [record]);
 
     // update key
     const onKeySubmit = (form, apiKey) => {
@@ -477,19 +476,22 @@ export const ApplicationEditView = ({
         if (apiKey === NEW_KEY) {
             if (keyData.authMethod === 'NONE') {
                 keyData = {
-                  ...keyData,
-                  defaultKey: form.apiKeys.length === 1,
-                }
-                if(apiKeyObject.clientRegistrationType === 'EXTERNAL') {
-                  addApiKey(record.id, {
-                      ...keyData,
-                      apiKey: apiKeyObject.userProvidedApiKey,
-                  });
-                } else {// clientRegistrationType is PORTAL_DCR
-                  addOAuthClient(record.id, {
                     ...keyData,
-                    clientMetadata: JSON.parse(apiKeyObject.clientMetadata),
-                });
+                    defaultKey: form.apiKeys.length === 1,
+                };
+                if (apiKeyObject.clientRegistrationType === 'EXTERNAL') {
+                    addApiKey(record.id, {
+                        ...keyData,
+                        apiKey: apiKeyObject.userProvidedApiKey,
+                    });
+                } else {
+                    // clientRegistrationType is PORTAL_DCR
+                    addOAuthClient(record.id, {
+                        ...keyData,
+                        clientMetadata: apiKeyObject.clientMetadata
+                            ? JSON.parse(apiKeyObject.clientMetadata)
+                            : '',
+                    });
                 }
             } else {
                 addApiKey(record.id, {
@@ -502,30 +504,30 @@ export const ApplicationEditView = ({
             }
         } else {
             if (!isEditApiKeysLocked) {
-              let keyType = 'api-keys';
-              if(apiKeyObject.clientRegistrationType === 'PORTAL_DCR') {
-                keyType = 'oauth-clients';
-                keyData = {
-                  ...keyData,
-                  clientMetadata: JSON.parse(apiKeyObject.clientMetadata),
-                  clientId: apiKeyObject.apiKey,
-                };
-              }
+                let keyType = 'api-keys';
+                if (apiKeyObject.clientRegistrationType === 'PORTAL_DCR') {
+                    keyType = 'oauth-clients';
+                    keyData = {
+                        ...keyData,
+                        clientMetadata: JSON.parse(apiKeyObject.clientMetadata),
+                        clientId: apiKeyObject.apiKey,
+                    };
+                }
                 update(
+                    'applications',
                     {
-                        payload: {
-                            id: apiKeyObject.applicationUuid,
+                        id: apiKeyObject.applicationUuid,
+                        data: keyData,
+                        meta: {
                             keyId: apiKeyObject.apiKey,
-                            data: keyData,
                             options: {
                                 type: keyType,
                             },
                         },
                     },
                     {
-                        action: CRUD_UPDATE,
                         onSuccess: handleFormSaveSuccess,
-                        onFailure: handleFormSaveFailure,
+                        onError: handleFormSaveFailure,
                     }
                 );
             }
@@ -535,14 +537,17 @@ export const ApplicationEditView = ({
     // add key
     const addApiKey = async (appUuid, data) => {
         const { keySecretHashed } = data;
-        await dataProvider.create(
+        await create(
             'apiKeys',
             {
                 data,
-                appUuid,
+                meta: {
+                    appUuid,
+                },
             },
             {
-                onFailure: error => {
+                returnPromise: true,
+                onError: error => {
                     let errorMessage = getErrorMessageFromError(error);
                     notify(
                         `${translate(
@@ -552,7 +557,7 @@ export const ApplicationEditView = ({
                     );
                     reloadForm();
                 },
-                onSuccess: ({ data }) => {
+                onSuccess: data => {
                     setActivePanelID(PANEL_ID_NONE);
                     setAddingKeyEntry(false);
                     if (keySecretHashed) {
@@ -590,53 +595,56 @@ export const ApplicationEditView = ({
     };
 
     const addOAuthClient = async (appUuid, data) => {
-      await dataProvider.create(
-          'oAuthClients',
-          {
-              data,
-              appUuid,
-          },
-          {
-              onFailure: error => {
-                  let errorMessage = getErrorMessageFromError(error);
-                  notify(
-                      `${translate(
-                          'resources.applications.notifications.edit_error'
-                      )} ${errorMessage}`,
-                      NOTIFICATION_TYPE_ERROR
-                  );
-                  reloadForm();
-              },
-              onSuccess: ({ data }) => {
-                  setActivePanelID(PANEL_ID_NONE);
-                  setAddingKeyEntry(false);
-                  const { status } = data;
-                  if (status === 'ENABLED') {
-                      setAddedKey({
-                        ...data,
-                        apiKey: data.clientId,
-                        keySecret: data.clientSecret,
-                      });
-                      setOpenSecretDialog(true);
-                  } else {
-                      setShowRegPendingPopup(true);
-                      if (isAppIncomplete) {
-                          reloadForm();
-                      } else {
-                          navigateToShowView();
-                      }
-                  }
-              },
-          }
-      );
-  };
+        await create(
+            'oAuthClients',
+            {
+                data,
+                meta: {
+                    appUuid,
+                },
+            },
+            {
+                returnPromise: true,
+                onError: error => {
+                    let errorMessage = getErrorMessageFromError(error);
+                    notify(
+                        `${translate(
+                            'resources.applications.notifications.edit_error'
+                        )} ${errorMessage}`,
+                        NOTIFICATION_TYPE_ERROR
+                    );
+                    reloadForm();
+                },
+                onSuccess: ({ data }) => {
+                    setActivePanelID(PANEL_ID_NONE);
+                    setAddingKeyEntry(false);
+                    const { status } = data;
+                    if (status === 'ENABLED') {
+                        setAddedKey({
+                            ...data,
+                            apiKey: data.clientId,
+                            keySecret: data.clientSecret,
+                        });
+                        setOpenSecretDialog(true);
+                    } else {
+                        setShowRegPendingPopup(true);
+                        if (isAppIncomplete) {
+                            reloadForm();
+                        } else {
+                            navigateToShowView();
+                        }
+                    }
+                },
+            }
+        );
+    };
 
     // save details
-    const onDetailsSubmit = form => {
+    const onDetailsSubmit = async form => {
         const promises = [];
         if (!isEditAppDetailsLocked && isDetailsModified) {
             promises.push(
-                new Promise((resolve, reject) => {
+                await new Promise((resolve, reject) => {
                     let appStatus = form.status;
                     // set app state only if the original state is ENABLED or DISABLED
                     if (
@@ -648,55 +656,55 @@ export const ApplicationEditView = ({
                             : 'DISABLED';
                     }
                     update(
+                        'applications',
                         {
-                            payload: {
-                                id: form.id,
-                                data: {
-                                    name: form.applicationName,
-                                    uuid: form.id,
-                                    description: form.description,
-                                    organizationUuid: record.organizationUuid,
-                                    organizationName: form.organizationName,
-                                    status: appStatus,
-                                },
+                            id: form.id,
+                            data: {
+                                name: form.applicationName,
+                                uuid: form.id,
+                                description: form.description,
+                                organizationUuid: record.organizationUuid,
+                                organizationName: form.organizationName,
+                                status: appStatus,
+                            },
+                            meta: {
                                 options: {
                                     type: 'details',
                                 },
                             },
                         },
                         {
-                            action: CRUD_UPDATE,
                             onSuccess: resolve,
-                            onFailure: reject,
+                            onError: reject,
                         }
                     );
                 })
             );
         }
         if (!isEditCustomFieldsLocked && isCustomFieldModified) {
-            const customFieldsArr = form.CustomFieldsArr || [];
-            const CustomFieldValues = customFieldsArr.map(item => {
+            const customFieldsArr = form.customFieldsArr || [];
+            const customFieldValues = customFieldsArr.map(item => {
                 return {
                     customFieldUuid: item,
                     value: form[item] ? form[item] : '',
                 };
             });
             promises.push(
-                new Promise((resolve, reject) => {
+                await new Promise((resolve, reject) => {
                     update(
+                        'applications',
                         {
-                            payload: {
-                                id: form.id,
-                                data: CustomFieldValues,
+                            id: form.id,
+                            data: customFieldValues,
+                            meta: {
                                 options: {
                                     type: 'custom-fields',
                                 },
                             },
                         },
                         {
-                            action: CRUD_UPDATE,
                             onSuccess: resolve,
-                            onFailure: reject,
+                            onError: reject,
                         }
                     );
                 })
@@ -718,7 +726,7 @@ export const ApplicationEditView = ({
     };
 
     // save apis
-    const onApisSubmit = form => {
+    const onApisSubmit = async form => {
         const promises = [];
         if (apiPlansEnabled) {
             const apiApiPlanIds = form.ApiApiPlanIds || [];
@@ -728,21 +736,21 @@ export const ApplicationEditView = ({
             }));
             if (!isEditApiPlansLocked) {
                 promises.push(
-                    new Promise((resolve, reject) => {
+                    await new Promise((resolve, reject) => {
                         update(
+                            'applications',
                             {
-                                payload: {
-                                    id: form.id,
-                                    data: apiApiPlans,
+                                id: form.id,
+                                data: apiApiPlans,
+                                meta: {
                                     options: {
                                         type: 'api-plans',
                                     },
                                 },
                             },
                             {
-                                action: CRUD_UPDATE,
                                 onSuccess: resolve,
-                                onFailure: reject,
+                                onError: reject,
                             }
                         );
                     })
@@ -755,21 +763,21 @@ export const ApplicationEditView = ({
             }));
             if (!isEditApiGroupsLocked) {
                 promises.push(
-                    new Promise((resolve, reject) => {
+                    await new Promise((resolve, reject) => {
                         update(
+                            'applications',
                             {
-                                payload: {
-                                    id: form.id,
-                                    data: apiGroups,
+                                id: form.id,
+                                data: apiGroups,
+                                meta: {
                                     options: {
                                         type: 'api-groups',
                                     },
                                 },
                             },
                             {
-                                action: CRUD_UPDATE,
                                 onSuccess: resolve,
-                                onFailure: reject,
+                                onError: reject,
                             }
                         );
                     })
@@ -781,21 +789,21 @@ export const ApplicationEditView = ({
             }));
             if (!isEditApisLocked) {
                 promises.push(
-                    new Promise((resolve, reject) => {
+                    await new Promise((resolve, reject) => {
                         update(
+                            'applications',
                             {
-                                payload: {
-                                    id: form.id,
-                                    data: apis,
+                                id: form.id,
+                                data: apis,
+                                meta: {
                                     options: {
                                         type: 'apis',
                                     },
                                 },
                             },
                             {
-                                action: CRUD_UPDATE,
                                 onSuccess: resolve,
-                                onFailure: reject,
+                                onError: reject,
                             }
                         );
                     })
@@ -821,17 +829,9 @@ export const ApplicationEditView = ({
         setIsSectionModified(false);
         setIsDetailsModified(false);
         setIsCustomFieldModified(false);
-        refresh();
         setApiSelectorDataLoaded(false);
-        setApiKeys([]);
-        fetchApiKeys();
-        fetchOAuthClients();
-        if (apiPlansEnabled) {
-            fetchApiApiPlans();
-        } else {
-            fetchApis();
-            fetchApiGroups();
-        }
+        refresh();
+        fetchData();
     };
 
     const handleFormSaveSuccess = () => {
@@ -878,7 +878,7 @@ export const ApplicationEditView = ({
         }
         navigateToShowView();
     };
-    const [addingKeyEntry, setAddingKeyEntry] = React.useState(false);
+    const [addingKeyEntry, setAddingKeyEntry] = useState(false);
 
     const onFormSubmit = form => {
         if (activePanelID === PANEL_ID_DETAILS) {
@@ -913,7 +913,8 @@ export const ApplicationEditView = ({
             errorMessages.push(getErrorMessageFromError(error));
         });
         notify(
-            translate('resources.applications.notifications.edit_error') + ' ' +
+            translate('resources.applications.notifications.edit_error') +
+                ' ' +
                 errorMessages.join(','),
             NOTIFICATION_TYPE_ERROR
         );
@@ -922,7 +923,8 @@ export const ApplicationEditView = ({
     const handleFormSaveFailure = error => {
         let errorMessage = getErrorMessageFromError(error);
         notify(
-            translate('resources.applications.notifications.edit_error') + ' ' +
+            translate('resources.applications.notifications.edit_error') +
+                ' ' +
                 errorMessage,
             NOTIFICATION_TYPE_ERROR
         );
@@ -930,24 +932,31 @@ export const ApplicationEditView = ({
 
     const onPublish = () => {
         update(
+            'applications',
             {
-                payload: {
-                    id: record.id,
+                id: record.id,
+                meta: {
                     options: {
                         type: 'publish',
                     },
                 },
+                data: { id: record.id },
             },
             {
-                action: CRUD_UPDATE,
                 onSuccess: handleFormPublishSuccess,
-                onFailure: handleFormSaveFailure,
+                onError: handleFormSaveFailure,
             }
         );
     };
 
     const navigateToShowView = () => {
-        history.push(`/applications/${record.id}/show`);
+        navigate(
+            createPath({
+                resource: 'applications',
+                type: 'show',
+                id,
+            })
+        );
     };
 
     const onCancel = () => {
@@ -977,42 +986,35 @@ export const ApplicationEditView = ({
             }
         }
     };
-    const [
-    regenerateMutate,
-    {
+
+    const {
+        mutate: completeRegistration,
         data: dcrCreatedKey,
         error: completeRegistrationError,
-        loading: completingRegistration,
-    },
-  ] = useMutation();
-
-  React.useEffect(() => {
-    if(dcrCreatedKey && dcrCreatedKey.clientId) {
-      setAddedKey({
-        apiKey: dcrCreatedKey.clientId,
-        keySecret: dcrCreatedKey.clientSecret,
-        clientMetadata: dcrCreatedKey.clientMetadata,
-      });
-      setOpenSecretDialog(true);      
-    }
-  }, [dcrCreatedKey]);
-
-  React.useEffect(() => {
-    if(completeRegistrationError) {
-      handleFormSaveFailure([completeRegistrationError]);
-    }
-  }, [completeRegistrationError]);
-
-  const completeRegistration = (appId, apiKeyId) =>
-    regenerateMutate({
-        type: 'completeRegistration',
-        resource: 'oAuthClients',
-        payload: {
-            clientId: apiKeyId,
-            appUuid: appId,
-        },
+    } = useMutation({
+        mutationFn: ({ appId, apiKeyId }) =>
+            dataProvider.completeRegistration('oAuthClients', {
+                clientId: apiKeyId,
+                appUuid: appId,
+            }),
     });
 
+    useEffect(() => {
+        if (dcrCreatedKey && dcrCreatedKey.clientId) {
+            setAddedKey({
+                apiKey: dcrCreatedKey.clientId,
+                keySecret: dcrCreatedKey.clientSecret,
+                clientMetadata: dcrCreatedKey.clientMetadata,
+            });
+            setOpenSecretDialog(true);
+        }
+    }, [dcrCreatedKey]);
+
+    useEffect(() => {
+        if (completeRegistrationError) {
+            handleFormSaveFailure([completeRegistrationError]);
+        }
+    }, [completeRegistrationError, handleFormSaveFailure]);
 
     const handleCloseAddKey = () => {
         setOpenSecretDialog(false);
@@ -1035,206 +1037,10 @@ export const ApplicationEditView = ({
         if (handlingCancel) {
             navigateToShowView();
         } else {
-            form.setConfig('keepDirtyOnReinitialize', false);
             form.reset();
-            form.setConfig('keepDirtyOnReinitialize', true);
             reloadForm();
             setActivePanelID(selectedPanelID);
         }
-    };
-
-    const subscription = {
-        values: true,
-    };
-
-    const convertFileToBase64 = file =>
-        new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = () => resolve(reader.result);
-            reader.onerror = reject;
-            reader.readAsDataURL(file.rawFile);
-        });
-
-    const onChange = async ({ values }) => {
-        let sectionModified = false;
-        let invalidData = false;
-        if (activePanelID === PANEL_ID_DETAILS) {
-            let detailsModified = false;
-            const {
-                applicationName,
-                description,
-                statusBoolValue,
-                CustomFieldsArr = [],
-            } = values;
-            if (
-                initialValues.applicationName !== applicationName ||
-                initialValues.description !== description ||
-                initialValues.statusBoolValue !== statusBoolValue
-            ) {
-                detailsModified = true;
-            }
-            setIsDetailsModified(detailsModified);
-
-            let customFieldsModified = false;
-            const initialMap = {};
-            const initialCustomFields = initialValues.customFields || [];
-            initialCustomFields.forEach(item => {
-                initialMap[item.customFieldUuid] = item.value;
-            });
-            const valuesMap = {};
-            CustomFieldsArr.forEach(item => {
-                if (!isUndefined(values[item])) {
-                    valuesMap[item] = values[item];
-                }
-            });
-            const keysArr = keys(initialMap);
-            const valuesKeysArr = keys(valuesMap);
-            if (keysArr.length !== valuesKeysArr.length) {
-                customFieldsModified = true;
-            } else {
-                keysArr.forEach(key => {
-                    if (initialMap[key] !== valuesMap[key]) {
-                        customFieldsModified = true;
-                    }
-                });
-            }
-            setIsCustomFieldModified(customFieldsModified);
-
-            sectionModified = detailsModified || customFieldsModified;
-        } else if (activePanelID === PANEL_ID_APIS) {
-            if (apiPlansEnabled) {
-                const initialApiApiPlansMap = {};
-                apiApiPlanIds.forEach(item => {
-                    initialApiApiPlansMap[item.ApiUuid] = item.ApiPlanUuid;
-                });
-                const modifiedApiApiPlansMap = {};
-                const valuesApiApiPlanIds = values.ApiApiPlanIds || [];
-                // no change if values.ApiApiPlanIds is empty
-                if (valuesApiApiPlanIds.length > 0) {
-                    valuesApiApiPlanIds.forEach(item => {
-                        modifiedApiApiPlansMap[item.ApiUuid] = item.ApiPlanUuid;
-                    });
-                    const initialkeys = keys(initialApiApiPlansMap);
-                    const modifiedKeys = keys(modifiedApiApiPlansMap);
-                    const diffKeys = difference(initialkeys, modifiedKeys);
-                    if (
-                        initialkeys.length === modifiedKeys.length &&
-                        diffKeys.length === 0
-                    ) {
-                        initialkeys.forEach(id => {
-                            if (
-                                initialApiApiPlansMap[id] !==
-                                modifiedApiApiPlansMap[id]
-                            ) {
-                                sectionModified = true;
-                            }
-                        });
-                    } else {
-                        sectionModified = true;
-                    }
-                }
-            } else {
-                const modifiedApiGroupIds = values.ApiGroupIds || [];
-                const modifiedApiIds = values.apiIds || [];
-                const diffApiGroupIds = difference(
-                    modifiedApiGroupIds,
-                    apiGroupIds
-                );
-                const diffApiIds = difference(modifiedApiIds, apiIds);
-                if (
-                    apiGroupIds.length !== modifiedApiGroupIds.length ||
-                    diffApiGroupIds.length !== 0 ||
-                    apiIds.length !== modifiedApiIds.length ||
-                    diffApiIds.length !== 0
-                ) {
-                    sectionModified = true;
-                }
-            }
-        } else if (activePanelID.startsWith(PANEL_ID_KEY_PREFIX)) {
-            const activeAPIKeyID = activePanelID.replace(
-                PANEL_ID_KEY_PREFIX,
-                ''
-            );
-
-            if (activeAPIKeyID === NEW_KEY) {
-                if (addingKeyEntry) {
-                    const valuesKeyObj =
-                        values.apiKeys[values.apiKeys.length - 1];
-                    // show save bar only by setting sectionModified to true only
-                    // when it is not empty
-                    if (valuesKeyObj) {
-                        if (get(valuesKeyObj, 'authMethod') === 'SECRET') {
-                            sectionModified = !!(
-                                get(valuesKeyObj, 'name') ||
-                                get(valuesKeyObj, 'oauthCallbackUrl') ||
-                                get(valuesKeyObj, 'oauthScope') 
-                            );
-                        } else {
-                            sectionModified = !!(get(valuesKeyObj, 'name') || 
-                                                 get(valuesKeyObj, 'clientMetadata'));
-                            if(get(valuesKeyObj, 'clientMetadata')) {
-                              try {
-                                JSON.parse(get(valuesKeyObj, 'clientMetadata'));
-                              } catch(e) {
-                                invalidData = true;
-                              }
-                            }
-                          }
-                    }
-                }
-            } else {
-                const keyIndex = findIndex(
-                    apiKeys,
-                    item => item.apiKey === activeAPIKeyID
-                );
-                const valuesKeyObj = values.apiKeys[keyIndex];
-                const initialKeyObj = apiKeys[keyIndex];
-                // keySecret and keySecretHashed are excluded
-                // as they are updated with patch now
-                if (initialKeyObj) {
-                    if (
-                        initialKeyObj.name !== get(valuesKeyObj, 'name') ||
-                        initialKeyObj.oauthCallbackUrl !==
-                            get(valuesKeyObj, 'oauthCallbackUrl') ||
-                        initialKeyObj.oauthScope !==
-                            get(valuesKeyObj, 'oauthScope') ||
-                        initialKeyObj.oauthType !==
-                            get(valuesKeyObj, 'oauthType') ||
-                        initialKeyObj.status !== get(valuesKeyObj, 'status') ||
-                        initialKeyObj.clientMetadata !== get(valuesKeyObj, 'clientMetadata')
-                    ) {
-                        sectionModified = true;
-                    }
-                    if(get(valuesKeyObj, 'clientMetadata')) {
-                      try {
-                        JSON.parse(get(valuesKeyObj, 'clientMetadata'));
-                      } catch(e) {
-                        invalidData = true;
-                      }
-                    }
-                }
-            }
-        }
-        if (values.uploadedCertFile) {
-            const base64EncodedFile = await convertFileToBase64(
-                values.uploadedCertFile
-            );
-            const certContentArray = base64EncodedFile.split(',');
-            const base64 =
-                certContentArray.length > 1 ? certContentArray[1] : '';
-            setUploadedCertFile(base64);
-            const fileName = values.uploadedCertFile.rawFile.name;
-            if (certFileName !== fileName) {
-                setCertFileName(fileName);
-            }
-        } else if (uploadedCertFile) {
-            setUploadedCertFile();
-        }
-        if (values.givenCertName !== assignedCertName) {
-            setAssignedCertName(values.givenCertName);
-        }
-        setIsSectionModified(sectionModified);
-        setInvalidData(invalidData);
     };
 
     const showPublishBtn = isAppIncomplete || isAppRejected;
@@ -1329,7 +1135,7 @@ export const ApplicationEditView = ({
                 title={translate('resources.apikeys.reg_pending_title')}
                 content={translate(
                     `resources.apikeys.${
-                      isAppIncomplete
+                        isAppIncomplete
                             ? 'reg_pending_incomplete_content'
                             : 'reg_pending_wf_content'
                     }`
@@ -1337,15 +1143,17 @@ export const ApplicationEditView = ({
                 buttonConfirm={translate('resources.apikeys.actions.close')}
                 open={showRegPendingPopup}
                 onConfirm={() => {
-                        setShowRegPendingPopup(false);
-                        reloadForm();
-                      }}
+                    setShowRegPendingPopup(false);
+                    reloadForm();
+                }}
             />
             <Grid container item md={12} sm={12}>
                 <SimpleForm
                     className={classes.form}
-                    save={onFormSubmit}
-                    initialValues={initialValues}
+                    onSubmit={onFormSubmit}
+                    defaultValues={initialValues}
+                    mode="onBlur"
+                    reValidateMode="onBlur"
                     toolbar={
                         <ApplicationToolbar
                             type="EDIT"
@@ -1355,7 +1163,6 @@ export const ApplicationEditView = ({
                             disablePublishButton={disablePublishButton}
                             onPublish={onPublish}
                             onCancel={onCancel}
-                            {...toolbarProps}
                         />
                     }
                     validate={validateAppEdit}
@@ -1376,13 +1183,13 @@ export const ApplicationEditView = ({
                                 )}
                             </p>
                         )}
-                        <Labeled
-                            // On <Labeled />, this will translate in a correct `for` attribute on the label
+                        <span
                             id="applicationName"
-                            label="resources.applications.fields.details"
                             classes={labelClasses}
                             className={classes.field}
-                        ></Labeled>
+                        >
+                            {translate('resources.applications.fields.details')}
+                        </span>
                         <TextInput
                             data-apim-test="applicationName"
                             disabled={isEditAppDetailsLocked}
@@ -1392,7 +1199,12 @@ export const ApplicationEditView = ({
                             variant="filled"
                             fullWidth
                             helperText="resources.applications.validation.application_name_caption"
-                            validate={[required(), minLength(2), maxLength(50)]}
+                            validate={[
+                                required(),
+                                minLength(2),
+                                maxLength(50),
+                                validateAppEdit,
+                            ]}
                             onChange={onNameChange}
                         />
                         {(initialValues.status === 'ENABLED' ||
@@ -1426,7 +1238,6 @@ export const ApplicationEditView = ({
                             <EditCustomFieldData
                                 disabled={isEditCustomFieldsLocked}
                                 fields={initialValues.customFields}
-                                type="EDIT"
                                 className={classes.field}
                             />
                         )}
@@ -1456,6 +1267,7 @@ export const ApplicationEditView = ({
                                 apiIds={apiIds}
                                 ApiApiPlanIds={apiApiPlanIds}
                                 ApiGroupIds={apiGroupIds}
+                                apiPlansEnabled={apiPlansEnabled}
                                 application={record}
                                 isEditApisLocked={isEditApisLocked}
                                 isEditApiPlansLocked={isEditApiPlansLocked}
@@ -1491,7 +1303,9 @@ export const ApplicationEditView = ({
                             addingKeyEntry={addingKeyEntry}
                             allowSelectHashing={allowSelectHashing}
                             apiKeys={apiKeys}
-                            apiKeysLoading={apiKeysLoading || oAuthClientsLoading}
+                            apiKeysLoading={
+                                apiKeysIsLoading || oAuthClientsIsLoading
+                            }
                             appCertificates={appCertificates}
                             application={record}
                             authProviders={authProviders}
@@ -1510,9 +1324,26 @@ export const ApplicationEditView = ({
                             completeRegistration={completeRegistration}
                         />
                     </Grid>
-                    <FormSpy subscription={subscription} onChange={onChange}>
-                        {() => <span />}
-                    </FormSpy>
+                    <FormSpy
+                        activePanelID={activePanelID}
+                        initialValues={initialValues}
+                        setIsDetailsModified={setIsDetailsModified}
+                        setIsCustomFieldModified={setIsCustomFieldModified}
+                        apiPlansEnabled={apiPlansEnabled}
+                        apiApiPlanIds={apiApiPlanIds}
+                        addingKeyEntry={addingKeyEntry}
+                        apiGroupIds={apiGroupIds}
+                        apiIds={apiIds}
+                        apiKeys={apiKeys}
+                        setUploadedCertFile={setUploadedCertFile}
+                        certFileName={certFileName}
+                        setCertFileName={setCertFileName}
+                        uploadedCertFile={uploadedCertFile}
+                        assignedCertName={assignedCertName}
+                        setAssignedCertName={setAssignedCertName}
+                        setIsSectionModified={setIsSectionModified}
+                        setInvalidData={setInvalidData}
+                    />
                     {showSaveDialog && (
                         <UnSavedChangesDialog
                             onOk={handleUnsavedChangesDialogYes}
@@ -1526,63 +1357,282 @@ export const ApplicationEditView = ({
     );
 };
 
-const useStyles = makeStyles(
-    theme => ({
-        root: {
-            display: 'flex',
-            fontFamily: theme.typography.body2.fontFamily,
-            fontSize: theme.typography.caption.fontSize,
-            margin: theme.spacing(0),
-        },
-        details: {},
-        configuration: {},
-        subtitle: {
-            color: theme.palette.primary.main || '#333333',
-            fontWeight: theme.typography.fontWeightBold,
-            fontSize: '21px',
-            lineHeight: '22px',
-            margin: theme.spacing(1, 0, 1, 0),
-        },
-        field: {
-            marginRight: theme.spacing(1),
-            width: '100%',
-        },
-        type: {
-            textTransform: 'uppercase',
-        },
-        icon: {
-            fontSize: '1rem',
-        },
-        form: {
-            flex: 1,
-            marginBottom: 80,
-        },
-        customFields: {
-            display: 'flex',
-            flexDirection: 'column',
-        },
-        label: {
-            fontWeight: theme.typography.fontWeightBold,
-            fontSize: '1.5rem',
-        },
-        apiSelector: {
-            marginBottom: theme.spacing(1),
-        },
-        addButton: {
-            color: 'blue',
-        },
-        lockText: {
-            color: theme.palette.primary.textHub,
-            fontFamily: theme.typography.body1.fontFamily,
-            fontSize: theme.typography.body1.fontSize,
-        },
-    }),
-    {
-        name: 'Layer7ApplicationDetails',
-    }
-);
+const useStyles = makeStyles({ name: 'Layer7ApplicationDetails' })(theme => ({
+    root: {
+        display: 'flex',
+        fontFamily: theme.typography.body2.fontFamily,
+        fontSize: theme.typography.caption.fontSize,
+        margin: theme.spacing(0),
+    },
+    details: {},
+    configuration: {},
+    subtitle: {
+        color: theme.palette.primary.main || '#333333',
+        fontWeight: theme.typography.fontWeightBold,
+        fontSize: '21px',
+        lineHeight: '22px',
+        margin: theme.spacing(1, 0, 1, 0),
+    },
+    field: {
+        marginRight: theme.spacing(1),
+        width: '100%',
+    },
+    type: {
+        textTransform: 'uppercase',
+    },
+    icon: {
+        fontSize: '1rem',
+    },
+    form: {
+        flex: 1,
+        marginBottom: 80,
+        marginRight: '20px',
+    },
+    customFields: {
+        display: 'flex',
+        flexDirection: 'column',
+    },
+    label: {
+        fontWeight: theme.typography.fontWeightBold,
+        fontSize: '1.5rem',
+    },
+    apiSelector: {
+        marginBottom: theme.spacing(1),
+    },
+    addButton: {
+        color: 'blue',
+    },
+    lockText: {
+        color: theme.palette.primary.textHub,
+        fontFamily: theme.typography.body1.fontFamily,
+        fontSize: theme.typography.body1.fontSize,
+    },
+}));
 
-const useLabelStyles = makeStyles(theme => ({
+const FormSpy = ({
+    activePanelID,
+    initialValues,
+    setIsDetailsModified,
+    setIsCustomFieldModified,
+    apiPlansEnabled,
+    apiApiPlanIds,
+    addingKeyEntry,
+    apiGroupIds,
+    apiIds,
+    apiKeys,
+    setUploadedCertFile,
+    certFileName,
+    setCertFileName,
+    uploadedCertFile,
+    assignedCertName,
+    setAssignedCertName,
+    setIsSectionModified,
+    setInvalidData,
+}) => {
+    const values = useWatch();
+    const convertFileToBase64 = file =>
+        new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(file.rawFile);
+        });
+
+    const onChange = async ({ values }) => {
+        let sectionModified = false;
+        let invalidData = false;
+        if (activePanelID === PANEL_ID_DETAILS) {
+            let detailsModified = false;
+            const {
+                applicationName,
+                description,
+                statusBoolValue,
+                customFieldsArr = [],
+            } = values;
+            if (
+                initialValues.applicationName !== applicationName ||
+                initialValues.description !== description ||
+                initialValues.statusBoolValue !== statusBoolValue
+            ) {
+                detailsModified = true;
+            }
+            setIsDetailsModified(detailsModified);
+
+            let customFieldsModified = false;
+            const initialMap = {};
+            const initialCustomFields = initialValues.customFields || [];
+            initialCustomFields.forEach(item => {
+                initialMap[item.customFieldUuid] = item.value;
+            });
+            const valuesMap = {};
+            customFieldsArr.forEach(item => {
+                if (!isUndefined(values[item])) {
+                    valuesMap[item] = values[item];
+                }
+            });
+            const keysArr = keys(initialMap);
+            const valuesKeysArr = keys(valuesMap);
+            if (keysArr.length !== valuesKeysArr.length) {
+                customFieldsModified = true;
+            } else {
+                keysArr.forEach(key => {
+                    if (initialMap[key] !== valuesMap[key]) {
+                        customFieldsModified = true;
+                    }
+                });
+            }
+            setIsCustomFieldModified(customFieldsModified);
+
+            sectionModified = detailsModified || customFieldsModified;
+        } else if (activePanelID === PANEL_ID_APIS) {
+            if (apiPlansEnabled) {
+                const initialApiApiPlansMap = {};
+                apiApiPlanIds.forEach(item => {
+                    initialApiApiPlansMap[item.ApiUuid] = item.ApiPlanUuid;
+                });
+                const modifiedApiApiPlansMap = {};
+                const valuesApiApiPlanIds = values.ApiApiPlanIds || [];
+                // no change if values.ApiApiPlanIds is empty
+                if (valuesApiApiPlanIds.length > 0) {
+                    valuesApiApiPlanIds.forEach(item => {
+                        modifiedApiApiPlansMap[item.ApiUuid] = item.ApiPlanUuid;
+                    });
+                    const initialkeys = keys(initialApiApiPlansMap);
+                    const modifiedKeys = keys(modifiedApiApiPlansMap);
+                    const diffKeys = difference(initialkeys, modifiedKeys);
+                    if (
+                        initialkeys.length === modifiedKeys.length &&
+                        diffKeys.length === 0
+                    ) {
+                        initialkeys.forEach(id => {
+                            if (
+                                initialApiApiPlansMap[id] !==
+                                modifiedApiApiPlansMap[id]
+                            ) {
+                                sectionModified = true;
+                            }
+                        });
+                    } else {
+                        sectionModified = true;
+                    }
+                }
+            } else {
+                const modifiedApiGroupIds = values.ApiGroupIds || [];
+                const modifiedApiIds = values.apiIds || [];
+                const diffApiGroupIds = difference(
+                    modifiedApiGroupIds,
+                    apiGroupIds
+                );
+                const diffApiIds = difference(modifiedApiIds, apiIds);
+                if (
+                    apiGroupIds.length !== modifiedApiGroupIds.length ||
+                    diffApiGroupIds.length !== 0 ||
+                    apiIds.length !== modifiedApiIds.length ||
+                    diffApiIds.length !== 0
+                ) {
+                    sectionModified = true;
+                }
+            }
+        } else if (activePanelID.startsWith(PANEL_ID_KEY_PREFIX)) {
+            const activeAPIKeyID = activePanelID.replace(
+                PANEL_ID_KEY_PREFIX,
+                ''
+            );
+
+            if (activeAPIKeyID === NEW_KEY) {
+                if (addingKeyEntry) {
+                    const valuesKeyObj =
+                        values.apiKeys[values.apiKeys.length - 1];
+                    // show save bar only by setting sectionModified to true only
+                    // when it is not empty
+                    if (valuesKeyObj) {
+                        if (get(valuesKeyObj, 'authMethod') === 'SECRET') {
+                            sectionModified = !!(
+                                get(valuesKeyObj, 'name') ||
+                                get(valuesKeyObj, 'oauthCallbackUrl') ||
+                                get(valuesKeyObj, 'oauthScope')
+                            );
+                        } else {
+                            sectionModified = !!(
+                                get(valuesKeyObj, 'name') ||
+                                get(valuesKeyObj, 'clientMetadata')
+                            );
+                            if (get(valuesKeyObj, 'clientMetadata')) {
+                                try {
+                                    JSON.parse(
+                                        get(valuesKeyObj, 'clientMetadata')
+                                    );
+                                } catch (e) {
+                                    invalidData = true;
+                                }
+                            }
+                        }
+                    }
+                }
+            } else {
+                const keyIndex = findIndex(
+                    apiKeys,
+                    item => item.apiKey === activeAPIKeyID
+                );
+                const valuesKeyObj = values.apiKeys[keyIndex];
+                const initialKeyObj = apiKeys[keyIndex];
+                // keySecret and keySecretHashed are excluded
+                // as they are updated with patch now
+                if (initialKeyObj) {
+                    if (
+                        initialKeyObj.name !== get(valuesKeyObj, 'name') ||
+                        initialKeyObj.oauthCallbackUrl !==
+                            get(valuesKeyObj, 'oauthCallbackUrl') ||
+                        initialKeyObj.oauthScope !==
+                            get(valuesKeyObj, 'oauthScope') ||
+                        initialKeyObj.oauthType !==
+                            get(valuesKeyObj, 'oauthType') ||
+                        initialKeyObj.status !== get(valuesKeyObj, 'status') ||
+                        initialKeyObj.clientMetadata !==
+                            get(valuesKeyObj, 'clientMetadata')
+                    ) {
+                        sectionModified = true;
+                    }
+                    if (get(valuesKeyObj, 'clientMetadata')) {
+                        try {
+                            JSON.parse(get(valuesKeyObj, 'clientMetadata'));
+                        } catch (e) {
+                            invalidData = true;
+                        }
+                    }
+                }
+            }
+        }
+        if (values.uploadedCertFile) {
+            const base64EncodedFile = await convertFileToBase64(
+                values.uploadedCertFile
+            );
+            const certContentArray = base64EncodedFile.split(',');
+            const base64 =
+                certContentArray.length > 1 ? certContentArray[1] : '';
+            setUploadedCertFile(base64);
+            const fileName = values.uploadedCertFile.rawFile.name;
+            if (certFileName !== fileName) {
+                setCertFileName(fileName);
+            }
+        } else if (uploadedCertFile) {
+            setUploadedCertFile();
+        }
+        if (values.givenCertName !== assignedCertName) {
+            setAssignedCertName(values.givenCertName);
+        }
+        setIsSectionModified(sectionModified);
+        setInvalidData(invalidData);
+    };
+
+    useEffect(() => {
+        onChange({ values });
+    }, [values]);
+
+    return <span />;
+};
+
+const useLabelStyles = makeStyles()(theme => ({
     label: {
         fontWeight: theme.typography.fontWeightBold,
         fontSize: '1.5rem',

@@ -1,9 +1,10 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React from 'react';
-import { DataProviderContext, renderWithRedux } from 'ra-core';
-import { fireEvent, wait } from '@testing-library/react';
+import { fireEvent, waitFor, render } from '@testing-library/react';
 
 import { HomePageContent } from './HomePageContent';
 import { CurrentUserId } from '../dataProvider/userContexts';
+import { AdminContext } from 'react-admin';
 
 describe('HomePageContent', () => {
     const initialState = {
@@ -34,14 +35,13 @@ describe('HomePageContent', () => {
             }),
         };
 
-        const { findByText } = renderWithRedux(
-            <DataProviderContext.Provider value={dataProvider}>
+        const { findByText } = render(
+            <AdminContext dataProvider={dataProvider}>
                 <HomePageContent />
-            </DataProviderContext.Provider>,
-            initialState
+            </AdminContext>
         );
 
-        await wait(() => {
+        await waitFor(() => {
             findByText('apihub.homepage.placeholder_empty_content');
         });
     });
@@ -65,14 +65,13 @@ describe('HomePageContent', () => {
             }),
         };
 
-        const { findByText, queryByText } = renderWithRedux(
-            <DataProviderContext.Provider value={dataProvider}>
+        const { findByText, queryByText } = render(
+            <AdminContext dataProvider={dataProvider}>
                 <HomePageContent />
-            </DataProviderContext.Provider>,
-            initialState
+            </AdminContext>
         );
 
-        await wait(() => {
+        await waitFor(() => {
             findByText('apihub.homepage.placeholder_empty_content');
         });
         expect(queryByText('ra.action.create')).toBeNull();
@@ -103,14 +102,13 @@ describe('HomePageContent', () => {
             }),
         };
 
-        const { findByText, queryByText } = renderWithRedux(
-            <DataProviderContext.Provider value={dataProvider}>
+        const { findByText, queryByText } = render(
+            <AdminContext dataProvider={dataProvider}>
                 <HomePageContent navtitle="home1" />
-            </DataProviderContext.Provider>,
-            initialState
+            </AdminContext>
         );
 
-        await wait(() => {
+        await waitFor(() => {
             findByText('some markdown');
         });
         expect(queryByText('ra.action.edit')).toBeNull();
@@ -150,11 +148,10 @@ describe('HomePageContent', () => {
             getByLabelText,
             findByRole,
             queryByRole,
-        } = renderWithRedux(
-            <DataProviderContext.Provider value={dataProvider}>
+        } = render(
+            <AdminContext dataProvder={dataProvider}>
                 <HomePageContent />
-            </DataProviderContext.Provider>,
-            initialState
+            </AdminContext>
         );
 
         await findByText('apihub.homepage.placeholder_empty_content');
@@ -177,7 +174,7 @@ describe('HomePageContent', () => {
         );
         expect(dataProvider.create).toHaveBeenCalled();
 
-        await wait(() => {
+        await waitFor(() => {
             expect(queryByRole('dialog')).toBeNull();
         });
 
@@ -227,11 +224,10 @@ describe('HomePageContent', () => {
             getByLabelText,
             findByRole,
             queryByRole,
-        } = renderWithRedux(
-            <DataProviderContext.Provider value={dataProvider}>
+        } = render(
+            <AdminContext dataProvider={dataProvider}>
                 <HomePageContent />
-            </DataProviderContext.Provider>,
-            initialState
+            </AdminContext>
         );
 
         await findByText('some markdown');
@@ -257,7 +253,7 @@ describe('HomePageContent', () => {
             getByText('resources.documents.actions.save', { container: dialog })
         );
 
-        await wait(() => {
+        await waitFor(() => {
             expect(queryByRole('dialog')).toBeNull();
         });
 

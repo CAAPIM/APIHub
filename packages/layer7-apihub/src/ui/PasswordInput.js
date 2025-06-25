@@ -1,18 +1,20 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React, { useState } from 'react';
-import { TextInput } from 'react-admin';
-import { useTranslate } from 'ra-core';
-import { InfoOutlined, Visibility, VisibilityOff } from '@material-ui/icons';
-import { makeStyles, IconButton, InputAdornment } from '@material-ui/core';
+import { TextInput, useTranslate } from 'react-admin';
+import { InfoOutlined, Visibility, VisibilityOff } from '@mui/icons-material';
+import { IconButton, InputAdornment } from '@mui/material';
+
+import { makeStyles } from 'tss-react/mui';
 
 import { HtmlTooltip } from './HtmlTooltip';
 
 export const PasswordInput = ({ title, ...props }) => {
     const [passwordVisible, setPasswordVisible] = usePasswordVisibility();
     const translate = useTranslate();
-    const classes = useStyles(props);
+    const { classes } = useStyles();
 
     return (
-        <TextInput
+        (<TextInput
             type={passwordVisible ? 'text' : 'password'}
             variant="outlined"
             InputProps={{
@@ -26,7 +28,7 @@ export const PasswordInput = ({ title, ...props }) => {
                                         : 'ra.input.password.toggle_hidden'
                                 )}
                                 onClick={setPasswordVisible}
-                            >
+                                size="large">
                                 {passwordVisible ? (
                                     <VisibilityOff />
                                 ) : (
@@ -48,7 +50,7 @@ export const PasswordInput = ({ title, ...props }) => {
                 ),
             }}
             {...props}
-        />
+        />)
     );
 };
 
@@ -62,7 +64,7 @@ export const usePasswordVisibility = initialValue => {
     return [visible, toggleVisibility];
 };
 
-const useStyles = makeStyles(
+const useStyles = makeStyles()(
     {
         tootip: {
             cursor: 'pointer',

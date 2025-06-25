@@ -2,7 +2,7 @@
 
 The Example app demonstrates the usage of the Layer7 API Hub library. For more information about the library, see [the Layer7 API Hub Library README](../layer7-apihub/README.md).
 
-The Example app is built on top of [Create React App (CRA)](https://create-react-app.dev/).
+The Example app is built is using vite
 
 ## Configure the Example App
 
@@ -63,18 +63,6 @@ Change the page title using `react` and `react-helmet` in the [/src/App.js](./sr
 1. Update the default title in the `[/public/index.html](./public/index.html)` index file. You can define the page title before the Example app renders the page.
 2. Update the page title defined by the Example app directly in the `config.js` file. The title is stored under the `window.APIHUB_CONFIG.PAGE_TITLE` key. You can define a different title for each environment.
 For more information, see [Change the configuration](./README.md#change-the-configuration).
-
-## Make Calls to the Layer7 API Hub Mock Server or Portal API (PAPI)
-
-You can make calls to the Layer7 API Hub mock server without having to connect to API Portal. The mock server mimics PAPI responses to ease local development.
-
-For more information about the mock server, see [Layer7 API Hub Mock Server](https://github.gwd.broadcom.net/ESD/APIHub/tree/develop/packages/layer7-apihub-mock).
-
-### Use the Mock Server
-
-To use the mock server, enable it in the configuration file. Set the `ENABLE_MOCK` variable to `true` (set to `false` to disable) in your configuration file.
-
-For more information about how to change the configuration file, see [Define a Configuration for a New Environment](./README.md#define-a-configuration-for-a-new-environment).
 
 ### Use the PAPI
 
@@ -159,9 +147,9 @@ In this example, we add a custom contact-us form in a new page at this location 
 ``` js
 // in src/ui/ContactUs.js
 import React from 'react';
-import Typography from '@material-ui/core/Typography';
-import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
+import Typography from '@mui/material/Typography';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
 
 export function ContactUs() {
     return (
@@ -189,28 +177,32 @@ export function ContactUs() {
 export * from './ContactUs'
 ```
 
-2. Create a custom route to access the `contact-us` component:
+2. Create custom routes to access the `contact-us` component:
 
 ```js
 // in src/App.js
 import React from 'react';
-import { Route } from 'react-router';
+import { Route } from 'react-router-dom';
 import { ApiHubAdmin } from 'layer7-apihub';
-
 import { ContactUs } from './ui'; // Import the component you've just created
 
-const ContactUsRoute = () => {
+const customRoutes = () => [
     <Route
         path="/contact-us"
-        component={ContactUs}
-        noLayout // Do not use the layout from ApiHub
-    />
-}
+        element={<ContactUs />}
+    />,
+    <Route
+        path="/contact-us-2"
+        element={<ContactUs />}
+    />,
+]
 
 const App = () => {
     return (
         <ApiHubAdmin
-            customRoutes={[ContactUsRoute]}
+            customRoutes={customRoutes} 
+            // OR
+            customRoutesNoLayout={customRoutes} // removes react-admin layout component
         />
     );
 }
@@ -218,4 +210,4 @@ const App = () => {
 export default App;
 ```
 
-You can now access the custom route at URL `/#/contact-us`.
+You can now access the custom route at URL `/#/contact-us` and `/#/contact-us-2`.

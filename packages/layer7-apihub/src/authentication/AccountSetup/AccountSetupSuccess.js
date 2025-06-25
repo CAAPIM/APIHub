@@ -1,13 +1,14 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React from 'react';
-import { useTranslate } from 'ra-core';
-import { makeStyles } from '@material-ui/core';
-import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
+import { useTranslate } from 'react-admin';
+import { makeStyles } from 'tss-react/mui';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
 import { Link } from 'react-router-dom';
 
 export const AccountSetupSuccess = props => {
     const translate = useTranslate();
-    const classes = useStyles(props);
+    const { classes } = useStyles(props);
 
     return (
         <div className={classes.root}>
@@ -15,7 +16,6 @@ export const AccountSetupSuccess = props => {
                 {translate('apihub.account_setup.notifications.success')}
             </Typography>
             <Button
-                color="primary"
                 variant="contained"
                 component={Link}
                 to="/login"
@@ -27,15 +27,12 @@ export const AccountSetupSuccess = props => {
     );
 };
 
-const useStyles = makeStyles(
+const useStyles = makeStyles({  name: 'Layer7AccountSetupSuccess' })(
     theme => ({
         root: {},
         title: {
             color: theme.palette.success.main,
         },
         button: {},
-    }),
-    {
-        name: 'Layer7AccountSetupSuccess',
-    }
+    })
 );

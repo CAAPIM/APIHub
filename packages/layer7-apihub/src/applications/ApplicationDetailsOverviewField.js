@@ -1,31 +1,27 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React, { useEffect, useState, useRef } from 'react';
-import classnames from 'classnames';
-import { useTranslate } from 'ra-core';
-import { makeStyles } from '@material-ui/core/styles';
-import IconButton from '@material-ui/core/IconButton';
-import EditIcon from '@material-ui/icons/Edit';
-import Fade from '@material-ui/core/Fade';
-import LinearProgress from '@material-ui/core/LinearProgress';
+import { useGetRecordId, useTranslate } from 'react-admin';
+import { makeStyles } from 'tss-react/mui';
+import IconButton from '@mui/material/IconButton';
+import EditIcon from '@mui/icons-material/Edit';
+import Fade from '@mui/material/Fade';
+import LinearProgress from '@mui/material/LinearProgress';
 import { get } from 'lodash';
 
 import { useMarkdownContent } from '../documentation';
 import { ApplicationDetailsOverviewEditor } from './ApplicationDetailsOverviewEditor';
 import { MarkdownView } from '../ui';
 
-export const ApplicationDetailsOverviewField = ({
-    id,
-    record,
-    canEdit,
-    ...rest
-}) => {
-    const classes = useStyles(rest);
+export const ApplicationDetailsOverviewField = ({ id, canEdit, ...rest }) => {
+    const { classes, cx } = useStyles(rest);
     const translate = useTranslate();
     const markdownElementRef = useRef();
     const [isEditingOverview, setIsEditingOverview] = useState(false);
     const [isOverviewScrollBottom, setIsOverviewScrollBottom] = useState(false);
-    const [{ data, loading }, handleUpdate] = useMarkdownContent({
+    const recordId = useGetRecordId();
+    const [{ data, isLoading }, handleUpdate] = useMarkdownContent({
         entityType: 'application',
-        entityUuid: record.id,
+        entityUuid: recordId,
         navtitle: 'overview',
     });
 
@@ -70,7 +66,7 @@ export const ApplicationDetailsOverviewField = ({
         setIsEditingOverview(false);
     };
 
-    if (loading) {
+    if (isLoading) {
         return (
             <Fade
                 in
@@ -101,21 +97,22 @@ export const ApplicationDetailsOverviewField = ({
                     }
                 />
                 <div
-                    className={classnames(classes.overviewScrollFadeColor, {
+                    className={cx(classes.overviewScrollFadeColor, {
                         [classes.overviewScrollFade]: isOverviewScrollBottom,
-                        [classes.hideOverviewScrollFade]: !isOverviewScrollBottom,
+                        [classes.hideOverviewScrollFade]:
+                            !isOverviewScrollBottom,
                     })}
                 />
             </div>
             {canEdit ? (
                 <>
                     <IconButton
-                        color="primary"
                         title={translate(
                             'resources.applications.notifications.edit_overview'
                         )}
                         className={classes.editButton}
                         onClick={handleToggleEditing}
+                        size="large"
                     >
                         <EditIcon className={classes.icon} />
                     </IconButton>
@@ -131,7 +128,7 @@ export const ApplicationDetailsOverviewField = ({
     );
 };
 
-const useStyles = makeStyles(
+const useStyles = makeStyles({ name: 'Layer7ApplicationOverviewField' })(
     theme => ({
         overview: {
             display: 'flex',
@@ -171,8 +168,5 @@ const useStyles = makeStyles(
         icon: {
             fontSize: '1rem',
         },
-    }),
-    {
-        name: 'Layer7ApplicationOverviewField',
-    }
+    })
 );

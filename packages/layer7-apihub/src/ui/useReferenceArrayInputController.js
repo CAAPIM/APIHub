@@ -1,21 +1,22 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
+
 /**
  * Copy of React Admin useReferenceArrayInputController.
  * It adds support for a more complete pagination, sorting and filtering features.
  */
 
 import { useMemo, useState, useEffect, useRef } from 'react';
-import { useSelector } from 'react-redux';
 import isEqual from 'lodash/isEqual';
 import difference from 'lodash/difference';
 import {
     useFilterState,
-    useGetMany,
-    useGetMatching,
+    useGetList,
     usePaginationState,
     useSortState,
     useTranslate,
     getStatusForArrayInput as getDataStatus,
-} from 'ra-core';
+    useGetMany,
+} from 'react-admin';
 
 /**
  * Prepare data for the ReferenceArrayInput components
@@ -57,9 +58,9 @@ export const useReferenceArrayInputController = ({
     const inputValue = useRef(input.value);
     const [idsToFetch, setIdsToFetch] = useState(input.value);
     const [idsToGetFromStore, setIdsToGetFromStore] = useState([]);
-    const referenceRecordsFromStore = useSelector(state =>
-        idsToGetFromStore.map(id => state.admin.resources[reference].data[id])
-    );
+    const { data: referenceRecordsFromStore } = useGetMany(resource, {
+        ids: idsToGetFromStore,
+    });
 
     // optimization: we fetch selected items only once. When the user selects more items,
     // as we already have the past selected items in the store, we don't fetch them.
@@ -75,24 +76,17 @@ export const useReferenceArrayInputController = ({
     // CHANGE: Original code has a much simpler pagination handling not suitable for
     // grid like components which needs to display total and to allow to select a specific
     // page
-    const {
-        page,
-        pagination,
-        perPage,
-        setPage,
-        setPagination,
-        setPerPage,
-    } = usePaginationState({
-        page: 1,
-        perPage: defaultPerPage,
-    });
+    const { page, pagination, perPage, setPage, setPagination, setPerPage } =
+        usePaginationState({
+            page: 1,
+            perPage: defaultPerPage,
+        });
 
     // CHANGE: Original code has a much simpler sort handling not suitable for
     // grid like components which needs to allows a specific field to be used
     // for sorting AND a specific order
-    const { sort, setSort, setSortField, setSortOrder } = useSortState(
-        defaultSort
-    );
+    const { sort, setSort, setSortField, setSortOrder } =
+        useSortState(defaultSort);
 
     // CHANGE: Original code has a much simpler filter handling which was not
     // handling debouncing calls which might be needed for filters such as
@@ -130,10 +124,9 @@ export const useReferenceArrayInputController = ({
         setPage(1);
     }, [JSON.stringify(finalFilter), setPage]); // eslint-disable-line
 
-    const { data: referenceRecordsFetched, loaded } = useGetMany(
-        reference,
-        idsToFetch || []
-    );
+    const { data: referenceRecordsFetched, isLoading } = useGetMany(reference, {
+        ids: idsToFetch || [],
+    });
 
     const referenceRecords = referenceRecordsFetched
         ? referenceRecordsFetched.concat(referenceRecordsFromStore)
@@ -142,13 +135,13 @@ export const useReferenceArrayInputController = ({
     // filter out not found references - happens when the dataProvider doesn't guarantee referential integrity
     const finalReferenceRecords = referenceRecords.filter(Boolean);
 
-    const { data: matchingReferences, total } = useGetMatching(
-        reference,
-        pagination,
-        sort,
-        finalFilter,
-        source,
+    const { data: matchingReferences, total } = useGetList(
         resource,
+        {
+            pagination,
+            sort,
+            filter: finalFilter,
+        },
         options
     );
 
@@ -170,8 +163,8 @@ export const useReferenceArrayInputController = ({
         matchingReferences && matchingReferences.length > 0
             ? mergeReferences(matchingReferences, finalReferenceRecords)
             : finalReferenceRecords.length > 0
-            ? finalReferenceRecords
-            : matchingReferences;
+              ? finalReferenceRecords
+              : matchingReferences;
 
     const dataStatus = getDataStatus({
         input,
@@ -191,7 +184,7 @@ export const useReferenceArrayInputController = ({
         selectedChoices: referenceRecords,
         error: dataStatus.error,
         filter,
-        loaded,
+        isLoading,
         loading: dataStatus.waiting,
         page, // CHANGE: Added
         perPage,

@@ -1,10 +1,13 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from 'tss-react/mui';
 
 import { ApplicationStatus } from './ApplicationStatus';
+import { useRecordContext } from 'react-admin';
 
-export const ApplicationTitle = ({ record, ...rest }) => {
-    const classes = useStyles(rest);
+export const ApplicationTitle = () => {
+    const { classes } = useStyles();
+    let record = useRecordContext();
 
     if (!record) {
         return null;
@@ -14,27 +17,19 @@ export const ApplicationTitle = ({ record, ...rest }) => {
         <div className={classes.root}>
             <div>
                 <span className={classes.title}>{record.name}</span>
-                <ApplicationStatus
-                    classes={{ status: classes.status }}
-                    record={record}
-                />
+                <ApplicationStatus classes={{ status: classes.status }} />
             </div>
         </div>
     );
 };
 
-const useStyles = makeStyles(
-    theme => ({
-        root: {
-            display: 'flex',
-            justifyContent: 'space-between',
-        },
-        title: {},
-        status: {
-            padding: theme.spacing(1, 0),
-        },
-    }),
-    {
-        name: 'Layer7ApplicationTitle',
-    }
-);
+const useStyles = makeStyles({ name: 'Layer7ApplicationTitle' })(theme => ({
+    root: {
+        display: 'flex',
+        justifyContent: 'space-between',
+    },
+    title: {},
+    status: {
+        padding: theme.spacing(1, 0),
+    },
+}));

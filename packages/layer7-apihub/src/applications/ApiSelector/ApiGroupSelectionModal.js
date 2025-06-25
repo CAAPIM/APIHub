@@ -1,38 +1,43 @@
-import * as React from 'react';
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
+import React, { useState, useEffect } from 'react';
 import {
     Button,
     Dialog,
     DialogActions,
     DialogContent,
     DialogTitle,
-    Typography,
-} from '@material-ui/core';
-import { makeStyles, withStyles } from '@material-ui/core/styles';
-import { useDataProvider, useTranslate } from 'ra-core';
+} from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
+import { useDataProvider, useTranslate } from 'react-admin';
 import { ApiSelectionModalTaC } from './ApiSelectionModalTaC';
 import { useLayer7Notify } from '../../useLayer7Notify';
+import { useMutation } from '@tanstack/react-query';
 
 export function ApiGroupSelectionModal(props) {
     const { apiGroup, onConfirm, onCancel, orgUuid } = props;
-    const [apiGroupEula, setApiGroupEula] = React.useState();
+    const [apiGroupEula, setApiGroupEula] = useState();
     const dataProvider = useDataProvider();
     const translate = useTranslate();
     const notify = useLayer7Notify();
-    const classes = useStyles(props);
+    const { mutateAsync } = useMutation({
+        mutationFn: ({ apiGroupId, filter }) =>
+            dataProvider.getApiGroupEula('apiGroups', {
+                apiGroupId,
+                filter,
+            }),
+    });
 
-    React.useEffect(() => {
+    useEffect(() => {
         async function fetchApiGroupEula() {
-            const { data } = await dataProvider.getApiGroupEula(
-                'apiGroups',
+            const { data } = await mutateAsync(
                 {
                     apiGroupId: apiGroup.id,
                     filter: { OrganizationUuid: orgUuid },
                 },
                 {
-                    onFailure: error => notify(error),
+                    onError: error => notify(error),
                 }
             );
-
             setApiGroupEula(data);
         }
 
@@ -58,10 +63,10 @@ export function ApiGroupSelectionModal(props) {
                     <ApiSelectionModalTaC content={apiGroupEula?.content} />
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={onCancel} color="primary">
+                    <Button onClick={onCancel}>
                         {translate('ra.action.cancel')}
                     </Button>
-                    <Button onClick={onConfirm} color="primary" autoFocus>
+                    <Button onClick={onConfirm} autoFocus>
                         {translate(
                             'resources.applications.actions.accept_terms_and_conditions'
                         )}
@@ -72,7 +77,7 @@ export function ApiGroupSelectionModal(props) {
     );
 }
 
-const useStyles = makeStyles(
+const useStyles = makeStyles({ name: 'Layer7ApplicationApiPlansList' })(
     theme => ({
         heading: {
             fontSize: theme.typography.pxToRem(14),
@@ -90,8 +95,5 @@ const useStyles = makeStyles(
         container: {
             maxHeight: '100%',
         },
-    }),
-    {
-        name: 'Layer7ApplicationApiPlansList',
-    }
+    })
 );

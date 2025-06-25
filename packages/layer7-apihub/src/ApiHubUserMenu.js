@@ -1,17 +1,16 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React, { Children, cloneElement, isValidElement, useState } from 'react';
-import classnames from 'classnames';
-import { useTranslate } from 'ra-core';
-import Tooltip from '@material-ui/core/Tooltip';
-import Button from '@material-ui/core/Button';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import { makeStyles } from '@material-ui/core/styles';
-import Divider from '@material-ui/core/Divider';
-import AccountCircle from '@material-ui/icons/AccountCircle';
-import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
+import { useTranslate, Logout } from 'react-admin';
+import Tooltip from '@mui/material/Tooltip';
+import Button from '@mui/material/Button';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import { makeStyles } from 'tss-react/mui';
+import Divider from '@mui/material/Divider';
+import AccountCircle from '@mui/icons-material/AccountCircle';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { Link, useLocation } from 'react-router-dom';
-
 import { CurrentUserId } from './dataProvider/userContexts';
 import { UserOrganizationSwitcher, useUserContext } from './userContexts';
 
@@ -50,7 +49,7 @@ export const useResourceListLocation = () => {
  */
 export const ApiHubUserMenu = props => {
     const translate = useTranslate();
-    const classes = useStyles(props);
+    const { classes, cx } = useStyles(props);
     const [anchorEl, setAnchorEl] = useState(null);
 
     const redirectTo = useResourceListLocation();
@@ -60,11 +59,11 @@ export const ApiHubUserMenu = props => {
         handleChangeUserActiveOrg,
     ] = useUserContext(redirectTo);
 
-    const { children, label, icon, logout } = props;
-
-    if (!logout && !children) {
-        return null;
-    }
+    const {
+        children,
+        label = 'ra.auth.user_menu',
+        icon = <AccountCircle />,
+    } = props;
 
     const userName = userContext
         ? translate('apihub.menu.user_details.full_name', {
@@ -141,39 +140,26 @@ export const ApiHubUserMenu = props => {
                           })
                         : null
                 )}
-                {cloneElement(logout, {
-                    className: classnames(
-                        classes.menuItem,
-                        classes.menuItemLogout
-                    ),
-                })}
+                <Logout
+                    classNames={cx(classes.menuItem, classes.menuItemLogout)}
+                />
             </Menu>
         </div>
     );
 };
 
-ApiHubUserMenu.defaultProps = {
-    label: 'ra.auth.user_menu',
-    icon: <AccountCircle />,
-};
-
-const useStyles = makeStyles(
-    theme => ({
-        menuItem: {
-            color: theme.palette.text.secondary,
-            marginBottom: theme.spacing(),
-        },
-        menuItemLogout: {
-            marginBottom: '0px',
-        },
-        divider: {
-            marginBottom: theme.spacing(),
-        },
-        icon: {
-            minWidth: theme.spacing(5),
-        },
-    }),
-    {
-        name: 'ApiHubUserMenu',
-    }
-);
+const useStyles = makeStyles({ name: 'ApiHubUserMenu' })(theme => ({
+    menuItem: {
+        color: theme.palette.text.secondary,
+        marginBottom: theme.spacing(),
+    },
+    menuItemLogout: {
+        marginBottom: '0px',
+    },
+    divider: {
+        marginBottom: theme.spacing(),
+    },
+    icon: {
+        minWidth: theme.spacing(5),
+    },
+}));

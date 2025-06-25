@@ -1,6 +1,5 @@
-import { hideNotification } from 'ra-core';
-import { useDispatch } from 'react-redux';
 
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 /**
  * An Hook to clear the react-admin notifications.
  *
@@ -18,6 +17,5 @@ import { useDispatch } from 'react-redux';
  *
  */
 export const useClearNotifications = () => {
-    const dispatch = useDispatch();
-    return () => dispatch(hideNotification());
+    return () => {};
 };

@@ -1,10 +1,13 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React, { useMemo } from 'react';
 import { Datagrid as RaDatagrid } from 'react-admin';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { useTheme } from '@mui/material/styles';
+
+import { makeStyles } from 'tss-react/mui';
 
 export const Datagrid = props => {
     const theme = useTheme();
-    const classes = useStyles(props);
+    const { classes } = useStyles(props);
 
     // HACK: For some reason, the header cells loses their styles when dynamically
     // changing the theme. Passing a new key when changing the theme fixes that
@@ -15,21 +18,16 @@ export const Datagrid = props => {
 
 const computeDatagridPadding = (theme, props) =>
     props && props.size === 'small'
-        ? `${theme.spacing(0.5)}px ${theme.spacing(3)}px`
-        : `${theme.spacing(1)}px ${theme.spacing(3)}px`;
+        ? `${theme.spacing(0.5)} ${theme.spacing(3)}`
+        : `${theme.spacing(1)} ${theme.spacing(3)}`;
 
-const useStyles = makeStyles(
-    theme => ({
-        headerCell: {
-            backgroundColor: theme.palette.action.selected,
-            fontWeight: theme.typography.fontWeightBold,
-            textTransform: 'uppercase',
-        },
-        rowCell: {
-            padding: props => computeDatagridPadding(theme, props),
-        },
-    }),
-    {
-        name: 'Layer7Datagrid',
-    }
-);
+const useStyles = makeStyles({ name: 'Layer7SelectedItem' })(theme => ({
+    headerCell: {
+        backgroundColor: theme.palette.action.selected,
+        fontWeight: theme.typography.fontWeightBold,
+        textTransform: 'uppercase',
+    },
+    rowCell: {
+        padding: props => computeDatagridPadding(theme, props),
+    },
+}));

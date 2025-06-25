@@ -1,11 +1,12 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React from 'react';
-import { makeStyles } from '@material-ui/core';
+import { makeStyles } from 'tss-react/mui';
 
 import { BrandLogo } from '.';
 import { useTheme } from '../theme';
 
 export const Header = () => {
-    const classes = useStyles();
+    const { classes } = useStyles();
     const { logo } = useTheme();
     return (
         <div className={classes.root}>
@@ -14,7 +15,7 @@ export const Header = () => {
     );
 };
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles()(theme => ({
     root: {
         height: '100%',
         maxWidth: '20%',
