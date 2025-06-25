@@ -1,14 +1,14 @@
-import React, { cloneElement, useEffect } from 'react';
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
+import React, { useEffect } from 'react';
 import { HideOnScroll, LoadingIndicator, useTranslate } from 'react-admin';
-import { useDispatch, useSelector } from 'react-redux';
-import MuiAppBar from '@material-ui/core/AppBar';
-import Divider from '@material-ui/core/Divider';
-import IconButton from '@material-ui/core/IconButton';
-import Toolbar from '@material-ui/core/Toolbar';
-import Tooltip from '@material-ui/core/Tooltip';
-import { makeStyles } from '@material-ui/core/styles';
-import LightModeIcon from '@material-ui/icons/Brightness7';
-import DarkModeIcon from '@material-ui/icons/Brightness4';
+import MuiAppBar from '@mui/material/AppBar';
+import Divider from '@mui/material/Divider';
+import IconButton from '@mui/material/IconButton';
+import Toolbar from '@mui/material/Toolbar';
+import Tooltip from '@mui/material/Tooltip';
+import { makeStyles } from 'tss-react/mui';
+import LightModeIcon from '@mui/icons-material/Brightness7';
+import DarkModeIcon from '@mui/icons-material/Brightness4';
 import {
     ApiHubUserMenu,
     ApiHubLanguageSwitcher,
@@ -16,27 +16,26 @@ import {
     useApiHubPreference,
 } from 'layer7-apihub';
 import { BrandLogo } from '../ui';
-import { changeTheme, useTheme } from '../theme';
+import { useTheme } from '../theme';
+import { useTheme as useThemePreference } from 'react-admin';
 
 export const AppBar = ({
     children,
     classes: classesOverride,
     className,
-    languagesMenu,
-    logout,
-    open,
-    sidebarButton,
-    title,
-    userMenu,
+    languagesMenu = <ApiHubLanguageSwitcher />,
+    sidebarButton = <SidebarButton />,
+    userMenu = <ApiHubUserMenu />,
     ...rest
 }) => {
-    const classes = useStyles({ classes: classesOverride });
+    const { classes } = useStyles({ classes: classesOverride });
     const { logo } = useTheme();
     return (
         <HideOnScroll>
             <MuiAppBar
                 className={className}
                 color="default"
+                enableColorOnDark={true}
                 elevation={2}
                 {...rest}
             >
@@ -45,7 +44,7 @@ export const AppBar = ({
                     variant="regular"
                     className={classes.toolbar}
                 >
-                    {cloneElement(sidebarButton, { open })}
+                    {sidebarButton}
                     <div className={classes.header}>
                         <BrandLogo
                             className={classes.logo}
@@ -57,26 +56,20 @@ export const AppBar = ({
                     {!global.APIHUB_CONFIG.USE_BRANDING_THEME ? (
                         <ThemeModeButton />
                     ) : null}
-                    {cloneElement(languagesMenu)}
+                    {languagesMenu}
                     <Divider
                         className={classes.divider}
                         orientation="vertical"
                     />
-                    {cloneElement(userMenu, { logout })}
+                    {userMenu}
                 </Toolbar>
             </MuiAppBar>
         </HideOnScroll>
     );
 };
 
-AppBar.defaultProps = {
-    userMenu: <ApiHubUserMenu />,
-    languagesMenu: <ApiHubLanguageSwitcher />,
-    sidebarButton: <SidebarButton />,
-};
-
-const useStyles = makeStyles(
-    theme => ({
+const useStyles = makeStyles({ name: 'ExampleAppBar' })(
+    (theme, { classes }) => ({
         toolbar: {
             paddingRight: 24,
             backgroundColor: theme.palette.customHeader?.main,
@@ -107,27 +100,23 @@ const useStyles = makeStyles(
             height: theme.spacing(6),
             padding: '10px',
         },
-    }),
-    {
-        name: 'ExampleAppBar',
-    }
+        ...classes,
+    })
 );
 
 export const ThemeModeButton = () => {
-    const classes = useThemeModeButtonStyles();
+    const { classes } = useThemeModeButtonStyles();
     const translate = useTranslate();
 
-    const dispatch = useDispatch();
-    const themeMode = useSelector(state => state.theme);
-    const [themeModePreference, setThemeModePreference] = useApiHubPreference(
-        'themeMode'
-    );
+    const [themeMode, setThemeMode] = useThemePreference();
+    const [themeModePreference, setThemeModePreference] =
+        useApiHubPreference('themeMode');
 
     useEffect(() => {
         if (themeModePreference && themeModePreference !== themeMode) {
-            dispatch(changeTheme(themeModePreference));
+            setThemeMode(themeModePreference);
         }
-    }, [themeModePreference, themeMode, dispatch]);
+    }, [themeModePreference, themeMode, setThemeMode]);
 
     const handleClick = () => {
         const newTheme = themeMode === 'light' ? 'dark' : 'light';
@@ -136,7 +125,7 @@ export const ThemeModeButton = () => {
 
     return (
         <Tooltip title={translate('example.action.toggle_dark_mode')}>
-            <IconButton color="default" onClick={handleClick}>
+            <IconButton onClick={handleClick} size="large">
                 {themeMode === 'light' ? (
                     <DarkModeIcon className={classes.icon} />
                 ) : (
@@ -147,7 +136,7 @@ export const ThemeModeButton = () => {
     );
 };
 
-const useThemeModeButtonStyles = makeStyles(theme => ({
+const useThemeModeButtonStyles = makeStyles()(theme => ({
     icon: {
         color: theme.palette.common.white,
     },

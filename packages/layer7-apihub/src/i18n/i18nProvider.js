@@ -1,3 +1,4 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import polyglotI18nProvider from 'ra-i18n-polyglot';
 import englishMessages from './en';
 import spanishMessages from './es';

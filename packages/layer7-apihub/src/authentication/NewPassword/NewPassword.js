@@ -1,7 +1,8 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React, { useEffect, useState } from 'react';
-import { useTranslate } from 'ra-core';
+import { useTranslate } from 'react-admin';
 import { useLocation } from 'react-router';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 
 import { useApiHub } from '../../ApiHubContext';
 import { extractTokenFromUrl } from '../extractTokenFromUrl';
@@ -91,7 +92,6 @@ export const NewPasswordPage = props => (
  */
 export const useSetNewPassword = () => {
     const [state, setState] = useState('verifying_token');
-    const location = useLocation();
 
     const { url, urlWithTenant, originHubName } = useApiHub();
     const token = extractTokenFromUrl(window.location.hash);

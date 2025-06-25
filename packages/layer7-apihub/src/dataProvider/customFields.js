@@ -1,10 +1,14 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 const basePath = '/api-management/1.0/custom-fields';
 export const customFieldsDataProvider = context => {
     return {
         // The CustomFields API route does not care about pagination or sorting
         // so we ignore those parameters
-        getList: async ({ entityName = 'APPLICATION', status = 'ENABLED' }) => {
-            const url = new URL(`${context.apiUrl}${basePath}?entityType=${entityName}&status=${status}&size=2000`);
+        getList: async ({ meta }) => {
+            const { entityName, status } = meta;
+            const url = new URL(
+                `${context.apiUrl}${basePath}?entityType=${entityName}&status=${status}&size=2000`
+            );
             const { json } = await context.fetchJson(url.toString(), {
                 credentials: 'include',
             });

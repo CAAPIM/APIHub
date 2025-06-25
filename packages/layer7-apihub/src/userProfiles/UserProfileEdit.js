@@ -1,45 +1,61 @@
-import React, { useState } from 'react';
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
+import React, { useState, useEffect } from 'react';
 import {
     BooleanInput,
-    EditView,
+    email,
+    FormDataConsumer,
+    Labeled,
+    maxLength,
+    required,
+    SaveButton,
     SimpleForm,
-    Toolbar,
     TextField,
     TextInput,
-    EditButton,
-    SaveButton,
-    required,
-    maxLength,
-    email,
-    useEditController,
+    Toolbar,
+    useCreatePath,
+    useGetRecordId,
+    useRecordContext,
     useTranslate,
-    FormDataConsumer,
+    useUpdate,
 } from 'react-admin';
-import { Link } from 'react-router-dom';
-import { makeStyles, Collapse } from '@material-ui/core';
-import Button from '@material-ui/core/Button';
-import createDecorator from 'final-form-calculate';
+import { Link, useNavigate } from 'react-router-dom';
+import { Collapse } from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
+import Button from '@mui/material/Button';
 import get from 'lodash/get';
 
 import { useApiHub } from '../ApiHubContext';
-import { FormDialog, ViewTitle, PasswordInput } from '../ui';
-import { usePasswordEncryption, fetchPasswordPolicyData, getPwdTooltip, getPasswordValidators } from '../authentication';
+import { Edit, FormDialog, PasswordInput, ViewTitle } from '../ui';
+import {
+    fetchPasswordPolicyData,
+    getPwdTooltip,
+    usePasswordEncryption,
+} from '../authentication';
 import { UserProfileTitle } from './UserProfileTitle';
 import { UserProfileSubtitle } from './UserProfileSubtitle';
 import { isPortalAdmin, useUserContext } from '../userContexts';
+import { useLayer7Notify } from '../useLayer7Notify';
 
-export const UserProfileEdit = props => {
-    const { record, save, ...editControllerProps } = useEditController({
-        successMessage: 'resources.userProfiles.notifications.update_success',
-        ...props,
-    });
+export const UserProfileEdit = () => (
+    <Edit title={<UserProfileTitle />} mutationMode="undoable">
+        <UserProfileEditPage />
+    </Edit>
+);
+
+const UserProfileEditPage = () => {
+    const id = useGetRecordId();
     const translate = useTranslate();
     const [publicKey, encrypt] = usePasswordEncryption();
     const [currentPassword, setCurrentPassword] = useState('');
     const [showFormDialog, setShowFormDialog] = useState(false);
     const [savedFormData, setSavedFormData] = useState({});
-    const classes = useUserProfileEditFormStyles();
+    const { classes } = useUserProfileEditFormStyles();
     const [currentPwdError, setCurrentPwdError] = useState(false);
+    const record = useRecordContext();
+    const [update] = useUpdate();
+    const navigate = useNavigate();
+    const createPath = useCreatePath();
+    const notify = useLayer7Notify();
 
     const handleSave = async formData => {
         const { newPassword, ...userProfile } = formData;
@@ -63,8 +79,26 @@ export const UserProfileEdit = props => {
                 userProfile.password = await encrypt(currentPassword);
             }
         }
-        const result = await save(userProfile, 'show');
-        return result;
+        return await update(
+            'userProfiles',
+            {
+                id,
+                data: userProfile,
+            },
+            {
+                returnPromise: true,
+                onSuccess: () => {
+                    navigate(
+                        createPath({
+                            resource: 'userProfiles',
+                            type: 'show',
+                            id,
+                        })
+                    );
+                },
+                onError: error => notify('Unable to authroize action', 'error'),
+            }
+        );
     };
 
     const handleSubmit = async formData => {
@@ -92,35 +126,10 @@ export const UserProfileEdit = props => {
         }
     };
 
-    const handleFormDialogFormSubmit = async event => {
-        event.preventDefault();
-        if (currentPassword) {
-            setShowFormDialog(false);
-            await handleSave(savedFormData);
-        } else {
-            setCurrentPwdError(true);
-        }
-    };
-
     const handleCurrentPasswordChange = event => {
         setCurrentPwdError(false);
         setCurrentPassword(event.target.value);
     };
-
-    // workaround to hide form toolbar in formdialog
-    const EmptyDiv = () => <div />;
-
-    // specified those props to avoid errors in console
-    const ToolbarCustomEmptyDiv = ({
-        handleSubmit,
-        handleSubmitWithRedirect,
-        onSave,
-        invalid,
-        pristine,
-        saving,
-        submitOnEnter,
-        ...rest
-    }) => <EmptyDiv {...rest} />;
 
     const modalFormValidate = ({ currentPassword }) => {
         const errors = {};
@@ -134,15 +143,7 @@ export const UserProfileEdit = props => {
     return (
         <>
             <ViewTitle />
-            <EditView
-                undoable={false}
-                {...editControllerProps}
-                title={<UserProfileTitle actions={<EditButton disabled />} />}
-                record={record}
-                save={handleSubmit}
-            >
-                <UserProfileEditForm />
-            </EditView>
+            <UserProfileEditForm save={handleSubmit} />
             <FormDialog
                 isOpen={showFormDialog}
                 submitText={translate('resources.userProfiles.actions.submit')}
@@ -154,9 +155,9 @@ export const UserProfileEdit = props => {
                 isDialogContentText={false}
             >
                 <SimpleForm
-                    toolbar={<ToolbarCustomEmptyDiv />}
+                    sanitizeEmptyValues={true}
+                    toolbar={() => {}} // hide toolbar
                     validate={modalFormValidate}
-                    onSubmit={handleFormDialogFormSubmit}
                 >
                     <PasswordInput
                         className={classes.field}
@@ -179,131 +180,122 @@ export const UserProfileEdit = props => {
     );
 };
 
-const CancelButton = ({ record }) => {
+const CancelButton = ({ disabled }) => {
     const translate = useTranslate();
+    const id = useGetRecordId();
+    const createPath = useCreatePath();
 
     return (
         <Button
             component={Link}
-            to={record ? `/userProfiles/${record.id}/show` : ''}
+            to={createPath({ resource: 'userProfiles', id, type: 'show' })}
             variant="outlined"
-            color="primary"
+            disabled={disabled}
         >
             {translate('resources.userProfiles.actions.cancel')}
         </Button>
     );
 };
 
-const useUserProfileEditToolbarStyles = makeStyles(
-    theme => ({
-        toolbar: {
-            backgroundColor: 'transparent',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'flex-end',
-            width: 456,
-        },
-        saveButton: {
-            marginLeft: theme.spacing(2),
-        },
-    }),
-    {
-        name: 'Layer7UserContextEditToolbar',
-    }
-);
+const useUserProfileEditToolbarStyles = makeStyles({
+    name: 'Layer7UserContextEditToolbar',
+})(theme => ({
+    toolbar: {
+        backgroundColor: 'transparent',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'flex-end',
+        width: 456,
+    },
+    saveButton: {
+        marginLeft: theme.spacing(2),
+    },
+}));
 
-const UserProfileEditToolbar = ({ record, ...rest }) => {
-    const classes = useUserProfileEditToolbarStyles();
+const UserProfileEditToolbar = () => {
+    const { classes } = useUserProfileEditToolbarStyles();
     const [userContext] = useUserContext();
     const isIdpUser = get(userContext, 'userDetails.isIdpUser', false);
     return (
-        <Toolbar className={classes.toolbar} record={record} {...rest}>
+        <Toolbar className={classes.toolbar}>
             <CancelButton disabled={isIdpUser} />
-            <SaveButton
-                disabled={isIdpUser}
-                className={classes.saveButton}
-                redirect="show"
-            />
+            <SaveButton disabled={isIdpUser} className={classes.saveButton} />
         </Toolbar>
     );
 };
 
-const useUserProfileEditFormStyles = makeStyles(
-    theme => ({
-        root: {
-            padding: `${theme.spacing(2)}px !important`,
-            width: 480,
-        },
-        field: {
-            display: 'block',
-        },
-    }),
-    {
-        name: 'Layer7UserProfileEditForm',
-    }
-);
+const useUserProfileEditFormStyles = makeStyles({
+    name: 'Layer7UserProfileEditForm',
+})(theme => ({
+    root: {
+        padding: `${theme.spacing(2)} !important`,
+        width: 480,
+    },
+    field: {
+        display: 'block',
+    },
+}));
 
 const validateName = [required(), maxLength(60)];
 const validateEmail = [required(), maxLength(256), email()];
 
-const pwdResetDecorator = createDecorator({
-    field: 'updatePassword', // when updatePassword changes...
-    updates: {
-        // ...clear new password and verified password if updatePassword is false
-        newPassword: (updatePasswordValue, allValues) =>
-            updatePasswordValue ? allValues.newPassword : '',
-        confirmNewPassword: (updatePasswordValue, allValues) =>
-            updatePasswordValue ? allValues.confirmNewPassword : '',
-    },
-});
-
-export const UserProfileEditForm = ({ record, basePath, save, ...rest }) => {
-    const classes = useUserProfileEditFormStyles();
-
-    const validate = ({ newPassword, confirmNewPassword, updatePassword }) => {
-        const errors = {};
-
-        if (updatePassword && newPassword) {
-            if (newPassword !== confirmNewPassword) {
-                errors.confirmNewPassword =
-                    'resources.userProfiles.validation.error_password_match';
-            }
-        }
-
-        if (updatePassword && !newPassword) {
-            errors.newPassword =
-                'resources.userProfiles.validation.error_password_empty';
-        }
-
-        return errors;
-    };
+export const UserProfileEditForm = ({ save, ...rest }) => {
+    const { classes } = useUserProfileEditFormStyles();
     const [userContext] = useUserContext();
     const isAdmin = isPortalAdmin(userContext);
-    const [passwordPolicyData, setPasswordPolicyData] = React.useState({});
+    const [passwordPolicyData, setPasswordPolicyData] = useState({});
     const { urlWithTenant, originHubName } = useApiHub();
-    React.useEffect(() => {
-        fetchPasswordPolicyData(urlWithTenant, originHubName).then(data => {
-            setPasswordPolicyData(data);
-        }).catch((exception) => {
-            setPasswordPolicyData({});
-        });
-    }, []);
+    useEffect(() => {
+        fetchPasswordPolicyData(urlWithTenant, originHubName)
+            .then(data => {
+                setPasswordPolicyData(data);
+            })
+            .catch(exception => {
+                setPasswordPolicyData({});
+            });
+    }, [originHubName, urlWithTenant]);
     const regexConfig = get(passwordPolicyData, 'regexConfig', {});
     const regexStr = get(regexConfig, 'REGEX.value', '');
     const translate = useTranslate();
     const passwordTooltip = getPwdTooltip(regexConfig, translate);
     const isIdpUser = get(userContext, 'userDetails.isIdpUser', false);
+    const validate = ({ newPassword, confirmNewPassword, updatePassword }) => {
+        const errors = {};
+        if (updatePassword) {
+            const strReg = new RegExp(regexStr);
+            if (!strReg.test(newPassword)) {
+                errors.newPassword = passwordTooltip;
+            }
+            if (!strReg.test(confirmNewPassword)) {
+                errors.confirmNewPassword = passwordTooltip;
+            }
+            if (newPassword) {
+                if (newPassword !== confirmNewPassword) {
+                    errors.confirmNewPassword =
+                        'resources.userProfiles.validation.error_password_match';
+                }
+            }
+            if (!newPassword) {
+                errors.newPassword =
+                    'resources.userProfiles.validation.error_password_empty';
+            }
+        }
+        return errors;
+    };
+
     return (
         <SimpleForm
+            sanitizeEmptyValues={true}
             className={classes.root}
-            decorators={[pwdResetDecorator]}
-            record={record}
-            save={save}
+            // decorators={[pwdResetDecorator]}
+            onSubmit={save}
             toolbar={<UserProfileEditToolbar />}
             validate={validate}
             {...rest}
         >
-            <TextField className={classes.field} fullWidth source="userName" />
+            <Labeled>
+                <TextField className={classes.field} source="userName" />
+            </Labeled>
             <TextInput
                 className={classes.field}
                 fullWidth
@@ -323,7 +315,7 @@ export const UserProfileEditForm = ({ record, basePath, save, ...rest }) => {
                 fullWidth
                 source="email"
                 validate={validateEmail}
-                disabled={!isAdmin || isIdpUser}
+                readOnly={!isAdmin || isIdpUser}
             />
             {!isIdpUser && <UserProfileSubtitle />}
             {!isIdpUser && (
@@ -346,7 +338,6 @@ export const UserProfileEditForm = ({ record, basePath, save, ...rest }) => {
                                 title={passwordTooltip}
                                 data-testid={'new-password'}
                                 className={className}
-                                validate={getPasswordValidators(regexStr)}
                                 {...rest}
                             />
                             <br />

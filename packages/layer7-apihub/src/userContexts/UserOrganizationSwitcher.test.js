@@ -1,7 +1,8 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React, { useState } from 'react';
 import expect from 'expect';
-import { TranslationProvider } from 'react-admin';
-import { render, wait, fireEvent, within } from '@testing-library/react';
+import { I18nContextProvider } from 'react-admin';
+import { render, waitFor, fireEvent, within } from '@testing-library/react';
 
 import { UserOrganizationSwitcher } from './UserOrganizationSwitcher';
 import { i18nProvider } from '../i18n';
@@ -28,12 +29,12 @@ describe('UserOrganizationSwitcher page', () => {
         };
 
         return (
-            <TranslationProvider i18nProvider={i18nProvider('en')}>
+            <I18nContextProvider value={i18nProvider('en')}>
                 <UserOrganizationSwitcher
                     userContext={userContext}
                     onChangeUserContext={handleChangeUserContext}
                 />
-            </TranslationProvider>
+            </I18nContextProvider>
         );
     };
 
@@ -64,7 +65,7 @@ describe('UserOrganizationSwitcher page', () => {
 
         fireEvent.click(notSelectedOrganization);
 
-        await wait(() => {
+        await waitFor(() => {
             const newSelectedOrganization = getByLabelText(
                 'Selected organization'
             );

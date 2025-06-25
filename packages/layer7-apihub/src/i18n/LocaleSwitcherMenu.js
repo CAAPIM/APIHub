@@ -1,15 +1,15 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React, { useState, forwardRef } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
-import classnames from 'classnames';
+import { makeStyles } from 'tss-react/mui';
+import Button from '@mui/material/Button';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 
 export const LocaleSwitcherMenu = props => {
     const [anchorEl, setAnchorEl] = useState(null);
     const { onChange, locale, locales, className, ...rest } = props;
-    const classes = useStyles(props);
+    const { classes, cx } = useStyles(props);
 
     const open = Boolean(anchorEl);
 
@@ -28,7 +28,7 @@ export const LocaleSwitcherMenu = props => {
                 aria-haspopup={true}
                 color="inherit"
                 variant="text"
-                className={classnames(classes.button, className)}
+                className={cx(classes.button, className)}
                 onClick={handleMenu}
                 endIcon={<ArrowDropDownIcon />}
                 {...rest}
@@ -75,13 +75,10 @@ export const LocaleSwitcherMenuItem = forwardRef(
     }
 );
 
-const useStyles = makeStyles(
+const useStyles = makeStyles({name: 'Layer7LocaleSwitcherMenu'})(
     {
         button: {
             textTransform: 'none',
         },
-    },
-    {
-        name: 'Layer7LocaleSwitcherMenu',
     }
 );

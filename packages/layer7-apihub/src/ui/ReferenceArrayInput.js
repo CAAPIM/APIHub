@@ -1,3 +1,5 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
+
 /**
  * Copy of React Admin ReferenceArrayInput.
  * It adds support for a more complete pagination, sorting and filtering features.
@@ -5,10 +7,10 @@
 
 import * as React from 'react';
 import PropTypes from 'prop-types';
-import { useInput, useTranslate } from 'ra-core';
 import { LinearProgress, Labeled } from 'react-admin';
-import { TextField } from '@material-ui/core';
+import { TextField } from '@mui/material';
 import { useReferenceArrayInputController } from './useReferenceArrayInputController';
+import { useInput, useTranslate } from 'react-admin';
 
 /**
  * An Input component for fields containing a list of references to another resource.
@@ -105,7 +107,7 @@ export const ReferenceArrayInput = ({
         );
     }
 
-    const { id, input, isRequired, meta } = useInput({
+    const { id, field, isRequired, fieldState } = useInput({
         id: idOverride,
         onBlur,
         onChange,
@@ -119,7 +121,7 @@ export const ReferenceArrayInput = ({
 
     const controllerProps = useReferenceArrayInputController({
         ...props,
-        input,
+        input: field,
     });
 
     const translate = useTranslate();
@@ -127,9 +129,9 @@ export const ReferenceArrayInput = ({
     return (
         <ReferenceArrayInputView
             id={id}
-            input={input}
+            input={field}
             isRequired={isRequired}
-            meta={meta}
+            meta={fieldState}
             translate={translate}
             children={children}
             {...props}
@@ -179,7 +181,7 @@ export const ReferenceArrayInputView = ({
     error,
     filter,
     input,
-    loading,
+    isLoading,
     isRequired,
     label,
     meta,
@@ -208,7 +210,7 @@ export const ReferenceArrayInputView = ({
         { _: label }
     );
 
-    if (loading) {
+    if (isLoading) {
         return (
             <Labeled
                 label={translatedLabel}
@@ -279,7 +281,7 @@ ReferenceArrayInputView.propTypes = {
     choices: PropTypes.array,
     className: PropTypes.string,
     error: PropTypes.string,
-    loading: PropTypes.bool,
+    isLoading: PropTypes.bool,
     input: PropTypes.object.isRequired,
     label: PropTypes.string,
     meta: PropTypes.object,

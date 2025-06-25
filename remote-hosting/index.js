@@ -1,3 +1,4 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 var fs = require('fs');
 const express = require('express');
 const path = require('path');

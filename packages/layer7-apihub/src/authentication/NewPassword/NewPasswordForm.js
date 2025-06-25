@@ -1,38 +1,43 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React from 'react';
-import { SimpleForm, useTranslate } from 'react-admin';
-import { required } from 'ra-core';
-import { FORM_ERROR } from 'final-form';
-import { makeStyles } from '@material-ui/core';
+import { SimpleForm, useTranslate, required } from 'react-admin';
+import { makeStyles } from 'tss-react/mui';
 import get from 'lodash/get';
 
 import { useApiHub } from '../../ApiHubContext';
 import { NewPasswordToolbar } from './NewPasswordToolbar';
 import { PasswordInput } from '../../ui';
-import { fetchPasswordPolicyData, getPwdTooltip, getPasswordValidators } from '../validatePassword';
+import {
+    fetchPasswordPolicyData,
+    getPwdTooltip,
+    getPasswordValidators,
+} from '../validatePassword';
 
 export const NewPasswordForm = props => {
     const { onSubmit, toolbarProps, ...rest } = props;
 
-    const classes = useStyles(props);
+    const { classes } = useStyles(props);
 
     const validate = ({ password, confirm_password }) => {
+        const errors = {};
         if (password !== confirm_password) {
-            return {
-                [FORM_ERROR]:
-                    'apihub.new_password.validation.error_password_match',
-            };
+            errors.password =
+                'apihub.new_password.validation.error_password_match';
         }
+        return errors;
     };
 
     const [passwordPolicyData, setPasswordPolicyData] = React.useState({});
     const { urlWithTenant, originHubName } = useApiHub();
     React.useEffect(() => {
-        fetchPasswordPolicyData(urlWithTenant, originHubName).then(data => {
-            setPasswordPolicyData(data);
-        }).catch((exception) => {
-            setPasswordPolicyData({});
-        });
-    }, []);
+        fetchPasswordPolicyData(urlWithTenant, originHubName)
+            .then(data => {
+                setPasswordPolicyData(data);
+            })
+            .catch(exception => {
+                setPasswordPolicyData({});
+            });
+    }, [originHubName, urlWithTenant]);
     const regexConfig = get(passwordPolicyData, 'regexConfig', {});
     const regexStr = get(regexConfig, 'REGEX.value', '');
     const translate = useTranslate();
@@ -41,8 +46,9 @@ export const NewPasswordForm = props => {
     return (
         <div className={classes.root}>
             <SimpleForm
+                sanitizeEmptyValues={true}
                 className={classes.form}
-                save={onSubmit}
+                onSubmit={onSubmit}
                 toolbar={<NewPasswordToolbar {...toolbarProps} />}
                 validate={validate}
                 {...rest}
@@ -68,19 +74,14 @@ export const NewPasswordForm = props => {
     );
 };
 
-const useStyles = makeStyles(
-    theme => ({
-        root: {},
-        form: {
-            '& >:first-child': {
-                padding: 0,
-            },
-            '& .ra-input': {
-                marginTop: theme.spacing(2),
-            },
+const useStyles = makeStyles({ name: 'Layer7NewPasswordForm' })(theme => ({
+    root: {},
+    form: {
+        '& >:first-child': {
+            padding: 0,
         },
-    }),
-    {
-        name: 'Layer7NewPasswordForm',
-    }
-);
+        '& .ra-input': {
+            marginTop: theme.spacing(2),
+        },
+    },
+}));

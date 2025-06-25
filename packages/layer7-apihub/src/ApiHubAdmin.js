@@ -1,8 +1,7 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React, { Children } from 'react';
-import { Admin, Resource } from 'react-admin';
-import { Route } from 'react-router';
-import merge from 'lodash/fp/merge';
-
+import { Admin, CustomRoutes, localStorageStore, Resource } from 'react-admin';
+import { Route } from 'react-router-dom';
 import {
     ApiHubProvider,
     guessApihubUrl,
@@ -25,37 +24,33 @@ import { applications } from './applications';
 import { documents } from './documentation';
 import { userProfiles } from './userProfiles';
 import { ApiHubLayout } from './ApiHubLayout';
-
 import { readApiHubPreference } from './preferences';
-import { theme as defaultTheme } from './theme';
+import { QueryClient } from '@tanstack/react-query';
 
-import { documentationReducer } from './documentation/Documentation/documentationReducer';
+const queryClient = new QueryClient({});
 
-const defaultCustomRoutes = [];
-
-export const ApiHubAdmin = ({
-    // ApiHub Settings
-    url = guessApihubUrl(),
-    tenantName = guessApihubTenantName(),
-    originHubName,
-    useSameOrigin = true,
-    // Custom Pages and Layout
-    dashboard = HomePageContent,
-    layout = ApiHubLayout,
-    loginPage = LoginPage,
-    resetPasswordPage = ResetPasswordPage,
-    newPasswordPage = NewPasswordPage,
-    accountSetupPage = AccountSetupPage,
-    signUpPage = SignUpPage,
-    samlLoginConfirmPage = SAMLLoginConfirmPage,
-    // React Admin Settings
-    theme = defaultTheme,
-    customReducers,
-    customRoutes = defaultCustomRoutes,
-    initialState,
-    children,
-    ...props
-}) => {
+export const ApiHubAdmin = props => {
+    const {
+        // ApiHub Settings
+        url = guessApihubUrl(),
+        tenantName = guessApihubTenantName(),
+        originHubName,
+        useSameOrigin = true,
+        // Custom Pages and Layout
+        dashboard = HomePageContent,
+        layout = ApiHubLayout,
+        loginPage = LoginPage,
+        resetPasswordPage = ResetPasswordPage,
+        newPasswordPage = NewPasswordPage,
+        accountSetupPage = AccountSetupPage,
+        signUpPage = SignUpPage,
+        samlLoginConfirmPage = SAMLLoginConfirmPage,
+        // React Admin Settings
+        theme,
+        customRoutes = [],
+        customRoutesNoLayout = [],
+        children,
+    } = props;
     const defaultLocaleFromPreferences = readApiHubPreference(
         'locale',
         defaultLocale
@@ -66,17 +61,8 @@ export const ApiHubAdmin = ({
         true
     );
 
-    const finalInitialState = merge(
-        {
-            admin: {
-                ui: {
-                    sidebarOpen: !!defaultSidebarOpenFromPreferences,
-                    viewVersion: 0,
-                },
-            },
-        },
-        initialState
-    );
+    const store = localStorageStore();
+    store.setItem('sidebar.open', defaultSidebarOpenFromPreferences);
 
     const resources = [
         // Resources which are needed for references but which will not have any UI
@@ -109,7 +95,6 @@ export const ApiHubAdmin = ({
             />
         );
     }
-
     return (
         <ApiHubProvider
             url={url}
@@ -120,44 +105,38 @@ export const ApiHubAdmin = ({
                 authProvider={authProvider(url, tenantName, originHubName)}
                 dataProvider={dataProvider(url, tenantName, originHubName)}
                 i18nProvider={i18nProvider(defaultLocaleFromPreferences)}
-                theme={theme}
                 layout={layout}
                 loginPage={loginPage}
                 dashboard={dashboard}
-                customRoutes={[
-                    // React-Router loads only the first route that matches a path.
-                    // The only way to allow customizing the pre-defined routes
-                    // is to pass the customRoutes from the props before.
-                    ...customRoutes,
-                    // The Wiki Page displays a list of documents in a non standard way.
-                    <Route path="/wiki" component={documents.list} />,
-                    <Route
-                        path="/reset-password*"
-                        component={resetPasswordPage}
-                        noLayout
-                    />,
-                    <Route
-                        path="/new-password*"
-                        component={newPasswordPage}
-                        noLayout
-                    />,
-                    <Route
-                        path="/account-setup*"
-                        component={accountSetupPage}
-                        noLayout
-                    />,
-                    <Route
-                        path="/saml/login/confirm"
-                        component={samlLoginConfirmPage}
-                        noLayout
-                    />,
-                    <Route path="/signup" component={signUpPage} noLayout />,
-                ]}
-                customReducers={merge(documentationReducer, customReducers)}
-                initialState={finalInitialState}
+                store={store}
+                queryClient={queryClient}
+                theme={theme}
                 {...props}
+                requireAuth={true}
             >
                 {resources}
+                <CustomRoutes>
+                    {/* The Wiki Page displays a list of documents in a non-standard way.*/}
+                    <Route path="/wiki" element={documents.list} />
+                    {/* React-Router loads only the first route that matches a path.*/}
+                    {/* The only way to allow customizing the pre-defined routes*/}
+                    {/* is to pass the customRoutes from the props before.*/}
+                    {...customRoutes}
+                </CustomRoutes>
+                <CustomRoutes noLayout>
+                    {...customRoutesNoLayout}
+                    <Route
+                        path="/reset-password/*"
+                        element={resetPasswordPage}
+                    />
+                    <Route
+                        path="/saml/login/confirm"
+                        element={samlLoginConfirmPage}
+                    />
+                    <Route path="/signup" element={signUpPage} />
+                    <Route path="/new-password/*" element={newPasswordPage} />
+                    <Route path="/account-setup/*" element={accountSetupPage} />
+                </CustomRoutes>
             </Admin>
         </ApiHubProvider>
     );

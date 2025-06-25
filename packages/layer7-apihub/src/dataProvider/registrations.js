@@ -1,3 +1,4 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 const basePath = '/v2/users/registrations';
 
 const prepareCreateData = ({ ...body }) => JSON.stringify(body);
@@ -10,7 +11,7 @@ export const registrationsDataProvider = context => {
             const { json } = await context.fetchJson(url, {
                 credentials: 'include',
                 method: 'POST',
-                body: prepareCreateData(body),
+                body: JSON.stringify(data),
             });
 
             return {

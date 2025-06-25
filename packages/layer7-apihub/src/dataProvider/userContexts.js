@@ -1,3 +1,4 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import { getErrorMessage } from '../useLayer7Notify';
 
 // Fake id used because we can only access the current user context
@@ -16,24 +17,32 @@ export const userContextsDataProvider = context => {
 
     return {
         getOne: async () => {
-            const { json: data } = await context.fetchJson(basePath, {
-                credentials: 'include',
-            });
+            try {
+                const { json: data } = await context.fetchJson(basePath, {
+                    credentials: 'include',
+                });
+                if (
+                    !data ||
+                    !data.userContexts ||
+                    !data.userContexts.length > 0
+                ) {
+                    const customError = {
+                        status: 404,
+                        message:
+                            'resources.userContexts.notifications.profile_not_exist_error',
+                    };
+                    throw customError;
+                }
 
-            if (!data || !data.userContexts || !data.userContexts.length > 0) {
-                const customError = {
-                    status: 404,
-                    message:
-                        'resources.userContexts.notifications.profile_not_exist_error',
+                const userContext = data.userContexts[0];
+
+                return {
+                    data: { ...userContext, id: CurrentUserId },
                 };
-                throw customError;
+            } catch (error) {
+                const message = getErrorMessage(error);
+                throw new UserContextsValidationError(message);
             }
-
-            const userContext = data.userContexts[0];
-
-            return {
-                data: { ...userContext, id: CurrentUserId },
-            };
         },
         update: async ({ id, data }) => {
             // The update method should only be used to update the user details

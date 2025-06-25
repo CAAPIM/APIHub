@@ -1,30 +1,27 @@
-import { defaultTheme } from 'react-admin';
-import defaultMuiTheme from '@material-ui/core/styles/defaultTheme';
-import createMuiTheme from '@material-ui/core/styles/createMuiTheme';
-import createPalette from '@material-ui/core/styles/createPalette';
-import merge from 'lodash/merge';
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
+import { createTheme } from '@mui/material/styles';
+import { deepmerge } from '@mui/utils';
+import { blue } from '@mui/material/colors';
 
-import blue from '@material-ui/core/colors/blue';
+const defaultMuiTheme = createTheme();
 
-const palette = createPalette(
-    merge({}, defaultTheme.palette, {
-        secondary: {
-            light: '#6ec6ff',
-            main: '#43425d',
-            dark: '#0069c0',
-            contrastText: defaultMuiTheme.palette.common.white,
-        },
-    })
-);
+const palette = deepmerge(defaultMuiTheme.palette, {
+    secondary: {
+        light: '#6ec6ff',
+        main: '#43425d',
+        dark: '#0069c0',
+        contrastText: defaultMuiTheme.palette.common.white,
+    },
+});
 
 /**
  * Default Layer 7 Api Hub theme
  */
-export const theme = createMuiTheme(
-    merge({}, defaultTheme, {
-        palette,
-        overrides: {
-            RaMenuItemLink: {
+export const theme = deepmerge(defaultMuiTheme, {
+    palette,
+    components: {
+        RaMenuItemLink: {
+            styleOverrides: {
                 root: {
                     color: palette.common.white,
                     borderLeftColor: 'transparent',
@@ -32,37 +29,50 @@ export const theme = createMuiTheme(
                     borderLeftStyle: 'solid',
                     paddingTop: defaultMuiTheme.spacing(2),
                     paddingBottom: defaultMuiTheme.spacing(2),
-                },
-                active: {
-                    borderLeftColor: blue[800],
-                    borderLeftWidth: defaultMuiTheme.spacing(0.5),
-                    borderLeftStyle: 'solid',
-                    backgroundColor: palette.action.selected,
-                    color: palette.common.white,
-                    '& svg': {
-                        color: '#a3a0fb',
+                    '&.RaMenuItemLink-active': {
+                        borderLeftColor: blue[800],
+                        borderLeftWidth: defaultMuiTheme.spacing(0.5),
+                        borderLeftStyle: 'solid',
+                        backgroundColor: palette.action.selected,
+                        color: `${palette.common.white} !important`,
+                        '& svg': {
+                            color: '#a3a0fb',
+                        },
                     },
-                },
-                icon: {
-                    color: palette.common.white,
-                },
-            },
-            RaSidebar: {
-                drawerPaper: {
-                    backgroundColor: palette.secondary.main,
-                    marginTop: '1.5em',
-                    height: 'calc(100% - 1.5em)',
-                    [defaultMuiTheme.breakpoints.up('xs')]: {
-                        marginTop: '0',
-                        paddingTop: '1.5em',
-                    },
-                    [defaultMuiTheme.breakpoints.down('sm')]: {
-                        marginTop: '0',
-                        paddingTop: '1.5em',
+                    '& .RaMenuItemLink-icon': {
+                        color: palette.common.white,
                     },
                 },
             },
-            RaLayout: {
+        },
+        RaSidebar: {
+            styleOverrides: {
+                root: {
+                    height: 'auto !important',
+                    '& .MuiPaper-root': {
+                        backgroundColor: palette.secondary.main,
+                        marginTop: '1.5em',
+                        height: '100%',
+                        [defaultMuiTheme.breakpoints.up('xs')]: {
+                            marginTop: '0',
+                            paddingTop: '1.5em',
+                        },
+                        [defaultMuiTheme.breakpoints.down('md')]: {
+                            marginTop: '0',
+                            paddingTop: '1.5em',
+                        },
+                        '& .RaSidebar-fixed': {
+                            width: '100%',
+                        },
+                    },
+                    fixed: {
+                        position: 'relative',
+                    },
+                },
+            },
+        },
+        RaLayout: {
+            styleOverrides: {
                 root: {
                     display: 'flex',
                     flexDirection: 'column',
@@ -71,6 +81,21 @@ export const theme = createMuiTheme(
                     position: 'relative',
                     minWidth: 'fit-content',
                     width: '100%',
+                    '& .RaLayout-content': {
+                        display: 'flex',
+                        flexDirection: 'column',
+                        flexGrow: 1,
+                        flexBasis: 0,
+                        padding: defaultMuiTheme.spacing(3),
+                        paddingTop: defaultMuiTheme.spacing(6),
+                        paddingLeft: 0,
+                        [defaultMuiTheme.breakpoints.up('xs')]: {
+                            paddingLeft: defaultMuiTheme.spacing(3),
+                        },
+                        [defaultMuiTheme.breakpoints.down('sm')]: {
+                            padding: 0,
+                        },
+                    },
                 },
                 appFrame: {
                     display: 'flex',
@@ -88,36 +113,33 @@ export const theme = createMuiTheme(
                     display: 'flex',
                     flexGrow: 1,
                 },
-                content: {
-                    display: 'flex',
-                    flexDirection: 'column',
-                    flexGrow: 1,
-                    flexBasis: 0,
-                    padding: defaultMuiTheme.spacing(3),
-                    paddingTop: defaultMuiTheme.spacing(6),
-                    paddingLeft: 0,
-                    [defaultMuiTheme.breakpoints.up('xs')]: {
-                        paddingLeft: defaultMuiTheme.spacing(3),
-                    },
-                    [defaultMuiTheme.breakpoints.down('sm')]: {
-                        padding: 0,
-                    },
-                },
             },
-            MuiTab: {
+        },
+        MuiTab: {
+            styleOverrides: {
                 root: {
                     textTransform: 'capitalize',
-                    '&$selected': {
+                    '&.Mui-selected	': {
                         color: palette.primary,
                         fontWeight: defaultMuiTheme.typography.fontWeightBold,
                     },
                 },
             },
         },
-        props: {
-            MuiFab: {
+        MuiFab: {
+            defaultProps: {
                 color: 'primary',
             },
         },
-    })
-);
+        MuiIconButton: {
+            defaultProps: {
+                size: 'large',
+            },
+        },
+        MuiLink: {
+            defaultProps: {
+                underline: 'hover', // override default prop of 'none' set by MUI 5
+            },
+        },
+    },
+});

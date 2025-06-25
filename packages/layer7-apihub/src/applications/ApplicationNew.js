@@ -1,24 +1,25 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React, { useState, useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import {
     SimpleForm,
     TextInput,
     required,
     minLength,
     maxLength,
-    Labeled,
     useCreate,
-    CRUD_CREATE,
+    useTranslate,
+    useLoading,
+    useCreatePath,
 } from 'react-admin';
-import Dialog from '@material-ui/core/Dialog';
-import DialogContent from '@material-ui/core/DialogContent';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import Dialog from '@mui/material/Dialog';
+import DialogContent from '@mui/material/DialogContent';
+import CircularProgress from '@mui/material/CircularProgress';
 import debounce from 'lodash/debounce';
 import get from 'lodash/get';
 import isUndefined from 'lodash/isUndefined';
-import { useTranslate, linkToRecord, useLoading } from 'ra-core';
-import { makeStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
+import { makeStyles } from 'tss-react/mui';
+import Grid from '@mui/material/Grid';
 import { getUserOrganizations, isOrgBoundUser } from '../userContexts';
 import { ApplicationToolbar } from './ApplicationToolbar';
 import CollapsiblePanel from './CollapsiblePanel';
@@ -27,18 +28,19 @@ import { useLayer7Notify } from '../useLayer7Notify';
 import useApplicationUniqueCheck from './useApplicationUniqueCheck';
 import { UnSavedChangesDialog } from './UnSavedChangesDialog';
 
-export const ApplicationNew = ({ userContext, toolbarProps }) => {
-    const classes = useStyles();
-    const labelClasses = useLabelStyles();
-    const history = useHistory();
+export const ApplicationNew = ({ userContext }) => {
+    const { classes } = useStyles();
+    const { classes: labelClasses } = useLabelStyles();
+    const navigate = useNavigate();
     const { hasAccessibleOrgs, activeOrg } = getUserOrganizations(userContext);
     const [showOrgList, setShowOrgList] = useState(false);
     const [selectedOrganization, setSelectedOrganization] = useState(null);
-    const [create, { error }] = useCreate('applications');
+    const [showSaveDialog, setShowSaveDialog] = useState(false);
+    const [create] = useCreate();
     const notify = useLayer7Notify();
     const translate = useTranslate();
     const loading = useLoading();
-    const [showSaveDialog, setShowSaveDialog] = useState(false);
+    const createPath = useCreatePath();
 
     const initialValues = {
         name: '',
@@ -57,7 +59,7 @@ export const ApplicationNew = ({ userContext, toolbarProps }) => {
     const onSubmit = form => {
         const { name, description } = form;
 
-        let payload = {
+        const payload = {
             name: name,
             description: description,
             organizationUuid: selectedOrganization,
@@ -65,20 +67,22 @@ export const ApplicationNew = ({ userContext, toolbarProps }) => {
         };
 
         create(
+            'applications',
+            { data: payload },
             {
-                payload: { data: payload },
-            },
-            {
-                action: CRUD_CREATE,
-                onSuccess: ({ data }) => {
+                onSuccess: data => {
                     notify(
                         'resources.applications.notifications.create_success'
                     );
-                    history.push(
-                        linkToRecord('/applications', data.id, 'edit')
+                    navigate(
+                        createPath({
+                            resource: 'applications',
+                            id: data.id,
+                            type: 'edit',
+                        })
                     );
                 },
-                onFailure: error => {
+                onError: error => {
                     notify(
                         error ||
                             'resources.applications.notifications.create_error',
@@ -112,7 +116,7 @@ export const ApplicationNew = ({ userContext, toolbarProps }) => {
 
     const handleUnsavedChangesDialogYes = () => {
         setShowSaveDialog(false);
-        history.push('/applications');
+        navigate('/applications');
     };
 
     const handleUnsavedChangesDialogCancel = () => {
@@ -127,7 +131,7 @@ export const ApplicationNew = ({ userContext, toolbarProps }) => {
         ) {
             setShowSaveDialog(true);
         } else {
-            history.push('/applications');
+            navigate('/applications');
         }
     };
 
@@ -137,6 +141,11 @@ export const ApplicationNew = ({ userContext, toolbarProps }) => {
                 name: translate(
                     'resources.applications.validation.error_application_name_not_unique'
                 ),
+            };
+        }
+        if (!selectedOrganization) {
+            return {
+                organizationName: translate('organization is required'),
             };
         }
         return {};
@@ -151,23 +160,26 @@ export const ApplicationNew = ({ userContext, toolbarProps }) => {
             </Dialog>
             <Grid container item md={12} sm={12}>
                 <SimpleForm
+                    sanitizeEmptyValues={true}
                     className={classes.form}
-                    save={onSubmit}
-                    initialValues={initialValues}
-                    toolbar={<ApplicationToolbar onCancel={handleCancel} {...toolbarProps} />}
+                    onSubmit={onSubmit}
+                    mode="onBlur"
+                    reValidateMode="onBlur"
+                    defaultValues={initialValues}
+                    toolbar={<ApplicationToolbar onCancel={handleCancel} />}
                     validate={validateAppCreation}
                 >
                     <CollapsiblePanel
                         expanded
                         label={'resources.applications.fields.overview'}
                     >
-                        <Labeled
-                            // On <Labeled />, this will translate in a correct `for` attribute on the label
-                            id="applicationName"
-                            label="resources.applications.fields.details"
-                            classes={labelClasses}
+                        <span
+                            id={'applicationName'}
                             className={classes.field}
-                        ></Labeled>
+                            classes={labelClasses}
+                        >
+                            {translate('resources.applications.fields.details')}
+                        </span>
                         <TextInput
                             data-apim-test="applicationName"
                             onChange={onNameChange}
@@ -177,7 +189,12 @@ export const ApplicationNew = ({ userContext, toolbarProps }) => {
                             variant="filled"
                             fullWidth
                             helperText="resources.applications.validation.application_name_caption"
-                            validate={[required(), minLength(2), maxLength(50)]}
+                            validate={[
+                                required(),
+                                minLength(2),
+                                maxLength(50),
+                                validateAppCreation,
+                            ]}
                         />
                         {showOrgList && (
                             <OrganizationSelectInput
@@ -241,56 +258,51 @@ export const ApplicationNew = ({ userContext, toolbarProps }) => {
     );
 };
 
-const useStyles = makeStyles(
-    theme => ({
-        root: {
-            display: 'flex',
-            fontFamily: theme.typography.body2.fontFamily,
-            fontSize: theme.typography.caption.fontSize,
-            margin: theme.spacing(0),
-        },
-        details: {},
-        configuration: {},
-        subtitle: {
-            textTransform: 'uppercase',
-            fontWeight: theme.typography.fontWeightBold,
-            fontSize: '1rem',
-            margin: theme.spacing(1, 1, 2, 1),
-        },
-        field: {
-            marginRight: theme.spacing(1),
-            width: '100%',
-        },
-        type: {
-            textTransform: 'uppercase',
-        },
-        icon: {
-            fontSize: '1rem',
-        },
-        form: {
-            flex: 1,
-        },
-        customFields: {
-            display: 'flex',
-            flexDirection: 'column',
-        },
-        label: {
-            fontWeight: theme.typography.fontWeightBold,
-            fontSize: '1.5rem',
-        },
-        input: {
-            width: '100%',
-        },
-        apiSelector: {
-            marginBottom: theme.spacing(1),
-        },
-    }),
-    {
-        name: 'Layer7ApplicationDetails',
-    }
-);
+const useStyles = makeStyles({ name: 'Layer7ApplicationDetails' })(theme => ({
+    root: {
+        display: 'flex',
+        fontFamily: theme.typography.body2.fontFamily,
+        fontSize: theme.typography.caption.fontSize,
+        margin: theme.spacing(0),
+    },
+    details: {},
+    configuration: {},
+    subtitle: {
+        textTransform: 'uppercase',
+        fontWeight: theme.typography.fontWeightBold,
+        fontSize: '1rem',
+        margin: theme.spacing(1, 1, 2, 1),
+    },
+    field: {
+        marginRight: theme.spacing(1),
+        width: '100%',
+    },
+    type: {
+        textTransform: 'uppercase',
+    },
+    icon: {
+        fontSize: '1rem',
+    },
+    form: {
+        flex: 1,
+    },
+    customFields: {
+        display: 'flex',
+        flexDirection: 'column',
+    },
+    label: {
+        fontWeight: theme.typography.fontWeightBold,
+        fontSize: '1.5rem',
+    },
+    input: {
+        width: '100%',
+    },
+    apiSelector: {
+        marginBottom: theme.spacing(1),
+    },
+}));
 
-const useLabelStyles = makeStyles(theme => ({
+const useLabelStyles = makeStyles()(theme => ({
     label: {
         fontWeight: theme.typography.fontWeightBold,
         fontSize: '1.5rem',

@@ -1,16 +1,17 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
+import {
+    useDocumentationTreeContext,
+    useDocumentationTreeDispatcherContext,
+    saveExpandedNodes,
+} from './DocumentationTreeProvider';
+import { get } from 'lodash';
 import { useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 
-import { saveExpandedNodes, selectExpandedNodes } from './documentationReducer';
-
+// !! must be used within a DocumentationTreeProvider
 export const useExpandedNodes = (entityUuid, locale) => {
-    const dispatch = useDispatch();
-    const expandedNodes = useSelector(
-        useCallback(selectExpandedNodes(entityUuid, locale), [
-            entityUuid,
-            locale,
-        ])
-    );
+    const dispatch = useDocumentationTreeDispatcherContext();
+    const documentationTree = useDocumentationTreeContext();
+    const expandedNodes = get(documentationTree, `${entityUuid}.${locale}`, []);
     const setExpandedNodes = useCallback(
         expanded => dispatch(saveExpandedNodes(entityUuid, locale, expanded)),
         [dispatch, entityUuid, locale]

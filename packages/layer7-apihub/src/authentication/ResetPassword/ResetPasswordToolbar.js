@@ -1,7 +1,8 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React from 'react';
-import { SaveButton, Toolbar } from 'react-admin';
-import { makeStyles, Typography} from '@material-ui/core';
-import { ValidationError } from 'ra-core';
+import { SaveButton, Toolbar, ValidationError } from 'react-admin';
+import { Typography } from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
 import get from 'lodash/get';
 
 /**
@@ -13,7 +14,7 @@ import get from 'lodash/get';
  *
  */
 export const ResetPasswordToolbar = props => {
-    const classes = useStyles(props);
+    const { classes } = useStyles(props);
 
     const { button } = props;
     const { error } = props;
@@ -23,7 +24,7 @@ export const ResetPasswordToolbar = props => {
 
     return (
         <>
-          {error ? (
+            {error ? (
                 <Typography
                     variant="body1"
                     color="error"
@@ -33,20 +34,20 @@ export const ResetPasswordToolbar = props => {
                 </Typography>
             ) : null}
             <Toolbar className={classes.toolbar} {...props}>
-            <SaveButton
-                className={classes.submit}
-                icon={<span />}
-                label="apihub.reset_password.actions.submit"
-                color={color}
-                variant={variant}
-                size={size}
-            />
-        </Toolbar>
+                <SaveButton
+                    className={classes.submit}
+                    icon={<span />}
+                    label="apihub.reset_password.actions.submit"
+                    color={color}
+                    variant={variant}
+                    size={size}
+                />
+            </Toolbar>
         </>
     );
 };
 
-const useStyles = makeStyles(
+const useStyles = makeStyles({ name: 'Layer7ResetPasswordToolbar' })(
     theme => ({
         toolbar: {
             display: 'flex',
@@ -58,8 +59,5 @@ const useStyles = makeStyles(
             marginTop: theme.spacing(2),
         },
         submit: {},
-    }),
-    {
-        name: 'Layer7ResetPasswordToolbar',
-    }
+    })
 );

@@ -1,5 +1,6 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React, { useEffect } from 'react';
-import { useSetLocale, useLocale } from 'ra-core';
+import { useSetLocale, useLocale } from 'react-admin';
 
 import { LocaleSwitcherMenu, supportedLocales, defaultLocale } from './i18n';
 import { useApiHubPreference } from './preferences';

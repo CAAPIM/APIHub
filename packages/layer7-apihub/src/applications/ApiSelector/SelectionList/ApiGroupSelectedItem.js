@@ -1,12 +1,13 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import * as React from 'react';
-import { Typography, Chip } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-import { useTranslate } from 'ra-core';
+import { Typography, Chip } from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
+import { useTranslate } from 'react-admin';
 
 export function ApiGroupSelectedItem(props) {
     const { item } = props;
     const translate = useTranslate();
-    const classes = useStyles(props);
+    const { classes } = useStyles(props);
 
     return (
         <>
@@ -27,7 +28,7 @@ export function ApiGroupSelectedItem(props) {
     );
 }
 
-const useStyles = makeStyles(
+const useStyles = makeStyles({ name: 'Layer7ApiGroupSelectedItem' })(
     theme => ({
         root: {
             display: 'flex',
@@ -47,8 +48,5 @@ const useStyles = makeStyles(
             fontSize: '0.8rem',
             textTransform: 'lowercase',
         },
-    }),
-    {
-        name: 'Layer7ApiGroupSelectedItem',
-    }
+    })
 );

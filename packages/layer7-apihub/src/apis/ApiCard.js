@@ -1,34 +1,41 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React from 'react';
-import { useTranslate, linkToRecord } from 'ra-core';
 import { Link } from 'react-router-dom';
-import Card from '@material-ui/core/Card';
-import CardHeader from '@material-ui/core/CardHeader';
-import CardContent from '@material-ui/core/CardContent';
-import CardActions from '@material-ui/core/CardActions';
-import Divider from '@material-ui/core/Divider';
-import Grid from '@material-ui/core/Grid';
-import Tooltip from '@material-ui/core/Tooltip';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
-import AppsIcon from '@material-ui/icons/Apps';
-import TimeIcon from '@material-ui/icons/AccessTime';
-import EventIcon from '@material-ui/icons/Event';
-import format from 'date-fns/format';
+import Card from '@mui/material/Card';
+import CardHeader from '@mui/material/CardHeader';
+import CardContent from '@mui/material/CardContent';
+import { TopToolbar, useRecordContext } from 'react-admin';
+import Divider from '@mui/material/Divider';
+import Grid from '@mui/material/Grid';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
+import { makeStyles } from 'tss-react/mui';
+import AppsIcon from '@mui/icons-material/Apps';
+import TimeIcon from '@mui/icons-material/AccessTime';
+import EventIcon from '@mui/icons-material/Event';
+import { format } from 'date-fns';
 
 import { MarkdownView, Stats, StatsText } from '../ui';
 import { TagsField } from './TagsField';
 import { ApiStatus } from './ApiStatus';
+import { useTranslate, useCreatePath } from 'react-admin';
 
-export const ApiCard = ({ basePath, record }) => {
-    const classes = useStyles();
+export const ApiCard = () => {
+    const { classes } = useStyles();
     const translate = useTranslate();
+    const createPath = useCreatePath();
+    const record = useRecordContext();
     const formattedDate =
-        record && record.modifyTs ? format(record.modifyTs, 'P') : '';
+        record && record.modifyTs ? format(record.modifyTs, 'MM-DD-YYYY') : '';
     return (
         <Card
             className={classes.root}
             component={Link}
-            to={linkToRecord(basePath, record && record.id, 'show')}
+            to={createPath({
+                resource: 'apis',
+                id: record.id,
+                type: 'show',
+            })}
         >
             <CardHeader
                 className={classes.header}
@@ -49,7 +56,7 @@ export const ApiCard = ({ basePath, record }) => {
                 subheader={
                     <>
                         <div className={classes.subheader}>
-                            <ApiStatus record={record} variant="caption" />
+                            <ApiStatus variant="caption" />
                             <Divider
                                 orientation="vertical"
                                 className={classes.divider}
@@ -91,13 +98,9 @@ export const ApiCard = ({ basePath, record }) => {
                     />
                 </Tooltip>
             </CardContent>
-            <CardActions className={classes.footer}>
+            <TopToolbar className={classes.footer}>
                 <Grid container alignItems="center" className={classes.tags}>
-                    <TagsField
-                        record={record}
-                        source="tags"
-                        className={classes.tag}
-                    />
+                    <TagsField source="tags" className={classes.tag} />
                 </Grid>
                 <Grid container alignItems="center" className={classes.stats}>
                     <Grid item>
@@ -157,12 +160,12 @@ export const ApiCard = ({ basePath, record }) => {
                         </Grid>
                     )}
                 </Grid>
-            </CardActions>
+            </TopToolbar>
         </Card>
     );
 };
 
-const useStyles = makeStyles(
+const useStyles = makeStyles()(
     theme => ({
         root: {
             height: '100%',

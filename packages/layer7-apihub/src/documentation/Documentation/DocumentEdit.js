@@ -1,7 +1,8 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React from 'react';
-import { useGetOne, useTranslate, CRUD_GET_ONE } from 'ra-core';
-import LinearProgress from '@material-ui/core/LinearProgress';
-import Typography from '@material-ui/core/Typography';
+import { useGetOne, useTranslate } from 'react-admin';
+import LinearProgress from '@mui/material/LinearProgress';
+import Typography from '@mui/material/Typography';
 
 import { DocumentEditForm } from './DocumentEditForm';
 import { DocumentToolbar } from './DocumentToolbar';
@@ -19,17 +20,15 @@ export const DocumentEdit = ({
 }) => {
     const translate = useTranslate();
 
-    const { data, loaded, loading, error } = useGetOne(
-        'documents',
-        document.id,
-        { action: CRUD_GET_ONE }
-    );
+    const { data, isLoading, error } = useGetOne('documents', {
+        id: document.id,
+    });
 
-    if (loading) {
+    if (isLoading) {
         return <LinearProgress />;
     }
 
-    if (loaded && !!(!data || error)) {
+    if (!isLoading && !!(!data || error)) {
         return (
             <Typography variant="body2" color="error">
                 {translate('ra.page.error')}

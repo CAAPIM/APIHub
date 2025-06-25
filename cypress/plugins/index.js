@@ -1,3 +1,4 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 const wp = require('@cypress/webpack-preprocessor');
 const task = require('cypress-skip-and-only-ui/task');
 

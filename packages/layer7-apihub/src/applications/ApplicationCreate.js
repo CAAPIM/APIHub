@@ -1,37 +1,30 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import { useTranslate } from 'ra-core';
+import { makeStyles } from 'tss-react/mui';
+import { useTranslate } from 'react-admin';
 
 import { Create } from '../ui';
 import { ApplicationNew } from './ApplicationNew';
 import { useUserContext } from '../userContexts';
 
-const useTitleStyles = makeStyles(
+const useTitleStyles = makeStyles({ name: 'Layer7ApplicationTitle' })(
     theme => ({
         root: {},
         title: {},
         status: {
             padding: theme.spacing(1, 0),
         },
-    }),
-    {
-        name: 'Layer7ApplicationTitle',
-    }
+    })
 );
 
-const useStyles = makeStyles(
-    {
-        root: {},
-        card: {},
-    },
-    {
-        name: 'Layer7ApplicationCreate',
-    }
-);
+const useStyles = makeStyles({ name: 'Layer7ApplicationCreate' })({
+    root: {},
+    card: {},
+});
 
 //TODO: proper translation for Title
 const Title = ({ ...rest }) => {
-    const classes = useTitleStyles(rest);
+    const { classes } = useTitleStyles(rest);
     const translate = useTranslate();
 
     return (
@@ -42,9 +35,9 @@ const Title = ({ ...rest }) => {
         </div>
     );
 };
-export const ApplicationCreate = props => {
-    const { root: rootClassName, ...classes } = useStyles(props);
-    const { permissions, id, ...rest } = props;
+export const ApplicationCreate = () => {
+    const { classes } = useStyles();
+    const { root: rootClassName } = classes;
     const [userContext] = useUserContext();
     const [canCreateApp, setCanCreateApp] = React.useState(false);
 
@@ -60,7 +53,6 @@ export const ApplicationCreate = props => {
                 className={rootClassName}
                 classes={classes}
                 title={<Title />}
-                {...rest}
             >
                 <ApplicationNew userContext={userContext} />
             </Create>

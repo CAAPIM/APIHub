@@ -1,3 +1,4 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import { stringify } from 'query-string';
 
 const apiGroupsBasePath = '/api-management/internal/OrganizationApiGroups';
@@ -10,7 +11,7 @@ export const apiGroupsDataProvider = context => {
             filter = {},
             pagination = { page: 1, perPage: 24 },
         }) => {
-            const url = `${context.apiUrl}${apiGroupsBasePath}?${stringify({
+            const url = `${context.adminUrl}${apiGroupsBasePath}?${stringify({
                 ...getFilter(filter),
                 page: pagination.page - 1,
                 size: pagination.perPage,

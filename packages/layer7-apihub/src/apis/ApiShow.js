@@ -1,14 +1,7 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React from 'react';
-import {
-    TabbedShowLayout,
-    Tab,
-    useGetOne,
-    useQuery,
-    CRUD_GET_ONE,
-} from 'react-admin';
-import { useTranslate } from 'ra-core';
 import get from 'lodash/get';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from 'tss-react/mui';
 
 import { Show } from '../ui';
 import { ENTITY_TYPE_API } from '../dataProvider/documents';
@@ -17,72 +10,120 @@ import { isPublisher } from '../userContexts';
 import { ApiOverview } from './ApiOverview';
 import { ApiDocumentation } from './ApiDocumentation';
 import { ApiSpecs } from './ApiSpecs';
+import { useQuery } from '@tanstack/react-query';
+import {
+    useDataProvider,
+    useGetOne,
+    TabbedShowLayout,
+    useRecordContext,
+    useTranslate,
+    useGetRecordId,
+    useCreatePath,
+} from 'react-admin';
+import { Link } from 'react-router-dom';
 
 export const ApiShow = props => {
-    const { root: rootClassName, ...classes } = useStyles(props);
-    const { id, ...rest } = props;
-    const { data: userContexts } = useGetOne('userContexts', CurrentUserId, {
-        action: CRUD_GET_ONE,
-    });
+    const { classes } = useStyles(props);
+    const { root: rootClassName } = classes;
+    const id = useGetRecordId();
+    const dataProvider = useDataProvider();
+    const { data: userContexts, isSuccess: fetchUserContextIsSuccess } =
+        useGetOne('userContexts', {
+            id: CurrentUserId,
+        });
 
-    const { data: apisPermissions } = useQuery({
-        type: 'getPermissions',
-        resource: 'apis',
-        payload: { id },
+    const {
+        data: apisPermissionsResponse,
+        isSuccess: fetchApisPermissionsIsSuccess,
+    } = useQuery({
+        queryKey: ['apis', 'getPermissions', { id }],
+        queryFn: () => dataProvider.getPermissions('apis', { id }),
     });
 
     return (
-        <Show
-            className={rootClassName}
-            classes={classes}
-            title={<ApiTitle />}
-            id={id}
-            {...rest}
-        >
-            <ApiShowTabs
-                userIsPublisher={isPublisher(userContexts)}
-                userCanEdit={get(apisPermissions, 'canEdit', false)}
-                userCanDelete={get(apisPermissions, 'canEdit', false)}
-            />
+        <Show className={rootClassName} classes={classes} title={<ApiTitle />}>
+            {fetchApisPermissionsIsSuccess && fetchUserContextIsSuccess && (
+                <ApiShowTabs
+                    userIsPublisher={isPublisher(userContexts)}
+                    userCanEdit={get(
+                        apisPermissionsResponse.data,
+                        'canEdit',
+                        false
+                    )}
+                    userCanDelete={get(
+                        apisPermissionsResponse.data,
+                        'canEdit',
+                        false
+                    )}
+                />
+            )}
         </Show>
     );
 };
 
-export const ApiShowTabs = props => {
+export const ApiShowTabs = ({
+    userIsPublisher,
+    userCanEdit,
+    userCanDelete,
+}) => {
     const translate = useTranslate();
-    const { userIsPublisher, userCanEdit, userCanDelete, ...rest } = props;
-
-    const showSpecs = !isSoapApi(props.record);
+    const record = useRecordContext();
+    const showSpecs = !isSoapApi(record);
+    const createPath = useCreatePath();
+    const id = useGetRecordId();
 
     return (
-        <TabbedShowLayout {...rest}>
-            <Tab label={translate('resources.apis.overview.title')}>
+        <TabbedShowLayout
+            syncWithLocation={false} // override default onclick tab behaviour to erase query parameters when navigating between tabs
+        >
+            <TabbedShowLayout.Tab
+                label={'resources.apis.overview.title'}
+                to={createPath({
+                    id,
+                    resource: 'apis',
+                    type: 'show',
+                })}
+                component={Link}
+            >
                 <ApiOverview userIsPublisher={userIsPublisher} />
-            </Tab>
+            </TabbedShowLayout.Tab>
             {showSpecs && (
-                <Tab
+                <TabbedShowLayout.Tab
                     label={translate('resources.apis.specification.title')}
                     path="spec"
+                    to={`${createPath({
+                        id,
+                        resource: 'apis',
+                        type: 'show',
+                    })}/spec`}
+                    component={Link}
                 >
                     <ApiSpecs />
-                </Tab>
+                </TabbedShowLayout.Tab>
             )}
-            <Tab
+            <TabbedShowLayout.Tab
                 label={translate('resources.apis.documentation.title')}
                 path="doc"
+                to={`${createPath({
+                    id,
+                    resource: 'apis',
+                    type: 'show',
+                })}/doc`}
+                component={Link}
             >
                 <ApiDocumentation
                     userCanEdit={userCanEdit}
                     userCanDelete={userCanDelete}
                     entityType={ENTITY_TYPE_API}
                 />
-            </Tab>
+            </TabbedShowLayout.Tab>
         </TabbedShowLayout>
     );
 };
 
-const ApiTitle = ({ record, ...rest }) => {
-    const classes = useTitleStyles(rest);
+const ApiTitle = () => {
+    const { classes } = useTitleStyles();
+    const record = useRecordContext();
 
     if (!record) {
         return null;
@@ -109,22 +150,12 @@ export const isSoapApi = record => {
 
 // We don't need custom styles by default but this allows to
 // easily customize styles in the theme file directly
-const useStyles = makeStyles(
-    {
-        root: {},
-        card: {},
-    },
-    {
-        name: 'Layer7ApiShow',
-    }
-);
+const useStyles = makeStyles({ name: 'Layer7ApiShow' })({
+    root: {},
+    card: {},
+});
 
-const useTitleStyles = makeStyles(
-    theme => ({
-        root: {},
-        title: {},
-    }),
-    {
-        name: 'Layer7ApplicationTitle',
-    }
-);
+const useTitleStyles = makeStyles({ name: 'Layer7ApplicationTitle' })({
+    root: {},
+    title: {},
+});

@@ -1,11 +1,17 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React from 'react';
-import { MenuItemLink } from 'react-admin';
-import { useSelector } from 'react-redux';
-import classnames from 'classnames';
-import { useTranslate } from 'ra-core';
-import { makeStyles, useMediaQuery } from '@material-ui/core';
+import {
+    MenuItemLink,
+    useHasDashboard,
+    useTranslate,
+    Logout,
+} from 'react-admin';
+import { useMediaQuery } from '@mui/material';
+
+import { makeStyles } from 'tss-react/mui';
 
 import { IconHome, IconApi, IconApps, IconWiki } from './ui/icons';
+import { useTheme } from '@mui/material/styles';
 
 /**
  * The ApiHub Menu used in the ApiHub Sidebar.
@@ -15,36 +21,20 @@ import { IconHome, IconApi, IconApps, IconWiki } from './ui/icons';
  * @param {*} props Menu properties
  */
 export const ApiHubMenu = props => {
-    const {
-        classes: classesOverride,
-        className,
-        dense,
-        hasDashboard,
-        onMenuClick = () => null,
-        logout,
-        ...rest
-    } = props;
-
+    const { className } = props;
     const translate = useTranslate();
-    const classes = useStyles(props);
-    const isXSmall = useMediaQuery(theme => theme.breakpoints.down('xs'));
-    const open = useSelector(state => state.admin.ui.sidebarOpen);
-
-    // Used to force redraw on navigation
-    useSelector(state => state.router.location.pathname);
+    const { classes, cx } = useStyles(props);
+    const theme = useTheme();
+    const isXSmall = useMediaQuery(theme.breakpoints.down('sm'));
+    const hasDashboard = useHasDashboard();
 
     return (
-        <div className={classnames(classes.main, className)} {...rest}>
+        <div className={cx(classes.main, className)}>
             {hasDashboard && (
                 <MenuItemLink
-                    onClick={onMenuClick}
                     to="/"
-                    exact
                     primaryText={translate('ra.page.dashboard')}
                     leftIcon={<IconHome />}
-                    dense={dense}
-                    sidebarIsOpen={open}
-                    {...rest}
                 />
             )}
             <MenuItemLink
@@ -54,9 +44,6 @@ export const ApiHubMenu = props => {
                     smart_count: 2,
                 })}
                 leftIcon={<IconApi />}
-                onClick={onMenuClick}
-                dense={dense}
-                sidebarIsOpen={open}
             />
             <MenuItemLink
                 key="applications"
@@ -65,9 +52,6 @@ export const ApiHubMenu = props => {
                     smart_count: 2,
                 })}
                 leftIcon={<IconApps />}
-                onClick={onMenuClick}
-                dense={dense}
-                sidebarIsOpen={open}
             />
             <MenuItemLink
                 key="documents"
@@ -76,22 +60,16 @@ export const ApiHubMenu = props => {
                     smart_count: 2,
                 })}
                 leftIcon={<IconWiki />}
-                onClick={onMenuClick}
-                dense={dense}
-                sidebarIsOpen={open}
             />
-            {isXSmall && logout}
+            {isXSmall && <Logout />}
         </div>
     );
 };
 
-const useStyles = makeStyles(
-    {
-        main: {
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'flex-start',
-        },
+const useStyles = makeStyles({ name: 'RaMenu' })({
+    main: {
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'flex-start',
     },
-    { name: 'RaMenu' }
-);
+});

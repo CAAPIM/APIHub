@@ -1,13 +1,12 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React, { useCallback } from 'react';
 import PropTypes from 'prop-types';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import FormGroup from '@material-ui/core/FormGroup';
-import Checkbox from '@material-ui/core/Checkbox';
-import { FieldTitle, useInput } from 'ra-core';
-import { makeStyles } from '@material-ui/core/styles';
-
-import { InputHelperText, InputPropTypes } from 'react-admin';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormHelperText from '@mui/material/FormHelperText';
+import FormGroup from '@mui/material/FormGroup';
+import Checkbox from '@mui/material/Checkbox';
+import { makeStyles } from 'tss-react/mui';
+import { InputHelperText, FieldTitle, useInput } from 'react-admin';
 import { isValidElement } from 'react';
 
 const CheckboxInput = ({
@@ -28,9 +27,9 @@ const CheckboxInput = ({
 }) => {
     const {
         id,
-        input: { onChange: finalFormOnChange, type, value, ...inputProps },
+        field: { onChange: finalFormOnChange, ...inputProps },
         isRequired,
-        meta: { error, touched },
+        fieldState: { error },
     } = useInput({
         format,
         onBlur,
@@ -44,7 +43,7 @@ const CheckboxInput = ({
         ...rest,
     });
 
-    const classes = useStyles();
+    const { classes } = useStyles();
 
     const handleChange = useCallback(
         (event, value) => {
@@ -59,7 +58,6 @@ const CheckboxInput = ({
                 control={
                     <Checkbox
                         id={id}
-                        color="primary"
                         onChange={handleChange}
                         {...inputProps}
                         {...options}
@@ -82,8 +80,7 @@ const CheckboxInput = ({
             />
             <FormHelperText error={!!error}>
                 <InputHelperText
-                    touched={touched}
-                    error={error}
+                    error={error?.message}
                     helperText={helperText}
                 />
             </FormHelperText>
@@ -92,7 +89,6 @@ const CheckboxInput = ({
 };
 
 CheckboxInput.propTypes = {
-    ...InputPropTypes,
     label: PropTypes.any,
     options: PropTypes.shape(Checkbox.propTypes),
     disabled: PropTypes.bool,
@@ -104,7 +100,7 @@ CheckboxInput.defaultProps = {
 
 export default CheckboxInput;
 
-const useStyles = makeStyles({
+const useStyles = makeStyles()({
     checkbox: {
         alignSelf: 'center',
         paddingTop: '2',

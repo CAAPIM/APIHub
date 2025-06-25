@@ -1,3 +1,4 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React, { useState, useCallback } from 'react';
 import { Link, InputHelperText, useInput, useTranslate } from 'react-admin';
 import {
@@ -6,14 +7,14 @@ import {
     FormHelperText,
     Checkbox,
     Typography,
-} from '@material-ui/core';
+} from '@mui/material';
 
 import { TermsDialog } from './TermsDialog';
 
 export const TermsInput = ({ helperText, ...rest }) => {
     const {
-        input: { onChange, type, value, ...inputProps },
-        meta: { error, touched },
+        field: { onChange, value, ...inputProps },
+        fieldState: { error, isTouched },
     } = useInput({
         ...rest,
     });
@@ -28,20 +29,14 @@ export const TermsInput = ({ helperText, ...rest }) => {
     return (
         <FormGroup>
             <FormControlLabel
-                control={
-                    <Checkbox
-                        color="primary"
-                        onChange={handleChange}
-                        {...inputProps}
-                    />
-                }
+                control={<Checkbox onChange={handleChange} {...inputProps} />}
                 label={<TermsLabel />}
                 labelPlacement="end"
             />
             <FormHelperText error={!!error}>
                 <InputHelperText
-                    touched={touched}
-                    error={error}
+                    touched={isTouched}
+                    error={error?.message}
                     helperText={helperText}
                 />
             </FormHelperText>

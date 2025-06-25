@@ -1,60 +1,62 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React from 'react';
-import classnames from 'classnames';
-import { useTranslate } from 'ra-core';
-import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
+import { useRecordContext, useTranslate } from 'react-admin';
+import { makeStyles } from 'tss-react/mui';
+import Typography from '@mui/material/Typography';
+import { get } from 'lodash';
 
-export const ApiStatus = ({ record, variant = 'caption' }) => {
-    const classes = useStyles();
+export const ApiStatus = ({ variant = 'caption', ...props }) => {
+    const { classes, cx } = useStyles();
     const translate = useTranslate();
-    if (!record.portalStatus) {
-        record.portalStatus = record.status || '';
+    let record = useRecordContext();
+    if (props.record != null) {
+        record = props.record;
     }
-
-    if (!record) {
-        return null;
-    }
+    const value = get(record, 'portalStatus') || get(record, 'status');
 
     return (
         <div
-            className={classnames(classes.root, {
-                [classes.enabled]: record.portalStatus === 'ENABLED',
-                [classes.disabled]: record.portalStatus !== 'ENABLED',
+            className={cx(classes.root, {
+                [classes.enabled]: value === 'ENABLED',
+                [classes.disabled]: value !== 'ENABLED',
             })}
         >
             <div className={classes.enabledIcon} />
             <Typography className={classes.status} variant={variant}>
-                {translate(
-                    `resources.apis.portalStatus.${record.portalStatus.toLowerCase()}`
-                )}
+                {value
+                    ? translate(
+                          `resources.apis.portalStatus.${value.toLowerCase()}`
+                      )
+                    : ''}
             </Typography>
         </div>
     );
 };
 
-const useStyles = makeStyles(
-    theme => ({
+const useStyles = makeStyles({ name: 'Layer7ApiStatus' })(
+    (theme, _params, classes) => ({
         root: {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'flex-start',
             width: 'auto',
+            marginRight: '60px',
         },
         enabled: {
             color: theme.palette.success.main,
-            '& $enabledIcon': {
+            [`& .${classes.enabledIcon}`]: {
                 backgroundColor: theme.palette.success.main,
             },
         },
         rejected: {
             color: theme.palette.error.main,
-            '& $enabledIcon': {
+            [`& .${classes.enabledIcon}`]: {
                 backgroundColor: theme.palette.error.main,
             },
         },
         disabled: {
             color: theme.palette.text.disabled,
-            '& $enabledIcon': {
+            [`& .${classes.enabledIcon}`]: {
                 backgroundColor: theme.palette.text.disabled,
             },
         },
@@ -65,8 +67,5 @@ const useStyles = makeStyles(
             marginRight: theme.spacing(),
         },
         status: {}, // Used for theming
-    }),
-    {
-        name: 'Layer7ApiStatus',
-    }
+    })
 );

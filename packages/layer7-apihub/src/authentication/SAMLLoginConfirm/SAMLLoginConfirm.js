@@ -1,28 +1,28 @@
-import React, { useState } from 'react';
-import { Button } from 'react-admin';
-import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import { useTranslate } from 'ra-core';
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
+import React from 'react';
+import { Button, useTranslate } from 'react-admin';
+import { makeStyles } from 'tss-react/mui';
+import Typography from '@mui/material/Typography';
 import { AuthenticationLayout } from '../AuthenticationLayout';
 import { WarningIcon } from './Icons';
 import queryString from 'query-string';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import get from 'lodash/get';
 import { useApiHub } from '../../ApiHubContext';
 
 export const SAMLLoginConfirm = props => {
     const translate = useTranslate();
-    const classes = useStyles(props);
+    const { classes } = useStyles(props);
     const location = useLocation();
     const { url: portalURL } = useApiHub();
-    let history = useHistory();
+    let navigate = useNavigate();
 
     const getRedirectUrl = () => {
         const queryParam = queryString.parse(location.search);
         return get(queryParam, 'redirectUrl');
     };
     const navigateToHome = () => {
-        history.goBack();
+        navigate(-1);
     };
     const reAuthenticate = () => {
         let redirectUrl = getRedirectUrl();
@@ -65,7 +65,6 @@ export const SAMLLoginConfirm = props => {
                 </div>
                 <Button
                     className={classes.btn}
-                    color="primary"
                     label="apihub.login.actions.multi_session_sign_in"
                     variant="contained"
                     onClick={reAuthenticate}
@@ -79,7 +78,6 @@ export const SAMLLoginConfirm = props => {
                 </div>
                 <Button
                     className={classes.btn}
-                    color="primary"
                     label="resources.applications.actions.cancel"
                     variant="outlined"
                     onClick={navigateToHome}
@@ -95,7 +93,7 @@ export const SAMLLoginConfirmPage = props => (
     </AuthenticationLayout>
 );
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles()(theme => ({
     additionalBtnText: {
         marginBottom: 8,
         marginTop: 4,

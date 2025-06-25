@@ -1,20 +1,17 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React from 'react';
 import Editor, { defaultCommands } from '@uiw/react-markdown-editor';
-import { EditorView } from "@codemirror/view";
-import GridOn from '@material-ui/icons/GridOn';
+import { EditorView } from '@codemirror/view';
+import GridOn from '@mui/icons-material/GridOn';
 import keys from 'lodash/keys';
 import map from 'lodash/map';
-import { makeStyles } from '@material-ui/core';
+import { makeStyles } from 'tss-react/mui';
 
-export const MarkdownEditor = ({
-    value = '',
-    onChange,
-}) => {
-
+export const MarkdownEditor = ({ value = '', onChange }) => {
     const tableCmd = {
-        name: "table",
-        keyCommand: "table",
-        buttonProps: { "aria-label": "Insert table" },
+        name: 'table',
+        keyCommand: 'table',
+        buttonProps: { 'aria-label': 'Insert table' },
         icon: (
             <GridOn
                 style={{
@@ -25,24 +22,31 @@ export const MarkdownEditor = ({
         ),
         execute: ({ state, view }) => {
             if (!state || !view) return;
-            const lineInfo = view.state.doc.lineAt(view.state.selection.main.from);
+            const lineInfo = view.state.doc.lineAt(
+                view.state.selection.main.from
+            );
             const mark = `| Head | Head |\n| ---  | ---  |\n| Data | Data |\n| Data | Data |`;
             view.dispatch({
-              changes: {
-                from: lineInfo.from,
-                to: lineInfo.to,
-                insert: `${mark}`
-              },
-              // selection: EditorSelection.range(lineInfo.from + mark.length, lineInfo.to),
-              selection: { anchor: lineInfo.from + mark.length },
+                changes: {
+                    from: lineInfo.from,
+                    to: lineInfo.to,
+                    insert: `${mark}`,
+                },
+                // selection: EditorSelection.range(lineInfo.from + mark.length, lineInfo.to),
+                selection: { anchor: lineInfo.from + mark.length },
             });
-        },        
-      };
-    const toolsKeys = keys(defaultCommands).filter(key => key !== 'fullscreen' && key !== 'preview');
+        },
+    };
+    const toolsKeys = keys(defaultCommands).filter(
+        key => key !== 'fullscreen' && key !== 'preview'
+    );
     const existingTools = map(toolsKeys, key => defaultCommands[key]);
-    const rightSideTools = (defaultCommands && defaultCommands.preview) ? [defaultCommands.preview] : [];
+    const rightSideTools =
+        defaultCommands && defaultCommands.preview
+            ? [defaultCommands.preview]
+            : [];
 
-    const classes = useStyles();
+    const { classes } = useStyles();
 
     return (
         <div>
@@ -61,7 +65,7 @@ export const MarkdownEditor = ({
     );
 };
 
-const useStyles = makeStyles(
+const useStyles = makeStyles({ name: 'Layer7MarkdownEditor' })(
     {
         editor: {
             backgroundColor: 'rgb(216, 222, 228)',
@@ -79,8 +83,5 @@ const useStyles = makeStyles(
                 backgroundColor: 'lightGray',
             },
         },
-    },
-    {
-        name: 'Layer7MarkdownEditor',
     }
 );

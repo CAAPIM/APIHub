@@ -1,17 +1,17 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React from 'react';
-import { useTranslate } from 'ra-core';
-import { useForm } from 'react-final-form';
-
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
+import { useTranslate } from 'react-admin';
+import { useFormContext } from 'react-hook-form';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
 
 export const UnSavedChangesDialog = props => {
     const { onOk, onCancel, show } = props;
     const translate = useTranslate();
-    const form = useForm();
+    const form = useFormContext();
     return (
         <Dialog open={show}>
             <DialogTitle>
@@ -33,11 +33,7 @@ export const UnSavedChangesDialog = props => {
                 >
                     {translate('resources.applications.actions.no')}
                 </Button>
-                <Button
-                    color="primary"
-                    onClick={() => onOk(form)}
-                    variant="contained"
-                >
+                <Button onClick={() => onOk(form)} variant="contained">
                     {translate('resources.applications.actions.yes')}
                 </Button>
             </DialogActions>

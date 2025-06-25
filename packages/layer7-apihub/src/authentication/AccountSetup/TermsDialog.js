@@ -1,16 +1,16 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React from 'react';
 import { useTranslate } from 'react-admin';
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DefaultDialogTitle from '@material-ui/core/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogActions from '@material-ui/core/DialogActions';
-import IconButton from '@material-ui/core/IconButton';
-import Typography from '@material-ui/core/Typography';
-import LinearProgress from '@material-ui/core/LinearProgress';
-import { makeStyles } from '@material-ui/core/styles';
-import { Close } from '@material-ui/icons';
-import isEmpty from 'lodash/isEmpty';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DefaultDialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import IconButton from '@mui/material/IconButton';
+import Typography from '@mui/material/Typography';
+import LinearProgress from '@mui/material/LinearProgress';
+import { makeStyles } from 'tss-react/mui';
+import { Close } from '@mui/icons-material';
 
 import { useAuthenticationConfiguration } from '../useAuthenticationConfiguration';
 
@@ -36,7 +36,7 @@ export const TermsDialog = ({ open, onClose }) => {
                 {termsOfUse && <TermsField content={termsOfUse} />}
             </DialogContent>
             <DialogActions>
-                <Button autoFocus onClick={onClose} color="primary">
+                <Button autoFocus onClick={onClose}>
                     {translate(
                         'apihub.account_setup.terms_of_use.terms_of_use_dialog.close'
                     )}
@@ -46,26 +46,23 @@ export const TermsDialog = ({ open, onClose }) => {
     );
 };
 
-const useTermsTitleStyles = makeStyles(
-    theme => ({
-        root: {
-            margin: 0,
-            padding: theme.spacing(2),
-        },
-        closeButton: {
-            position: 'absolute',
-            right: theme.spacing(1),
-            top: theme.spacing(1),
-            color: theme.palette.grey[500],
-        },
-    }),
-    {
-        name: 'Layer7AccountSetupTermsTitle',
-    }
-);
+const useTermsTitleStyles = makeStyles({
+    name: 'Layer7AccountSetupTermsTitle',
+})(theme => ({
+    root: {
+        margin: 0,
+        padding: theme.spacing(2),
+    },
+    closeButton: {
+        position: 'absolute',
+        right: theme.spacing(1),
+        top: theme.spacing(1),
+        color: theme.palette.grey[500],
+    },
+}));
 
 const DialogTitle = ({ children, onClose, ...rest }) => {
-    const classes = useTermsTitleStyles(rest);
+    const { classes } = useTermsTitleStyles(rest);
     const translate = useTranslate();
 
     return (
@@ -82,6 +79,7 @@ const DialogTitle = ({ children, onClose, ...rest }) => {
                     )}
                     className={classes.closeButton}
                     onClick={onClose}
+                    size="large"
                 >
                     <Close />
                 </IconButton>
@@ -93,15 +91,13 @@ const DialogTitle = ({ children, onClose, ...rest }) => {
 const TermsField = ({ content }) => {
     return (
         <>
-            {content.split('\\n').map((section, index) =>
-                isEmpty(section) ? (
-                    <br />
-                ) : (
-                    <Typography key={index} variant="body2" paragraph>
-                        {section}
-                    </Typography>
-                )
-            )}
+            <Typography
+                style={{ whiteSpace: 'pre-wrap' }}
+                variant="body2"
+                paragraph
+            >
+                {content}
+            </Typography>
         </>
     );
 };

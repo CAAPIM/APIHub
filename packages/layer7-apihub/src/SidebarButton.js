@@ -1,27 +1,23 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React, { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
-import classNames from 'classnames';
-import IconButton from '@material-ui/core/IconButton';
-import MenuIcon from '@material-ui/icons/Menu';
-import { toggleSidebar, useTranslate } from 'ra-core';
-import { makeStyles } from '@material-ui/core/styles';
-import { Tooltip } from '@material-ui/core';
-
+import IconButton from '@mui/material/IconButton';
+import MenuIcon from '@mui/icons-material/Menu';
+import { makeStyles } from 'tss-react/mui';
+import { Tooltip } from '@mui/material';
+import { useSidebarState, useTranslate } from 'react-admin';
 import { useApiHubPreference } from './preferences';
 
-export const SidebarButton = ({ open, ...props }) => {
-    const classes = useStyles();
-    const dispatch = useDispatch();
+export const SidebarButton = props => {
+    const { classes, cx } = useStyles();
     const translate = useTranslate();
+    const [open, setOpen] = useSidebarState();
 
     const label = translate(
         open ? 'ra.actions.close_sidebar' : 'ra.actions.open_sidebar'
     );
 
-    const [
-        sidebarOpenPreference,
-        writeSidebarOpenPreference,
-    ] = useApiHubPreference('sidebarOpen');
+    const [sidebarOpenPreference, writeSidebarOpenPreference] =
+        useApiHubPreference('sidebarOpen');
 
     useEffect(() => {
         if (sidebarOpenPreference == null) {
@@ -30,9 +26,9 @@ export const SidebarButton = ({ open, ...props }) => {
         }
 
         if (sidebarOpenPreference !== open) {
-            dispatch(toggleSidebar());
+            setOpen(!open);
         }
-    }, [dispatch, open, sidebarOpenPreference, writeSidebarOpenPreference]);
+    }, [open, setOpen, sidebarOpenPreference, writeSidebarOpenPreference]);
 
     const handleToggleSidebar = () => {
         writeSidebarOpenPreference(!sidebarOpenPreference);
@@ -44,8 +40,9 @@ export const SidebarButton = ({ open, ...props }) => {
                 color="inherit"
                 aria-label={label}
                 onClick={handleToggleSidebar}
-                className={classNames(classes.root)}
+                className={cx(classes.root)}
                 {...props}
+                size="large"
             >
                 <MenuIcon
                     classes={{
@@ -57,26 +54,23 @@ export const SidebarButton = ({ open, ...props }) => {
     );
 };
 
-const useStyles = makeStyles(
-    theme => ({
-        root: {
-            marginLeft: '0.5em',
-            marginRight: '0.5em',
-        },
-        closed: {
-            transition: theme.transitions.create(['transform'], {
-                easing: theme.transitions.easing.sharp,
-                duration: theme.transitions.duration.leavingScreen,
-            }),
-            transform: 'rotate(0deg)',
-        },
-        open: {
-            transition: theme.transitions.create(['transform'], {
-                easing: theme.transitions.easing.sharp,
-                duration: theme.transitions.duration.leavingScreen,
-            }),
-            transform: 'rotate(180deg)',
-        },
-    }),
-    { name: 'Layer7SidebarButton' }
-);
+const useStyles = makeStyles({ name: 'Layer7SidebarButton' })(theme => ({
+    root: {
+        marginLeft: '0.5em',
+        marginRight: '0.5em',
+    },
+    closed: {
+        transition: theme.transitions.create(['transform'], {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.leavingScreen,
+        }),
+        transform: 'rotate(0deg)',
+    },
+    open: {
+        transition: theme.transitions.create(['transform'], {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.leavingScreen,
+        }),
+        transform: 'rotate(180deg)',
+    },
+}));

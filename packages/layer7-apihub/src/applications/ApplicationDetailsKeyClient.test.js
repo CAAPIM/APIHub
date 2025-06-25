@@ -1,7 +1,9 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React from 'react';
 import { ApplicationDetailsKeyClient } from './ApplicationDetailsKeyClient';
 import { ApiHubProvider } from '../ApiHubContext';
-import { DataProviderContext, renderWithRedux } from 'ra-core';
+import { render } from '@testing-library/react';
+import { AdminContext } from 'react-admin';
 
 describe('ApplicationDetailsKeyClient', () => {
     const dataProvider = {
@@ -11,16 +13,6 @@ describe('ApplicationDetailsKeyClient', () => {
         getList: jest.fn().mockResolvedValue({
             data: [],
         }),
-    };
-
-    const initialState = {
-        admin: {
-            resources: {
-                assets: {},
-                tags: {},
-                apis: {},
-            },
-        },
     };
 
     test('should render the ApplicationDetailsKeyClient', async () => {
@@ -40,18 +32,17 @@ describe('ApplicationDetailsKeyClient', () => {
             createTs: 1616695614566,
             modifyTs: 1616695651307,
         };
-        const { getByText, getAllByLabelText } = renderWithRedux(
+        const { getByText, getAllByLabelText, findByText } = render(
             <ApiHubProvider url="http://apihub" tenantName="apim">
-                <DataProviderContext.Provider value={dataProvider}>
+                <AdminContext dataProvider={dataProvider}>
                     <ApplicationDetailsKeyClient
                         id={apiKeyData.id}
                         key={apiKeyData.id}
                         data={apiKeyData}
                         includeSecret={true}
                     />
-                </DataProviderContext.Provider>
-            </ApiHubProvider>,
-            initialState
+                </AdminContext>
+            </ApiHubProvider>
         );
         expect(getByText(apiKeyData.name)).not.toBeNull();
         expect(
@@ -61,26 +52,22 @@ describe('ApplicationDetailsKeyClient', () => {
             getByText('resources.applications.status.enabled')
         ).not.toBeNull();
         expect(
-            getAllByLabelText('resources.applications.fields.scope')
+            findByText('resources.applications.fields.scope')
         ).not.toBeNull();
         expect(getByText(apiKeyData.oauthScope)).not.toBeNull();
         expect(
-            getAllByLabelText('resources.applications.fields.callbackUrl')
+            findByText('resources.applications.fields.callbackUrl')
         ).not.toBeNull();
         expect(getByText(apiKeyData.oauthCallbackUrl)).not.toBeNull();
         expect(
-            getAllByLabelText('resources.applications.fields.apiKeyClientID')
+            findByText('resources.applications.fields.apiKeyClientID')
         ).not.toBeNull();
         expect(getByText(apiKeyData.apiKey)).not.toBeNull();
         expect(
-            getAllByLabelText(
-                'resources.applications.fields.sharedSecretClientSecret'
-            )
+            findByText('resources.applications.fields.sharedSecretClientSecret')
         ).not.toBeNull();
         expect(getByText(apiKeyData.keySecret)).not.toBeNull();
-        expect(
-            getAllByLabelText('resources.applications.fields.type')
-        ).not.toBeNull();
+        expect(findByText('resources.applications.fields.type')).not.toBeNull();
         expect(getByText(apiKeyData.oauthType)).not.toBeNull();
     });
     test('should not render optional fields if they are not defined', async () => {
@@ -100,22 +87,17 @@ describe('ApplicationDetailsKeyClient', () => {
             createTs: 1616695614566,
             modifyTs: 1616695651307,
         };
-        const {
-            getByText,
-            queryByLabelText,
-            getAllByLabelText,
-        } = renderWithRedux(
+        const { queryByLabelText } = render(
             <ApiHubProvider url="http://apihub" tenantName="apim">
-                <DataProviderContext.Provider value={dataProvider}>
+                <AdminContext dataProvider={dataProvider}>
                     <ApplicationDetailsKeyClient
                         id={apiKeyData.id}
                         key={apiKeyData.id}
                         data={apiKeyData}
                         includeSecret={false}
                     />
-                </DataProviderContext.Provider>
-            </ApiHubProvider>,
-            initialState
+                </AdminContext>
+            </ApiHubProvider>
         );
         expect(
             queryByLabelText('resources.applications.fields.default')

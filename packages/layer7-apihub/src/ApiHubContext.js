@@ -1,3 +1,4 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React, { createContext, useContext, useRef } from 'react';
 import get from 'lodash/get';
 
@@ -25,10 +26,10 @@ export const ApiHubProvider = ({
 
 export const useApiHub = () => useContext(ApiHubContext);
 
-export const guessApihubUrl = (location = global.window.location) => {
+export const guessApihubUrl = (location = window.location) => {
     return get(location, 'origin', '');
 };
 
-export const guessApihubTenantName = (location = global.window.location) => {
+export const guessApihubTenantName = (location = window.location) => {
     return location.host.split('.')[0];
 };

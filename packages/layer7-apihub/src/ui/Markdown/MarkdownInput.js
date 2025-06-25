@@ -1,12 +1,10 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React from 'react';
 import { Labeled, InputHelperText, useInput } from 'react-admin';
-import classNames from 'classnames';
-import { makeStyles } from '@material-ui/core';
-import FormHelperText from '@material-ui/core/FormHelperText';
+import { makeStyles } from 'tss-react/mui';
+import FormHelperText from '@mui/material/FormHelperText';
 
-import {
-    MarkdownEditor,
-} from './';
+import { MarkdownEditor } from './';
 
 export const MarkdownInput = ({
     helperText,
@@ -14,31 +12,27 @@ export const MarkdownInput = ({
     className,
     ...rest
 }) => {
-    const classes = useStyles(rest);
+    const { classes, cx } = useStyles(rest);
 
     const {
-        input: { onChange, value, name },
-        meta: { error, touched },
+        field: { onChange, value, name },
+        fieldState: { error, isTouched },
     } = useInput({
         ...rest,
     });
 
     return (
         <Labeled
-            className={classNames(formClassName, className)}
+            className={cx(formClassName, className)}
             {...rest}
             id="textarea"
         >
             <div className={classes.editor}>
-                <MarkdownEditor
-                    name={name}
-                    value={value}
-                    onChange={onChange}
-                />
+                <MarkdownEditor name={name} value={value} onChange={onChange} />
                 <FormHelperText error={!!error} variant="filled" margin="dense">
                     <InputHelperText
-                        touched={touched}
-                        error={error}
+                        touched={isTouched}
+                        error={error?.message}
                         helperText={helperText}
                     />
                 </FormHelperText>
@@ -47,17 +41,12 @@ export const MarkdownInput = ({
     );
 };
 
-const useStyles = makeStyles(
-    {
-        editor: {
-            width: '100%',
-            height: '40vh',
-            '& code': {
-                whiteSpace: 'pre-wrap',
-            },
+const useStyles = makeStyles({ name: 'Layer7MarkdownInput' })({
+    editor: {
+        width: '100%',
+        height: '40vh',
+        '& code': {
+            whiteSpace: 'pre-wrap',
         },
     },
-    {
-        name: 'Layer7MarkdownInput',
-    }
-);
+});

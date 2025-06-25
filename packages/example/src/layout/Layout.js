@@ -1,9 +1,9 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React from 'react';
 import { ApiHubLayout, useBranding } from 'layer7-apihub';
 import { Helmet } from 'react-helmet';
-import get from 'lodash/get';
+import { get } from 'lodash';
 
-import { useTheme } from '../theme';
 import { AppBar } from './AppBar';
 
 export const Layout = props => {
@@ -20,7 +20,6 @@ export const Layout = props => {
     const API_URL_WITH_TENANT = `${URL}/api/${TENANT}`;
 
     const { favicon } = useBranding(API_URL_WITH_TENANT, ORIGIN_HUB_NAME);
-    const { theme } = useTheme();
 
     return (
         <>
@@ -34,14 +33,15 @@ export const Layout = props => {
                     />
                 )}
             </Helmet>
-            <ApiHubLayout appBar={AppBar} {...props} theme={theme} />
+            <ApiHubLayout appBar={AppBar} {...props} />
         </>
     );
 };
-export const guessApihubTenantName = (location = global.window.location) => {
+
+export const guessApihubTenantName = (location = window.location) => {
     return location.host.split('.')[0];
 };
 
-export const guessApihubUrl = (location = global.window.location) => {
+export const guessApihubUrl = (location = window.location) => {
     return get(location, 'origin', '');
 };

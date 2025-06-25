@@ -1,25 +1,24 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React, { Fragment } from 'react';
-import { Labeled, TextField, useDataProvider } from 'react-admin';
-import { useTranslate } from 'ra-core';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import IconButton from '@material-ui/core/IconButton';
+import { Labeled, TextField, useDataProvider, useTranslate } from 'react-admin';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
+import IconButton from '@mui/material/IconButton';
 import {
-    makeStyles,
     Table,
     TableBody,
     TableCell,
     TableHead,
     TableRow,
-} from '@material-ui/core';
-import IconFileCopy from '@material-ui/icons/FileCopy';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import Chip from '@material-ui/core/Chip';
-import ListItem from '@material-ui/core/ListItem';
-import ExpansionPanel from '@material-ui/core/ExpansionPanel';
-import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
-import classnames from 'classnames';
+} from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
+import IconFileCopy from '@mui/icons-material/FileCopy';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import Chip from '@mui/material/Chip';
+import ListItem from '@mui/material/ListItem';
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
 import moment from 'moment';
 import momentTimeZone from 'moment-timezone';
 import forEach from 'lodash/forEach';
@@ -50,10 +49,10 @@ const getStatusColor = (classes, status) => {
                 statusColorClass: classes.expired,
             };
         case 'PENDING_REGISTRATION':
-          return {
-              statusLabel: 'Pending_registration',
-              statusColorClass: classes.disabled,
-          };
+            return {
+                statusLabel: 'Pending_registration',
+                statusColorClass: classes.disabled,
+            };
         default:
             return {
                 statusLabel: 'Disabled',
@@ -64,7 +63,7 @@ const getStatusColor = (classes, status) => {
 
 export const ApplicationDetailsKeyClient = props => {
     const { appCertificates, data, includeSecret, isKeyExpiryEnabled } = props;
-    const classes = useStyles();
+    const { classes, cx } = useStyles();
     const translate = useTranslate();
     const copyToClipboard = useCopyToClipboard({
         successMessage: 'resources.applications.notifications.copy_success',
@@ -185,8 +184,8 @@ export const ApplicationDetailsKeyClient = props => {
             divider={includeSecret}
             className={classes.root}
         >
-            <ExpansionPanel className={classes.expansionPanel}>
-                <ExpansionPanelSummary
+            <Accordion className={classes.expansionPanel}>
+                <AccordionSummary
                     className={classes.expansionPanelSummary}
                     expandIcon={
                         <ExpandMoreIcon
@@ -198,12 +197,7 @@ export const ApplicationDetailsKeyClient = props => {
                 >
                     <Typography variant="h3" className={classes.apiKeyName}>
                         <span id="apiKeyName">{data.name}</span>
-                        <span
-                            className={classnames(
-                                classes.status,
-                                statusColorClass
-                            )}
-                        >
+                        <span className={cx(classes.status, statusColorClass)}>
                             {translate(
                                 `resources.applications.status.${statusLabel.toLowerCase()}`
                             )}
@@ -217,8 +211,8 @@ export const ApplicationDetailsKeyClient = props => {
                             />
                         )}
                     </Typography>
-                </ExpansionPanelSummary>
-                <ExpansionPanelDetails
+                </AccordionSummary>
+                <AccordionDetails
                     classes={{
                         root: classes.expansionPanelDetails,
                     }}
@@ -228,17 +222,23 @@ export const ApplicationDetailsKeyClient = props => {
                             <Grid item md={6} sm={6} xs={12}>
                                 <Labeled
                                     id="oauthCallbackUrl"
-                                    label="resources.applications.fields.callbackUrl"
+                                    label={translate(
+                                        'resources.applications.fields.callbackUrl'
+                                    )}
                                     classes={classes}
                                     className={classes.fieldLabel}
                                 >
-                                    <div className={classes.fieldValue}>
+                                    <Typography
+                                        variant="body2"
+                                        className={classes.fieldContent}
+                                    >
                                         <TextField
                                             id="oauthCallbackUrl"
                                             record={data}
                                             source="oauthCallbackUrl"
+                                            className={classes.fieldValue}
                                         />
-                                    </div>
+                                    </Typography>
                                 </Labeled>
                             </Grid>
                         )}
@@ -247,9 +247,9 @@ export const ApplicationDetailsKeyClient = props => {
                                 <Labeled
                                     // On <Labeled />, this will translate in a correct `for` attribute on the label
                                     id="apiKeyAuthProvider"
-                                    label={
+                                    label={translate(
                                         'resources.applications.fields.authprovider'
-                                    }
+                                    )}
                                     classes={classes}
                                     className={classes.fieldLabel}
                                 >
@@ -276,25 +276,20 @@ export const ApplicationDetailsKeyClient = props => {
                                 <Labeled
                                     // On <Labeled />, this will translate in a correct `for` attribute on the label
                                     id="apiKeyAuthMethod"
-                                    label={
+                                    label={translate(
                                         'resources.applications.fields.authMethod'
-                                    }
+                                    )}
                                     classes={classes}
                                     className={classes.fieldLabel}
                                 >
-                                    <Typography
-                                        variant="body2"
-                                        className={classes.fieldContent}
+                                    <span
+                                        id="apiKeyAuthMethod"
+                                        className={classes.fieldValue}
                                     >
-                                        <span
-                                            id="apiKeyAuthMethod"
-                                            className={classes.fieldValue}
-                                        >
-                                            {translate(
-                                                'resources.applications.fields.notAvailableAuthMethod'
-                                            )}
-                                        </span>
-                                    </Typography>
+                                        {translate(
+                                            'resources.applications.fields.notAvailableAuthMethod'
+                                        )}
+                                    </span>
                                 </Labeled>
                             )}
                         </Grid>
@@ -302,9 +297,9 @@ export const ApplicationDetailsKeyClient = props => {
                             <Labeled
                                 // On <Labeled />, this will translate in a correct `for` attribute on the label
                                 id="apiKeyClientID"
-                                label={
+                                label={translate(
                                     'resources.applications.fields.apiKeyClientID'
-                                }
+                                )}
                                 classes={classes}
                                 className={classes.fieldLabel}
                             >
@@ -316,23 +311,27 @@ export const ApplicationDetailsKeyClient = props => {
                                         id="apiKeyClientID"
                                         className={classes.fieldValue}
                                     >
-                                        {data.status === 'PENDING_REGISTRATION' ? 
-                                        translate('resources.applications.fields.deferredClientId'): data.apiKey}
+                                        {data.status === 'PENDING_REGISTRATION'
+                                            ? translate(
+                                                  'resources.applications.fields.deferredClientId'
+                                              )
+                                            : data.apiKey}
                                     </span>
-                                    {data.status !== 'PENDING_REGISTRATION' &&
-                                      (<IconButton
-                                          className={classes.buttonCopy}
-                                          color="primary"
-                                          title={translate(
-                                              'resources.applications.notifications.copy_to_clipboard'
-                                          )}
-                                          value={data.apiKey}
-                                          onClick={copyToClipboard}
-                                      >
-                                          <IconFileCopy
-                                              className={classes.iconCopy}
-                                          />
-                                      </IconButton>)}
+                                    {data.status !== 'PENDING_REGISTRATION' && (
+                                        <IconButton
+                                            className={classes.buttonCopy}
+                                            title={translate(
+                                                'resources.applications.notifications.copy_to_clipboard'
+                                            )}
+                                            value={data.apiKey}
+                                            onClick={copyToClipboard}
+                                            size="large"
+                                        >
+                                            <IconFileCopy
+                                                className={classes.iconCopy}
+                                            />
+                                        </IconButton>
+                                    )}
                                 </Typography>
                             </Labeled>
                         </Grid>
@@ -341,7 +340,9 @@ export const ApplicationDetailsKeyClient = props => {
                                 <Labeled
                                     // On <Labeled />, this will translate in a correct `for` attribute on the label
                                     id="certificates"
-                                    label="resources.applications.fields.certificates"
+                                    label={translate(
+                                        'resources.applications.fields.certificates'
+                                    )}
                                     classes={classes}
                                     className={classes.fieldLabel}
                                 >
@@ -356,17 +357,22 @@ export const ApplicationDetailsKeyClient = props => {
                                 <Labeled
                                     // On <Labeled />, this will translate in a correct `for` attribute on the label
                                     id="oauthScope"
-                                    label="resources.applications.fields.scope"
+                                    label={translate(
+                                        'resources.applications.fields.scope'
+                                    )}
                                     classes={classes}
                                     className={classes.fieldLabel}
                                 >
-                                    <div className={classes.fieldValue}>
+                                    <Typography
+                                        variant="body2"
+                                        className={classes.fieldContent}
+                                    >
                                         <TextField
                                             id="oauthScope"
                                             record={data}
                                             source="oauthScope"
                                         />
-                                    </div>
+                                    </Typography>
                                 </Labeled>
                             </Grid>
                         )}
@@ -375,7 +381,9 @@ export const ApplicationDetailsKeyClient = props => {
                                 <Labeled
                                     // on Labeled, this will translate in a correct `for` attribute on the label
                                     id="sharedSecretClientSecret"
-                                    label="resources.applications.fields.sharedSecretClientSecret"
+                                    label={translate(
+                                        'resources.applications.fields.sharedSecretClientSecret'
+                                    )}
                                     classes={classes}
                                     className={classes.fieldLabel}
                                 >
@@ -397,12 +405,12 @@ export const ApplicationDetailsKeyClient = props => {
                                                     className={
                                                         classes.buttonCopy
                                                     }
-                                                    color="primary"
                                                     title={translate(
                                                         'resources.applications.notifications.copy_to_clipboard'
                                                     )}
                                                     value={data.keySecret}
                                                     onClick={copyToClipboard}
+                                                    size="large"
                                                 >
                                                     <IconFileCopy
                                                         className={
@@ -422,17 +430,22 @@ export const ApplicationDetailsKeyClient = props => {
                                 <Labeled
                                     // On <Labeled />, this will translate in a correct `for` attribute on the label
                                     id="oauthType"
-                                    label="resources.applications.fields.type"
+                                    label={translate(
+                                        'resources.applications.fields.type'
+                                    )}
                                     classes={classes}
                                     className={classes.fieldLabel}
                                 >
-                                    <div className={classes.fieldValue}>
+                                    <Typography
+                                        variant="body2"
+                                        className={classes.fieldContent}
+                                    >
                                         <TextField
                                             id="oauthType"
                                             record={data}
                                             source="oauthType"
                                         />
-                                    </div>
+                                    </Typography>
                                 </Labeled>
                             </Grid>
                         )}
@@ -443,9 +456,9 @@ export const ApplicationDetailsKeyClient = props => {
                                 <Labeled
                                     // On <Labeled />, this will translate in a correct `for` attribute on the label
                                     id="expiryDate"
-                                    label={
+                                    label={translate(
                                         'resources.applications.fields.expiryDate'
-                                    }
+                                    )}
                                     classes={classes}
                                     className={classes.fieldLabel}
                                 >
@@ -473,125 +486,120 @@ export const ApplicationDetailsKeyClient = props => {
                             </Grid>
                         )}
                     </Grid>
-                </ExpansionPanelDetails>
-            </ExpansionPanel>
+                </AccordionDetails>
+            </Accordion>
         </ListItem>
     );
 };
 
-const useStyles = makeStyles(
-    theme => ({
-        root: {
-            display: 'list-item',
+const useStyles = makeStyles({ name: 'Layer7ApplicationKeyClient' })(theme => ({
+    root: {
+        display: 'list-item',
+    },
+    status: {
+        fontSize: '14px',
+        marginLeft: theme.spacing(2),
+        '&:before': {
+            borderRadius: '10px',
+            content: '""',
+            display: 'inline-block',
+            height: '10px',
+            marginTop: '-6px',
+            marginRight: theme.spacing(1),
+            top: '50%',
+            width: '10px',
         },
-        status: {
-            fontSize: '14px',
-            marginLeft: theme.spacing(2),
-            '&:before': {
-                borderRadius: '10px',
-                content: '""',
-                display: 'inline-block',
-                height: '10px',
-                marginTop: '-6px',
-                marginRight: theme.spacing(1),
-                top: '50%',
-                width: '10px',
-            },
+    },
+    enabled: {
+        color: '#4CAF50',
+        '&:before': {
+            backgroundColor: '#4CAF50',
         },
-        enabled: {
-            color: '#4CAF50',
-            '&:before': {
-                backgroundColor: '#4CAF50',
-            },
+    },
+    expired: {
+        color: '#B30303',
+        '&:before': {
+            backgroundColor: '#B30303',
         },
-        expired: {
-            color: '#B30303',
-            '&:before': {
-                backgroundColor: '#B30303',
-            },
+    },
+    expiredKeyStatus: {
+        color: '#B30303',
+        fontFamily: 'clear-sans-bold',
+    },
+    disabled: {
+        color: '#696969',
+        '&:before': {
+            backgroundColor: '#696969',
         },
-        expiredKeyStatus: {
-            color: '#B30303',
-            fontFamily: 'clear-sans-bold',
+    },
+    expansionPanel: {
+        boxShadow: 'none',
+    },
+    expandMoreIconSummary: {
+        color: theme.palette.primary.main || '#333333',
+    },
+    expansionPanelSummary: {
+        '& > div': {
+            margin: `${theme.spacing(1)} 0 !important`,
         },
-        disabled: {
-            color: '#696969',
-            '&:before': {
-                backgroundColor: '#696969',
-            },
-        },
-        expansionPanel: {
-            boxShadow: 'none',
-        },
-        expandMoreIconSummary: {
-            color: theme.palette.primary.main || '#333333',
-        },
-        expansionPanelSummary: {
-            '& > div': {
-                margin: `${theme.spacing(1)}px 0 !important`,
-            },
-        },
-        fieldLabel: {
-            margin: `0 ${theme.spacing(1)}px ${theme.spacing(1)}px`,
-            minWidth: '100px',
-        },
-        chip: {
-            marginLeft: theme.spacing(2),
-            height: '21px',
-        },
-        expandCollapseButton: {
-            color: theme.palette.primary.main,
-            float: 'right',
-        },
-        expansionPanelDetails: {
-            display: 'block',
-            padding: `0 ${theme.spacing(1)}px`,
-        },
-        fieldContent: {},
-        fieldValue: {
-            color: theme.palette.primary.textHub || '#333333',
-            fontFamily: theme.typography.textHub,
-            fontSize: '14px',
-            fontStyle: 'normal',
-            fontWeight: 'normal',
-            lineHeight: '20px',
-            // textTransform: 'titlecase',
-        },
-        buttonCopy: {
-            padding: 0,
-            marginLeft: '10px',
-        },
-        iconCopy: {
-            fontSize: '14px',
-            color: theme.palette.secondary.main,
-        },
-        label: {
-            color: theme.palette.primary.textHub || '#333333',
-            fontFamily: theme.typography.textHub,
-            fontSize: '14px',
-            fontStyle: 'normal',
-            fontWeight: 'bold',
-            lineHeight: '22px',
-            transform: 'unset',
-        },
-        apiKeyName: {
-            color: theme.palette.primary.main,
-            fontFamily: theme.typography.apiHubFont,
-            fontSize: '18px',
-            fontStyle: 'normal',
-            fontWeight: 600,
-            lineHeight: '22px',
-            marginBottom: theme.spacing(1),
-            marginTop: theme.spacing(1),
-            textTransform: 'none',
-        },
-        certificatesHeader: {
-            backgroundColor: theme.palette.background.default,
-            fontWeight: theme.typography.fontWeightBold,
-            textTransform: 'uppercase',
-        },
-    }),
-    {
-        name: 'Layer7ApplicationKeyClient',
-    }
-);
+    },
+    fieldLabel: {
+        margin: `0 ${theme.spacing(1)} ${theme.spacing(1)}`,
+        minWidth: '100px',
+    },
+    chip: {
+        marginLeft: theme.spacing(2),
+        height: '21px',
+    },
+    expandCollapseButton: {
+        color: theme.palette.primary.main,
+        float: 'right',
+    },
+    expansionPanelDetails: {
+        display: 'block',
+        padding: `0 ${theme.spacing(1)}`,
+    },
+    fieldContent: {},
+    fieldValue: {
+        color: theme.palette.primary.textHub || '#333333',
+        fontFamily: theme.typography.textHub,
+        fontSize: '14px',
+        fontStyle: 'normal',
+        fontWeight: 'normal',
+        lineHeight: '20px',
+        // textTransform: 'titlecase',
+    },
+    buttonCopy: {
+        padding: 0,
+        marginLeft: '10px',
+    },
+    iconCopy: {
+        fontSize: '14px',
+        color: theme.palette.secondary.main,
+    },
+    label: {
+        color: theme.palette.primary.textHub || '#333333',
+        fontFamily: theme.typography.textHub,
+        fontSize: '14px',
+        fontStyle: 'normal',
+        fontWeight: 'bold',
+        lineHeight: '22px',
+        transform: 'unset',
+    },
+    apiKeyName: {
+        color: theme.palette.primary.main,
+        fontFamily: theme.typography.apiHubFont,
+        fontSize: '18px',
+        fontStyle: 'normal',
+        fontWeight: 600,
+        lineHeight: '22px',
+        marginBottom: theme.spacing(1),
+        marginTop: theme.spacing(1),
+        textTransform: 'none',
+    },
+    certificatesHeader: {
+        backgroundColor: theme.palette.background.default,
+        fontWeight: theme.typography.fontWeightBold,
+        textTransform: 'uppercase',
+    },
+}));

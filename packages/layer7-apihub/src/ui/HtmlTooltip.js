@@ -1,5 +1,6 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React from 'react';
-import { Tooltip } from '@material-ui/core';
+import { Tooltip } from '@mui/material';
 
 export const textToHtml = text => text.replace(/\n/g, '<br />');
 

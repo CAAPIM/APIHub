@@ -1,3 +1,4 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 const basePath = '/api-management/1.0/apis';
 
 export const assetsDataProvider = context => ({

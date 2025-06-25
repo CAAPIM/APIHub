@@ -1,3 +1,4 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import { getFetchJson } from '../fetchUtils';
 
 import { accountPlansDataProvider } from './accountPlans';
@@ -42,12 +43,14 @@ export const dataProvider = (
         apiPlans: apiPlansDataProvider(context),
         apis: apisDataProvider(context),
         apiKeys: apiKeysDataProvider(context),
-        oAuthClients : oAuthClientsDataProvider(context),
+        oAuthClients: oAuthClientsDataProvider(context),
         applicationCertificates: applicationCertificatesDataProvider(context),
         applications: applicationsDataProvider(context),
         assets: assetsDataProvider(context),
         authProviders: authProvidersDataProvider(context),
-        authProviderClientDefinitions: authProviderClientDefinitionsDataProvider(context),
+        authProviderClientDefinitions: authProviderClientDefinitionsDataProvider(
+            context
+        ),
         customFields: customFieldsDataProvider(context),
         documents: documentsDataProvider(context),
         organizations: organizationsDataProvider(context),

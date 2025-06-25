@@ -1,28 +1,31 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React, { useState, useEffect } from 'react';
-import { useTranslate } from 'ra-core';
-import { Labeled, useQuery, useMutation } from 'react-admin';
-import Button from '@material-ui/core/Button';
-import Grid from '@material-ui/core/Grid';
-import WarningIcon from '@material-ui/icons/Warning';
-import Typography from '@material-ui/core/Typography';
-import IconButton from '@material-ui/core/IconButton';
-import IconFileCopy from '@material-ui/icons/FileCopy';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import NativeSelect from '@material-ui/core/NativeSelect';
-import ReportProblemOutlinedIcon from '@material-ui/icons/ReportProblemOutlined';
-import { makeStyles } from '@material-ui/core/styles';
+import {
+    Labeled,
+    useDataProvider,
+    useRecordContext,
+    useTranslate,
+} from 'react-admin';
+import Button from '@mui/material/Button';
+import Grid from '@mui/material/Grid';
+import WarningIcon from '@mui/icons-material/Warning';
+import Typography from '@mui/material/Typography';
+import IconButton from '@mui/material/IconButton';
+import IconFileCopy from '@mui/icons-material/FileCopy';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import NativeSelect from '@mui/material/NativeSelect';
+import { makeStyles } from 'tss-react/mui';
 import get from 'lodash/get';
-import { useForm } from 'react-final-form';
 import { useLayer7Notify } from '../useLayer7Notify';
 import { useCopyToClipboard } from '../ui';
+import { useQuery, useMutation } from '@tanstack/react-query';
 
 export const ApplicationKeySecret = props => {
     const {
         id: apiKey,
-        record,
         isEditDisabled,
         labelClasses,
         onUpdateKeyDetails,
@@ -30,16 +33,19 @@ export const ApplicationKeySecret = props => {
     } = props;
 
     const [open, setOpen] = useState(false);
-    const classes = useStyles(props);
+    const { classes } = useStyles(props);
     const copyToClipboard = useCopyToClipboard({
         successMessage: 'resources.applications.notifications.copy_success',
         errorMessage: 'resources.applications.notifications.copy_error',
     });
     const translate = useTranslate();
     const notify = useLayer7Notify();
-    const form = useForm();
-
-    const keySecret = record.keySecret;
+    let record = useRecordContext();
+    if (props.record != null) {
+        record = props.record;
+    }
+    const appUuid = get(record, 'applicationUuid');
+    const keySecret = get(record, 'keySecret');
     const isSecretHashed = get(record, 'keySecretHashed');
     const [generatedKeySecret, setGeneratedKeySecret] = useState();
     const [isPlainTextSelected, setIsPlainTextSelected] = useState(true);
@@ -47,6 +53,7 @@ export const ApplicationKeySecret = props => {
     const [allowSelectHashing, setAllowSelectHashing] = useState(false);
     const [showPasswordDialog, setShowPasswordDialog] = useState(false);
     const [hashSelected, setHashSelected] = useState(false);
+    const dataProvider = useDataProvider();
 
     const handleClick = event => {
         const value = event.target.value;
@@ -65,69 +72,60 @@ export const ApplicationKeySecret = props => {
 
     const handleClose = () => {
         onGenerateKey();
-        getKeyDetails();
+        getKeyDetails({
+            id: apiKey,
+            meta: {
+                appUuid,
+            },
+        });
         setShowPasswordDialog(false);
         setOpen(false);
     };
-    const appUuid = record.applicationUuid;
 
-    const [
-        getKeyDetails,
-        { data: updatedKeyDetails, loading: apiKeyDetailsLoading },
-    ] = useMutation({
-        type: 'getOne',
-        resource: 'apiKeys',
-        payload: {
-            appUuid,
-            apiKey,
-        },
+    const {
+        mutate: getKeyDetails,
+        data: updatedKeyDetails,
+        isLoading: apiKeyDetailsLoading,
+    } = useMutation({
+        mutationFn: ({ id, meta }) =>
+            dataProvider.getOne('apiKeys', { id, meta }),
     });
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (!apiKeyDetailsLoading && updatedKeyDetails) {
             onUpdateKeyDetails(updatedKeyDetails);
         }
     }, [apiKeyDetailsLoading, updatedKeyDetails]);
 
-    const [
-        regenerateMutate,
-        {
-            data: regeneratedSecret,
-            error: regenerateFailed,
-            loading: regeneratingSecret,
-        },
-    ] = useMutation();
-
-    const regenerateSecret = hashSelectedParam =>
-        regenerateMutate({
-            type: 'generateSecret',
-            resource: 'applications',
-            payload: {
+    const { mutate: regenerateSecret } = useMutation({
+        mutationFn: ({ apiKey, appUuid, keySecretHashed }) =>
+            dataProvider.generateSecret('applications', {
                 apiKey,
                 appUuid,
-                keySecretHashed: hashSelectedParam,
-            },
-        });
-
-    React.useEffect(() => {
-        if (!regeneratingSecret && regeneratedSecret && !regenerateFailed) {
-            setGeneratedKeySecret(regeneratedSecret.keySecret);
+                keySecretHashed,
+            }),
+        onSuccess: ({ data }) => {
+            setGeneratedKeySecret(data.keySecret);
             notify(
                 'resources.applications.notifications.secret_generated_heading'
             );
-        }
-    }, [regeneratedSecret, regeneratingSecret, regenerateFailed]);
+        },
+        onError: error => notify(error),
+    });
 
-    const { data, error, loading: isGetSecretHashMetadataLoading } = useQuery({
-        type: 'getSecretHashMetadata',
-        resource: 'applications',
-        payload: {},
+    const {
+        data,
+        error,
+        isLoading: isGetSecretHashMetadataLoading,
+    } = useQuery({
+        queryKey: ['applications', 'getSecretHashMetadata'],
+        queryFn: () => dataProvider.getSecretHashMetadata('applications'),
     });
 
     useEffect(() => {
-        if (data && data.value) {
+        if (data && get(data, 'data.value')) {
             const isPlainTextAllowed = get(
-                JSON.parse(data.value),
+                JSON.parse(get(data, 'data.value')),
                 'plaintextAllowed'
             );
             setIsHashedSecretSetting(true);
@@ -140,7 +138,7 @@ export const ApplicationKeySecret = props => {
     }, [data, error]);
 
     const generateKeySecret = () => {
-        let keySecretHashed = false;
+        let keySecretHashed;
         if (isHashedSecretSetting && !isPlainTextSelected) {
             keySecretHashed = true;
         } else {
@@ -148,7 +146,11 @@ export const ApplicationKeySecret = props => {
         }
         setShowPasswordDialog(true);
         setHashSelected(keySecretHashed);
-        regenerateSecret(keySecretHashed);
+        regenerateSecret({
+            apiKey,
+            appUuid,
+            keySecretHashed: keySecretHashed,
+        });
     };
 
     if (isGetSecretHashMetadataLoading) {
@@ -174,12 +176,12 @@ export const ApplicationKeySecret = props => {
                         {keySecret && !isSecretHashed && (
                             <IconButton
                                 className={classes.buttonCopy}
-                                color="primary"
                                 title={translate(
                                     'resources.applications.notifications.copy_to_clipboard'
                                 )}
                                 value={keySecret}
                                 onClick={copyToClipboard}
+                                size="large"
                             >
                                 <IconFileCopy className={classes.iconCopy} />
                             </IconButton>
@@ -192,7 +194,6 @@ export const ApplicationKeySecret = props => {
                     {!allowSelectHashing && (
                         <Button
                             className={classes.buttonGenerate}
-                            color="primary"
                             variant="outlined"
                             onClick={handleClick}
                             aria-label={translate(
@@ -242,7 +243,6 @@ export const ApplicationKeySecret = props => {
                         </NativeSelect>
                     )}
                     <Dialog
-                        disableBackdropClick={showPasswordDialog}
                         disableEscapeKeyDown={showPasswordDialog}
                         open={open}
                         onClose={handleClose}
@@ -267,96 +267,87 @@ export const ApplicationKeySecret = props => {
     );
 };
 
-const useStyles = makeStyles(
-    theme => ({
-        field: {
-            marginLeft: theme.spacing(1),
-            marginRight: theme.spacing(1),
-            marginBottom: theme.spacing(2),
-            minWidth: '100px',
+const useStyles = makeStyles({ name: 'Layer7ApplicationKeySecret' })(theme => ({
+    field: {
+        marginRight: theme.spacing(1),
+        marginBottom: theme.spacing(2),
+        minWidth: '100px',
+    },
+    fieldContent: {},
+    buttonCopy: {},
+    iconCopy: {
+        fontSize: '1rem',
+        color: theme.palette.secondary.main,
+    },
+    buttonGenerate: {},
+    selectField: {
+        border: `1px solid ${theme.palette.primary.main}`,
+        color: theme.palette.primary.main,
+        borderRadius: 4,
+        '&.MuiNativeSelect-select:focus, .MuiNativeSelect-select': {
+            borderRadius: 'unset',
+            backgroundColor: 'transparent',
         },
-        fieldContent: {},
-        buttonCopy: {},
-        iconCopy: {
-            fontSize: '1rem',
-            color: theme.palette.secondary.main,
+        '&.MuiInput-underline:after, .MuiInput-underline:before': {
+            borderBottom: 0,
         },
-        buttonGenerate: {},
-        selectField: {
-            border: `1px solid ${theme.palette.primary.main}`,
-            color: theme.palette.primary.main,
-            borderRadius: 4,
-            '&.MuiNativeSelect-select:focus, .MuiNativeSelect-select': {
-                borderRadius: 'unset',
-                backgroundColor: 'transparent',
-            },
-            '&.MuiInput-underline:after, .MuiInput-underline:before': {
-                borderBottom: 0,
-            },
-            '&.MuiInput-underline:before': {
-                borderBottom: 0,
-            },
-            '&.MuiInput-underline:hover:not(.Mui-disabled):before': {
-                borderBottom: 0,
-            },
-            padding: theme.spacing(0.5),
-            margin: theme.spacing(1),
+        '&.MuiInput-underline:before': {
+            borderBottom: 0,
         },
-    }),
-    {
-        name: 'Layer7ApplicationKeySecret',
-    }
-);
+        '&.MuiInput-underline:hover:not(.Mui-disabled):before': {
+            borderBottom: 0,
+        },
+        padding: theme.spacing(0.5),
+        margin: theme.spacing(1),
+    },
+}));
 
-const useOneTimePasswordDialogStyles = makeStyles(
-    theme => ({
-        mainContent: {
-            display: 'flex',
-            flexDirection: 'row',
-        },
-        leftIcon: {
-            fontSize: '5rem',
-            color: theme.palette.common.white,
-        },
-        rightSection: {
-            flex: '5',
-            flexDirection: 'row',
-        },
-        subHeading: {
-            textTransform: 'uppercase',
-            fontWeight: theme.typography.fontWeightBold,
-        },
-        copyHashSection: {
-            backgroundColor: theme.palette.background.default,
-            padding: theme.spacing(1),
-            textAlign: 'center',
-        },
-        hashWarningIcon: {
-            paddingRight: 8,
-        },
-        hashWarningSection: {
-            alignItems: 'flex-start',
-            backgroundColor: 'rgba(255, 148, 77, 0.1)',
-            border: `1px solid ${theme.palette.warning.main}`,
-            display: 'flex',
-            marginTop: 24,
-            paddingBottom: 16,
-            paddingLeft: 12,
-            paddingRight: 12,
-            paddingTop: 16,
-        },
-    }),
-    {
-        name: 'Layer7ApplicationOneTimePasswordDialog',
-    }
-);
+const useOneTimePasswordDialogStyles = makeStyles({
+    name: 'Layer7ApplicationOneTimePasswordDialog',
+})(theme => ({
+    mainContent: {
+        display: 'flex',
+        flexDirection: 'row',
+    },
+    leftIcon: {
+        fontSize: '5rem',
+        color: theme.palette.common.white,
+    },
+    rightSection: {
+        flex: '5',
+        flexDirection: 'row',
+    },
+    subHeading: {
+        textTransform: 'uppercase',
+        fontWeight: theme.typography.fontWeightBold,
+    },
+    copyHashSection: {
+        backgroundColor: theme.palette.background.default,
+        padding: theme.spacing(1),
+        textAlign: 'center',
+    },
+    hashWarningIcon: {
+        paddingRight: 8,
+    },
+    hashWarningSection: {
+        alignItems: 'flex-start',
+        backgroundColor: 'rgba(255, 148, 77, 0.1)',
+        border: `1px solid ${theme.palette.warning.main}`,
+        display: 'flex',
+        marginTop: 24,
+        paddingBottom: 16,
+        paddingLeft: 12,
+        paddingRight: 12,
+        paddingTop: 16,
+    },
+}));
 
 const OneTimePasswordDialog = ({
     handleClose,
     keySecretToShow,
     showHashWarning,
 }) => {
-    const classes = useOneTimePasswordDialogStyles();
+    const { classes } = useOneTimePasswordDialogStyles();
     const copyToClipboard = useCopyToClipboard({
         successMessage: 'resources.applications.notifications.copy_success',
         errorMessage: 'resources.applications.notifications.copy_error',
@@ -395,7 +386,6 @@ const OneTimePasswordDialog = ({
                             value={keySecretToShow}
                             align="center"
                             variant="contained"
-                            color="primary"
                         >
                             {translate(
                                 'resources.applications.notifications.copy_to_clipboard'
@@ -452,7 +442,7 @@ const ShowGenerateDialog = ({ handleClose, generate }) => {
                 >
                     {translate('ra.action.cancel')}
                 </Button>
-                <Button onClick={generate} variant="contained" color="primary">
+                <Button onClick={generate} variant="contained">
                     {translate('resources.applications.actions.generateSecret')}
                 </Button>
             </DialogActions>

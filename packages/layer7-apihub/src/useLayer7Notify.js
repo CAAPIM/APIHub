@@ -1,6 +1,7 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import get from 'lodash/get';
 import isEmpty from 'lodash/isEmpty';
-import { useNotify } from 'ra-core';
+import { useNotify } from 'react-admin';
 
 export const getErrorMessage = error => {
     const message =
@@ -38,10 +39,9 @@ export const useLayer7Notify = () => {
         if (typeof message === 'object') {
             const errorMessage = getErrorMessage(message);
 
-            notify(errorMessage, 'error');
-            return;
+            notify(errorMessage, { type: 'error' });
+        } else {
+            notify(message, { type, messageArgs, undoable });
         }
-
-        notify(message, type, messageArgs, undoable);
     };
 };

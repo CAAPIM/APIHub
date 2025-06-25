@@ -24,32 +24,6 @@ The Example app has the same source code as the standard API Hub. [The Example a
 - [Auto-detect the API Hub URL](./packages/example/README.md##auto-detect-the-api-hub-url)
 - [Customization Tutorials](./packages/example/README.md##customization-tutorials)
 
-### Healthcare App [Deprecated]
-
-> **_Note:_** The Healthcare app is now deprecated. It will no longer be actively maintained and will not receive new features or updates, including bug fixes. This deprecation is part of our ongoing efforts to improve the repository and streamline functionality.
-
-[The Healthcare app](./packages/healthcare/README.md) demonstrates a possible customized variation of API Hub with a Healthcare theme. It includes the same developer features as the Example app. It further extends the API Hub to include custom pages and additional calls (PAPI and Portal Metrics API). You use this app with the mock server.
-
-The Healthcare app README includes the following information:
-
-- [Available users](./packages/healthcare/README.md##available-users)
-- [Customize the Healthcare app](./packages/layer7-apihub-mock/README.md##customize-the-healthcare-app)
-
-### Layer7 API Hub Mock Server [Deprecated]
-
-> **_Note:_** Layer7 API Hub Mock Server is now deprecated. It will no longer be actively maintained and will not receive new features or updates, including bug fixes. This deprecation is part of our ongoing efforts to improve the repository and streamline functionality.
-
-[The Layer7 API Hub mock server README](./packages/layer7-apihub-mock/README.md) includes the following information:
-
-- [Start the mock server in your client application](./packages/layer7-apihub-mock/README.md##start-the-cock-server-in-your-client-application)
-- [Available users](./packages/layer7-apihub-mock/README.md##available-users)
-- [Customize the mock server](./packages/layer7-apihub-mock/README.md##customize-the-mock-server)
-
-### Cypress End-To-End Testing
-
-The end-to-end (E2E) tests are for the Example app.
-
-For more information about this testing, see [the Cypress - End-To-End Testing README](./cypress/README.md).
 
 ## Quick Start
 
@@ -61,7 +35,7 @@ Before setting up your local development environment, ensure that you have compl
 
 - You have installed [Yarn](https://yarnpkg.com/).
 - You have installed GNU Make 3.81 or later.
-- You have installed Node v12.20.2.
+- You have installed Node v22.13.0.
 
 ### Install the JavaScript Dependencies
 
@@ -81,12 +55,6 @@ To start the **Example app**, issue the following command:
 make start
 ```
 
-To start the **Healthcare app**, issue the following command:
-
-```sh
-make start-healthcare
-```
-
 ### Run the Tests
 
 Run the unit tests and the E2E tests by issuing the following command:
@@ -101,20 +69,6 @@ Run only the unit tests by issuing the following command:
 
 ```sh
 make test-unit
-```
-
-#### End-To-End Tests
-
-Run only the E2E tests:
-
-```sh
-make test-e2e
-```
-
-Open the E2E tests GUI (useful for writing and debugging E2E tests):
-
-```sh
-make test-e2e-local
 ```
 
 ## Deploy the Example App
@@ -149,10 +103,11 @@ $ cd packages && yarn create react-app my-own-apihub --scripts-version=3.2.0
   # in packages/my-own-apihub/package.json
  "dependencies": {
         "layer7-apihub": "~1.0.0",
-        "layer7-apihub-mock": "~1.0.0",
-        "react": "~16.13.1",
-        "react-admin": "~3.6.2",
-        "react-scripts": "~3.2.0"
+        "react": "^18.3.1",
+        "react-dom": "^18.3.1",
+        "react-admin": "^5.7.3",
+        "react-helmet": "~6.1.0",
+        "tss-react": "~4.9.4"
     },
 ```
 
@@ -191,26 +146,7 @@ const App = () => {
 };
 ```
 
-6. Add the mock server to the `index.js` file
-
-```js
-// in packages/my-own-apihub/src/index.js
-import { startApiHubMockedServer } from 'layer7-apihub-mock';
-...
-const { ENABLE_MOCK, MOCK_SERVER_INDICATOR_LINK } = global.APIHUB_CONFIG;
-export const shouldEnableMock = (enableMock = ENABLE_MOCK) =>
-    enableMock === 'true' || enableMock === true;
-if (!shouldEnableMock(ENABLE_MOCK)) {
-    ReactDOM.render(<App />, document.getElementById('root'));
-} else {
-    console.log('Starting the mocked server');
-    startApiHubMockedServer({
-        runningIndicatorLink: MOCK_SERVER_INDICATOR_LINK,
-    }).then(() => ReactDOM.render(<App />, document.getElementById('root')));
-}
-```
-
-7. Start the bare-bones my-own-apihub app by issuing the following commands:
+6. Start the bare-bones my-own-apihub app by issuing the following commands:
 
 ```
 $ cd packages/my-own-apihub

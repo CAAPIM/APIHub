@@ -1,20 +1,23 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React from 'react';
-import classnames from 'classnames';
-import { useTranslate } from 'ra-core';
-import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
+import { makeStyles } from 'tss-react/mui';
+import Typography from '@mui/material/Typography';
+import { useRecordContext, useTranslate } from 'react-admin';
 
-export const ApplicationStatus = ({ record, variant = 'caption', ...rest }) => {
-    const classes = useStyles(rest);
+export const ApplicationStatus = ({ variant = 'caption', ...props }) => {
+    const { classes, cx } = useStyles(props);
     const translate = useTranslate();
-
+    let record = useRecordContext();
+    if (props.record != null) {
+        record = props.record;
+    }
     if (!record) {
         return null;
     }
 
     return (
         <div
-            className={classnames(classes.root, {
+            className={cx(classes.root, {
                 [classes.enabled]: record.status === 'ENABLED',
                 [classes.rejected]: record.status === 'REJECTED',
                 [classes.disabled]:
@@ -33,8 +36,8 @@ export const ApplicationStatus = ({ record, variant = 'caption', ...rest }) => {
     );
 };
 
-const useStyles = makeStyles(
-    theme => ({
+const useStyles = makeStyles({ name: 'Layer7ApplicationStatus' })(
+    (theme, _params, classes) => ({
         root: {
             display: 'flex',
             alignItems: 'center',
@@ -43,19 +46,19 @@ const useStyles = makeStyles(
         },
         enabled: {
             color: theme.palette.success.main,
-            '& $enabledIcon': {
+            [`& .${classes.enabledIcon}`]: {
                 backgroundColor: theme.palette.success.main,
             },
         },
         rejected: {
             color: theme.palette.error.main,
-            '& $enabledIcon': {
+            [`& .${classes.enabledIcon}`]: {
                 backgroundColor: theme.palette.error.main,
             },
         },
         disabled: {
             color: theme.palette.text.disabled,
-            '& $enabledIcon': {
+            [`& .${classes.enabledIcon}`]: {
                 backgroundColor: theme.palette.text.disabled,
             },
         },
@@ -66,8 +69,5 @@ const useStyles = makeStyles(
             marginRight: theme.spacing(),
         },
         status: {}, // Used for theming
-    }),
-    {
-        name: 'Layer7ApplicationStatus',
-    }
+    })
 );

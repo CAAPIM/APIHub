@@ -1,4 +1,5 @@
-import { composeValidators, maxLength, minLength, regex } from 'ra-core';
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
+import { composeValidators, maxLength, minLength, regex } from 'react-admin';
 import forEach from 'lodash/forEach';
 import get from 'lodash/get';
 import { getFetchJson } from '../fetchUtils';

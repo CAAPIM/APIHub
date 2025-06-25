@@ -1,12 +1,12 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React from 'react';
-import Button from '@material-ui/core/Button';
-import Divider from '@material-ui/core/Divider';
-import IconEdit from '@material-ui/icons/Edit';
-import IconDelete from '@material-ui/icons/Delete';
-import IconAdd from '@material-ui/icons/Add';
-import { makeStyles } from '@material-ui/core/styles';
-import { useTranslate } from 'ra-core';
-
+import Button from '@mui/material/Button';
+import Divider from '@mui/material/Divider';
+import IconEdit from '@mui/icons-material/Edit';
+import IconDelete from '@mui/icons-material/Delete';
+import IconAdd from '@mui/icons-material/Add';
+import { makeStyles } from 'tss-react/mui';
+import { useTranslate } from 'react-admin';
 import { AddDocumentButton } from './AddDocumentButton';
 import { DeleteDocumentButton } from './DeleteDocumentButton';
 
@@ -26,7 +26,7 @@ export const DocumentToolbar = ({
     onAddNewDocument,
     onDeleteDocument,
 }) => {
-    const classes = useStyles();
+    const { classes } = useStyles();
     const translate = useTranslate();
 
     if (!document || (!userCanEdit && !userCanDelete)) {
@@ -56,7 +56,6 @@ export const DocumentToolbar = ({
                 )}
                 {userCanEdit && (
                     <Button
-                        color="primary"
                         size="small"
                         onClick={onEdit}
                         disabled={disabled}
@@ -98,7 +97,7 @@ export const DocumentToolbar = ({
     );
 };
 
-const useStyles = makeStyles(
+const useStyles = makeStyles({ name: 'Layer7DocumentationToolbar' })(
     theme => ({
         root: {
             padding: theme.spacing(1),
@@ -108,8 +107,5 @@ const useStyles = makeStyles(
                 marginLeft: theme.spacing(2),
             },
         },
-    }),
-    {
-        name: 'Layer7DocumentationToolbar',
-    }
+    })
 );

@@ -1,17 +1,16 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React, { useState, useEffect, forwardRef } from 'react';
-import { useTranslate } from 'ra-core';
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Slide from '@material-ui/core/Slide';
-import { makeStyles } from '@material-ui/core/styles';
-import SaveIcon from '@material-ui/icons/Save';
+import { useTranslate } from 'react-admin';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import Slide from '@mui/material/Slide';
+import { makeStyles } from 'tss-react/mui';
+import SaveIcon from '@mui/icons-material/Save';
 
-import {
-    MarkdownEditor,
-} from '../ui';
+import { MarkdownEditor } from '../ui';
 
 export const ApplicationDetailsOverviewEditor = ({
     initialValue,
@@ -19,7 +18,7 @@ export const ApplicationDetailsOverviewEditor = ({
     onSave,
     open,
 }) => {
-    const classes = useStyles();
+    const { classes } = useStyles();
     const [value, setValue] = useState(initialValue);
     const translate = useTranslate();
 
@@ -56,14 +55,12 @@ export const ApplicationDetailsOverviewEditor = ({
             </DialogContent>
             <DialogActions className={classes.actions}>
                 <Button
-                    color="primary"
                     variant="outlined"
                     onClick={handleCancel}
                 >
                     {translate('resources.applications.actions.cancel')}
                 </Button>
                 <Button
-                    color="primary"
                     variant="contained"
                     onClick={handleSave}
                     startIcon={<SaveIcon />}
@@ -79,16 +76,13 @@ const Transition = forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const useStyles = makeStyles(
+const useStyles = makeStyles({ name: 'Layer7ApplicationDetailsOverviewEditor' })(
     theme => ({
         editor: {
-            height: `calc(100% - ${theme.spacing(2)}px)`,
+            height: `calc(100% - ${theme.spacing(2)})`,
         },
         actions: {
             margin: theme.spacing(2),
         },
-    }),
-    {
-        name: 'Layer7ApplicationDetailsOverviewEditor',
-    }
+    })
 );

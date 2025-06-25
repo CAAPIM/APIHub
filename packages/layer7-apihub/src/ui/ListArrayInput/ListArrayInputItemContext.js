@@ -1,3 +1,4 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import * as React from 'react';
 
 export const ListArrayInputItemContext = React.createContext();
@@ -11,8 +12,8 @@ export const ListArrayInputItemContext = React.createContext();
  * @example <caption>Example of a child for <ListArrayInput /></caption>
  * import { useListArrayInputItem } from 'layer7-apihub';
  * import { IconButton, ListItemIcon, ListItemText } from 'material-ui';
- * import AddIcon from '@material-ui/icons/Add';
- * import DeleteIcon from '@material-ui/icons/Delete';
+ * import AddIcon from '@mui/icons-material/Add';
+ * import DeleteIcon from '@mui/icons-material/Delete';
  *
  * function ApiChoiceItem(props) {
  *     const { onAdd, onRemove, record, selected } = useListArrayInputItem();

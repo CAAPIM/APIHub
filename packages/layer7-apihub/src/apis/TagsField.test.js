@@ -1,9 +1,15 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React from 'react';
-import { configure, fireEvent, render, screen } from '@testing-library/react';
-import { DataProviderContext, renderWithRedux } from 'ra-core';
-import { wait } from '@testing-library/react';
+import {
+    configure,
+    fireEvent,
+    render,
+    screen,
+    waitFor,
+} from '@testing-library/react';
 
 import { AsyncTagsField, TagsField, TagsFieldScrollButton } from './TagsField';
+import { AdminContext } from 'react-admin';
 
 describe('TagsField', () => {
     beforeAll(() => {
@@ -25,31 +31,23 @@ describe('TagsField', () => {
         });
     });
     describe('AsyncTagsField', () => {
-        const initialState = {
-            admin: {
-                resources: {
-                  tags: {},
-                },
-            },
-        };
-
         const dataProvider = {
             getManyReference: jest.fn().mockResolvedValue({
                 data: [
                     {
-                        uuid: "d9a2909c-b532-4a8a-8a39-e17001e9b225",
-                        id: "d9a2909c-b532-4a8a-8a39-e17001e9b225",
-                        name: "Accounts"
+                        uuid: 'd9a2909c-b532-4a8a-8a39-e17001e9b225',
+                        id: 'd9a2909c-b532-4a8a-8a39-e17001e9b225',
+                        name: 'Accounts',
                     },
                     {
-                        uuid: "9a7d8894-5e40-47b8-8d92-f9270516b526",
-                        id: "9a7d8894-5e40-47b8-8d92-f9270516b526",
-                        name: "Security"
+                        uuid: '9a7d8894-5e40-47b8-8d92-f9270516b526',
+                        id: '9a7d8894-5e40-47b8-8d92-f9270516b526',
+                        name: 'Security',
                     },
                     {
-                        uuid: "41c60b1e-80c6-4dd5-9a6f-da2fd1924cb6",
-                        id: "41c60b1e-80c6-4dd5-9a6f-da2fd1924cb6",
-                        name: "Plans"
+                        uuid: '41c60b1e-80c6-4dd5-9a6f-da2fd1924cb6',
+                        id: '41c60b1e-80c6-4dd5-9a6f-da2fd1924cb6',
+                        name: 'Plans',
                     },
                 ],
                 total: 3,
@@ -57,14 +55,17 @@ describe('TagsField', () => {
         };
 
         test('should render the AsyncTagsField component', async () => {
-            const { getByText } = renderWithRedux(
-                <DataProviderContext.Provider value={dataProvider}>
-                    <AsyncTagsField record={{}} />
-                </DataProviderContext.Provider>,
-                initialState
+            const { getByText } = render(
+                <AdminContext dataProvider={dataProvider}>
+                    <AsyncTagsField
+                        record={{
+                            id: '123',
+                        }}
+                    />
+                </AdminContext>
             );
 
-            await wait(() => {
+            await waitFor(() => {
                 expect(getByText('Accounts')).not.toBeNull();
             });
         });

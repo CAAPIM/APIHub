@@ -1,3 +1,4 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import { stringify } from 'query-string';
 
 export const organizationsDataProvider = context => {

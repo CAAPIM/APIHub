@@ -1,3 +1,4 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import defaultData from '../../packages/layer7-apihub-mock/src/defaultData.json';
 
 Cypress.Commands.add('loadData', (data = defaultData) => {

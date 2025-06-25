@@ -1,69 +1,78 @@
-import React, { useState } from 'react';
-import { useTranslate, useDataProvider } from 'ra-core';
-import { makeStyles } from '@material-ui/core/styles';
-import FormControl from '@material-ui/core/FormControl';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import TextField from '@material-ui/core/TextField';
-import Select from '@material-ui/core/Select';
-import InputLabel from '@material-ui/core/InputLabel';
-import Input from '@material-ui/core/Input';
-import MenuItem from '@material-ui/core/MenuItem';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import CircularProgress from '@material-ui/core/CircularProgress';
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
+import React, { useEffect, useState } from 'react';
+import { useTranslate, useDataProvider } from 'react-admin';
+import { makeStyles } from 'tss-react/mui';
+import FormControl from '@mui/material/FormControl';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
+import TextField from '@mui/material/TextField';
+import Select from '@mui/material/Select';
+import InputLabel from '@mui/material/InputLabel';
+import Input from '@mui/material/Input';
+import MenuItem from '@mui/material/MenuItem';
+import Autocomplete from '@mui/material/Autocomplete';
+import CircularProgress from '@mui/material/CircularProgress';
 import uniqBy from 'lodash/uniqBy';
 import find from 'lodash/find';
 
 import { useLayer7Notify } from '../../useLayer7Notify';
+import { useMutation } from '@tanstack/react-query';
 
 const emptyFunction = () => {};
 
 export const ApiApplications = ({ handleKeyUpdate = emptyFunction, id }) => {
     const translate = useTranslate();
-    const classes = useStyles();
+    const { classes } = useStyles();
     const dataProvider = useDataProvider();
     const notify = useLayer7Notify();
     const [selectedApp, setSelectedApp] = useState();
-    const [open, setOpen] = React.useState(false);
+    const [open, setOpen] = useState(false);
     const [applications, setApplications] = useState([]);
     const [apiKeys, setApiKeys] = useState([]);
     const [selectedAPIKey, setSelectedAPIKey] = useState();
-    const [search, setSearch] = React.useState(undefined);
-    const [loadingApplications, setLoadingApplications] = React.useState(false);
-    const [loadingAPIKeys, setLoadingAPIKeys] = React.useState(false);
-    const [currentAppPage, setCurrentAppPage] = React.useState(1);
-    const [currentAPIkeyPage, setCurrentAPIkeyPage] = React.useState(0);
+    const [search, setSearch] = useState('');
+    const [loadingApplications, setLoadingApplications] = useState(false);
+    const [loadingAPIKeys, setLoadingAPIKeys] = useState(false);
+    const [currentAppPage, setCurrentAppPage] = useState(1);
+    const [currentAPIkeyPage, setCurrentAPIkeyPage] = useState(0);
+    const { mutateAsync: fetchApplicationsAsync } = useMutation({
+        mutationFn: ({ filter, pagination, sort }) =>
+            dataProvider.getList('applications', {
+                filter,
+                pagination,
+                sort,
+            }),
+        onError: error => notify(error),
+    });
+    const { mutateAsync: fetchApiKeysAsync } = useMutation({
+        mutationFn: ({ meta, pagination, sort }) =>
+            dataProvider.getList('apiKeys', {
+                meta,
+                pagination,
+                sort,
+            }),
+        onError: error => notify(error),
+    });
 
-    const fetchApplications = async searchValue => {
-        const { data, totalPages } = await dataProvider.getList(
-            'applications',
-            {
-                filter: {
-                    apiUuid: id,
-                    name: search,
-                },
-                pagination: { page: currentAppPage, perPage: 10 },
-                sort: { field: 'name', order: 'ASC' },
+    const fetchApplications = async () => {
+        const { data, totalPages } = await fetchApplicationsAsync({
+            filter: {
+                apiUuid: id,
+                name: search,
             },
-            {
-                onFailure: error => notify(error),
-            }
-        );
+            pagination: { page: currentAppPage, perPage: 10 },
+            sort: { field: 'name', order: 'ASC' },
+        });
+
         return [data, totalPages];
     };
 
     const fetchAPIKeys = async () => {
-        const { data, totalPages } = await dataProvider.getList(
-            'apiKeys',
-            {
-                applicationUuid: selectedApp.id,
-                pagination: { page: currentAPIkeyPage, perPage: 10 },
-                sort: { field: 'createTs', order: 'DESC' },
-            },
-            {
-                onFailure: error => notify(error),
-            }
-        );
+        const { data, totalPages } = await fetchApiKeysAsync({
+            meta: { applicationUuid: selectedApp.id },
+            pagination: { page: currentAPIkeyPage, perPage: 10 },
+            sort: { field: 'createTs', order: 'DESC' },
+        });
 
         return [data, totalPages];
     };
@@ -72,13 +81,14 @@ export const ApiApplications = ({ handleKeyUpdate = emptyFunction, id }) => {
         setSelectedAPIKey(evt.target.value);
     };
 
-    React.useEffect(() => {
+    useEffect(() => {
         let active = true;
 
         (async () => {
             if (!selectedApp) {
                 return;
             }
+
             const [data, totalPages] = await fetchAPIKeys();
 
             if (active) {
@@ -103,21 +113,21 @@ export const ApiApplications = ({ handleKeyUpdate = emptyFunction, id }) => {
         setSearch(event.target.value);
     };
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (!open) {
             setLoadingApplications(false);
-            setSearch(undefined);
+            setSearch('');
         }
     }, [open]);
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (handleKeyUpdate) {
             const apiKey = find(apiKeys, item => item.id === selectedAPIKey);
             handleKeyUpdate(apiKey);
         }
     }, [apiKeys, handleKeyUpdate, selectedAPIKey]);
 
-    React.useEffect(() => {
+    useEffect(() => {
         let active = true;
 
         (async () => {
@@ -137,6 +147,11 @@ export const ApiApplications = ({ handleKeyUpdate = emptyFunction, id }) => {
         };
         // eslint-disable-next-line
     }, [search, currentAppPage]);
+
+    const getOptionLabelDefaultFn = option => {
+        if (!option || typeof option !== 'object') return '';
+        return option.name || '';
+    };
 
     return (
         <div className={classes.root}>
@@ -160,10 +175,10 @@ export const ApiApplications = ({ handleKeyUpdate = emptyFunction, id }) => {
                                 setSelectedApp(app);
                                 setSelectedAPIKey();
                             }}
-                            getOptionSelected={(option, value) =>
+                            isOptionEqualToValue={(option, value) =>
                                 option.name === value.name
                             }
-                            getOptionLabel={option => option.name}
+                            getOptionLabel={getOptionLabelDefaultFn}
                             options={applications}
                             loading={loadingApplications}
                             loadingText={translate('ra.action.loading')}
@@ -178,7 +193,7 @@ export const ApiApplications = ({ handleKeyUpdate = emptyFunction, id }) => {
                                     InputProps={{
                                         ...params.InputProps,
                                         endAdornment: (
-                                            <React.Fragment>
+                                            <>
                                                 {loadingApplications ? (
                                                     <CircularProgress
                                                         color="inherit"
@@ -186,7 +201,7 @@ export const ApiApplications = ({ handleKeyUpdate = emptyFunction, id }) => {
                                                     />
                                                 ) : null}
                                                 {params.InputProps.endAdornment}
-                                            </React.Fragment>
+                                            </>
                                         ),
                                     }}
                                 />
@@ -229,17 +244,12 @@ export const ApiApplications = ({ handleKeyUpdate = emptyFunction, id }) => {
     );
 };
 
-const useStyles = makeStyles(
-    theme => ({
-        root: {
-            fontFamily: theme.typography.body2.fontFamily,
-            padding: '0px 20px',
-        },
-        formControl: {
-            minWidth: '240px',
-        },
-    }),
-    {
-        name: 'Layer7ApiApplications',
-    }
-);
+const useStyles = makeStyles({ name: 'Layer7ApiApplications' })(theme => ({
+    root: {
+        fontFamily: theme.typography.body2.fontFamily,
+        padding: '0px 20px',
+    },
+    formControl: {
+        minWidth: '240px',
+    },
+}));

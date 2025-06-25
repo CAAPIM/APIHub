@@ -1,13 +1,14 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React from 'react';
-import { useTranslate } from 'ra-core';
-import { makeStyles } from '@material-ui/core';
-import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
+import { useTranslate } from 'react-admin';
+import { makeStyles } from 'tss-react/mui';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
 import { Link } from 'react-router-dom';
 
 export const AccountSetupInvalidRequest = () => {
     const translate = useTranslate();
-    const classes = useStyles();
+    const { classes } = useStyles();
 
     return (
         <div className={classes.root}>
@@ -17,7 +18,6 @@ export const AccountSetupInvalidRequest = () => {
                 )}
             </Typography>
             <Button
-                color="primary"
                 variant="contained"
                 component={Link}
                 to="/login"
@@ -29,15 +29,12 @@ export const AccountSetupInvalidRequest = () => {
     );
 };
 
-const useStyles = makeStyles(
+const useStyles = makeStyles({ name: 'Layer7AccountSetupInvalidRequest' })(
     theme => ({
         root: {},
         title: {
             color: theme.palette.error.main,
         },
         button: {},
-    }),
-    {
-        name: 'Layer7AccountSetupInvalidRequest',
-    }
+    })
 );

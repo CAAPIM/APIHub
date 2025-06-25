@@ -1,9 +1,10 @@
-import React, { cloneElement } from 'react';
-import AppBar from '@material-ui/core/AppBar';
-import Divider from '@material-ui/core/Divider';
-import Toolbar from '@material-ui/core/Toolbar';
-import { makeStyles } from '@material-ui/core/styles';
-import { HideOnScroll, LoadingIndicator, useLocale } from 'react-admin';
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
+import React from 'react';
+import AppBar from '@mui/material/AppBar';
+import Divider from '@mui/material/Divider';
+import Toolbar from '@mui/material/Toolbar';
+import { makeStyles } from 'tss-react/mui';
+import { HideOnScroll, LoadingIndicator } from 'react-admin';
 import { ApiHubUserMenu } from './ApiHubUserMenu';
 import { ApiHubLanguageSwitcher } from './ApiHubLanguageSwitcher';
 import { SidebarButton } from './SidebarButton';
@@ -19,15 +20,11 @@ export const ApiHubAppBar = ({
     className,
     languagesMenu,
     logo,
-    logout,
-    open,
     sidebarButton,
-    title,
     userMenu,
     ...rest
 }) => {
-    const classes = useStyles({ classes: classesOverride });
-    useLocale(); // Make sure the locale change would rerender the component
+    const { classes } = useStyles({ classes: classesOverride });
 
     return (
         <HideOnScroll>
@@ -35,6 +32,7 @@ export const ApiHubAppBar = ({
                 className={className}
                 color="secondary"
                 elevation={0}
+                enableColorOnDark={true}
                 {...rest}
             >
                 <Toolbar
@@ -42,15 +40,15 @@ export const ApiHubAppBar = ({
                     variant="regular"
                     className={classes.toolbar}
                 >
-                    {cloneElement(sidebarButton, { open })}
+                    {sidebarButton}
                     <div className={classes.header}>{children}</div>
                     <LoadingIndicator />
-                    {cloneElement(languagesMenu)}
+                    {languagesMenu}
                     <Divider
                         className={classes.divider}
                         orientation="vertical"
                     />
-                    {cloneElement(userMenu, { logout })}
+                    {userMenu}
                 </Toolbar>
             </AppBar>
         </HideOnScroll>
@@ -63,8 +61,8 @@ ApiHubAppBar.defaultProps = {
     sidebarButton: <SidebarButton />,
 };
 
-const useStyles = makeStyles(
-    theme => ({
+const useStyles = makeStyles({ name: 'Layer7AppBar' })(
+    (theme, { classes }) => ({
         toolbar: {
             paddingRight: 24,
         },
@@ -87,8 +85,6 @@ const useStyles = makeStyles(
             marginRight: theme.spacing(4),
             marginTop: theme.spacing(2),
         },
-    }),
-    {
-        name: 'Layer7AppBar',
-    }
+        ...classes,
+    })
 );

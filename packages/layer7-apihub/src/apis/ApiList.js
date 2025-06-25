@@ -1,19 +1,18 @@
-import React, { cloneElement } from 'react';
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
+import React from 'react';
 import {
     DateField,
-    Filter,
     ReferenceArrayInput,
-    sanitizeListRestProps,
     SelectArrayInput,
     SearchInput,
     SelectInput,
     TextField,
     TopToolbar,
+    useTranslate,
+    FilterButton,
 } from 'react-admin';
-import { useTranslate } from 'ra-core';
-import classnames from 'classnames';
-import { makeStyles } from '@material-ui/core/styles';
-import Card from '@material-ui/core/Card';
+import { makeStyles } from 'tss-react/mui';
+import Card from '@mui/material/Card';
 
 import {
     AccessField,
@@ -37,10 +36,76 @@ import { LastUpdateField } from './LastUpdateField';
 import { readApiHubPreference } from '../preferences';
 
 export const ApiList = props => {
+    const translate = useTranslate();
+    const { classes } = useApiFilterStyles();
     const initialListDisplay = readApiHubPreference(
         listDisplayPreferenceName,
         LIST_DISPLAY_DATAGRID
     );
+
+    const filters = [
+        <SearchInput
+            source="q"
+            className={classes.searchInput}
+            placeholder={translate('resources.apis.list.filters.search')}
+            alwaysOn={true}
+        />,
+        <SelectInput
+            source="accessStatus"
+            choices={[
+                {
+                    id: 'public',
+                    name: 'resources.apis.accessStatus.public',
+                },
+                {
+                    id: 'private',
+                    name: 'resources.apis.accessStatus.private',
+                },
+            ]}
+        />,
+        <SelectInput
+            source="portalStatus"
+            choices={[
+                {
+                    id: 'Enabled',
+                    name: 'resources.apis.portalStatus.enabled',
+                },
+                {
+                    id: 'Disabled',
+                    name: 'resources.apis.portalStatus.disabled',
+                },
+                {
+                    id: 'Deprecated',
+                    name: 'resources.apis.portalStatus.deprecated',
+                },
+                {
+                    id: 'New',
+                    name: 'resources.apis.portalStatus.unpublished',
+                },
+                {
+                    id: 'Incomplete',
+                    name: 'resources.apis.portalStatus.incomplete',
+                },
+            ]}
+        />,
+        <SelectInput
+            // The field is ssgServiceType in the response payload but apiServiceType in filters
+            source="apiServiceType"
+            choices={[
+                {
+                    id: 'SOAP',
+                    name: 'SOAP',
+                },
+                {
+                    id: 'REST',
+                    name: 'REST',
+                },
+            ]}
+        />,
+        <ReferenceArrayInput source="tags" reference="tags">
+            <SelectArrayInput optionText="name" className={classes.inputRoot} />
+        </ReferenceArrayInput>,
+    ];
 
     return (
         <ListDisplayProvider
@@ -49,10 +114,9 @@ export const ApiList = props => {
         >
             <List
                 actions={<ApiListActions />}
-                filters={<ApiFilter />}
+                filters={filters}
                 sort={defaultSort}
-                bulkActionButtons={false}
-                component={ApiListComponent}
+                component="div"
                 {...props}
             >
                 <ApiListDisplay />
@@ -61,83 +125,12 @@ export const ApiList = props => {
     );
 };
 
-const ApiFilter = props => {
-    const translate = useTranslate();
-    const classes = useApiFilterStyles();
-
-    return (
-        <Filter {...props}>
-            <SearchInput
-                source="q"
-                className={classes.searchInput}
-                alwaysOn
-                placeholder={translate('resources.apis.list.filters.search')}
-            />
-            <SelectInput
-                source="accessStatus"
-                choices={[
-                    {
-                        id: 'public',
-                        name: 'resources.apis.accessStatus.public',
-                    },
-                    {
-                        id: 'private',
-                        name: 'resources.apis.accessStatus.private',
-                    },
-                ]}
-            />
-            <SelectInput
-                source="portalStatus"
-                choices={[
-                    {
-                        id: 'Enabled',
-                        name: 'resources.apis.portalStatus.enabled',
-                    },
-                    {
-                        id: 'Disabled',
-                        name: 'resources.apis.portalStatus.disabled',
-                    },
-                    {
-                        id: 'Deprecated',
-                        name: 'resources.apis.portalStatus.deprecated',
-                    },
-                    {
-                        id: 'New',
-                        name: 'resources.apis.portalStatus.unpublished',
-                    },
-                    {
-                        id: 'Incomplete',
-                        name: 'resources.apis.portalStatus.incomplete',
-                    },
-                ]}
-            />
-            <SelectInput
-                // The field is ssgServiceType in the response payload but apiServiceType in filters
-                source="apiServiceType"
-                choices={[
-                    {
-                        id: 'SOAP',
-                        name: 'SOAP',
-                    },
-                    {
-                        id: 'REST',
-                        name: 'REST',
-                    },
-                ]}
-            />
-            <ReferenceArrayInput source="tags" reference="tags">
-                <SelectArrayInput optionText="name" />
-            </ReferenceArrayInput>
-        </Filter>
-    );
-};
-
-const ApiListDisplay = props => {
+const ApiListDisplay = () => {
     const [display] = useListDisplay();
 
     if (display === LIST_DISPLAY_CARDS) {
         return (
-            <CardGrid {...props}>
+            <CardGrid>
                 <ApiCard />
             </CardGrid>
         );
@@ -145,7 +138,7 @@ const ApiListDisplay = props => {
 
     return (
         <Card>
-            <Datagrid rowClick="show" {...props}>
+            <Datagrid rowClick="show" bulkActionButtons={false}>
                 <TruncatedTextField source="name" />
                 <MarkdownField source="description" stripTags truncate />
                 <TagsField source="tags" sortable={false} />
@@ -166,40 +159,14 @@ const ApiListDisplay = props => {
     );
 };
 
-const ApiListActions = ({
-    className,
-    currentSort,
-    displayedFilters,
-    exporter,
-    filters,
-    filterValues,
-    permanentFilter,
-    resource,
-    showFilter,
-    ...props
-}) => {
-    const classes = useApiListActionsStyles();
+const ApiListActions = ({ className }) => {
+    const { classes, cx } = useApiListActionsStyles();
     const [display] = useListDisplay();
 
     return (
-        <TopToolbar
-            className={classnames(classes.root, className)}
-            {...sanitizeListRestProps(props)}
-        >
-            {filters &&
-                cloneElement(filters, {
-                    resource,
-                    showFilter,
-                    displayedFilters,
-                    filterValues,
-                    context: 'button',
-                })}
-            {display === LIST_DISPLAY_CARDS ? (
-                <ApiListSortButton
-                    resource={resource}
-                    currentSort={currentSort}
-                />
-            ) : null}
+        <TopToolbar className={cx(classes.root, className)}>
+            <FilterButton />
+            {display === LIST_DISPLAY_CARDS && <ApiListSortButton />}
             <ListDisplayButton className={classes.button} />
         </TopToolbar>
     );
@@ -238,8 +205,6 @@ const defaultSort = { field: 'createTs', order: 'DESC' };
 
 const listDisplayPreferenceName = 'listDisplay/apis';
 
-const ApiListComponent = props => <div {...props} />;
-
 const SortByNameASC = { field: 'name', order: 'ASC' };
 const SortByNameDESC = { field: 'name', order: 'DESC' };
 const SortByCreateTsASC = { field: 'createTs', order: 'ASC' };
@@ -247,13 +212,21 @@ const SortByCreateTsDESC = { field: 'createTs', order: 'DESC' };
 const SortByModifyTsASC = { field: 'modifyTs', order: 'ASC' };
 const SortByModifyTsDESC = { field: 'modifyTs', order: 'DESC' };
 
-const useApiFilterStyles = makeStyles({
+const useApiFilterStyles = makeStyles()({
     searchInput: {
         minWidth: '300px',
+        marginTop: '0px !important',
+        marginBottom: '3px !important',
+    },
+    inputRoot: {
+        marginBottom: '5px !important',
+        '& .MuiFormLabel-root': {
+            top: '-6px',
+        },
     },
 });
 
-const useApiListActionsStyles = makeStyles(
+const useApiListActionsStyles = makeStyles({ name: 'Layer7ApiListActions' })(
     theme => ({
         root: {
             alignItems: 'center',
@@ -261,6 +234,5 @@ const useApiListActionsStyles = makeStyles(
         button: {
             marginLeft: theme.spacing(),
         },
-    }),
-    { name: 'Layer7ApiListActions' }
+    })
 );

@@ -1,23 +1,21 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React, { useState, useEffect, forwardRef } from 'react';
-import { useTranslate } from 'ra-core';
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Fade from '@material-ui/core/Fade';
-import LinearProgress from '@material-ui/core/LinearProgress';
-import InputLabel from '@material-ui/core/InputLabel';
-import Slide from '@material-ui/core/Slide';
-import { makeStyles } from '@material-ui/core/styles';
-import SaveIcon from '@material-ui/icons/Save';
+import { useTranslate } from 'react-admin';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import Fade from '@mui/material/Fade';
+import LinearProgress from '@mui/material/LinearProgress';
+import InputLabel from '@mui/material/InputLabel';
+import Slide from '@mui/material/Slide';
+import { makeStyles } from 'tss-react/mui';
+import SaveIcon from '@mui/icons-material/Save';
 
 import { ENTITY_TYPE_HOME } from '../dataProvider/documents';
 import { HomePageCreateButton, HomePageEditButton } from './HomePageButton';
-import {
-    MarkdownEditor,
-    MarkdownView,
-} from '../ui';
+import { MarkdownEditor, MarkdownView } from '../ui';
 import { useUserContext } from '../userContexts';
 import { useMarkdownContent } from '../documentation';
 
@@ -36,13 +34,13 @@ import { useMarkdownContent } from '../documentation';
 export const HomePageContent = props => {
     const { navtitle = 'home1', entityUuid = 'home1', ...rest } = props;
 
-    const [{ data, loading }, handleUpdate] = useMarkdownContent({
+    const [{ data, isLoading }, handleUpdate] = useMarkdownContent({
         entityType: ENTITY_TYPE_HOME,
         entityUuid,
         navtitle,
     });
     const translate = useTranslate();
-    const classes = useStyles(rest);
+    const { classes } = useStyles(rest);
 
     const [userContext] = useUserContext();
     const canEdit = userContext?.userDetails?.portalAdmin || false;
@@ -55,7 +53,7 @@ export const HomePageContent = props => {
         setMode('view');
     }, [data]);
 
-    if (loading) {
+    if (isLoading) {
         return (
             <Fade
                 in
@@ -109,7 +107,7 @@ const HomePageContentEditor = ({
     open,
     navtitle,
 }) => {
-    const classes = useHomePageContentEditorStyles();
+    const { classes } = useHomePageContentEditorStyles();
     const [value, setValue] = useState(initialValue);
     const translate = useTranslate();
 
@@ -146,15 +144,10 @@ const HomePageContentEditor = ({
                 />
             </DialogContent>
             <DialogActions className={classes.actions}>
-                <Button
-                    color="primary"
-                    variant="outlined"
-                    onClick={handleCancel}
-                >
+                <Button variant="outlined" onClick={handleCancel}>
                     {translate('resources.documents.actions.cancel')}
                 </Button>
                 <Button
-                    color="primary"
                     variant="contained"
                     onClick={handleSave}
                     startIcon={<SaveIcon />}
@@ -170,30 +163,22 @@ const Transition = forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const useStyles = makeStyles(
-    theme => ({
-        root: {
-            position: 'relative',
-        },
-        markdown: {
-            overflowWrap: 'anywhere',
-        },
-    }),
-    {
-        name: 'Layer7HomePageContent',
-    }
-);
+const useStyles = makeStyles({ name: 'Layer7HomePageContent' })(theme => ({
+    root: {
+        position: 'relative',
+    },
+    markdown: {
+        overflowWrap: 'anywhere',
+    },
+}));
 
-const useHomePageContentEditorStyles = makeStyles(
-    theme => ({
-        editor: {
-            height: `calc(100% - ${theme.spacing(2)}px)`,
-        },
-        actions: {
-            margin: theme.spacing(2),
-        },
-    }),
-    {
-        name: 'Layer7HomePageContentEditor',
-    }
-);
+const useHomePageContentEditorStyles = makeStyles({
+    name: 'Layer7HomePageContentEditor',
+})(theme => ({
+    editor: {
+        height: `calc(100% - ${theme.spacing(2)})`,
+    },
+    actions: {
+        margin: theme.spacing(2),
+    },
+}));

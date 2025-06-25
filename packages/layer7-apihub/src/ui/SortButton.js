@@ -1,3 +1,4 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React, {
     useState,
     Children,
@@ -5,15 +6,14 @@ import React, {
     useEffect,
     forwardRef,
 } from 'react';
-import Button from '@material-ui/core/Button';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
-import SortIcon from '@material-ui/icons/Sort';
-import { makeStyles } from '@material-ui/core/styles';
-import { shallowEqual, useDispatch, useSelector } from 'react-redux';
-import { changeListParams, useTranslate } from 'ra-core';
-import { useHistory } from 'react-router-dom';
+import Button from '@mui/material/Button';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import SortIcon from '@mui/icons-material/Sort';
+import { makeStyles } from 'tss-react/mui';
+import { useListContext, useTranslate } from 'react-admin';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { stringify } from 'query-string';
 
 /**
@@ -51,21 +51,14 @@ import { stringify } from 'query-string';
  *     );
  * };
  */
-export const SortButton = ({ children, resource, currentSort }) => {
+export const SortButton = ({ children }) => {
     const [currentSortLabel, setCurrentSortLabel] = useState();
     const [anchorEl, setAnchorEl] = useState(null);
     const translate = useTranslate();
-    const dispatch = useDispatch();
-    const history = useHistory();
-    const classes = useStyles();
-
-    const listParams = useSelector(
-        reduxState =>
-            reduxState.admin.resources[resource]
-                ? reduxState.admin.resources[resource].list.params
-                : {},
-        shallowEqual
-    );
+    const navigate = useNavigate();
+    const location = useLocation();
+    const { classes } = useStyles();
+    const { setSort, sort: currentSort, filterValues } = useListContext();
 
     const handleClick = event => {
         setAnchorEl(event.currentTarget);
@@ -76,22 +69,20 @@ export const SortButton = ({ children, resource, currentSort }) => {
     };
 
     const handleMenuItemClick = (event, sortData) => {
-        history.push({
+        navigate({
+            pathname: location.pathname,
             search: `?${stringify({
-                ...listParams,
-                filter: JSON.stringify(listParams.filter),
+                // ...listParams // reduxState.admin.resources[resource].list.params
+                filter: JSON.stringify(filterValues),
                 sort: sortData.sort.field,
                 order: sortData.sort.order,
             })}`,
         });
 
-        dispatch(
-            changeListParams(resource, {
-                ...listParams,
-                sort: sortData.sort.field,
-                order: sortData.sort.order,
-            })
-        );
+        setSort({
+            field: sortData.sort.field,
+            order: sortData.sort.order,
+        });
         handleClose();
     };
 
@@ -131,7 +122,6 @@ export const SortButton = ({ children, resource, currentSort }) => {
                 endIcon={<ArrowDropDownIcon />}
                 className={classes.root}
                 size="small"
-                color="primary"
             >
                 {currentSortLabel}
             </Button>
@@ -153,16 +143,11 @@ export const SortButton = ({ children, resource, currentSort }) => {
     ) : null;
 };
 
-const useStyles = makeStyles(
-    theme => ({
-        root: {
-            marginLeft: theme.spacing(),
-        },
-    }),
-    {
-        name: 'Layer7SortButton',
-    }
-);
+const useStyles = makeStyles({ name: 'Layer7SortButton' })(theme => ({
+    root: {
+        marginLeft: theme.spacing(),
+    },
+}));
 
 export const SortMenuItem = forwardRef(({ label, sort, onClick }, ref) => {
     const translate = useTranslate();

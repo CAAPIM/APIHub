@@ -1,13 +1,17 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React, { useCallback } from 'react';
 import PropTypes from 'prop-types';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import FormGroup from '@material-ui/core/FormGroup';
-import Switch from '@material-ui/core/Switch';
-import { FieldTitle, useInput } from 'ra-core';
-import { makeStyles } from '@material-ui/core/styles';
-
-import { InputHelperText, InputPropTypes } from 'react-admin';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormHelperText from '@mui/material/FormHelperText';
+import FormGroup from '@mui/material/FormGroup';
+import Switch from '@mui/material/Switch';
+import { makeStyles } from 'tss-react/mui';
+import {
+    InputHelperText,
+    FieldTitle,
+    useInput,
+    useResourceContext,
+} from 'react-admin';
 import { isValidElement } from 'react';
 
 const ToggleSwitchInput = ({
@@ -18,19 +22,22 @@ const ToggleSwitchInput = ({
     onBlur,
     onChange,
     onFocus,
-    options,
+    options = {},
     disabled,
     parse,
-    resource,
     source,
     validate,
     ...rest
 }) => {
+    let resource = useResourceContext();
+    if (rest.resource != null) {
+        resource = rest.resource;
+    }
     const {
         id,
-        input: { onChange: finalFormOnChange, type, value, ...inputProps },
+        field: { onChange: finalFormOnChange, value },
+        fieldState: { error, isTouched },
         isRequired,
-        meta: { error, touched },
     } = useInput({
         format,
         onBlur,
@@ -44,11 +51,11 @@ const ToggleSwitchInput = ({
         ...rest,
     });
 
-    const classes = useStyles();
+    const { classes } = useStyles();
 
     const handleChange = useCallback(
-        (event, value) => {
-            finalFormOnChange(value);
+        event => {
+            finalFormOnChange(event.target.checked);
         },
         [finalFormOnChange]
     );
@@ -59,12 +66,11 @@ const ToggleSwitchInput = ({
                 control={
                     <Switch
                         id={id}
-                        color="primary"
                         onChange={handleChange}
-                        {...inputProps}
-                        {...options}
                         disabled={disabled}
                         className={classes.checkbox}
+                        checked={value}
+                        {...options}
                     />
                 }
                 label={
@@ -82,8 +88,8 @@ const ToggleSwitchInput = ({
             />
             <FormHelperText error={!!error}>
                 <InputHelperText
-                    touched={touched}
-                    error={error}
+                    touched={isTouched}
+                    error={error?.message}
                     helperText={helperText}
                 />
             </FormHelperText>
@@ -92,19 +98,14 @@ const ToggleSwitchInput = ({
 };
 
 ToggleSwitchInput.propTypes = {
-    ...InputPropTypes,
     label: PropTypes.any,
     options: PropTypes.shape(Switch.propTypes),
     disabled: PropTypes.bool,
 };
 
-ToggleSwitchInput.defaultProps = {
-    options: {},
-};
-
 export default ToggleSwitchInput;
 
-const useStyles = makeStyles({
+const useStyles = makeStyles()({
     checkbox: {
         alignSelf: 'center',
         paddingTop: '2',

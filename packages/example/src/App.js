@@ -1,3 +1,4 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React from 'react';
 import { ApiHubAdmin, readApiHubPreference } from 'layer7-apihub';
 import { Route } from 'react-router-dom';
@@ -12,8 +13,8 @@ import {
 } from './authentication';
 
 import { Layout, HomePage } from './layout';
-import { themeReducer } from './theme';
 import { i18nProvider } from './i18n/i18nProvider';
+import { useTheme } from './theme';
 import { TestPage } from './TestPage';
 
 const App = () => {
@@ -25,8 +26,9 @@ const App = () => {
         );
     }
 
-    const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)')
-        .matches;
+    const prefersDarkMode = window.matchMedia(
+        '(prefers-color-scheme: dark)'
+    ).matches;
 
     const themeModePreference = readApiHubPreference(
         'themeMode',
@@ -39,6 +41,7 @@ const App = () => {
 
     const defaultLocaleFromPreferences = readApiHubPreference('locale');
 
+    const { theme } = useTheme();
     return (
         <ApiHubAdmin
             // ApiHub Settings
@@ -49,16 +52,19 @@ const App = () => {
             dashboard={HomePage}
             layout={Layout}
             loginPage={LoginPage}
-            resetPasswordPage={ResetPasswordPage}
-            newPasswordPage={NewPasswordPage}
-            accountSetupPage={AccountSetupPage}
-            signUpPage={SignUpPage}
-            samlLoginConfirmPage={SAMLLoginConfirmPage}
+            theme={theme}
+            resetPasswordPage={<ResetPasswordPage />}
+            newPasswordPage={<NewPasswordPage />}
+            accountSetupPage={<AccountSetupPage />}
+            signUpPage={<SignUpPage />}
+            samlLoginConfirmPage={<SAMLLoginConfirmPage />}
             // React Admin Settings
-            customReducers={{ theme: themeReducer }}
             i18nProvider={i18nProvider(defaultLocaleFromPreferences)}
             initialState={initialState}
-            customRoutes={[<Route path="/test" component={TestPage} />]}
+            customRoutes={[<Route path="/test" element={<TestPage />} />]}
+            customRoutesNoLayout={[
+                <Route path="/test2" element={<TestPage />} />,
+            ]}
         />
     );
 };

@@ -1,40 +1,24 @@
-import React, { cloneElement } from 'react';
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
+import React from 'react';
 import { useTranslate } from 'react-admin';
-import { makeStyles } from '@material-ui/core';
+import { makeStyles } from 'tss-react/mui';
 
-export const UserProfileTitle = ({
-    actions,
-    basePath,
-    resource,
-    record,
-    ...rest
-}) => {
+export const UserProfileTitle = () => {
     const translate = useTranslate();
-    const classes = useStyles(rest);
+    const { classes } = useStyles();
 
     return (
         <div className={classes.root}>
             {translate('resources.userContexts.title')}
-            {actions &&
-                cloneElement(actions, {
-                    basePath,
-                    resource,
-                    record,
-                })}
         </div>
     );
 };
 
-const useStyles = makeStyles(
-    theme => ({
-        root: {
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            width: '100%',
-        },
-    }),
-    {
-        name: 'Layer7UserContextTitle',
-    }
-);
+const useStyles = makeStyles({ name: 'Layer7UserContextTitle' })(theme => ({
+    root: {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        width: '100%',
+    },
+}));

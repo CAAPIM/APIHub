@@ -1,3 +1,4 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React from 'react';
 import {
     required,
@@ -7,16 +8,20 @@ import {
     TextInput,
     useTranslate,
 } from 'react-admin';
-import { makeStyles, InputAdornment } from '@material-ui/core';
-import { InfoOutlined } from '@material-ui/icons';
-import { FORM_ERROR } from 'final-form';
+import { InputAdornment } from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
+import { InfoOutlined } from '@mui/icons-material';
 import get from 'lodash/get';
 
 import { useApiHub } from '../../ApiHubContext';
 import { HtmlTooltip, PasswordInput } from '../../ui';
 import { TermsInput } from './TermsInput';
 import { AccountSetupToolbar } from './AccountSetupToolbar';
-import { fetchPasswordPolicyData, getPwdTooltip, getPasswordValidators } from '../validatePassword';
+import {
+    fetchPasswordPolicyData,
+    getPwdTooltip,
+    getPasswordValidators,
+} from '../validatePassword';
 import isEmpty from 'lodash/isEmpty';
 import { getErrorMessage } from '../../useLayer7Notify';
 
@@ -28,46 +33,65 @@ export const AccountSetupForm = props => {
         error = {},
         ...rest
     } = props;
-    const classes = useStyles(rest);
+    const { classes } = useStyles(rest);
     const translate = useTranslate();
     const { urlWithTenant, originHubName } = useApiHub();
     const [passwordPolicyData, setPasswordPolicyData] = React.useState({});
     React.useEffect(() => {
-        fetchPasswordPolicyData(urlWithTenant, originHubName).then(data => {
-            setPasswordPolicyData(data);
-        }).catch((exception) => {
-            setPasswordPolicyData({});
-        });
-    }, []);
+        fetchPasswordPolicyData(urlWithTenant, originHubName)
+            .then(data => {
+                setPasswordPolicyData(data);
+            })
+            .catch(exception => {
+                setPasswordPolicyData({});
+            });
+    }, [originHubName, urlWithTenant]);
     const regexConfig = get(passwordPolicyData, 'regexConfig', {});
     const regexStr = get(regexConfig, 'REGEX.value', '');
     const passwordTooltip = getPwdTooltip(regexConfig, translate);
-
     let flag = true;
-    const validate = ({ password, confirm_password }) => {
-        if (password !== confirm_password) {
-            return {
-                [FORM_ERROR]:
-                    'apihub.account_setup.validation.error_password_match',
-            };
+    const validate = values => {
+        const errors = {};
+        if (!values.firstName) {
+            errors.firstName = 'Required';
+        }
+        if (!values.lastName) {
+            errors.lastName = 'Required';
+        }
+        if (!values.userName) {
+            errors.userName = 'Required';
+        }
+        if (values.password !== values.confirm_password) {
+            errors.password =
+                'apihub.account_setup.validation.error_password_match';
+        }
+        const strReg = new RegExp(regexStr);
+        if (!strReg.test(values.password)) {
+            errors.password = passwordTooltip;
+        }
+        if (!strReg.test(values.confirm_password)) {
+            errors.confirm_password = passwordTooltip;
+        }
+        if (!values.terms) {
+            errors.terms =
+                'apihub.account_setup.terms_of_use.terms_of_use_validation';
         }
         if (!isEmpty(error) && flag) {
             const message = getErrorMessage(error);
             flag = false;
-            return {
-                userName: message,
-            };
+            errors.userName = message;
         }
+        return errors;
     };
 
     return (
         <div className={classes.root}>
             <SimpleForm
                 className={classes.form}
-                save={onSubmit}
+                onSubmit={onSubmit}
                 toolbar={<AccountSetupToolbar {...toolbarProps} />}
                 validate={validate}
-                initialValues={initialValues}
+                defaultValues={initialValues}
                 {...rest}
             >
                 <TextInput
@@ -75,16 +99,16 @@ export const AccountSetupForm = props => {
                     type="text"
                     label="apihub.account_setup.fields.firstname"
                     variant="outlined"
-                    fullWidth
                     validate={required()}
+                    fullWidth
                 />
                 <TextInput
                     source="lastName"
                     type="text"
                     label="apihub.account_setup.fields.lastname"
                     variant="outlined"
-                    fullWidth
                     validate={required()}
+                    fullWidth
                 />
                 <TextInput
                     source="email"
@@ -141,7 +165,7 @@ export const AccountSetupForm = props => {
                 <TermsInput
                     source="terms"
                     type="checkbox"
-                    validate={[mustBeTrue()]}
+                    validate={[required()]}
                 />
             </SimpleForm>
         </div>
@@ -153,20 +177,15 @@ const mustBeTrue = () => value =>
         ? 'apihub.account_setup.terms_of_use.terms_of_use_validation'
         : undefined;
 
-const useStyles = makeStyles(
-    theme => ({
-        root: {},
-        form: {
-            '& >:first-child': {
-                padding: 0,
-            },
-            '& .ra-input': {
-                marginTop: theme.spacing(2),
-            },
-            paddingBottom: theme.spacing(4),
+const useStyles = makeStyles({ name: 'Layer7AccountSetupForm' })(theme => ({
+    root: {},
+    form: {
+        '& >:first-child': {
+            padding: 0,
         },
-    }),
-    {
-        name: 'Layer7AccountSetupForm',
-    }
-);
+        '& .ra-input': {
+            marginTop: theme.spacing(2),
+        },
+        paddingBottom: theme.spacing(4),
+    },
+}));

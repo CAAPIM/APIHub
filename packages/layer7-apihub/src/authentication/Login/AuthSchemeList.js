@@ -1,23 +1,16 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React, { useState } from 'react';
-import {
-    Button,
-    Divider,
-    List,
-    ListItem,
-    makeStyles,
-    Snackbar,
-    Tooltip,
-    Typography,
-} from '@material-ui/core';
-import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
-import CheckBoxIcon from '@material-ui/icons/CheckBox';
-import Alert from '@material-ui/lab/Alert';
+import { Button, Divider, List, ListItem, Snackbar, Tooltip, Typography } from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
+import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
+import CheckBoxIcon from '@mui/icons-material/CheckBox';
+import Alert from '@mui/material/Alert';
 import { useTranslate } from 'react-admin';
 import { CALOGOSRC } from './CALogoSrc.png';
 
 export const AuthSchemeList = props => {
     const { authSchemes, onClick, defaultAuthScheme, credsReqd } = props;
-    const classes = useStyles(props);
+    const { classes } = useStyles(props);
     const [selectedScheme, setSelectedScheme] = useState(defaultAuthScheme);
     const translate = useTranslate();
 
@@ -88,10 +81,11 @@ export const AuthSchemeList = props => {
                 </Alert>
             </Snackbar>
             <Divider variant="middle" />
-            { credsReqd &&
-            <Typography className={classes.divider} variant="body1">
-                or
-            </Typography> }
+            {credsReqd && (
+                <Typography className={classes.divider} variant="body1">
+                    or
+                </Typography>
+            )}
             <Typography variant="body1">
                 {translate('apihub.login.actions.sign_in_with')}
             </Typography>
@@ -133,7 +127,7 @@ export const AuthSchemeList = props => {
     );
 };
 
-const useStyles = makeStyles(
+const useStyles = makeStyles({ name: 'Layer7LoginAuthSchemeList' })(
     theme => ({
         root: {
             marginTop: theme.spacing(3),
@@ -160,8 +154,5 @@ const useStyles = makeStyles(
             textAlign: 'center',
             backgroundColor: theme.palette.background.default,
         },
-    }),
-    {
-        name: 'Layer7LoginAuthSchemeList',
-    }
+    })
 );

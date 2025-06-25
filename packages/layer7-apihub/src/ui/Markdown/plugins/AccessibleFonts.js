@@ -1,17 +1,18 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React from 'react';
-import { useTranslate } from 'ra-core';
+import { useTranslate } from 'react-admin';
 import { PluginComponent } from 'react-markdown-editor-lite';
 
-import Button from '@material-ui/core/Button';
-import FormatBoldIcon from '@material-ui/icons/FormatBold';
-import FormatItalicIcon from '@material-ui/icons/FormatItalic';
-import FormatStrikethroughIcon from '@material-ui/icons/FormatStrikethrough';
-import FormatListBulletedIcon from '@material-ui/icons/FormatListBulleted';
-import FormatListNumberedIcon from '@material-ui/icons/FormatListNumbered';
-import FormatQuoteIcon from '@material-ui/icons/FormatQuote';
-import WrapTextIcon from '@material-ui/icons/WrapText';
-import CodeIcon from '@material-ui/icons/Code';
-import SettingsEthernetIcon from '@material-ui/icons/SettingsEthernet';
+import Button from '@mui/material/Button';
+import FormatBoldIcon from '@mui/icons-material/FormatBold';
+import FormatItalicIcon from '@mui/icons-material/FormatItalic';
+import FormatStrikethroughIcon from '@mui/icons-material/FormatStrikethrough';
+import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
+import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
+import FormatQuoteIcon from '@mui/icons-material/FormatQuote';
+import WrapTextIcon from '@mui/icons-material/WrapText';
+import CodeIcon from '@mui/icons-material/Code';
+import SettingsEthernetIcon from '@mui/icons-material/SettingsEthernet';
 
 const FontButton = props => {
     const { type, onClick, children } = props;

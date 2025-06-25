@@ -1,14 +1,15 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React from 'react';
 import { useTranslate } from 'react-admin';
-import { makeStyles } from '@material-ui/core/styles';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListSubheader from '@material-ui/core/ListSubheader';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import Tooltip from '@material-ui/core/Tooltip';
-import Divider from '@material-ui/core/Divider';
-import CheckIcon from '@material-ui/icons/Check';
+import { makeStyles } from 'tss-react/mui';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListSubheader from '@mui/material/ListSubheader';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import Tooltip from '@mui/material/Tooltip';
+import Divider from '@mui/material/Divider';
+import CheckIcon from '@mui/icons-material/Check';
 
 import { getUserOrganizations } from '.';
 
@@ -17,7 +18,7 @@ export const UserOrganizationSwitcher = ({
     onChangeUserContext,
     ...props
 }) => {
-    const classes = useStyles(props);
+    const { classes } = useStyles(props);
     const translate = useTranslate();
 
     const {
@@ -76,7 +77,7 @@ export const UserOrganizationSwitcher = ({
     ) : null;
 };
 
-const useStyles = makeStyles(
+const useStyles = makeStyles({ name: 'Layer7UserOrganizationSwitcher' })(
     theme => ({
         root: {
             padding: `0px 0px ${theme.spacing()}px 0px`,
@@ -114,8 +115,5 @@ const useStyles = makeStyles(
         divider: {
             marginBottom: theme.spacing(),
         },
-    }),
-    {
-        name: 'Layer7UserOrganizationSwitcher',
-    }
+    })
 );

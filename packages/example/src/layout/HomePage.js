@@ -1,11 +1,12 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React from 'react';
 import { HomePageContent } from 'layer7-apihub';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from 'tss-react/mui';
 
 import { Footer } from '../ui';
 
 export const HomePage = () => {
-    const classes = useStyles();
+    const { classes } = useStyles();
 
     return (
         <>
@@ -17,7 +18,7 @@ export const HomePage = () => {
     );
 };
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles()(theme => ({
     root: {
         height: '100%',
     },

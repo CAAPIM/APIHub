@@ -1,20 +1,22 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import { stringify } from 'query-string';
 
 export const apiKeysDataProvider = context => {
     const basePath = `${context.apiUrl}/api-management/1.0/applications`;
     return {
         getList: async ({
-            applicationUuid,
             filter = {},
             pagination = { page: 1, perPage: 24 },
             sort = null,
+            meta = {},
         }) => {
+            const { applicationUuid } = meta;
             const path = `${basePath}/${applicationUuid}/api-keys`;
             const url = `${path}?${stringify({
                 ...filter,
                 page: pagination.page - 1,
                 size: pagination.perPage,
-                ...(sort && { sort: `${sort.field},${sort.order}` }),
+                sort: `${sort.field},${sort.order}`,
             })}`;
 
             const { json } = await context.fetchJson(url, {
@@ -32,7 +34,8 @@ export const apiKeysDataProvider = context => {
                 totalPages: json.totalPages,
             };
         },
-        getOne: async ({ appUuid, apiKey }) => {
+        getOne: async ({ id: apiKey, meta }) => {
+            const { appUuid } = meta;
             const url = `${basePath}/${appUuid}/api-keys/${apiKey}`;
 
             const { json } = await context.fetchJson(url, {
@@ -45,14 +48,14 @@ export const apiKeysDataProvider = context => {
                 },
             };
         },
-        create: async ({ appUuid, data }) => {
+        create: async ({ data, meta }) => {
+            const { appUuid } = meta;
             const path = `${basePath}/${appUuid}/api-keys`;
             const { json } = await context.fetchJson(path, {
                 credentials: 'include',
                 method: 'POST',
                 body: JSON.stringify({ ...data, applicationUuid: appUuid }),
             });
-            console.log('json', json);
             return {
                 data: {
                     ...json,
@@ -60,8 +63,9 @@ export const apiKeysDataProvider = context => {
                 },
             };
         },
-        delete: async ({ appUuid, keyId, params }) => {
-            const path = `${basePath}/${appUuid}/api-keys/${keyId}?${params}`;
+        delete: async ({ id, meta }) => {
+            const { appUuid, params } = meta;
+            const path = `${basePath}/${appUuid}/api-keys/${id}?${params}`;
 
             const {
                 json: { ...data },

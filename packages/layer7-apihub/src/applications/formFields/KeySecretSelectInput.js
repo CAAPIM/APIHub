@@ -1,10 +1,11 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React, { useState, useEffect } from 'react';
-import { useQuery, required, RadioButtonGroupInput } from 'react-admin';
-import { useTranslate } from 'ra-core';
-import { makeStyles } from '@material-ui/core/styles';
+import { required, RadioButtonGroupInput, useDataProvider, useTranslate } from 'react-admin';
+import { makeStyles } from 'tss-react/mui';
 import get from 'lodash/get';
+import { useQuery } from '@tanstack/react-query';
 
-const useSelectInputStyles = makeStyles({
+const useSelectInputStyles = makeStyles()({
     input: {
         width: '100%',
     },
@@ -14,10 +15,15 @@ export const KeySecretSelectInput = () => {
     const [allowHashedSecret, setAllowHashedSecret] = useState(false);
     const [allowPlainTextSecret, setAllowPlainTextSecret] = useState(false);
     const translate = useTranslate();
+    const dataProvider = useDataProvider();
+    // const { data, error, loading } = useQuery({
+    //     type: 'getSecretHashMetadata',
+    //     resource: 'applications',
+    //     payload: {},
+    // });
     const { data, error, loading } = useQuery({
-        type: 'getSecretHashMetadata',
-        resource: 'applications',
-        payload: {},
+        queryKey: ['applications', 'getSecretHashMetadata'],
+        queryFn: () => dataProvider.getSecretHashMetadata('applications'),
     });
     useEffect(() => {
         if (error) {
@@ -35,7 +41,7 @@ export const KeySecretSelectInput = () => {
             setAllowPlainTextSecret(true);
         }
     }, [data, error]);
-    const classes = useSelectInputStyles();
+    const { classes } = useSelectInputStyles();
 
     const choices = [
         ...(allowPlainTextSecret

@@ -1,6 +1,7 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
-import { renderWithRedux, TestTranslationProvider } from 'ra-core';
+import { TestTranslationProvider } from 'ra-core';
 import 'jest-localstorage-mock';
 
 import {
@@ -28,7 +29,7 @@ describe('LocaleSwitcherMenu', () => {
     });
 
     test('should display the current language', () => {
-        const { getByText } = renderWithRedux(
+        const { getByText } = render(
             <TestTranslationProvider>
                 <LocaleSwitcherMenu locale="en" locales={supportedLocales} />
             </TestTranslationProvider>

@@ -1,3 +1,4 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import { useLocalStorage } from '@rehooks/local-storage';
 
 const DEFAULT_STORAGE_KEY = '@layer7/preferences';

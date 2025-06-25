@@ -1,70 +1,73 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React, { useState } from 'react';
-import { useTranslate, linkToRecord } from 'ra-core';
-import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import ReportProblemOutlinedIcon from '@material-ui/icons/ReportProblemOutlined';
-import { makeStyles } from '@material-ui/core/styles';
+import { useTranslate } from 'react-admin';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import ReportProblemOutlinedIcon from '@mui/icons-material/ReportProblemOutlined';
+import { makeStyles } from 'tss-react/mui';
 import { useCopyToClipboard } from '../../ui';
-import Link from '@material-ui/core/Link';
-import { Link as RouterLink, useHistory } from 'react-router-dom';
 import CollapsiblePanel from '../CollapsiblePanel';
 
-const useOneTimePasswordDialogStyles = makeStyles(
-    theme => ({
-        mainContent: {
-            display: 'flex',
-            flexDirection: 'row',
-        },
-        leftSection: {
-            flex: '1',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            margin: theme.spacing(0),
-            padding: theme.spacing(1),
-            backgroundColor: theme.palette.warning.main,
-            color: theme.palette.common.white,
-        },
-        leftIcon: {
-            fontSize: '5rem',
-            color: theme.palette.common.white,
-        },
-        rightSection: {
-            flex: '5',
-            flexDirection: 'row',
-        },
-        subHeading: {
-            textTransform: 'uppercase',
+const useOneTimePasswordDialogStyles = makeStyles({
+    name: 'Layer7ApplicationOneTimePasswordDialog',
+})(theme => ({
+    mainContent: {
+        display: 'flex',
+        flexDirection: 'row',
+    },
+    leftSection: {
+        flex: '1',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        margin: theme.spacing(0),
+        padding: theme.spacing(1),
+        backgroundColor: theme.palette.warning.main,
+        color: theme.palette.common.white,
+    },
+    leftIcon: {
+        fontSize: '5rem',
+        color: theme.palette.common.white,
+    },
+    rightSection: {
+        flex: '5',
+        flexDirection: 'row',
+    },
+    subHeading: {
+        textTransform: 'uppercase',
+        fontWeight: theme.typography.fontWeightBold,
+    },
+    copyHashSection: {
+        backgroundColor: theme.palette.background.default,
+        padding: theme.spacing(1),
+        textAlign: 'center',
+    },
+    metadataCollapse: {
+        width: 436,
+        '& label': {
+            fontFamily: theme.typography.subtitle1.fontFamily,
+            fontSize: theme.typography.subtitle1.fontSize,
+            color: theme.palette.primary.textHub || '#333333',
             fontWeight: theme.typography.fontWeightBold,
         },
-        copyHashSection: {
-            backgroundColor: theme.palette.background.default,
-            padding: theme.spacing(1),
-            textAlign: 'center',
-        },
-        metadataCollapse: {
-            width: 436,
-            '& label': {
-              fontFamily: theme.typography.subtitle1.fontFamily,
-              fontSize: theme.typography.subtitle1.fontSize,
-              color: theme.palette.primary.textHub || '#333333',
-              fontWeight: theme.typography.fontWeightBold,
-            },
-        },
-    }),
-    {
-        name: 'Layer7ApplicationOneTimePasswordDialog',
-    }
-);
+    },
+}));
 
-export const OneTimePasswordDialog = ({ id, keySecret, apiKey, isPlainTextKey, clientMetadata, handleClose, ...props }) => {
+export const OneTimePasswordDialog = ({
+    id,
+    keySecret,
+    apiKey,
+    isPlainTextKey,
+    clientMetadata,
+    handleClose,
+    ...props
+}) => {
     const [open, setOpen] = useState(true);
-    const history = useHistory();
-    const classes = useOneTimePasswordDialogStyles();
+    const { classes } = useOneTimePasswordDialogStyles();
     const copyToClipboard = useCopyToClipboard({
         successMessage: 'resources.applications.notifications.copy_success',
         errorMessage: 'resources.applications.notifications.copy_error',
@@ -78,7 +81,6 @@ export const OneTimePasswordDialog = ({ id, keySecret, apiKey, isPlainTextKey, c
     };
     return (
         <Dialog
-            disableBackdropClick="false"
             disableEscapeKeyDown="false"
             open={open}
             onClose={handleDialogClose}
@@ -106,19 +108,21 @@ export const OneTimePasswordDialog = ({ id, keySecret, apiKey, isPlainTextKey, c
                             )}
                         </Typography>
                         {clientMetadata ? (
-                          <Typography variant="body1" gutterBottom>
-                          {translate(
-                              'resources.applications.notifications.oauth_client_secret_generated_message'
-                          )}
-                          </Typography>
-                          ) : !isPlainTextKey &&
                             <Typography variant="body1" gutterBottom>
                                 {translate(
-                                    'resources.applications.notifications.secret_generated_message'
+                                    'resources.applications.notifications.oauth_client_secret_generated_message'
                                 )}
                             </Typography>
-                        }
-                        {apiKey &&
+                        ) : (
+                            !isPlainTextKey && (
+                                <Typography variant="body1" gutterBottom>
+                                    {translate(
+                                        'resources.applications.notifications.secret_generated_message'
+                                    )}
+                                </Typography>
+                            )
+                        )}
+                        {apiKey && (
                             <div className={classes.copyHashSection}>
                                 <Typography variant="subtitle2" gutterBottom>
                                     {translate(
@@ -133,14 +137,13 @@ export const OneTimePasswordDialog = ({ id, keySecret, apiKey, isPlainTextKey, c
                                     value={apiKey}
                                     align="center"
                                     variant="contained"
-                                    color="primary"
                                 >
                                     {translate(
                                         'resources.applications.notifications.copy_to_clipboard'
                                     )}
                                 </Button>
                             </div>
-                        }
+                        )}
                         <div className={classes.copyHashSection}>
                             <Typography variant="subtitle2" gutterBottom>
                                 {translate(
@@ -155,21 +158,24 @@ export const OneTimePasswordDialog = ({ id, keySecret, apiKey, isPlainTextKey, c
                                 value={keySecret}
                                 align="center"
                                 variant="contained"
-                                color="primary"
                             >
                                 {translate(
                                     'resources.applications.notifications.copy_to_clipboard'
                                 )}
                             </Button>
                         </div>
-                    {clientMetadata &&
-                      <CollapsiblePanel label={'resources.apikeys.client_metadata_accordion_title'} className={classes.metadataCollapse}>
-                         <Typography
-                          component="pre">
-                              {JSON.stringify(clientMetadata, null, 2)}
-                        </Typography>
-                      </CollapsiblePanel>
-                    }
+                        {clientMetadata && (
+                            <CollapsiblePanel
+                                label={
+                                    'resources.apikeys.client_metadata_accordion_title'
+                                }
+                                className={classes.metadataCollapse}
+                            >
+                                <Typography component="pre">
+                                    {JSON.stringify(clientMetadata, null, 2)}
+                                </Typography>
+                            </CollapsiblePanel>
+                        )}
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={handleDialogClose} color="secondary">

@@ -1,6 +1,7 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React, { useState, useEffect } from 'react';
 import expect from 'expect';
-import { render, wait } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 
 import { usePasswordEncryption } from './usePasswordEncryption';
 import { ApiHubProvider } from '../ApiHubContext';
@@ -42,7 +43,7 @@ describe('usePasswordEncryption', () => {
             </ApiHubProvider>
         );
 
-        await wait(() => {
+        await waitFor(() => {
             expect(queryByText('encrypted')).not.toBeNull();
             expect(encrypt).toHaveBeenCalledWith(publicKey, 'Password@1');
         });

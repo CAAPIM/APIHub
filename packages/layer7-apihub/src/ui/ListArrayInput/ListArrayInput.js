@@ -1,7 +1,13 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import * as React from 'react';
-import { List } from '@material-ui/core';
-import { Pagination } from 'react-admin';
+import { List } from '@mui/material';
+import {
+    ListPaginationContext,
+    Pagination,
+    useChoicesContext,
+} from 'react-admin';
 import { ListArrayInputItem } from './ListArrayInputItem';
+import { useFormContext } from 'react-hook-form';
 
 const DefaultPagination = <Pagination />;
 
@@ -22,8 +28,8 @@ Y *
  * @example <caption>Example of a child for <ListArrayInput /></caption>
  * import { useListArrayInputItem } from 'layer7-apihub';
  * import { IconButton, ListItemIcon, ListItemText } from 'material-ui';
- * import AddIcon from '@material-ui/icons/Add';
- * import DeleteIcon from '@material-ui/icons/Delete';
+ * import AddIcon from '@mui/icons-material/Add';
+ * import DeleteIcon from '@mui/icons-material/Delete';
  *
  * function ApiChoiceItem(props) {
  *     const { onAdd, onRemove, record, selected } = useListArrayInputItem();
@@ -55,12 +61,12 @@ Y *
  * It also accept a component as its filters prop. This component will be cloned with two
  * additional props: filter and setFilter.
  * @example <caption>Filter component</caption>
- * 
+ *
  * import { SearchInput } from 'react-admin';
- * 
+ *
  * function ListArrayInputFilter(props) {
  *     const { filter, setFilter } = props;
- *     
+ *
  *     return (
  *         <SearchInput
  *             source="q"
@@ -70,7 +76,7 @@ Y *
  *         />
  *     );
  * }
- * 
+ *
  * // Then use it like this:
  * <ReferenceArrayInput
  *     label=""
@@ -88,21 +94,18 @@ Y *
  */
 export function ListArrayInput(props) {
     const {
-        availableChoices,
         children,
-        filter,
         filters,
-        input,
         onAdd,
+        source,
         onRemove,
-        page,
         pagination = DefaultPagination,
-        setFilter,
-        setPage,
-        perPage,
-        setPerPage,
-        total,
     } = props;
+
+    const { availableChoices, page, setPage, perPage, setPerPage, total } =
+        useChoicesContext();
+
+    const { getValues } = useFormContext();
 
     const handleAdd = (event, item) => {
         let cancelled = false;
@@ -116,9 +119,10 @@ export function ListArrayInput(props) {
 
         cancelled = cancelled || event.defaultPrevented;
 
-        if (!cancelled) {
-            input.onChange([...input.value, item.id]);
-        }
+        // TODO: see if we need extract the default onChange function
+        // if (!cancelled) {
+        //     input.onChange([...input.value, item.id]);
+        // }
     };
 
     const handleRemove = (event, item) => {
@@ -133,23 +137,33 @@ export function ListArrayInput(props) {
 
         cancelled = cancelled || event.defaultPrevented;
 
-        if (!cancelled) {
-            input.onChange(
-                input.value.filter(selectedItem => selectedItem.id !== item.id)
-            );
-        }
+        // if (!cancelled) {
+        //     input.onChange(
+        //         input.value.filter(selectedItem => selectedItem.id !== item.id)
+        //     );
+        // }
     };
-
+    const formValues = getValues(source) || [];
     return (
-        <>
-            {!!filters && React.cloneElement(filters, { filter, setFilter })}
+        <ListPaginationContext.Provider
+            value={{
+                page,
+                perPage,
+                total,
+                setPage,
+                setPerPage,
+            }}
+        >
+            {filters}
             <List>
                 {availableChoices &&
-                    availableChoices.map((choice, index) => (
+                    availableChoices.map(choice => (
                         <ListArrayInputItem
                             key={choice.id}
                             selected={
-                                !!input.value && input.value.includes(choice.id)
+                                formValues &&
+                                formValues.length > 0 &&
+                                formValues.includes(choice.id)
                             }
                             record={choice}
                             onAdd={handleAdd}
@@ -159,13 +173,7 @@ export function ListArrayInput(props) {
                         </ListArrayInputItem>
                     ))}
             </List>
-            {React.cloneElement(pagination, {
-                page,
-                perPage,
-                total,
-                setPage,
-                setPerPage,
-            })}
-        </>
+            {pagination}
+        </ListPaginationContext.Provider>
     );
 }

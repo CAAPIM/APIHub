@@ -1,11 +1,14 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React, { useCallback, useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from 'tss-react/mui';
 
 import { ApiApplications } from './Application';
 import { Swagger } from './Swagger';
+import { useGetRecordId } from 'react-admin';
 
-export const ApiSpecs = ({ record }) => {
-    const classes = useStyles();
+export const ApiSpecs = () => {
+    const { classes } = useStyles();
+    const id = useGetRecordId();
 
     const [selectedAPIkey, setSelectedAPIKey] = useState({});
     const handleKeyUpdate = useCallback(keyDetails => {
@@ -17,25 +20,20 @@ export const ApiSpecs = ({ record }) => {
     }, []);
     return (
         <div className={classes.root}>
-            <ApiApplications handleKeyUpdate={handleKeyUpdate} id={record.id} />
-            <Swagger apiKeyDetails={selectedAPIkey} id={record.id} />
+            <ApiApplications handleKeyUpdate={handleKeyUpdate} id={id} />
+            <Swagger apiKeyDetails={selectedAPIkey} id={id} />
         </div>
     );
 };
 
-const useStyles = makeStyles(
-    theme => ({
-        root: {
-            color: theme.palette.secondary.main,
-            fontWeight: theme.typography.fontWeightBold,
-            padding: theme.spacing(),
+const useStyles = makeStyles({ name: 'Layer7ApiSpecs' })(theme => ({
+    root: {
+        color: theme.palette.secondary.main,
+        fontWeight: theme.typography.fontWeightBold,
+        padding: theme.spacing(),
 
-            '& .swagger-ui .wrapper': {
-                maxWidth: 'unset',
-            },
+        '& .swagger-ui .wrapper': {
+            maxWidth: 'unset',
         },
-    }),
-    {
-        name: 'Layer7ApiSpecs',
-    }
-);
+    },
+}));

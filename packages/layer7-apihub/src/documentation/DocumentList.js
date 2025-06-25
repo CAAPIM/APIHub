@@ -1,7 +1,8 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React from 'react';
-import { useGetOne, CRUD_GET_ONE } from 'react-admin';
-import Paper from '@material-ui/core/Paper';
-import { makeStyles } from '@material-ui/core/styles';
+import { useGetOne } from 'react-admin';
+import Paper from '@mui/material/Paper';
+import { makeStyles } from 'tss-react/mui';
 
 import { ENTITY_TYPE_CUSTOM } from '../dataProvider/documents';
 import { CurrentUserId } from '../dataProvider/userContexts';
@@ -11,10 +12,10 @@ import { DocumentTitle } from './DocumentTitle';
 import { ViewTitle } from '../ui';
 
 export const DocumentList = ({ title = <DocumentTitle />, ...props }) => {
-    const classes = useStyles(props);
+    const { classes } = useStyles(props);
 
-    const { data: userContexts } = useGetOne('userContexts', CurrentUserId, {
-        action: CRUD_GET_ONE,
+    const { data: userContexts } = useGetOne('userContexts', {
+        id: CurrentUserId,
     });
 
     const isAdmin = isPortalAdmin(userContexts);
@@ -36,14 +37,9 @@ export const DocumentList = ({ title = <DocumentTitle />, ...props }) => {
     );
 };
 
-const useStyles = makeStyles(
-    theme => ({
-        root: {
-            padding: theme.spacing(2),
-            flexGrow: 1,
-        },
-    }),
-    {
-        name: 'Layer7DocumentList',
-    }
-);
+const useStyles = makeStyles({ name: 'Layer7DocumentList' })(theme => ({
+    root: {
+        padding: theme.spacing(2),
+        flexGrow: 1,
+    },
+}));

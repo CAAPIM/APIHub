@@ -1,15 +1,16 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React from 'react';
-import Button from '@material-ui/core/Button';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogActions from '@material-ui/core/DialogActions';
-import Dialog from '@material-ui/core/Dialog';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
+import Button from '@mui/material/Button';
+import CircularProgress from '@mui/material/CircularProgress';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import Dialog from '@mui/material/Dialog';
+import Typography from '@mui/material/Typography';
+import { makeStyles } from 'tss-react/mui';
 
 export const LoadingDialog = ({ title, content, open = false, ...rest }) => {
-    const classes = useStyles(rest);
+    const { classes } = useStyles(rest);
 
     return (
         <Dialog
@@ -27,7 +28,7 @@ export const LoadingDialog = ({ title, content, open = false, ...rest }) => {
     );
 };
 
-const useStyles = makeStyles(
+const useStyles = makeStyles({ name: 'Layer7LoadingDialog' })(
     theme => ({
         root: {
             display: 'flex',
@@ -39,7 +40,4 @@ const useStyles = makeStyles(
             marginBottom: theme.spacing(3),
         },
     }),
-    {
-        name: 'Layer7LoadingDialog',
-    }
 );

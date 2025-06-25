@@ -1,9 +1,9 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import { useState, useEffect } from 'react';
-import { useGetOne, CRUD_GET_ONE } from 'ra-core';
 import merge from 'lodash/fp/merge';
-import createMuiTheme from '@material-ui/core/styles/createMuiTheme';
-import defaultMuiTheme from '@material-ui/core/styles/defaultTheme';
+import { createTheme } from '@mui/material/styles';
 import get from 'lodash/get';
+import { deepmerge } from '@mui/utils';
 
 import { theme } from './theme';
 import { isOrgBoundUser } from '../userContexts';
@@ -11,6 +11,7 @@ import { getFetchJson } from '../fetchUtils';
 
 const LOGGED_IN = '@layer7/authentication/loggedIn';
 
+const defaultMuiTheme = createTheme();
 const convertBrandingToMuiTheme = themeBranding => {
     const { color, typography } = themeBranding;
     const palette = {
@@ -37,10 +38,58 @@ const convertBrandingToMuiTheme = themeBranding => {
             main: color.headerBackground,
             contrastText: '',
         },
+        error: {
+            light: color.apiHubPrimary,
+            main: color.apiHubPrimary,
+            dark: color.apiHubPrimary,
+            contrastText: '',
+        },
     };
-
+    const mergedPalette = deepmerge(defaultMuiTheme.palette, palette);
     return {
-        palette,
+        mergedPalette,
+        components: {
+            RaMenuItemLink: {
+                styleOverrides: {
+                    root: {
+                        color: color.primaryButtonText,
+                        fontWeight: defaultMuiTheme.typography.fontWeightBold,
+                        '& svg': {
+                            color: color.primaryButtonText,
+                        },
+                    },
+                    active: {
+                        color: color.primaryButtonText,
+                        borderLeftColor: color.primaryButtonText,
+                        '& svg': {
+                            color: color.primaryButtonText,
+                        },
+                    },
+                },
+            },
+            RaSidebar: {
+                styleOverrides: {
+                    root: {
+                        '& .MuiPaper-root': {
+                            backgroundColor: palette.secondary.main,
+                            marginTop: '0.5em',
+                            height: 'calc(100% - 0.5em)',
+                        },
+                    },
+                },
+            },
+            MuiTab: {
+                styleOverrides: {
+                    root: {
+                        textTransform: 'capitalize',
+                        '&.Mui-selected': {
+                            color: palette.primary.main,
+                            fontWeight: theme.typography.fontWeightBold,
+                        },
+                    },
+                },
+            },
+        },
         typography: {
             fontFamily: typography.apiHubFont,
             h1: {
@@ -75,40 +124,6 @@ const convertBrandingToMuiTheme = themeBranding => {
             },
             button: {
                 fontFamily: typography.apiHubFont,
-            },
-        },
-        overrides: {
-            RaMenuItemLink: {
-                root: {
-                    color: color.primaryButtonText,
-                    fontWeight: defaultMuiTheme.typography.fontWeightBold,
-                    '& svg': {
-                        color: color.primaryButtonText,
-                    },
-                },
-                active: {
-                    color: color.primaryButtonText,
-                    borderLeftColor: color.primaryButtonText,
-                    '& svg': {
-                        color: color.primaryButtonText,
-                    },
-                },
-            },
-            RaSidebar: {
-                drawerPaper: {
-                    backgroundColor: palette.secondary.main,
-                    marginTop: '0.5em',
-                    height: 'calc(100% - 0.5em)',
-                },
-            },
-            MuiTab: {
-                root: {
-                    textTransform: 'capitalize',
-                    '&$selected': {
-                        color: palette.primary.main,
-                        fontWeight: theme.typography.fontWeightBold,
-                    },
-                },
             },
         },
     };
@@ -158,7 +173,7 @@ export const useBranding = (url, originHubName, defaultTheme = theme) => {
                 return {
                     logo: theme.logo,
                     favicon: theme.favicon,
-                    ...createMuiTheme(convertBrandingToMuiTheme(theme)),
+                    ...createTheme(convertBrandingToMuiTheme(theme)),
                 };
             })
             .then(({ logo, favicon, ...theme }) => {

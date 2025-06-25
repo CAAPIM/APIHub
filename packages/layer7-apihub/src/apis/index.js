@@ -1,3 +1,4 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import { ApiList } from './ApiList';
 import { ApiShow } from './ApiShow';
 import { IconApi } from '../ui/icons';

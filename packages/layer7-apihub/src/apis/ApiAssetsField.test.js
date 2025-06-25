@@ -1,42 +1,43 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React from 'react';
 import { render } from '@testing-library/react';
 import { ApiAssetsField, AssetsList } from './ApiAssetsField';
 import { ApiHubProvider } from '../ApiHubContext';
-import { DataProviderContext, renderWithRedux } from 'ra-core';
-import { wait } from '@testing-library/react';
+import { waitFor } from '@testing-library/react';
+import { AdminContext } from 'react-admin';
 
 const defaultData = [
     {
-      uuid: "76f42917-5833-4938-a115-46534e186077",
-      id: "76f42917-5833-4938-a115-46534e186077",
-      type: "JSON",
-      name: "interactive_rich.json",
-      _apiUuid: "4f1e2149-c7d8-4bbb-9a8d-9eccce46531f",
-      links: [
-        {
-          rel: "file",
-          href: "/api-management/1.0/apis/4f1e2149-c7d8-4bbb-9a8d-9eccce46531f/assets/76f42917-5833-4938-a115-46534e186077/file"
-        }
-      ]
+        uuid: '76f42917-5833-4938-a115-46534e186077',
+        id: '76f42917-5833-4938-a115-46534e186077',
+        type: 'JSON',
+        name: 'interactive_rich.json',
+        _apiUuid: '4f1e2149-c7d8-4bbb-9a8d-9eccce46531f',
+        links: [
+            {
+                rel: 'file',
+                href: '/api-management/1.0/apis/4f1e2149-c7d8-4bbb-9a8d-9eccce46531f/assets/76f42917-5833-4938-a115-46534e186077/file',
+            },
+        ],
     },
     {
-      uuid: "618e331d-5dab-404c-9c51-fad45962a780",
-      id: "618e331d-5dab-404c-9c51-fad45962a780",
-      type: "JSON",
-      name: "hard_drive_auto_loan_account_fish.json",
-      _apiUuid: "6ec5a938-ab7d-4338-b5e5-e62107b737af",
-      links: [
-        {
-          rel: "file",
-          href: "/api-management/1.0/apis/6ec5a938-ab7d-4338-b5e5-e62107b737af/assets/618e331d-5dab-404c-9c51-fad45962a780/file"
-        }
-      ]
+        uuid: '618e331d-5dab-404c-9c51-fad45962a780',
+        id: '618e331d-5dab-404c-9c51-fad45962a780',
+        type: 'JSON',
+        name: 'hard_drive_auto_loan_account_fish.json',
+        _apiUuid: '6ec5a938-ab7d-4338-b5e5-e62107b737af',
+        links: [
+            {
+                rel: 'file',
+                href: '/api-management/1.0/apis/6ec5a938-ab7d-4338-b5e5-e62107b737af/assets/618e331d-5dab-404c-9c51-fad45962a780/file',
+            },
+        ],
     },
 ];
 
 describe('ApiAssetsField', () => {
     beforeEach(() => {
-      jest.clearAllMocks();
+        jest.clearAllMocks();
     });
 
     describe('AssetsList', () => {
@@ -142,27 +143,25 @@ describe('ApiAssetsField', () => {
         };
 
         const initialState = {
-          admin: {
-            resources: {
-              assets: {},
+            admin: {
+                resources: {
+                    assets: {},
+                },
             },
-          },
         };
 
         test('should list the assets for an API ', async () => {
-            const { queryByText } = renderWithRedux(
-              <ApiHubProvider url="http://apihub" tenantName="apim">
-                  <DataProviderContext.Provider value={dataProvider}>
-                      <ApiAssetsField record={{}} />
-                  </DataProviderContext.Provider>
-              </ApiHubProvider>,
-              initialState
+            const { queryByText } = render(
+                <ApiHubProvider url="http://apihub" tenantName="apim">
+                    <AdminContext dataProvider={dataProvider}>
+                        <ApiAssetsField record={{ id: '123' }} />
+                    </AdminContext>
+                </ApiHubProvider>,
+                initialState
             );
 
-            await wait(() => {
-              expect(
-                queryByText(`interactive_rich.json`)
-              ).not.toBeNull();
+            await waitFor(() => {
+                expect(queryByText(`interactive_rich.json`)).not.toBeNull();
             });
         });
     });

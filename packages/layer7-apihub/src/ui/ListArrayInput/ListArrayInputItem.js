@@ -1,5 +1,6 @@
+// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import * as React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from 'tss-react/mui';
 import { ListArrayInputItemContext } from './ListArrayInputItemContext';
 
 /**
@@ -7,7 +8,7 @@ import { ListArrayInputItemContext } from './ListArrayInputItemContext';
  */
 export function ListArrayInputItem(props) {
     const { children, onAdd, onRemove, record, selected } = props;
-    const classes = useStyles(props);
+    const { classes } = useStyles(props);
 
     const handleAdd = event => {
         onAdd(event, record);
@@ -33,7 +34,7 @@ export function ListArrayInputItem(props) {
     );
 }
 
-const useStyles = makeStyles(
+const useStyles = makeStyles({ name: 'Layer7ListArrayInputItemContext' })(
     theme => ({
         root: {
             alignItems: 'flex-start',
@@ -45,8 +46,5 @@ const useStyles = makeStyles(
             paddingLeft: 0,
         },
         button: {},
-    }),
-    {
-        name: 'Layer7ListArrayInputItemContext',
-    }
+    })
 );
