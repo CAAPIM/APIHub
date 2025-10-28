@@ -4,7 +4,7 @@ import { stringify } from 'query-string';
 const basePath = '/api-management/1.0/apis';
 const internalBasePath = '/api-management/internal';
 
-const SearchFields = ['name', 'description'];
+const SearchFields = ['name'];
 export const apisDataProvider = context => {
     return {
         async getList({ filter, pagination, sort }) {

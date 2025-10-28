@@ -13,9 +13,13 @@ export const registrationsDataProvider = context => {
                 method: 'POST',
                 body: JSON.stringify(data),
             });
+            const { uuid, ...responseData } = json;
 
             return {
-                data: { ...json },
+                data: {
+                    id: uuid || `temp-${Date.now()}`, // Fallback id if uuid is not present
+                    ...responseData,
+                },
             };
         },
     };

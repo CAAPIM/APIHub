@@ -3,6 +3,12 @@ import React from 'react';
 import { ApiApplications } from './ApiApplications';
 import { fireEvent, waitFor, render } from '@testing-library/react';
 import { AdminContext } from 'react-admin';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+// Mock the useLayer7Notify hook
+jest.mock('../../useLayer7Notify', () => ({
+    useLayer7Notify: () => jest.fn(),
+}));
 
 describe('Applications', () => {
     test('should allow to select an application', async () => {
@@ -89,10 +95,23 @@ describe('Applications', () => {
             },
         };
 
+        const queryClient = new QueryClient({
+            defaultOptions: {
+                queries: {
+                    retry: false,
+                },
+                mutations: {
+                    retry: false,
+                },
+            },
+        });
+
         const { getByLabelText, queryByText } = render(
-            <AdminContext dataProvider={dataProvider}>
-                <ApiApplications id="api_1" />
-            </AdminContext>
+            <QueryClientProvider client={queryClient}>
+                <AdminContext dataProvider={dataProvider}>
+                    <ApiApplications id="api_1" />
+                </AdminContext>
+            </QueryClientProvider>
         );
 
         const appSelect = getByLabelText(
@@ -179,10 +198,23 @@ describe('Applications', () => {
             }),
         };
 
+        const queryClient = new QueryClient({
+            defaultOptions: {
+                queries: {
+                    retry: false,
+                },
+                mutations: {
+                    retry: false,
+                },
+            },
+        });
+
         const { getByLabelText, findByText, getByText } = render(
-            <AdminContext dataProvider={dataProvider}>
-                <ApiApplications id="api_1" />
-            </AdminContext>
+            <QueryClientProvider client={queryClient}>
+                <AdminContext dataProvider={dataProvider}>
+                    <ApiApplications id="api_1" />
+                </AdminContext>
+            </QueryClientProvider>
         );
 
         const appSelect = getByLabelText(

@@ -233,6 +233,7 @@ const apiHubMessages = {
                 unpublished: 'Sin publicar',
                 incomplete: 'Incompleto',
                 new: 'Sin publicar',
+                delete_failed: 'Forzar eliminación',
             },
             accessStatus: {
                 public: 'Público',
@@ -262,16 +263,12 @@ const apiHubMessages = {
                         desc: 'Nombre de la API: Z-A',
                     },
                     createTs: {
-                        asc:
-                            'Fecha de creación: de la más anterior a la más reciente',
-                        desc:
-                            'Fecha de creación: de la más reciente a la más anterior',
+                        asc: 'Fecha de creación: de la más anterior a la más reciente',
+                        desc: 'Fecha de creación: de la más reciente a la más anterior',
                     },
                     modifyTs: {
-                        asc:
-                            'Fecha de modificación: de la más anterior a la más reciente',
-                        desc:
-                            'Fecha de modificación: de la más reciente a la más anterior',
+                        asc: 'Fecha de modificación: de la más anterior a la más reciente',
+                        desc: 'Fecha de modificación: de la más reciente a la más anterior',
                     },
                 },
                 filters: {

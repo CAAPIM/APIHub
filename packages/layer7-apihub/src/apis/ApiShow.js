@@ -42,21 +42,23 @@ export const ApiShow = props => {
 
     return (
         <Show className={rootClassName} classes={classes} title={<ApiTitle />}>
-            {fetchApisPermissionsIsSuccess && fetchUserContextIsSuccess && (
-                <ApiShowTabs
-                    userIsPublisher={isPublisher(userContexts)}
-                    userCanEdit={get(
-                        apisPermissionsResponse.data,
-                        'canEdit',
-                        false
-                    )}
-                    userCanDelete={get(
-                        apisPermissionsResponse.data,
-                        'canEdit',
-                        false
-                    )}
-                />
-            )}
+            <>
+                {fetchApisPermissionsIsSuccess && fetchUserContextIsSuccess && (
+                    <ApiShowTabs
+                        userIsPublisher={isPublisher(userContexts)}
+                        userCanEdit={get(
+                            apisPermissionsResponse.data,
+                            'canEdit',
+                            false
+                        )}
+                        userCanDelete={get(
+                            apisPermissionsResponse.data,
+                            'canDelete',
+                            false
+                        )}
+                    />
+                )}
+            </>
         </Show>
     );
 };

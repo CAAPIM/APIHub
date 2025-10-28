@@ -229,6 +229,7 @@ const apiHubMessages = {
                 unpublished: 'Non publié',
                 incomplete: 'Incomplet',
                 new: 'Non publié',
+                delete_failed: 'Echec de la suppression',
             },
             accessStatus: {
                 public: 'Public',
@@ -258,16 +259,12 @@ const apiHubMessages = {
                         desc: "Nom de l'API : Z-A",
                     },
                     createTs: {
-                        asc:
-                            'Date de création : du plus ancien au plus ancien récent',
-                        desc:
-                            'Date de création : du plus récent au plus ancien',
+                        asc: 'Date de création : du plus ancien au plus ancien récent',
+                        desc: 'Date de création : du plus récent au plus ancien',
                     },
                     modifyTs: {
-                        asc:
-                            'Date de modification : du plus ancien au plus ancien récent',
-                        desc:
-                            'Date de modification : du plus récent au plus ancien',
+                        asc: 'Date de modification : du plus ancien au plus ancien récent',
+                        desc: 'Date de modification : du plus récent au plus ancien',
                     },
                 },
                 filters: {
@@ -660,8 +657,7 @@ const apiHubMessages = {
             },
             notifications: {
                 confirmation_required: 'Confirmation requise',
-                error:
-                    "Un problème est survenu lors de l'enregistrement de votre compte.",
+                error: "Un problème est survenu lors de l'enregistrement de votre compte.",
                 confirmation_title: 'Consulter votre boîte de réception',
                 confirmation:
                     "Enregistrement reçu. Un courriel de notification sera envoyé à l'adresse indiquée.",

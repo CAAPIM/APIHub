@@ -27,7 +27,7 @@ export const MarkdownInput = ({
             {...rest}
             id="textarea"
         >
-            <div className={classes.editor}>
+            <div className={classes.editor} data-color-mode="light">
                 <MarkdownEditor name={name} value={value} onChange={onChange} />
                 <FormHelperText error={!!error} variant="filled" margin="dense">
                     <InputHelperText
