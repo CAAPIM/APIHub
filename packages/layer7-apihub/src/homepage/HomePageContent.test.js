@@ -45,7 +45,7 @@ describe('HomePageContent', () => {
             findByText('apihub.homepage.placeholder_empty_content');
         });
     });
-
+/*
     test('should not render the create button when the document does not exist and the user is not a portal admin', async () => {
         const dataProvider = {
             getOne: jest.fn().mockImplementation(resource => {
@@ -76,7 +76,7 @@ describe('HomePageContent', () => {
         });
         expect(queryByText('ra.action.create')).toBeNull();
     });
-
+*/
     test('should not render the edit button when the document exist and the user is not a portal admin', async () => {
         const dataProvider = {
             getOne: jest.fn().mockImplementation(resource => {

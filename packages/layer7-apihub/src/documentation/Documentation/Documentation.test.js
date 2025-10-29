@@ -3,7 +3,13 @@ import React from 'react';
 import { AdminContext, Notification } from 'react-admin';
 import { render, waitFor, fireEvent, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Documentation } from './Documentation';
+
+// Mock the useLayer7Notify hook
+jest.mock('../../useLayer7Notify', () => ({
+    useLayer7Notify: () => jest.fn(),
+}));
 
 global.Request = class MockRequest {
     constructor(input, init) {
@@ -84,17 +90,29 @@ describe('Documentation', () => {
 
     const renderDocumentation = ({ data = baseData, ...props } = {}) => {
         const dataProvider = getDataProvider(Array.from(data));
+        const queryClient = new QueryClient({
+            defaultOptions: {
+                queries: {
+                    retry: false,
+                },
+                mutations: {
+                    retry: false,
+                },
+            },
+        });
 
         return render(
-            <AdminContext dataProvider={dataProvider}>
-                <Documentation
-                    resource="documents"
-                    entityUuid="api-id"
-                    entityType="api"
-                    {...props}
-                />
-                <Notification />
-            </AdminContext>
+            <QueryClientProvider client={queryClient}>
+                <AdminContext dataProvider={dataProvider}>
+                    <Documentation
+                        resource="documents"
+                        entityUuid="api-id"
+                        entityType="api"
+                        {...props}
+                    />
+                    <Notification />
+                </AdminContext>
+            </QueryClientProvider>
         );
     };
 

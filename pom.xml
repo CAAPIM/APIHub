@@ -6,7 +6,7 @@
 
   <groupId>com.ca.apim</groupId>
   <artifactId>apihub</artifactId>
-  <version>33.2-SNAPSHOT</version>
+  <version>5.4.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <properties>
@@ -48,6 +48,8 @@
             </goals>
             <configuration>
               <nodeVersion>v22.13.0</nodeVersion>
+              <nodeDownloadRoot>https://usw1.packages.broadcom.com/artifactory/apim-npm-virtual/dist/</nodeDownloadRoot>
+              <serverId>artifactory</serverId>
               <yarnVersion>v1.19.2</yarnVersion>
             </configuration>
           </execution>
