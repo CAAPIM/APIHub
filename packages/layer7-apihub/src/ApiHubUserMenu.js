@@ -1,4 +1,4 @@
-// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
+// Copyright © 2026 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React, { Children, cloneElement, isValidElement, useState } from 'react';
 import { useTranslate, Logout } from 'react-admin';
 import Tooltip from '@mui/material/Tooltip';
@@ -67,12 +67,8 @@ export const ApiHubUserMenu = props => {
 
     const userName = userContext
         ? translate('apihub.menu.user_details.full_name', {
-              last_name: userContext?.userDetails?.lastName
-                  ? userContext.userDetails.lastName
-                  : '',
-              first_name: userContext?.userDetails?.firstName
-                  ? userContext.userDetails.firstName
-                  : '',
+              last_name: userContext.userDetails?.lastName || '',
+              first_name: userContext.userDetails?.firstName || '',
           })
         : '';
 

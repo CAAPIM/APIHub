@@ -1,4 +1,4 @@
-// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
+// Copyright © 2026 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React, { Fragment, useEffect, useState } from 'react';
 import {
     SaveButton,
@@ -51,7 +51,7 @@ export const ApplicationToolbar = props => {
                     color="error"
                     className={classes.error}
                 >
-                    <ValidationError error={error?.message} />
+                    <ValidationError error={error.message} />
                 </Typography>
             ) : null}
             <Toolbar className={classes.toolbar} {...props}>

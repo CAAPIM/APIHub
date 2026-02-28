@@ -23,7 +23,7 @@
         "decode-uri-component": "0.2.1",
         "focus-trap-react": "^11.0.3",
         "jsencrypt": "~3.0.0-rc.1",
-        "moment-timezone": "0.5.31",
+        "moment-timezone": "0.5.48",
         "ra-i18n-polyglot": "^5.7.3",
         "ra-language-english": "^5.7.3",
         "ra-language-french": "^5.7.3",
@@ -57,7 +57,7 @@
         "kcd-scripts": "6.3.0",
         "rimraf": "~3.0.2",
         "typescript": "~5.1.6",
-        "vite": "~5.4.20",
+        "vite": "~5.4.21",
         "vite-tsconfig-paths": "~5.1.4"
     },
     "files": [
@@ -65,5 +65,9 @@
         "lib",
         "esm",
         "src"
-    ]
+    ],
+    "publishConfig": {
+        "registry": "https://usw1.packages.broadcom.com/artifactory/api/npm/apim-npm-virtual/",
+        "access": "public"
+    }
 }

@@ -34,20 +34,13 @@ watch-lib: ## Starts the library in development mode
 
 #### Tests ####
 
-test: test-unit test-e2e ## Runs the tests. Usage BROWSER=[chrome|firefox] make test.
+test: test-unit ## Runs the tests. Usage BROWSER=[chrome|firefox] make test.
 
 test-unit: ## Runs the unit tests. Usage make test-unit.
 	@yarn test
 
 test-unit-coverage: ## Runs the unit tests with coverage report. Usage make test-unit-coverage.
 	@yarn test:coverage
-
-test-e2e: build build-example ## Runs the end-to-end tests. Usage BROWSER=[chrome|firefox] make test-e2e.
-	@NODE_ENV=test cd cypress && yarn -s start
-
-test-e2e-local: ## Opens the end-to-end tests GUI. Usage make test-e2e-local.
-	@echo 'Starting e2e tests environment. Ensure you started the example first (make start)'.
-	@cd cypress && yarn -s start-gui
 
 #### Code Formatting ####
 

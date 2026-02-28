@@ -22,3 +22,4 @@ export * from './userContexts';
 export * from './userProfiles';
 export * from './fetchUtils';
 export * from './useLayer7Notify';
+export * from './useConfig';

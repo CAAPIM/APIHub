@@ -26,11 +26,14 @@ yarn-debug.log*
 yarn-error.log*
 *.tsbuildinfo
 
+node/**
+target/**
+
 # config
 packages/example/public/config.js
 packages/healthcare/public/config.js
 
-# cypress
-cypress/screenshots
-/.idea/
-/apihub.iml
+# Editor artifacts
+.idea/*
+!.idea/copyright
+.vscode

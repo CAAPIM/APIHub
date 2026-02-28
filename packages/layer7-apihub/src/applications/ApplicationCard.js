@@ -1,4 +1,4 @@
-// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
+// Copyright © 2026 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React from 'react';
 import { Link } from 'react-router-dom';
 import Card from '@mui/material/Card';
@@ -56,7 +56,7 @@ export const ApplicationCard = () => {
                         type: 'show',
                     })}
                 >
-                    <Tooltip title={record.description || ''}>
+                    <Tooltip title={record.description}>
                         <MarkdownView
                             className={classes.description}
                             value={record.description}

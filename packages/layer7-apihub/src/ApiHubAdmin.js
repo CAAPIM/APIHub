@@ -1,12 +1,8 @@
-// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
+// Copyright © 2026 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React, { Children } from 'react';
 import { Admin, CustomRoutes, localStorageStore, Resource } from 'react-admin';
 import { Route } from 'react-router-dom';
-import {
-    ApiHubProvider,
-    guessApihubUrl,
-    guessApihubTenantName,
-} from './ApiHubContext';
+import { ApiHubProvider } from './ApiHubContext';
 import { authProvider } from './authentication';
 import { dataProvider } from './dataProvider';
 import { i18nProvider, defaultLocale } from './i18n';
@@ -26,6 +22,7 @@ import { userProfiles } from './userProfiles';
 import { ApiHubLayout } from './ApiHubLayout';
 import { readApiHubPreference } from './preferences';
 import { QueryClient } from '@tanstack/react-query';
+import { useConfig } from './useConfig';
 
 const queryClient = new QueryClient({
     defaultOptions: {
@@ -37,10 +34,10 @@ const queryClient = new QueryClient({
 });
 
 export const ApiHubAdmin = props => {
+    const config = useConfig();
+
     const {
         // ApiHub Settings
-        url = guessApihubUrl(),
-        tenantName = guessApihubTenantName(),
         originHubName,
         useSameOrigin = true,
         // Custom Pages and Layout
@@ -58,6 +55,10 @@ export const ApiHubAdmin = props => {
         customRoutesNoLayout = [],
         children,
     } = props;
+
+    const url = props['url'] || config.APIHUB_URL;
+    const tenantName = props['tenantName'] || config.TENANT_NAME;
+
     const defaultLocaleFromPreferences = readApiHubPreference(
         'locale',
         defaultLocale
@@ -102,6 +103,12 @@ export const ApiHubAdmin = props => {
             />
         );
     }
+
+    // Prevent rendering the component if tenant name is not available.
+    if (!tenantName) {
+        return;
+    }
+
     return (
         <ApiHubProvider
             url={url}
@@ -128,10 +135,10 @@ export const ApiHubAdmin = props => {
                     {/* React-Router loads only the first route that matches a path.*/}
                     {/* The only way to allow customizing the pre-defined routes*/}
                     {/* is to pass the customRoutes from the props before.*/}
-                    {...customRoutes}
+                    {customRoutes}
                 </CustomRoutes>
                 <CustomRoutes noLayout>
-                    {...customRoutesNoLayout}
+                    {customRoutesNoLayout}
                     <Route
                         path="/reset-password/*"
                         element={resetPasswordPage}

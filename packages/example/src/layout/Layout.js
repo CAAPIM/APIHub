@@ -2,9 +2,9 @@
 import React from 'react';
 import { ApiHubLayout, useBranding } from 'layer7-apihub';
 import { Helmet } from 'react-helmet';
-import { get } from 'lodash';
 
 import { AppBar } from './AppBar';
+import { useAppConfig } from '../contexts/ConfigContext';
 
 export const Layout = props => {
     const {
@@ -13,11 +13,9 @@ export const Layout = props => {
         USE_BRANDING_ICONS,
         ORIGIN_HUB_NAME,
         TENANT_NAME,
-    } = global.APIHUB_CONFIG;
+    } = useAppConfig();
 
-    const TENANT = TENANT_NAME || guessApihubTenantName();
-    const URL = APIHUB_URL || guessApihubUrl();
-    const API_URL_WITH_TENANT = `${URL}/api/${TENANT}`;
+    const API_URL_WITH_TENANT = `${APIHUB_URL}/api/${TENANT_NAME}`;
 
     const { favicon } = useBranding(API_URL_WITH_TENANT, ORIGIN_HUB_NAME);
 
@@ -36,12 +34,4 @@ export const Layout = props => {
             <ApiHubLayout appBar={AppBar} {...props} />
         </>
     );
-};
-
-export const guessApihubTenantName = (location = window.location) => {
-    return location.host.split('.')[0];
-};
-
-export const guessApihubUrl = (location = window.location) => {
-    return get(location, 'origin', '');
 };
