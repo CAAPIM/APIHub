@@ -1,4 +1,4 @@
-// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
+// Copyright © 2026 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import { stringify } from 'query-string';
 
 export const apiKeysDataProvider = context => {
@@ -12,12 +12,15 @@ export const apiKeysDataProvider = context => {
         }) => {
             const { applicationUuid } = meta;
             const path = `${basePath}/${applicationUuid}/api-keys`;
-            const url = `${path}?${stringify({
+            const params = {
                 ...filter,
                 page: pagination.page - 1,
                 size: pagination.perPage,
-                sort: `${sort.field},${sort.order}`,
-            })}`;
+            };
+            if (sort) {
+                params.sort = `${sort.field},${sort.order}`;
+            }
+            const url = `${path}?${stringify(params)}`;
 
             const { json } = await context.fetchJson(url, {
                 credentials: 'include',

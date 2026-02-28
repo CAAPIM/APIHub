@@ -16,9 +16,10 @@ import { Layout, HomePage } from './layout';
 import { i18nProvider } from './i18n/i18nProvider';
 import { useTheme } from './theme';
 import { TestPage } from './TestPage';
+import { useAppConfig } from './contexts/ConfigContext';
 
 const App = () => {
-    const { APIHUB_URL, TENANT_NAME, ORIGIN_HUB_NAME } = global.APIHUB_CONFIG;
+    const { APIHUB_URL, TENANT_NAME, ORIGIN_HUB_NAME } = useAppConfig();
 
     if (!ORIGIN_HUB_NAME) {
         throw new Error(

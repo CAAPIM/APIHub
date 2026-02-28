@@ -1,6 +1,14 @@
-// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
+// Copyright © 2026 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React, { useState } from 'react';
-import { Button, Divider, List, ListItem, Snackbar, Tooltip, Typography } from '@mui/material';
+import {
+    Button,
+    Divider,
+    List,
+    ListItem,
+    Snackbar,
+    Tooltip,
+    Typography,
+} from '@mui/material';
 import { makeStyles } from 'tss-react/mui';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
@@ -30,7 +38,7 @@ export const AuthSchemeList = props => {
     };
 
     const StartIcon = props => {
-        const { selectedScheme, scheme } = props;
+        const { scheme } = props;
         if (scheme.logo) {
             return (
                 <img
@@ -38,32 +46,13 @@ export const AuthSchemeList = props => {
                     src={scheme.logo}
                 />
             );
-        } else {
-            return (
-                <img
-                    style={{ maxHeight: '36px', maxWidth: '36px' }}
-                    src={CALOGOSRC}
-                />
-            );
         }
-        if (scheme.credsReqd) {
-            if (selectedScheme && selectedScheme.uuid === scheme.uuid) {
-                return (
-                    <img
-                        style={{ maxHeight: '36px', maxWidth: '36px' }}
-                        src={CALOGOSRC}
-                    />
-                );
-            } else {
-                return (
-                    <img
-                        style={{ maxHeight: '36px', maxWidth: '36px' }}
-                        src={CALOGOSRC}
-                    />
-                );
-            }
-        }
-        return null;
+        return (
+            <img
+                style={{ maxHeight: '36px', maxWidth: '36px' }}
+                src={CALOGOSRC}
+            />
+        );
     };
 
     return (
@@ -99,12 +88,7 @@ export const AuthSchemeList = props => {
                         >
                             <Button
                                 variant="outlined"
-                                startIcon={
-                                    <StartIcon
-                                        scheme={scheme}
-                                        selectedScheme={selectedScheme}
-                                    />
-                                }
+                                startIcon={<StartIcon scheme={scheme} />}
                                 className={classes.listButton}
                                 onClick={() => onSelectScheme(scheme)}
                             >
@@ -127,32 +111,30 @@ export const AuthSchemeList = props => {
     );
 };
 
-const useStyles = makeStyles({ name: 'Layer7LoginAuthSchemeList' })(
-    theme => ({
-        root: {
-            marginTop: theme.spacing(3),
-        },
-        listButtonLabelName: {
-            width: '100%',
-            textAlign: 'center',
-        },
-        listButtonLabelDescription: {
-            fontSize: '0.7rem',
-            display: 'block',
-            color: theme.palette.text.secondary,
-            textTransform: 'none',
-        },
-        listButton: {
-            width: '100%',
-            justifyContent: 'start',
-        },
-        divider: {
-            marginTop: '-13px',
-            marginBottom: theme.spacing(2),
-            margin: '0 auto',
-            width: '20px',
-            textAlign: 'center',
-            backgroundColor: theme.palette.background.default,
-        },
-    })
-);
+const useStyles = makeStyles({ name: 'Layer7LoginAuthSchemeList' })(theme => ({
+    root: {
+        marginTop: theme.spacing(3),
+    },
+    listButtonLabelName: {
+        width: '100%',
+        textAlign: 'center',
+    },
+    listButtonLabelDescription: {
+        fontSize: '0.7rem',
+        display: 'block',
+        color: theme.palette.text.secondary,
+        textTransform: 'none',
+    },
+    listButton: {
+        width: '100%',
+        justifyContent: 'start',
+    },
+    divider: {
+        marginTop: '-13px',
+        marginBottom: theme.spacing(2),
+        margin: '0 auto',
+        width: '20px',
+        textAlign: 'center',
+        backgroundColor: theme.palette.background.default,
+    },
+}));

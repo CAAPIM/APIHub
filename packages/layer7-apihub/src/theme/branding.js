@@ -156,7 +156,7 @@ export const useBranding = (url, originHubName, defaultTheme = theme) => {
     const [userContext, setUserContext] = useState('');
 
     useEffect(() => {
-        if (JSON.parse(sessionStorage.getItem(LOGGED_IN))) {
+        if (url && JSON.parse(sessionStorage.getItem(LOGGED_IN))) {
             fetchUserContext(url, originHubName).then(response => {
                 setUserContext(get(response, 'userContexts[0]'));
             });
@@ -164,29 +164,30 @@ export const useBranding = (url, originHubName, defaultTheme = theme) => {
     }, [originHubName, url]);
 
     useEffect(() => {
-        fetchBranding(url, originHubName, userContext)
-            .then(theme => {
-                localStorage.setItem(
-                    'SHOW_COPYRIGHT',
-                    get(theme, 'display.apihubCopyright')
-                );
-                return {
-                    logo: theme.logo,
-                    favicon: theme.favicon,
-                    ...createTheme(convertBrandingToMuiTheme(theme)),
-                };
-            })
-            .then(({ logo, favicon, ...theme }) => {
-                if (global.APIHUB_CONFIG.USE_BRANDING_THEME) {
-                    setBrandingLogo(logo);
-                    setBrandingFavicon(favicon);
-                    setBrandingTheme(merge(defaultTheme, theme));
-                } else {
-                    setBrandingLogo(null);
-                    setBrandingFavicon(null);
-                    setBrandingTheme(defaultTheme);
-                }
-            });
+        url &&
+            fetchBranding(url, originHubName, userContext)
+                .then(theme => {
+                    localStorage.setItem(
+                        'SHOW_COPYRIGHT',
+                        get(theme, 'display.apihubCopyright')
+                    );
+                    return {
+                        logo: theme.logo,
+                        favicon: theme.favicon,
+                        ...createTheme(convertBrandingToMuiTheme(theme)),
+                    };
+                })
+                .then(({ logo, favicon, ...theme }) => {
+                    if (global.APIHUB_CONFIG.USE_BRANDING_THEME) {
+                        setBrandingLogo(logo);
+                        setBrandingFavicon(favicon);
+                        setBrandingTheme(merge(defaultTheme, theme));
+                    } else {
+                        setBrandingLogo(null);
+                        setBrandingFavicon(null);
+                        setBrandingTheme(defaultTheme);
+                    }
+                });
     }, [defaultTheme, originHubName, url, userContext]);
 
     return {

@@ -5,7 +5,7 @@ import { useTheme as useThemePreference } from 'react-admin';
 import { merge } from 'lodash';
 import { createTheme } from '@mui/material/styles';
 
-import { guessApihubTenantName, guessApihubUrl } from '../layout';
+import { useAppConfig } from '../contexts/ConfigContext';
 
 const defaultDarkTheme = createTheme({
     palette: {
@@ -74,12 +74,10 @@ export const lightTheme = defaultTheme;
 
 export const useTheme = () => {
     const { APIHUB_URL, USE_BRANDING_THEME, TENANT_NAME, ORIGIN_HUB_NAME } =
-        global.APIHUB_CONFIG;
+        useAppConfig();
 
-    const TENANT = TENANT_NAME || guessApihubTenantName();
-    const URL = APIHUB_URL || guessApihubUrl();
-    const API_URL_WITH_TENANT = `${URL}/api/${TENANT}`;
-
+    const API_URL_WITH_TENANT =
+        TENANT_NAME && APIHUB_URL ? `${APIHUB_URL}/api/${TENANT_NAME}` : null;
     const [themeMode] = useThemePreference();
 
     const { logo, theme } = useBranding(API_URL_WITH_TENANT, ORIGIN_HUB_NAME);

@@ -1,4 +1,4 @@
-// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
+// Copyright © 2026 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React, { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import {
@@ -73,7 +73,7 @@ export const SignUpForm = props => {
                 validate={validate}
             >
                 <TextInput
-                    source="email"
+                    source="email" // coverity[copy_paste_error] - intentionally different from emailConfirmation
                     type="email"
                     label="resources.registrations.fields.email"
                     variant="outlined"

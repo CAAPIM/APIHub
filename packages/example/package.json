@@ -23,7 +23,7 @@
         "@vitejs/plugin-react": "~4.2.1",
         "@vitejs/plugin-basic-ssl": "~1.1.0",
         "kcd-scripts": "6.3.0",
-        "vite": "~5.4.20",
+        "vite": "~5.4.21",
         "vite-plugin-svgr": "~4.3.0"
     },
     "browserslist": {
@@ -37,5 +37,9 @@
             "last 1 firefox version",
             "last 1 safari version"
         ]
+    },
+    "publishConfig": {
+        "registry": "https://usw1.packages.broadcom.com/artifactory/api/npm/apim-npm-virtual/",
+        "access": "public"
     }
 }

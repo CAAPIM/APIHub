@@ -228,6 +228,7 @@ const apiHubMessages = {
                 incomplete: 'Incomplete',
                 new: 'Unpublished',
                 delete_failed: 'Delete Failed',
+                unmanaged: 'Unmanaged',
             },
             accessStatus: {
                 public: 'Public',

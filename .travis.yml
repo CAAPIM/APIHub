@@ -2,6 +2,7 @@ dist: xenial
 language: node_js
 node_js:
     - '12.16.3'
+    - 'lts/*'
 addons:
     chrome: stable
     firefox: latest
@@ -28,12 +29,27 @@ script: make test
 
 stages:
     - name: test
+    - name: deploy
       if: branch = master
 
 jobs:
     include:
         - stage: test
-          name: Units and E2E tests
+          name: Unit tests
           env:
               - DEPLOY_ENV=test
               - NODE_ENV=test
+        - stage: deploy
+          name: Deploy
+          env:
+              - DEPLOY_ENV=integration
+              - NODE_ENV=production
+          install: NODE_ENV=development make install # Install development dependencies
+          script: skip
+          before_deploy:
+              - pip install --user awscli
+              - export PATH=$PATH:$HOME/.local/bin
+          deploy:
+              skip_cleanup: true
+              provider: script
+              script: make deploy

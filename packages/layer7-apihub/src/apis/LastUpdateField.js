@@ -1,4 +1,4 @@
-// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
+// Copyright © 2026 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import React from 'react';
 import get from 'lodash/get';
 import Typography from '@mui/material/Typography';
@@ -19,7 +19,7 @@ export const LastUpdateField = ({ basePath, source, addPrefix, ...props }) => {
     }
 
     const date = new Date(value);
-    const formattedDate = format(date, 'MM/DD/YYYY');
+    const formattedDate = format(date, 'MM/dd/yyyy');
 
     let label = addPrefix
         ? translate('resources.apis.last_update.fields.updated', {
@@ -28,7 +28,7 @@ export const LastUpdateField = ({ basePath, source, addPrefix, ...props }) => {
         : formattedDate;
 
     return (
-        <Tooltip title={format(date, 'MM/DD/YYYY')}>
+        <Tooltip title={format(date, 'MM/dd/yyyy')}>
             <Typography variant="body2" {...props}>
                 {label}
             </Typography>

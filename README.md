@@ -57,7 +57,7 @@ make start
 
 ### Run the Tests
 
-Run the unit tests and the E2E tests by issuing the following command:
+Run the unit tests by issuing the following command:
 
 ```
 make test
