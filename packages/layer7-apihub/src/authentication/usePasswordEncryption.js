@@ -1,13 +1,43 @@
-// Copyright © 2025 Broadcom Inc. and its subsidiaries. All Rights Reserved.
+// Copyright © 2026 Broadcom Inc. and its subsidiaries. All Rights Reserved.
 import { useEffect, useState } from 'react';
-import JSEncrypt from 'jsencrypt';
+import forge from 'node-forge';
 import { useApiHub } from '../ApiHubContext';
 import { getFetchJson } from '../fetchUtils';
 
+/**
+ * Encrypts plaintext using RSA-OAEP.
+ *
+ * Parameters match Java's Cipher.getInstance("RSA/ECB/OAEPWithSHA-256AndMGF1Padding")
+ * with an explicit OAEPParameterSpec("SHA-256", "MGF1", MGF1ParameterSpec.SHA1, DEFAULT):
+ *   - OAEP hash: SHA-256
+ *   - MGF1 internal hash: SHA-1 (Java default for OAEPWithSHA-256AndMGF1Padding)
+ *
+ * The public key may arrive as a raw flat Base64 DER string (no PEM headers) from
+ * EteKeyController. PEM headers are added automatically when absent so that
+ * node-forge can parse it.
+ *
+ * @param {string} publicKey - RSA public key: PEM or raw Base64 DER.
+ * @param {string} data - Plaintext to encrypt.
+ * @returns {Promise<string|false>} Base64-encoded ciphertext, or false on failure.
+ */
 export const defaultEncrypt = (publicKey, data) => {
-    const encrypter = new JSEncrypt();
-    encrypter.setPublicKey(publicKey);
-    return Promise.resolve(encrypter.encrypt(data));
+    if (!publicKey || !data) return Promise.resolve(false);
+    try {
+        const pemKey = publicKey.includes('-----BEGIN')
+            ? publicKey
+            : `-----BEGIN PUBLIC KEY-----\n${publicKey}\n-----END PUBLIC KEY-----`;
+        const rsaKey = forge.pki.publicKeyFromPem(pemKey);
+        const encrypted = rsaKey.encrypt(data, 'RSA-OAEP', {
+            md: forge.md.sha256.create(),
+            mgf1: {
+                md: forge.md.sha1.create(),
+            },
+        });
+        return Promise.resolve(forge.util.encode64(encrypted));
+    } catch (error) {
+        console.error('Password encryption failed', error);
+        return Promise.resolve(false);
+    }
 };
 
 /**
