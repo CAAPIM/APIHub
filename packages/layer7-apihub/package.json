@@ -66,9 +66,5 @@
         "lib",
         "esm",
         "src"
-    ],
-    "publishConfig": {
-        "registry": "https://usw1.packages.broadcom.com/artifactory/api/npm/apim-npm-virtual/",
-        "access": "public"
-    }
+    ]
 }

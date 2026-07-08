@@ -75,9 +75,5 @@
         "path-to-regexp": "^3.3.0",
         "axios": "^1.16.0",
         "immutable": "^3.8.3"
-    },
-    "publishConfig": {
-        "registry": "https://usw1.packages.broadcom.com/artifactory/api/npm/apim-npm-virtual/",
-        "access": "public"
     }
 }
